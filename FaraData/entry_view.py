@@ -123,7 +123,6 @@ def cleantext(text):
 def cleanmoney(money):
     money = money.strip()
     money = money.replace('$', '').replace(',', '')
-    #money = float(re.sub('\$','', re.sub(',','', money)))
     return money
  
   
@@ -157,12 +156,16 @@ def lobbyist(request):
         else:
             return render(request, 'success.html', {'status': 'failed'})
 
-
+### multiples not working 
 # assigns a lobbyist or lobbyists to a reg. all_lobbyists
 def reg_lobbyist(request):
     if request.method == 'GET': 
         reg_id = request.GET['reg_id']
-        lobbyists = request.GET['lobbyists']
+        
+        lobbyists = request.GET.getlist('lobbyists')
+        if not lobbyists:
+            lobbyists = [request.GET.get('lobbyists'),]
+            
         message = ''
         registrant = Registrant.objects.get(reg_id=reg_id)
         for l_id in lobbyists:
@@ -176,27 +179,6 @@ def reg_lobbyist(request):
          
         else:
             return render(request, 'success.html', {'status': 'failed'})
-
-### this is not adding more than one client, just the last one
-#adds a client to the registrant
-def reg_client(request):
-    if request.method == 'GET': # If the form has been submitted...
-        reg_id = request.GET['reg_id'] # A form bound to the POST data
-        clients = request.GET['clients']
-        message = ''
-        registrant = Registrant.objects.get(reg_id=reg_id)
-        for c_id in clients:
-            client = Client.objects.get(id=c_id)
-            if client not in registrant.clients.all():
-                registrant.clients.add(client)
-                message += 'We added %s to clients.' % c_id
-            else:
-                message += '%s was already in the clients' % c_id
-        return render(request, 'success.html', {'status': 'yay', 'message': message}) 
-        
-    else:
-        return render(request, 'success.html', {'status': 'failed'})
-
 
 #creates a new client
 def client(request):
@@ -240,7 +222,7 @@ def registrant(request):
         else:
             return render(request, 'success.html', {'status': form.errors}, status=400)
 
-#### WhYYY did this break?                   
+                  
 #adds client to registrant 
 def reg_client(request):
     if request.method == 'GET': # If the form has been submitted...
@@ -267,7 +249,7 @@ def reg_client(request):
 def terminated(request):
     if request.method == 'GET': # If the form has been submitted...
         reg_id = request.GET['reg_id'] # A form bound to the POST data
-        clients = request.GET['clients']
+        clients = request.GET.getlist('clients')
         message = ''
         registrant = Registrant.objects.get(reg_id=reg_id)
         for c_id in clients:

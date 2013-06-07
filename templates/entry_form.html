@@ -252,6 +252,7 @@ Contacts related to this form:<br>
 
     
     <p><label for="lobbyist">Lobbyists:</label><select multiple="multiple" name="lobbyist">
+        <option value="{{ None }}">No lobbyist mentioned</option>
     {% for lobbyist in reg_object.lobbyists.all %}
         <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
     {% endfor %}
@@ -262,11 +263,11 @@ Contacts related to this form:<br>
 
     <p><label for="type">Type: </label>
         <select name="contact_type">
+            <option vlaue="U">unknown</option>
             <option value="P">phone</option>
             <option value="E">email</option>
             <option value="M">meeting</option>
             <option value="O">other</option>
-            <option value="U">unknown</option>
         </select></p>
     
     <p><label for="description">Description: </label><br />
@@ -302,8 +303,9 @@ Contacts related to this form:<br>
     {% csrf_token %}
     <input type="hidden" name="reg_id" value="{{ reg_num }}">
     <input type="hidden" name="link" value="{{ url }}">
-    
-    <p><label for="client">Clients:</label><select multiple="multiple" name="client">
+        <option selected disabled>Choose here</option>
+    <p><label for="client">Client: </label><select name="client">
+        <option value="None">Please Select Client</option>
     {% for client in reg_object.clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}
@@ -339,7 +341,8 @@ Disbursements related to this form:
     <input type="hidden" name="reg_id" value="{{ reg_num }}">
     <input type="hidden" name="link" value="{{ url }}">
     
-    <p><label for="client">Clients:<br /></label><select multiple="multiple" name="client">
+    <p><label for="client">Client:<br /></label><select name="client">
+        <option selected disabled>Choose here</option>
     {% for client in reg_object.clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}
@@ -374,19 +377,21 @@ Disbursements related to this form:
     <p><label for="date">Date: </label>
     <input id="contribution_date" type="text" name="date" /></p>
     
-    <p><label for="recipient">Recipient (who they are meeting with):</label><select multiple="multiple" id="input" name="recipient">
+    <p><label for="recipient">Recipient:</label><select id="input" name="recipient">
+        <option selected disabled>Choose here</option>
     {% for recipient in all_recipients %}
         <option value="{{ recipient.id }}">{{ recipient.title }} {{ recipient.name }}, {{ recipient.agency }}</option>
     {% endfor %}
-    </select></p><a href="#recip">add a new recipient</a>
+    </select></p><a href="#recip">add a new recipient</a></p>
 
     <p><label for="lobbyist">Lobbyist or PAC:</label><select name="lobbyist">
+        <option selected disabled>Choose here</option>
     {% for lobbyist in reg_object.lobbyists.all %}
         <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
     {% endfor %}
-    </select></p><a href="#lobbyist">add a new lobbyist or PAC</a>
+    </select></p>
+    <p><a href="#lobbyist">add a new lobbyist or PAC</a></p>
 
-    
     <input type="submit" />
 </form>
 
@@ -403,7 +408,8 @@ Gifts associated with this form:
     {% csrf_token %}
     <input type="hidden" name="reg_id" value="{{ reg_num }}">
     <input type="hidden" name="link" value="{{  url }}">
-    <p><label for="client">Clients:</label><select multiple="multiple" name="client">
+    <p><label for="client">Clients:</label><select name="client">
+        <option selected disabled>Choose here</option>
     {% for client in reg_object.clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}

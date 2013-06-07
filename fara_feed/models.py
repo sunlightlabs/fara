@@ -8,4 +8,6 @@ class Document(models.Model):
     stamp_date = models.DateField(null=True, blank=True) 
     #add some file storage or links to lobby tracker?
     
+    def __unicode__(self):
+        return "%s---  Date: %s" %(self.url, self.stamp_date)
 admin.site.register(Document)
