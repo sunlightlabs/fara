@@ -9,7 +9,8 @@ urlpatterns = patterns('',
     #views for viewing
     url(r'^regview/', 'FaraData.reg_view.index', name='reg-view'),
     #data entry form
-    url(r'^entryform/', 'FaraData.entry_view.index', name='entryform'),
+    #url(r'^entryform/', 'FaraData.entry_view.index', name='entryform'),
+    url(r'^entersupplemental/(\d+)', 'FaraData.entry_view.index', name='enter-supplemental'),
     url(r'^registrant/create', 'FaraData.entry_view.registrant', name= 'create-registrant'),
     url(r'^lobbyist/create', 'FaraData.entry_view.lobbyist', name='create-lobbyist'),
     url(r'^client/create', 'FaraData.entry_view.client', name='create-client'),
@@ -24,7 +25,10 @@ urlpatterns = patterns('',
     url(r'^registrant/add_recipient', 'FaraData.entry_view.recipient', name='add-recipient'),
     url(r'^gift/create', 'FaraData.entry_view.gift', name='create-gift'),
     url(r'^metadata/create', 'FaraData.entry_view.metadata', name='metadata'),
+    #json to generate choices for the form
     url(r'^formchoices/recip', 'FaraData.json_creator_view.recip_choice', name='json-recip-choices'),
     url(r'^formchoices/lobby', 'FaraData.json_creator_view.lobby_choice', name='json-lobby-choices'),
     url(r'^formchoices/client', 'FaraData.json_creator_view.client_choice', name='json-client-choices'),
+    #Document managers
+    url(r'^full_list/', 'fara_feed.document_select_view.full_list', name='full-list'),
     )

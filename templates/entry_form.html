@@ -3,7 +3,7 @@
 <meta charset="utf-8" />
 <title>FARA entry</title>
 <head>
-<!-- creates the two scrolling sections --!>  
+<!-- creates the two scrolling sections -->  
 <style>
     #left {
         width: 700px;
@@ -37,7 +37,7 @@
     }
     </style>
 
-  <!-- jQuery UI Datepicker - Default functionality  Version 1 --!>
+  <!-- jQuery UI Datepicker - Default functionality  Version 1 -->
   <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
   <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
@@ -117,11 +117,16 @@
 <div id="right">
 
 <h1>Data entry form</h1>
+
+<p>Reminders: <br>
+    Address needs to be changed when not on local host!<br>
+    Change scripts to local</p>
+<p><a href="http://127.0.0.1:8000/full_list/">select a different form</a></p>
 <h3>Registrant</h3>
 <p><i>Section I 1(c)</i></p>
-<p>Registration No = <b>{{ reg_num }}</b></p>
+<p>Registration No = <b>{{ reg_id }}</b></p>
 
-<!-- maybe some kind of if statement if there are not objects to pass --!>
+<!-- maybe some kind of if statement if there are not objects to pass -->
 
         <p> Registrant Name: <br /><b>{{ reg_object.reg_name }}</b></p>
         <p>Address: <br /><b>{{ reg_object.address }}</b><br />
@@ -153,7 +158,7 @@
 
 <form method="GET" id='lobbyform' action="/registrant/add_lobbyist">
     {% csrf_token %}
-    <input type="hidden" name="reg_id" value="{{ reg_num }}">
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <p><label for="lobbyists">Lobbyist: </label><select multiple="multiple" name="lobbyists">
     {% for lobbyist in all_lobbyists %}
         <option value="{{ lobbyist.id }}">{{ lobbyist.lobbyist_name }}</option>
@@ -164,10 +169,12 @@
 
 <a id="lobbyist"><h4>Add a new lobbyist</h4><a id="lobbyist">
 <form method="GET" action="/lobbyist/create">
-    {{ lobby_form.as_p }}
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+    <p><label for="id_lobby_id">Lobby id:</label> <input id="id_lobby_id" maxlength="150" name="lobby_id" type="text" /></p>
+    <p><label for="id_lobbyist_name">Lobbyist name:</label> <input id="id_lobbyist_name" maxlength="150" name="lobbyist_name" type="text" /></p>
+    <p><label for="id_PAC_name">PAC name:</label> <input id="id_PAC_name" maxlength="150" name="PAC_name" type="text" /></p>
     <input type="submit" />
 </form>
-<p>need to add a way to add many to many table connecting to registrant</p>
 <hr />
 
 
@@ -182,9 +189,11 @@
 
 <form method="GET" id='clientform' action="/registrant/add_client" id='clientform'>
     {% csrf_token %}
-    <input type="hidden" name="reg_id" value="{{ reg_num }}">
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <label><b>Add active client:</b></label><select multiple="multiple" name="clients">
     {% for client in all_clients %}
+        {% if client 
+        
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}
     </select>
@@ -202,7 +211,7 @@
 
 <form method="GET" id='terminateform' action="/registrant/add_terminated">
     {% csrf_token %}
-    <input type="hidden" name="reg_id" value="{{ reg_num }}">
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <label><b>Add termination:</b></label><select multiple="multiple" name="clients">
     {% for client in reg_object.clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
@@ -215,7 +224,7 @@
 <p><i>Questions 8 and 9</i></p>
 <form method="GET" action="/client/create">
     {{ client_form.as_p }}
-    <input type="hidden" name="reg_id" value="{{ reg_num }}">
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <input type="submit" />
 </form> 
 
@@ -234,7 +243,7 @@ Contacts related to this form:<br>
 
 <form method="GET" id='contactform' action="/contact/create"> 
     {% csrf_token %}
-    <input type="hidden" name="reg_id" value="{{ reg_num }}">
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <input type="hidden" name="link" value="{{ url }}">
 
     <p><label for="clients">Clients:</label><select id='ClientSelectId' name="client">
@@ -252,7 +261,6 @@ Contacts related to this form:<br>
 
     
     <p><label for="lobbyist">Lobbyists:</label><select multiple="multiple" name="lobbyist">
-        <option value="{{ None }}">No lobbyist mentioned</option>
     {% for lobbyist in reg_object.lobbyists.all %}
         <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
     {% endfor %}
@@ -263,11 +271,11 @@ Contacts related to this form:<br>
 
     <p><label for="type">Type: </label>
         <select name="contact_type">
-            <option vlaue="U">unknown</option>
             <option value="P">phone</option>
             <option value="E">email</option>
             <option value="M">meeting</option>
             <option value="O">other</option>
+            <option value="U">unknown</option>
         </select></p>
     
     <p><label for="description">Description: </label><br />
@@ -301,11 +309,10 @@ Contacts related to this form:<br>
 
 <form method="GET" id="payform" action="/payment/create">
     {% csrf_token %}
-    <input type="hidden" name="reg_id" value="{{ reg_num }}">
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <input type="hidden" name="link" value="{{ url }}">
-        <option selected disabled>Choose here</option>
-    <p><label for="client">Client: </label><select name="client">
-        <option value="None">Please Select Client</option>
+    
+    <p><label for="client">Clients:</label><select multiple="multiple" name="client">
     {% for client in reg_object.clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}
@@ -338,11 +345,10 @@ Disbursements related to this form:
 
 <form method="GET" id='disform' action="/disbursement/create">
     {% csrf_token %}
-    <input type="hidden" name="reg_id" value="{{ reg_num }}">
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <input type="hidden" name="link" value="{{ url }}">
     
-    <p><label for="client">Client:<br /></label><select name="client">
-        <option selected disabled>Choose here</option>
+    <p><label for="client">Clients:<br /></label><select multiple="multiple" name="client">
     {% for client in reg_object.clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}
@@ -368,7 +374,7 @@ Disbursements related to this form:
 
 <form method="GET" id='contform' action="/contribution/create">
     {% csrf_token %}
-    <input type="hidden" name="registrant" value="{{ reg_num }}">
+    <input type="hidden" name="registrant" value="{{ reg_id }}">
     <input type="hidden" name="link" value="{{ url }}">
     
     <p><label for="id_amount">Amount: $</label> 
@@ -377,21 +383,19 @@ Disbursements related to this form:
     <p><label for="date">Date: </label>
     <input id="contribution_date" type="text" name="date" /></p>
     
-    <p><label for="recipient">Recipient:</label><select id="input" name="recipient">
-        <option selected disabled>Choose here</option>
+    <p><label for="recipient">Recipient (who they are meeting with):</label><select multiple="multiple" id="input" name="recipient">
     {% for recipient in all_recipients %}
         <option value="{{ recipient.id }}">{{ recipient.title }} {{ recipient.name }}, {{ recipient.agency }}</option>
     {% endfor %}
-    </select></p><a href="#recip">add a new recipient</a></p>
+    </select></p><a href="#recip">add a new recipient</a>
 
     <p><label for="lobbyist">Lobbyist or PAC:</label><select name="lobbyist">
-        <option selected disabled>Choose here</option>
     {% for lobbyist in reg_object.lobbyists.all %}
         <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
     {% endfor %}
-    </select></p>
-    <p><a href="#lobbyist">add a new lobbyist or PAC</a></p>
+    </select></p><a href="#lobbyist">add a new lobbyist or PAC</a>
 
+    
     <input type="submit" />
 </form>
 
@@ -406,10 +410,9 @@ Gifts associated with this form:
 
 <form method="GET" id="giftform" action="/gift/create">
     {% csrf_token %}
-    <input type="hidden" name="reg_id" value="{{ reg_num }}">
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <input type="hidden" name="link" value="{{  url }}">
-    <p><label for="client">Clients:</label><select name="client">
-        <option selected disabled>Choose here</option>
+    <p><label for="client">Clients:</label><select multiple="multiple" name="client">
     {% for client in reg_object.clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}
@@ -433,7 +436,7 @@ Gifts associated with this form:
 Upload date: {{ meta_list.2 }}
 <form method="GET" action="/metadata/create">
     {% csrf_token %}
-    <input type="hidden" name="reg_id" value="{{ reg_num }}">
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <input type="hidden" name="link" value="{{  url }}">
     <input type="hidden" name="form" value="place holder">
     <input type="hidden" name="upload_date" value="place holder">

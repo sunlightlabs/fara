@@ -6,14 +6,17 @@ from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 
 from FaraData.models import * #LobbyistForm, ClientForm, RegForm, RecipientForm, ContactForm, PaymentForm, ContributionForm, Disbursement, DisbursementForm
+from fara_feed.models import Document
 
 #change GET to POST, but GET is better for debugging
 
 # this needs to be passed in to the form but hard coding for now-
-def doc_id():
-    url = "http://www.fara.gov/docs/4929-Supplemental-Statement-20130227-15.pdf"
-    id = url[25:29]
-    return (url, id)
+def doc_id(form_id):
+    doc = Document.objects.get(id = form_id)
+    url = doc.url
+    reg_id = doc.reg_id 
+    print reg_id
+    return (url, reg_id)
       
 #looks up registrant info already in the system    
 def reg_info(id):
@@ -70,13 +73,25 @@ def gift_info(url):
 
 #finds meta data attached to form 
 def meta_info(url):
-    m = MetaData.objects.get(link=url)
-    meta_list = [ m.reviewed, m.processed, m.upload_date, m.is_amendment, m.notes] 
+    try:
+        m = MetaData.objects.get(link=url)
+        meta_list = [ m.reviewed, m.processed, m.upload_date, m.is_amendment, m.notes] 
+    except:
+        metadata= MetaData(
+            link = url,
+            upload_date = date.today(),
+            reviewed = False,
+            processed = False,
+        )
+        metadata.save()
+        meta_list = [ False, False, date.today(), False, '']
     return meta_list
     
 
-def index(request):
-    lobby_form = LobbyistForm()
+def index(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    #forms
+    #lobby_form = LobbyistForm()
     client_form = ClientForm()
     reg_form = RegForm()
     recipient_form = RecipientForm()
@@ -85,8 +100,7 @@ def index(request):
     all_lobbyists = Lobbyist.objects.all()
     all_recipients = Recipient.objects.all()
     #for displaying information already in the system
-    url, reg_num, = doc_id()
-    reg_object = reg_info(reg_num)
+    reg_object = reg_info(reg_id)
     contact_list = contact_info(url)
     dis_list = dis_info(url)
     pay_list = pay_info(url)
@@ -96,14 +110,13 @@ def index(request):
     
     return render(request, 'entry_form.html',{
         'recipient_form': recipient_form,
-        'lobby_form': lobby_form,
+        #'lobby_form': lobby_form,
         'client_form': client_form,
         'reg_form': reg_form,
         #options for forms
         'all_clients': all_clients,
         'all_lobbyists': all_lobbyists,
         'all_recipients': all_recipients,
-        'reg_num': reg_num,
         'url': url, 
         'reg_object': reg_object,
         'contact_list': contact_list,
@@ -112,6 +125,8 @@ def index(request):
         'pay_list' : pay_list,
         'cont_list' : cont_list,
         'meta_list' : meta_list,
+        'reg_id' : reg_id,
+        'form_id' : form_id,
     })
 
 #data cleaning
@@ -144,19 +159,24 @@ def recipient(request):
             return render(request, 'success.html', {'status': 'failed'})
 
             
-# creates a new lobbyist using pre-made form        
+# creates a new lobbyist and adds it to Registrant         
 def lobbyist(request):
     if request.method == 'GET':
-        form = LobbyistForm(request.GET)
-        if form.is_valid():
-            lobby = Lobbyist(lobbyist_name = form.cleaned_data['lobbyist_name'], lobby_id = form.cleaned_data['lobby_id'])
-            lobby.save()
-            return render(request, 'success.html', {'status': form.cleaned_data['lobby_id']}) 
+        reg_id = request.GET['reg_id']
+        lobby = Lobbyist(lobbyist_name = request.GET['lobbyist_name'], 
+                        PAC_name = request.GET['PAC_name'], 
+                        lobby_id = request.GET['lobby_id'],
+        )
+        lobby.save()
+        lobby_obj = Lobbyist.objects.get(id = lobby.id)
+        reg_id = request.GET['reg_id']
+        registrant = Registrant.objects.get(reg_id = reg_id)
+        registrant.lobbyists.add(lobby_obj)
+        return render(request, 'success.html', {'status': request.GET['lobbyist_name']}) 
          
-        else:
-            return render(request, 'success.html', {'status': 'failed'})
+    else:
+        return render(request, 'success.html', {'status': 'failed'})
 
-### multiples not working 
 # assigns a lobbyist or lobbyists to a reg. all_lobbyists
 def reg_lobbyist(request):
     if request.method == 'GET': 
