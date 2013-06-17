@@ -42,6 +42,7 @@ def parse_and_save(page):
                 print "new--- ", url 
                 reg_id = re.sub('-','', link[34:38])
                 reg_id = re.sub('S','', reg_id)
+                reg_id = re.sub('L','', reg_id)
                 re.findall(r'href="(.*?)"', url)
                 info = re.findall( r'-(.*?)-', url)
 
@@ -87,7 +88,6 @@ def parse_and_save(page):
                 add_document(url_info)
 
                 new_fara_docs.append(url_info)
-                add_document(url_info)
                 print "saving", url_info
                 ##new_info.append(new_fara_docs)
     print "loop"               

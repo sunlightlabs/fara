@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8" />
+<title>FARA entry</title>
+<head>
+<!-- creates the two scrolling sections -->  
+<style>
+    #left {
+        width: 700px;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        background: #ffa;
+    }
+    #right {
+        margin-left: 705px;
+    }
+    </style>
+    <style type="text/css">
+     .scrollable{
+        overflow: auto;
+        width: 70px; 
+        height: 100%; 
+        border: 1px silver solid;
+     }
+    .scrollable select{
+        border: none;
+    }
+    #div-1a {
+     float:left;
+     width:200px;
+    }
+    #div-1b {
+     float:left;
+     width:200px;
+    }
+    </style>
+
+  <!-- jQuery UI Datepicker - Default functionality  Version 1 -->
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+  
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+  <script src="http://malsup.github.com/jquery.form.js"></script>
+<!--trying to change scripts to be local but not working
+   change scripts to be local 
+fara/static/jquery:ui:1.10.2:themes:smoothness:jquery-ui.css
+<script src="fara/static/jquery-1.9.1.js"></script>
+<script src="fara/static/jquery:ui:1.10.2:jquery-ui.js"></script>
+<script src="fara/static/jquery:malsup.github.com:jquery.form.js"></script>
+-->
+
+
+  
+  <link rel="stylesheet" href="/resources/demos/style.css" />
+  <script>
+  $(function() {
+    $( "#contact_date" ).datepicker();
+    $( "#disbursement_date" ).datepicker();
+    $( "#payment_date" ).datepicker();
+    $( "#contribution_date" ).datepicker();
+    $( "#gift_date" ).datepicker();
+  });
+  </script>
+
+<script type="text/javascript">
+  /*<![CDATA[*/
+  jQuery(document).ready(function() {
+  
+    var update_option = function(optionText, formID, selectID){
+        jQuery(formID).find(selectID).append(optionText);
+    }
+    var options = {
+        success: function(responseText, statusText, xhr, h){
+            jQuery("#ajaxwrapper").html(responseText);
+
+            //update_option(responseText, "#formID", "#selectid");
+            //responseText looks like this: <option value="contactID">Contact Name</option>
+            
+        },
+        error: function(jqxhr, errorText, error){
+            jQuery("#ajaxwrapper").prepend('<span class="error">There was an error</span>');
+            //errorText would be : <span class="error">The form didn't validate!</span>'
+        },
+        beforeSubmit: function(){
+            jQuery("#ajaxwrapper").prepend('<span>Sending message, please wait... </span>')
+        }
+    }
+    jQuery("#clientform").ajaxForm(options);
+     
+    var contact_options = {
+        success: function(responseText, statusText, xhr, h){
+            update_option('<option value="{{ client.id }}">{{ client.client_name }}</option>', '#contactform', '#ClientSelectId');
+        } 
+    }
+    jQuery("#contactform").ajaxForm(contact_options);
+    
+      
+        /*function(responseText, statusText) {
+          jQuery("#sendbutton").attr('disabled', true)
+          
+                
+            })
+              /*form.attr('action') + ' #ajaxwrapper',
+              form.serializeArray(),
+              function(responseText, responseStatus) {
+                  jQuery("#sendbutton").attr('disabled', false)
+              }
+          );*/
+           
+  });
+  /*]]>*/
+  </script>
+  
+  
+</head>
+<body>
+<div id="left">
+   <iframe height=100% width="700" scrolling="yes" src="{{ url }}"></iframe>
+</div>
+
+
+
+
+<div id="right">
+<p><i>don't forget to make scripts local</p></i>
+<a href="{% url 'full-list' %}">Choose another form from full list.</a></p>
+
+{% block formquestions %}{% endblock formquestions %}
+
+</div>

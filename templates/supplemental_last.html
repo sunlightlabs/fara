@@ -1,0 +1,38 @@
+{% extends "form_base.html" %}
+{% block formquestions %}
+<h3>Processing info:</h3>
+Upload date: {{ meta_list.2 }}
+<form method="GET" action="/metadata/create">
+    {% csrf_token %}
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+    <input type="hidden" name="link" value="{{  url }}">
+    <input type="hidden" name="form" value="place holder">
+    <input type="hidden" name="upload_date" value="place holder">
+  
+    {% if meta_list.0 == True %}   
+        <p><input type="checkbox" name="reviewed" checked>reviewed</p>
+    {% else %}  
+        <p><input type="checkbox" name="reviewed">reviewed</p>
+    {% endif %}
+    
+    {% if meta_list.1 == True %}
+        <p><input type="checkbox" name="processed" checked>processed</p>
+    {% else %}
+        <p><input type="checkbox" name="processed">processed</p>
+    {% endif %}
+    
+    {% if meta_list.3 == True %}
+        <p><input type="checkbox" name="is_amendment" checked>is amendment</p>
+    {% else %}
+        <p><input type="checkbox" name="is_amendment">is amendment</p>
+    {% endif %}
+    
+    <p><label for="notes">Notes:</label><br \>
+    <textarea name="notes" cols="25" rows="5">{{ meta_list.4 }}</textarea></p>
+ 
+ <input type="submit" />
+</form>
+<hr />
+</div>
+<h3><a href="{% url 'full-list' %}">Return to full list.</a></h4>
+{% endblock formquestions %}

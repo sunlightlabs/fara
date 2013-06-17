@@ -1,0 +1,42 @@
+{% extends "form_base.html" %}
+{% block formquestions %}
+<h3>Disbursement</h3>
+<p>Question 15(a)</p>
+Disbursements related to this form:
+{% for dis in dis_list %}
+    <li>${{ dis.1 }} {{ dis.0 }}</li>
+{% endfor %}
+</p>
+
+
+<form method="GET" id='disform' action="/disbursement/create">
+    {% csrf_token %}
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+    <input type="hidden" name="link" value="{{ url }}">
+    
+    <p><label for="client">Clients:</label><select name="client">
+        <option value="None">Please Select Client</option>
+    {% for client in reg_object.clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    {% for client in reg_object.terminated_clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    </select></p>
+
+    <p><a href="{% url 'supplemental-first' form_id %}">Add a missing client</a></p>
+    
+    <p><label for="date">Date: <br /></label>
+    <input id="disbursement_date" "text" name="date" /></p>
+    
+    <p><label for= "amount">Amount: <br />$</label><input id="amount" type="text" name="amount" /></p> 
+    <p><lable for="purpose">Purpose: <br /><textarea name="purpose" cols="25" rows="5"></textarea></p>
+    
+    <input type="submit" />
+</form>
+
+<hr />
+
+<div allign="center"><h3><a href="{% url 'supplemental-gift' form_id %}">  Continue to Gifts</a></h3></div>
+
+{% endblock formquestions %}

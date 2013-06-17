@@ -1,142 +1,28 @@
-<!doctype html>
-<html lang="en">
-<meta charset="utf-8" />
-<title>FARA entry</title>
-<head>
-<!-- creates the two scrolling sections -->  
-<style>
-    #left {
-        width: 700px;
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        background: #ffa;
-    }
-    #right {
-        margin-left: 705px;
-    }
-    </style>
-    <style type="text/css">
-     .scrollable{
-        overflow: auto;
-        width: 70px; 
-        height: 100%; 
-        border: 1px silver solid;
-     }
-    .scrollable select{
-        border: none;
-    }
-    #div-1a {
-     float:left;
-     width:200px;
-    }
-    #div-1b {
-     float:left;
-     width:200px;
-    }
-    </style>
+{% extends "form_base.html" %}
 
-  <!-- jQuery UI Datepicker - Default functionality  Version 1 -->
-  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
-  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-  <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
-  <script src="http://malsup.github.com/jquery.form.js"></script>
-  <!-- change scripts to be local -->
-  
-  <link rel="stylesheet" href="/resources/demos/style.css" />
-  <script>
-  $(function() {
-    $( "#contact_date" ).datepicker();
-    $( "#disbursement_date" ).datepicker();
-    $( "#payment_date" ).datepicker();
-    $( "#contribution_date" ).datepicker();
-    $( "#gift_date" ).datepicker();
-  });
-  </script>
-
-<script type="text/javascript">
-  /*<![CDATA[*/
-  jQuery(document).ready(function() {
-  
-    var update_option = function(optionText, formID, selectID){
-        jQuery(formID).find(selectID).append(optionText);
-    }
-    var options = {
-        success: function(responseText, statusText, xhr, h){
-            jQuery("#ajaxwrapper").html(responseText);
-
-            //update_option(responseText, "#formID", "#selectid");
-            //responseText looks like this: <option value="contactID">Contact Name</option>
-            
-        },
-        error: function(jqxhr, errorText, error){
-            jQuery("#ajaxwrapper").prepend('<span class="error">There was an error</span>');
-            //errorText would be : <span class="error">The form didn't validate!</span>'
-        },
-        beforeSubmit: function(){
-            jQuery("#ajaxwrapper").prepend('<span>Sending message, please wait... </span>')
-        }
-    }
-    jQuery("#clientform").ajaxForm(options);
-     
-    var contact_options = {
-        success: function(responseText, statusText, xhr, h){
-            update_option('<option value="{{ client.id }}">{{ client.client_name }}</option>', '#contactform', '#ClientSelectId');
-        } 
-    }
-    jQuery("#contactform").ajaxForm(contact_options);
-    
-      
-        /*function(responseText, statusText) {
-          jQuery("#sendbutton").attr('disabled', true)
-          
-                
-            })
-              /*form.attr('action') + ' #ajaxwrapper',
-              form.serializeArray(),
-              function(responseText, responseStatus) {
-                  jQuery("#sendbutton").attr('disabled', false)
-              }
-          );*/
-           
-  });
-  /*]]>*/
-  </script>
-  
-  
-</head>
-<body>
-<div id="left">
-   <iframe height=100% width="700" scrolling="yes" src="{{ url }}"></iframe>
-</div>
-
-
-
-
-<div id="right">
+{% block formquestions %}
 
 <h1>Data entry form</h1>
 
 <p>Reminders: <br>
     Address needs to be changed when not on local host!<br>
     Change scripts to local</p>
-<p><a href="http://127.0.0.1:8000/full_list/">select a different form</a></p>
+<p><a href="full_list/">select a different form</a></p>
 <h3>Registrant</h3>
 <p><i>Section I 1(c)</i></p>
-<p>Registration No = <b>{{ reg_id }}</b></p>
+<p>Registration No: <b>{{ reg_id }}</b></p>
 
 <!-- maybe some kind of if statement if there are not objects to pass -->
 
-        <p> Registrant Name: <br /><b>{{ reg_object.reg_name }}</b></p>
-        <p>Address: <br /><b>{{ reg_object.address }}</b><br />
+        <p> <b>{{ reg_object.reg_name }}</b></p>
+        <p><b>{{ reg_object.address }}</b><br />
         <b>{{ reg_object.city }}, {{ reg_object.state }} {{ reg_object.zip }}</b><br />
         <b>{{ reg_object.country }}</b></p>
 
 <h3>Create Registrant:</h3>
 <p>Section I</p>
 
-<form action="{% url 'create-registrant' %}" method="GET" id="regform">
+<form action='create_registrant/' method="GET" id="regform">
     <div id="ajaxwrapper">
     {{ reg_form.as_p }}
     <p id="sendwrapper"><input type="submit" value="Send" id="sendbutton"/></p>
@@ -192,9 +78,9 @@
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <label><b>Add active client:</b></label><select multiple="multiple" name="clients">
     {% for client in all_clients %}
-        {% if client 
-        
+        {% if not client in reg_object.clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
+        {% endif %}
     {% endfor %}
     </select>
     <input type="submit" />
@@ -246,9 +132,12 @@ Contacts related to this form:<br>
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <input type="hidden" name="link" value="{{ url }}">
 
-    <p><label for="clients">Clients:</label><select id='ClientSelectId' name="client">
+    <p><label for="client">Clients:</label><select name="client">
         <option value="None">Please Select Client</option>
     {% for client in reg_object.clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    {% for client in reg_object.terminated_clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}
     </select></p>
@@ -271,11 +160,11 @@ Contacts related to this form:<br>
 
     <p><label for="type">Type: </label>
         <select name="contact_type">
+            <option value="U">unknown</option>
             <option value="P">phone</option>
             <option value="E">email</option>
             <option value="M">meeting</option>
             <option value="O">other</option>
-            <option value="U">unknown</option>
         </select></p>
     
     <p><label for="description">Description: </label><br />
@@ -312,8 +201,12 @@ Contacts related to this form:<br>
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <input type="hidden" name="link" value="{{ url }}">
     
-    <p><label for="client">Clients:</label><select multiple="multiple" name="client">
+    <p><label for="client">Clients:</label><select name="client">
+        <option value="None">Please Select Client</option>
     {% for client in reg_object.clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    {% for client in reg_object.terminated_clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}
     </select></p><a href="#client">add a new client</a>
@@ -348,11 +241,15 @@ Disbursements related to this form:
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <input type="hidden" name="link" value="{{ url }}">
     
-    <p><label for="client">Clients:<br /></label><select multiple="multiple" name="client">
+    <p><label for="client">Clients:</label><select name="client">
+        <option value="None">Please Select Client</option>
     {% for client in reg_object.clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}
-    </select></p><a href="#client">add a new client</a>
+    {% for client in reg_object.terminated_clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    </select></p></p><a href="#client">add a new client</a>
     
     <p><label for="date">Date: <br /></label>
     <input id="disbursement_date" "text" name="date" /></p>
@@ -412,8 +309,12 @@ Gifts associated with this form:
     {% csrf_token %}
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <input type="hidden" name="link" value="{{  url }}">
-    <p><label for="client">Clients:</label><select multiple="multiple" name="client">
+    <p><label for="client">Clients:</label><select name="client">
+        <option value="None">Please Select Client</option>
     {% for client in reg_object.clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    {% for client in reg_object.terminated_clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}
     </select></p>  <a href="#client">add a new client</a>
@@ -466,3 +367,4 @@ Upload date: {{ meta_list.2 }}
 </form>
 <hr />
 </div>
+{% endblock formquestions %}

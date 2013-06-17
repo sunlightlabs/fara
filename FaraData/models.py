@@ -144,7 +144,7 @@ class MetaData(models.Model):
             return "%s (%s)" %(self.link, self.notes)
     
 #models for the data entry form.
-
+#would like to phase this one out
 class RegForm(ModelForm):
     class Meta:
         model = Registrant
@@ -153,10 +153,6 @@ class RegForm(ModelForm):
 class RecipientForm(ModelForm):
     class Meta:
         model = Recipient
-  
-class LobbyistForm(ModelForm):
-    class Meta:
-        model = Lobbyist
 
 class ClientForm(ModelForm):
     class Meta:

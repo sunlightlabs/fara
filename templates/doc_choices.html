@@ -3,13 +3,27 @@
 <h1>Document Choices</h1>
 
 <hr>
+I will make this page faster later
 
 <h3>Supplementals</h3>
 
 <table>
 	<tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Reg name</td><td>Entered</td><td>Processed</td></tr> 
-{% for d in form_groups.0.supplementals %}
-		<tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{{ form_groups.5 }}entersupplemental/{{ d.id }}/"> Enter form </a></td><td>Reg name</td><td>Entered</td><td>Processed</td></tr>
+{% for d in supplementals %}
+	
+		<tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td><td>Reg name</td>
+		{% if d.url in processed_true %}	
+			<td>Started</td>
+		{% else %}
+			<td><i>NOT started</i></td>
+		{% endif %}
+		
+		{% if d.url in reviewed_true %}
+			<td>Processed</td></tr>
+		{% else %}
+			<td><i>NOT Processed</i></td></tr>
+		{% endif %}
+
 {% endfor %}
 </table>
 <hr>
@@ -18,8 +32,21 @@
 
 <table>
 	<tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Reg name</td><td>Entered</td><td>Processed</td></tr> 
-{% for d in form_groups.1.amendments %}
-		<tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{{ d.url }}">{{ d.url }}</a></td><td>Reg name</td><td>Entered</td><td>Processed</td></tr>
+{% for d in amendments %}
+
+		<tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{{  d.url }}">{{ d.url }}</a></td><td>Reg name</td>
+		{% if d.url in processed_true %}	
+			<td>Started</td>
+		{% else %}
+			<td><i>NOT started</i></td>
+		{% endif %}
+		
+		{% if d.url in reviewed_true %}
+			<td>Processed</td></tr>
+		{% else %}
+			<td><i>NOT Processed</i></td></tr>
+		{% endif %}
+		
 {% endfor %}
 </table>
 <hr>
@@ -27,9 +54,9 @@
 <h3>Short Forms (Lobbist registration)</h3>
 
 <table>
-	<tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Reg name</td><td>Entered</td><td>Processed</td></tr> 
-{% for d in form_groups.2.short_forms%}
-		<tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{{ d.url }}">{{ d.url }}</a></td><td>Reg name</td><td>Entered</td><td>Processed</td></tr>
+	<tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Reg name</td></tr> 
+{% for d in short_forms%}
+		<tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{{ d.url }}">{{ d.url }}</a></td><td>Reg name</td></tr>
 {% endfor %}
 </table>
 <hr>
@@ -37,9 +64,9 @@
 <h3>Exibit AB (New Clients)</h3>
 
 <table>
-	<tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Reg name</td><td>Entered</td><td>Processed</td></tr> 
-{% for d in form_groups.3.ab %}
-		<tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{{ d.url }}">{{ d.url }}</a></td><td>Reg name</td><td>Entered</td><td>Processed</td></tr>
+	<tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Reg name</td></tr> 
+{% for d in ab %}
+		<tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{{ d.url }}">{{ d.url }}</a></td><td>Reg name</td></tr>
 {% endfor %}
 </table>
 <hr>
@@ -47,9 +74,9 @@
 <h3>All other forms</h3>
 
 <table>
-	<tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Reg name</td><td>Entered</td><td>Processed</td></tr> 
-{% for d in form_groups.4.others %}
-		<tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{{ d.url }}">{{ d.url }}</a></td><td>Reg name</td><td>Entered</td><td>Processed</td></tr>
+	<tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Reg name</td></tr> 
+{% for d in others %}
+		<tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{{ d.url }}">{{ d.url }}</a></td><td>Reg name</td></tr>
 {% endfor %}
 </table>
 <hr>

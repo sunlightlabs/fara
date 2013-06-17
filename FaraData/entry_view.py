@@ -10,12 +10,11 @@ from fara_feed.models import Document
 
 #change GET to POST, but GET is better for debugging
 
-# this needs to be passed in to the form but hard coding for now-
+# this gets the info about the form
 def doc_id(form_id):
     doc = Document.objects.get(id = form_id)
     url = doc.url
     reg_id = doc.reg_id 
-    print reg_id
     return (url, reg_id)
       
 #looks up registrant info already in the system    
@@ -87,11 +86,10 @@ def meta_info(url):
         meta_list = [ False, False, date.today(), False, '']
     return meta_list
     
-
+#all in one supplemental data entry form
 def index(request, form_id):
     url, reg_id, = doc_id(form_id)
     #forms
-    #lobby_form = LobbyistForm()
     client_form = ClientForm()
     reg_form = RegForm()
     recipient_form = RecipientForm()
@@ -127,6 +125,108 @@ def index(request, form_id):
         'meta_list' : meta_list,
         'reg_id' : reg_id,
         'form_id' : form_id,
+    })
+
+#multi-step supplemental form 
+def supplemental_first(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    reg_object = reg_info(reg_id)
+    #reg_form = RegForm()
+    all_clients = Client.objects.all()
+    client_form = ClientForm()
+
+    return render(request, 'supplemental_first.html',{
+        'reg_id' : reg_id,
+        'reg_object': reg_object,
+        'url': url,
+        #'reg_form': reg_form,
+        'all_clients': all_clients,
+        'client_form': client_form,
+        'form_id': form_id,
+    })
+
+def supplemental_contact(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    reg_object = reg_info(reg_id)
+    contact_list = contact_info(url)
+    client_form = ClientForm()
+    recipient_form = RecipientForm()
+    all_recipients = Recipient.objects.all()
+
+    return render(request, 'supplemental_contact.html',{
+        'reg_id' : reg_id,
+        'reg_object': reg_object,
+        'url': url,
+        'client_form': client_form,
+        'form_id': form_id,
+        'recipient_form': recipient_form,
+        'all_recipients': all_recipients,
+        'contact_list': contact_list,
+    })
+
+def supplemental_payment(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    pay_list = pay_info(url)
+    reg_object = reg_info(reg_id)
+
+    return render(request, 'supplemental_payment.html',{
+    'reg_id' : reg_id,
+    'url': url,
+    'pay_list' : pay_list,
+    'reg_object': reg_object,
+    'form_id': form_id,
+    })
+
+def supplemental_gift(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    gift_list = gift_info(url)
+
+    return render(request, 'supplemental_last.html',{
+    'reg_id' : reg_id,
+    'url': url,
+    'form_id': form_id,
+    'gift_list': gift_list,
+    })
+
+def supplemental_disbursement(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    reg_object = reg_info(reg_id)
+    dis_list = dis_info(url)
+
+    return render(request, 'supplemental_disbursement.html',{
+    'reg_id' : reg_id,
+    'url': url,
+    'form_id': form_id,
+    'reg_object': reg_object,
+    'dis_list' : dis_list,
+    })
+
+def supplemental_contribution(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    reg_object = reg_info(reg_id)
+    cont_list = cont_info(url)
+    all_recipients = Recipient.objects.all()
+    recipient_form = RecipientForm()
+
+    return render(request, 'supplemental_contribution.html',{
+    'reg_id': reg_id,
+    'url': url,
+    'form_id': form_id,
+    'reg_object': reg_object,
+    'cont_list': cont_list,
+    'all_recipients': all_recipients,
+    'recipient_form': recipient_form,
+    })
+
+def supplemental_last(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    meta_list = meta_info(url)
+
+    return render(request, 'supplemental_last.html',{
+    'reg_id' : reg_id,
+    'url': url,
+    'form_id': form_id,
+    'meta_list': meta_list,
     })
 
 #data cleaning
@@ -200,7 +300,7 @@ def reg_lobbyist(request):
         else:
             return render(request, 'success.html', {'status': 'failed'})
 
-#creates a new client
+#creates a new client and adds it to the registrant 
 def client(request):
     if request.method == 'GET': # If the form has been submitted...
         form = ClientForm(request.GET) # A form bound to the POST data
@@ -221,7 +321,7 @@ def client(request):
         else:
             return render(request, 'success.html', {'status': 'failed'})
 
-
+#want to phase out this one becuase it doesn't auto suggest reg number
 #creates a new registrant 
 def registrant(request):
     if request.method == 'GET': # If the form has been submitted...
@@ -241,6 +341,21 @@ def registrant(request):
             return render(request, 'registrant_success.html', {'status': 'reg_name', 'reg': registrant})
         else:
             return render(request, 'success.html', {'status': form.errors}, status=400)
+
+def new_registrant(request):
+    if request.method == 'GET':
+        registrant = Registrant(reg_id = request.GET['reg_id'],
+                            reg_name = request.GET['reg_name'],
+                            address = request.GET['address'],
+                            city = request.GET['city'],
+                            state = request.GET['state'],
+                            zip = request.GET['zip'],
+                            country = request.GET['country'],
+                            )
+        registrant.save()
+        return render(request, 'registrant_success.html', {'status': 'reg_name', 'reg': registrant})
+    else:
+        return render(request, 'success.html', {'status': form.errors}, status=400)
 
                   
 #adds client to registrant 

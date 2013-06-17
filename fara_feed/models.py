@@ -10,4 +10,3 @@ class Document(models.Model):
     
     def __unicode__(self):
         return "%s---  Date: %s" %(self.url, self.stamp_date)
-admin.site.register(Document)
