@@ -84,9 +84,9 @@ def meta_info(url):
         )
         metadata.save()
         meta_list = [ False, False, date.today(), False, '']
-    return meta_list
-    
-#all in one supplemental data entry form
+    return meta_list 
+
+#all in one supplemental data entry form- good for amendments
 def index(request, form_id):
     url, reg_id, = doc_id(form_id)
     #forms
@@ -127,7 +127,10 @@ def index(request, form_id):
         'form_id' : form_id,
     })
 
-#multi-step supplemental form 
+#multi-step supplemental form
+def supplemental_base(request, form_id):
+    return render(request, 'supplemental_base.html', {'form_id': form_id})   
+
 def supplemental_first(request, form_id):
     url, reg_id, = doc_id(form_id)
     reg_object = reg_info(reg_id)
@@ -180,11 +183,13 @@ def supplemental_payment(request, form_id):
 def supplemental_gift(request, form_id):
     url, reg_id, = doc_id(form_id)
     gift_list = gift_info(url)
+    reg_object = reg_info(reg_id)
 
-    return render(request, 'supplemental_last.html',{
+    return render(request, 'supplemental_gift.html',{
     'reg_id' : reg_id,
     'url': url,
     'form_id': form_id,
+    'reg_object': reg_object,
     'gift_list': gift_list,
     })
 
@@ -227,6 +232,128 @@ def supplemental_last(request, form_id):
     'url': url,
     'form_id': form_id,
     'meta_list': meta_list,
+    })
+
+# segmented registration form
+def registration_base(request, form_id):
+    return render(request, 'registration_base.html', {'form_id': form_id})   
+
+def registration_first(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    reg_object = reg_info(reg_id)
+    all_clients = Client.objects.all()
+    client_form = ClientForm()
+
+    return render(request, 'registration_first.html',{
+        'reg_id' : reg_id,
+        'reg_object': reg_object,
+        'url': url,
+        'all_clients': all_clients,
+        'client_form': client_form,
+        'form_id': form_id,
+    })
+
+def registration_contact(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    reg_object = reg_info(reg_id)
+    contact_list = contact_info(url)
+    client_form = ClientForm()
+    recipient_form = RecipientForm()
+    all_recipients = Recipient.objects.all()
+
+    return render(request, 'registration_contact.html',{
+        'reg_id' : reg_id,
+        'reg_object': reg_object,
+        'url': url,
+        'client_form': client_form,
+        'form_id': form_id,
+        'recipient_form': recipient_form,
+        'all_recipients': all_recipients,
+        'contact_list': contact_list,
+    })
+
+def registration_payment(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    pay_list = pay_info(url)
+    reg_object = reg_info(reg_id)
+
+    return render(request, 'registration_payment.html',{
+    'reg_id' : reg_id,
+    'url': url,
+    'pay_list' : pay_list,
+    'reg_object': reg_object,
+    'form_id': form_id,
+    })
+
+def registration_gift(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    gift_list = gift_info(url)
+
+    return render(request, 'registration_gift.html',{
+    'reg_id' : reg_id,
+    'url': url,
+    'form_id': form_id,
+    'gift_list': gift_list,
+    })
+
+def registration_disbursement(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    reg_object = reg_info(reg_id)
+    dis_list = dis_info(url)
+
+    return render(request, 'registration_disbursement.html',{
+    'reg_id' : reg_id,
+    'url': url,
+    'form_id': form_id,
+    'reg_object': reg_object,
+    'dis_list' : dis_list,
+    })
+
+def registration_contribution(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    reg_object = reg_info(reg_id)
+    cont_list = cont_info(url)
+    all_recipients = Recipient.objects.all()
+    recipient_form = RecipientForm()
+
+    return render(request, 'registration_contribution.html',{
+    'reg_id': reg_id,
+    'url': url,
+    'form_id': form_id,
+    'reg_object': reg_object,
+    'cont_list': cont_list,
+    'all_recipients': all_recipients,
+    'recipient_form': recipient_form,
+    })
+
+def registration_last(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    meta_list = meta_info(url)
+
+    return render(request, 'registration_last.html',{
+    'reg_id' : reg_id,
+    'url': url,
+    'form_id': form_id,
+    'meta_list': meta_list,
+    })
+
+def enter_AB(request, form_id):
+    url, reg_id, = doc_id(form_id)
+    reg_object = reg_info(reg_id)
+    #reg_form = RegForm()
+    all_clients = Client.objects.all()
+    client_form = ClientForm()
+    meta_list = meta_info(url)
+
+    return render(request, 'enter_AB.html',{
+        'reg_id' : reg_id,
+        'reg_object': reg_object,
+        'url': url,
+        #'reg_form': reg_form,
+        'all_clients': all_clients,
+        'client_form': client_form,
+        'form_id': form_id,
+        'meta_list': meta_list,
     })
 
 #data cleaning

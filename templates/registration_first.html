@@ -1,8 +1,8 @@
-{% extends "supplemental_base.html" %}
+{% extends "registration_base.html" %}
 
 {% block formquestions %}
 
-<h1>Supplemental data entry form</h1>
+<h1>Registration data entry form</h1>
 <h3>Part one: Registrant and Clients</h3>
 
 <p>Reminder: <br>
@@ -10,7 +10,7 @@
     
 <p><a href="{% url 'full-list' %}">select a different form</a></p>
 <h3>Registrant</h3>
-<p><i>Section I 1(c)</i></p>
+<p><i>Section I</i></p>
 <p>Registration id: <b>{{ reg_id }}</b></p>
 
 {% if not reg_object %}
@@ -45,31 +45,8 @@
 
 <hr />
 
-<h3>Terminated Clients</h3>
-<i>Question 7</i>
-
-<p>Terminated clients in the system for the registrant:<br>
-{% for clients in reg_object.terminated_clients.all %}
-    <li>{{ clients }}</li>
-{% endfor %}
-</p>
-
-<form method="GET" id='terminateform' action="/registrant/add_terminated">
-    {% csrf_token %}
-    <input type="hidden" name="reg_id" value="{{ reg_id }}">
-    <label><b>Add termination:</b></label><select multiple="multiple" name="clients">
-    {% for client in reg_object.clients.all %}
-        <option value="{{ client.id }}">{{ client.client_name }}</option>
-    {% endfor %}
-    </select>
-    <input type="submit" />
-</form>
-
-<hr />
-
-
 <h3>Client</h3>
-<p><i>Questions 8, 9</i></p>
+<p><i>Question 7</i></p>
 
 <a id="client"><p>Clients in the system for the registrant:<br></a>
 {% for client in reg_object.clients.all %}
@@ -102,7 +79,7 @@
 <hr>
 
 <div align="center">
-<h3><a href="{% url 'supplemental-contact' form_id %}">  Continue to Contacts</a></h3></div>
+<h3><a href="{% url 'registration-payment' form_id %}">  Continue to Payments</a></h3></div>
 <br />
 <br />
 

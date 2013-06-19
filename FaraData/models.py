@@ -59,12 +59,13 @@ class Registrant(models.Model):
 #Question 14(c)        
 # new category
 class Gift(models.Model):
-    client = models.ManyToManyField(Client)
+    client = models.ManyToManyField(Client, null=True, blank=True)
     date = models.DateField(null=True, blank=True) 
     purpose = models.TextField(null=True, blank=True)
     discription = models.TextField(null=True, blank=True)
     link = models.CharField(max_length=100)
     registrant = models.ForeignKey(Registrant)
+    #recipient = models.ForeignKey(Recipient, null=True, blank=True)
     
     def __unicode__(self):
         return "%s to %s" % (self.discription, self.registrant)

@@ -1,0 +1,12 @@
+{% extends "form_base.html" %}
+
+{% block quicklinks %}
+<hr>
+<a href="{% url 'supplemental-first' form_id %}">Client and Registrant</a>  
+<a href="{% url 'supplemental-contact' form_id %}">Contacts</a>  
+<a href="{% url 'supplemental-payment' form_id %}">Payments</a>  
+<a href="{% url 'supplemental-disbursement' form_id %}">Disbursements</a>  
+<a href="{% url 'supplemental-gift' form_id %}">Gifts</a>  
+<a href="{% url 'supplemental-contribution' form_id %}"></a>
+<a href="{% url 'supplemental-last' form_id %}">Processing</a>  
+{% endblock quicklinks %}

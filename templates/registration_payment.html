@@ -1,8 +1,8 @@
-{% extends "supplemental_base.html" %}
+{% extends "registration_base.html" %}
 
 {% block formquestions %}
 <h3>Payment</h3>
-<p><i>Question 14(a)</i></p>
+<p><i>Question 9</i></p>
 
 {% for pay in pay_list %}
         {% if pay.2 == True %}
@@ -44,7 +44,7 @@
 
 <hr />
 
-<div allign="center"><h3><a href="{% url 'supplemental-disbursement' form_id %}">  Continue to Disbursements</a></h3></div>
+<div allign="center"><h3><a href="{% url 'registration-gift' form_id %}">  Continue to Gift</a></h3></div>
 
 <br />
 <br />
