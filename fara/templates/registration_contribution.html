@@ -1,0 +1,60 @@
+{% extends "registration_base.html" %}
+{% block formquestions %}
+
+<h3>Contribution</h3>
+<p><i>Question 10(c)</i></p>
+
+{% for cont in cont_list %}
+        <li>{{ cont.0 }} ${{ cont.1 }} to: {{ cont.2 }}</li>
+{% endfor %}
+
+<form method="GET" id='contform' action="/contribution/create">
+    {% csrf_token %}
+    <input type="hidden" name="registrant" value="{{ reg_id }}">
+    <input type="hidden" name="link" value="{{ url }}">
+    
+    <p><label for="id_amount">Amount: $</label> 
+    <input id="id_amount" name="amount" type="text" /></p>
+    
+    <p><label for="date">Date: </label>
+    <input id="contribution_date" type="text" name="date" /></p>
+    
+    <p><label for="recipient">Recipient (who they are meeting with):</label><select multiple="multiple" id="input" name="recipient">
+        <option value="None">Please Select Recipient</option>
+    {% for recipient in all_recipients %}
+        <option value="{{ recipient.id }}">{{ recipient.title }} {{ recipient.name }}, {{ recipient.agency }}</option>
+    {% endfor %}
+    </select></p><a href="#recip">add a new recipient</a>
+
+    <p><label for="lobbyist">Lobbyist or PAC:</label><select name="lobbyist">
+        <option value="None">Please Select lobbist or PAC</option>
+    {% for lobbyist in reg_object.lobbyists.all %}
+        <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
+    {% endfor %}
+    </select></p><a href="#lobbyist">add a new lobbyist or PAC</a>
+
+    
+    <input type="submit" />
+</form>
+
+<hr /> 
+<a id="recip"><h4> Add a new Recipient (person who is being contacted):</h4></a>
+<p> <i>People being meet, given contributions and gifts</i></p>
+<form method="GET" id='recipform' action="/recipient/create">
+    {{ recipient_form.as_p }}
+    
+    <input type="submit" />
+</form>    
+<hr />
+<a id="lobbyist"><h4>Add a new lobbyist or PAC</h4><a id="lobbyist">
+<form method="GET" action="/lobbyist/create">
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+    <p><label for="id_lobby_id">Lobby id:</label> <input id="id_lobby_id" maxlength="150" name="lobby_id" type="text" /></p>
+    <p><label for="id_lobbyist_name">Lobbyist name:</label> <input id="id_lobbyist_name" maxlength="150" name="lobbyist_name" type="text" /></p>
+    <p><label for="id_PAC_name">PAC name:</label> <input id="id_PAC_name" maxlength="150" name="PAC_name" type="text" /></p>
+    <input type="submit" />
+</form>
+<hr />
+<h3><a href="{% url 'registration-last' form_id %}">Finish form</a></h3>
+
+{% endblock formquestions %}

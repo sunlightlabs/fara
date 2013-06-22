@@ -1,5 +1,7 @@
 import re
+import json
 from datetime import datetime, date
+
 
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -15,7 +17,9 @@ def doc_id(form_id):
     doc = Document.objects.get(id = form_id)
     url = doc.url
     reg_id = doc.reg_id 
-    return (url, reg_id)
+    # this enters the system with the wrong month so correct manually for now
+    s_date = doc.stamp_date
+    return (url, reg_id, s_date)
       
 #looks up registrant info already in the system    
 def reg_info(id):
@@ -31,7 +35,7 @@ def dis_info(url):
     dis_objects = Disbursement.objects.filter(link = url)
     dis_list = []
     for dis in dis_objects: 
-        dis_list.append([dis.client, dis.amount] ) 
+        dis_list.append([dis.client, dis.amount]) 
     return dis_list 
 
 #finds payments attached to this form 
@@ -88,7 +92,7 @@ def meta_info(url):
 
 #all in one supplemental data entry form- good for amendments
 def index(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date = doc_id(form_id)
     #forms
     client_form = ClientForm()
     reg_form = RegForm()
@@ -125,6 +129,7 @@ def index(request, form_id):
         'meta_list' : meta_list,
         'reg_id' : reg_id,
         'form_id' : form_id,
+        's_date' : s_date,
     })
 
 #multi-step supplemental form
@@ -132,7 +137,7 @@ def supplemental_base(request, form_id):
     return render(request, 'supplemental_base.html', {'form_id': form_id})   
 
 def supplemental_first(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     #reg_form = RegForm()
     all_clients = Client.objects.all()
@@ -146,15 +151,17 @@ def supplemental_first(request, form_id):
         'all_clients': all_clients,
         'client_form': client_form,
         'form_id': form_id,
+        's_date': s_date,
     })
 
 def supplemental_contact(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     contact_list = contact_info(url)
     client_form = ClientForm()
     recipient_form = RecipientForm()
     all_recipients = Recipient.objects.all()
+    all_lobbyists = Lobbyist.objects.all()
 
     return render(request, 'supplemental_contact.html',{
         'reg_id' : reg_id,
@@ -165,10 +172,11 @@ def supplemental_contact(request, form_id):
         'recipient_form': recipient_form,
         'all_recipients': all_recipients,
         'contact_list': contact_list,
+        'all_lobbyists': all_lobbyists,
     })
 
 def supplemental_payment(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date = doc_id(form_id)
     pay_list = pay_info(url)
     reg_object = reg_info(reg_id)
 
@@ -181,7 +189,7 @@ def supplemental_payment(request, form_id):
     })
 
 def supplemental_gift(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date = doc_id(form_id)
     gift_list = gift_info(url)
     reg_object = reg_info(reg_id)
 
@@ -194,7 +202,7 @@ def supplemental_gift(request, form_id):
     })
 
 def supplemental_disbursement(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     dis_list = dis_info(url)
 
@@ -207,7 +215,7 @@ def supplemental_disbursement(request, form_id):
     })
 
 def supplemental_contribution(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     cont_list = cont_info(url)
     all_recipients = Recipient.objects.all()
@@ -224,7 +232,7 @@ def supplemental_contribution(request, form_id):
     })
 
 def supplemental_last(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date= doc_id(form_id)
     meta_list = meta_info(url)
 
     return render(request, 'supplemental_last.html',{
@@ -239,7 +247,7 @@ def registration_base(request, form_id):
     return render(request, 'registration_base.html', {'form_id': form_id})   
 
 def registration_first(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     all_clients = Client.objects.all()
     client_form = ClientForm()
@@ -251,10 +259,11 @@ def registration_first(request, form_id):
         'all_clients': all_clients,
         'client_form': client_form,
         'form_id': form_id,
+        's_date': s_date,
     })
 
 def registration_contact(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     contact_list = contact_info(url)
     client_form = ClientForm()
@@ -273,7 +282,7 @@ def registration_contact(request, form_id):
     })
 
 def registration_payment(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date = doc_id(form_id)
     pay_list = pay_info(url)
     reg_object = reg_info(reg_id)
 
@@ -286,7 +295,7 @@ def registration_payment(request, form_id):
     })
 
 def registration_gift(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date = doc_id(form_id)
     gift_list = gift_info(url)
 
     return render(request, 'registration_gift.html',{
@@ -297,7 +306,7 @@ def registration_gift(request, form_id):
     })
 
 def registration_disbursement(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     dis_list = dis_info(url)
 
@@ -310,7 +319,7 @@ def registration_disbursement(request, form_id):
     })
 
 def registration_contribution(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     cont_list = cont_info(url)
     all_recipients = Recipient.objects.all()
@@ -327,7 +336,7 @@ def registration_contribution(request, form_id):
     })
 
 def registration_last(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date = doc_id(form_id)
     meta_list = meta_info(url)
 
     return render(request, 'registration_last.html',{
@@ -338,7 +347,7 @@ def registration_last(request, form_id):
     })
 
 def enter_AB(request, form_id):
-    url, reg_id, = doc_id(form_id)
+    url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     #reg_form = RegForm()
     all_clients = Client.objects.all()
@@ -354,6 +363,7 @@ def enter_AB(request, form_id):
         'client_form': client_form,
         'form_id': form_id,
         'meta_list': meta_list,
+        's_date': s_date,
     })
 
 #data cleaning
@@ -367,6 +377,22 @@ def cleanmoney(money):
     money = money.replace('$', '').replace(',', '')
     return money
  
+#corrects stamp date
+def stamp_date(request):
+    if request.method == 'GET':
+        s_date = datetime.strptime(request.GET['stamp_date'], "%m/%d/%Y")
+        form_id = request.GET['form_id']
+        document = Document.objects.get(id = form_id)
+        stamp = Document(id = document.id,
+                        url = document.url,
+                        reg_id = document.reg_id,
+                        doc_type = document.doc_type,
+                        stamp_date = s_date,
+        )
+        stamp.save()
+        return render(request, 'success.html', {'status': request.GET['stamp_date']})
+    else:
+        return render(request, 'success.html', {'status': 'failed'})
   
 #creates a new recipient
 def recipient(request):
@@ -379,7 +405,7 @@ def recipient(request):
                                 name  = form.cleaned_data['name'],
                                 title = form.cleaned_data['title'], 
             )
-            recipient.save()
+            recipient.stamp_date.add()
             return render(request, 'success.html', {'status': form.cleaned_data['name']}) 
             
         else:
@@ -399,12 +425,16 @@ def lobbyist(request):
         reg_id = request.GET['reg_id']
         registrant = Registrant.objects.get(reg_id = reg_id)
         registrant.lobbyists.add(lobby_obj)
-        return render(request, 'success.html', {'status': request.GET['lobbyist_name']}) 
+        #
+        message = '<li><b>' + str(request.GET['lobbyist_name']) + '</b></li>'
+        return render(request, 'success.html', {'status':'yes', 'message': message}) 
          
     else:
         return render(request, 'success.html', {'status': 'failed'})
 
 # assigns a lobbyist or lobbyists to a reg. all_lobbyists
+#### it is only adding the first one-- I thought this was fixed?
+
 def reg_lobbyist(request):
     if request.method == 'GET': 
         reg_id = request.GET['reg_id']
@@ -412,8 +442,8 @@ def reg_lobbyist(request):
         lobbyists = request.GET.getlist('lobbyists')
         if not lobbyists:
             lobbyists = [request.GET.get('lobbyists'),]
-            
-        message = ''
+        message = ''  
+        count = 0
         registrant = Registrant.objects.get(reg_id=reg_id)
         for l_id in lobbyists:
             lobbyist = Lobbyist.objects.get(id=l_id)
@@ -421,11 +451,10 @@ def reg_lobbyist(request):
                 registrant.lobbyists.add(lobbyist)
                 message += 'We added %s to lobbyists.' % l_id
             else:
+                continue
                 message += '%s was already in the lobbyists' % l_id
-            return render(request, 'success.html', {'status': 'yay', 'message': message}) 
-         
-        else:
-            return render(request, 'success.html', {'status': 'failed'})
+
+        return render(request, 'success.html', {'status': 'yay', 'message': message}) 
 
 #creates a new client and adds it to the registrant 
 def client(request):
@@ -441,14 +470,17 @@ def client(request):
             )
             client.save()
             registrant = Registrant.objects.get(reg_id=request.GET['reg_id'])
+            client_choice = {'name': client.client_name,'id': client.id,}
+            client_choice = json.dumps(client_choice, separators=(',',':')) 
+            
             if client not in registrant.clients.all():
                 registrant.clients.add(client)
-            return render(request, 'success.html', {'status': form.cleaned_data['client_name']}) 
+            return HttpResponse(client_choice, mimetype="application/json")  
          
         else:
             return render(request, 'success.html', {'status': 'failed'})
 
-#want to phase out this one becuase it doesn't auto suggest reg number
+#want to phase out this one because it doesn't auto suggest reg number
 #creates a new registrant 
 def registrant(request):
     if request.method == 'GET': # If the form has been submitted...
@@ -485,13 +517,14 @@ def new_registrant(request):
         return render(request, 'success.html', {'status': form.errors}, status=400)
 
                   
-#adds client to registrant 
+#adds existing client to registrant 
 def reg_client(request):
     if request.method == 'GET': # If the form has been submitted...
         reg_id = request.GET['reg_id'] # A form bound to the POST data
         clients = request.GET.getlist('clients')      
         message = ''
         registrant = Registrant.objects.get(reg_id=reg_id)
+        client_choices = []
         for c_id in clients:
             client = Client.objects.get(id=c_id)
             if client not in registrant.clients.all():
@@ -500,8 +533,14 @@ def reg_client(request):
             else:
                 message += '%s was already in the clients' % c_id
             if client in registrant.terminated_clients.all():
-                registrant.terminated_clients.remove(client) 
-        return render(request, 'success.html', {'status': 'yay', 'message': message}) 
+                registrant.terminated_clients.remove(client)
+            client_choices.append({
+                'name': client.client_name,
+                'id': client.id
+                })
+
+        client_choices = json.dumps(client_choices, separators=(',',':'))
+        return HttpResponse(client_choices, mimetype="application/json") 
          
     else:
         return render(request, 'success.html', {'status': 'failed'})

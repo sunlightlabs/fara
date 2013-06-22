@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8" />
+<title>FARA entry</title>
+<head>
+<!-- creates the two scrolling sections -->  
+<style>
+    #left {
+        width: 700px;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        background: #ffa;
+    }
+    #right {
+        margin-left: 705px;
+    }
+    </style>
+    <style type="text/css">
+     .scrollable{
+        overflow: auto;
+        width: 70px; 
+        height: 100%; 
+        border: 1px silver solid;
+     }
+    .scrollable select{
+        border: none;
+    }
+    #div-1a {
+     float:left;
+     width:200px;
+    }
+    #div-1b {
+     float:left;
+     width:200px;
+    }
+    </style>
+
+<!-- jQuery UI Datepicker -->
+<link rel="stylesheet" href="{{ STATIC_URL }}jquery-ui.css" />
+<script src="{{ STATIC_URL }}jquery-1.9.1.js"></script>
+<script src="/static/jquery-ui.js"></script>
+<script src="/static/jquery.form.js"></script>
+
+  
+  <link rel="stylesheet" href="/resources/demos/style.css" />
+  <script>
+  $(function() {
+    $( "#contact_date" ).datepicker();
+    $( "#disbursement_date" ).datepicker();
+    $( "#payment_date" ).datepicker();
+    $( "#contribution_date" ).datepicker();
+    $( "#gift_date" ).datepicker();
+    $( "#stamp_date").datepicker();
+  });
+  </script>
+
+<!-- This posts new client data without refreshing the page and updates the option choices -->
+<script type="text/javascript">
+  /*<![CDATA[*/
+  jQuery(document).ready(function() {
+  
+    var update_option = function(optionText, formID, selectID){
+        jQuery(formID).find(selectID).append(optionText);
+    }
+    var update_list = function(optionText, divID){
+        jQuery(divID).append(optionText);
+    }
+    var options = {
+        success: function(responses, statusText, xhr, h){
+          console.log(responses);
+          // response is an array of JSON objects returned from the server
+          for (var i=0; i<responses.length; i += 1) {
+            var response = responses[i];
+
+            var name = response.name;
+            var id = response.id;
+
+            // 1) update forms
+            var option = "<option value='" + id + "'>" + name + "</option>";
+            $("#contact_client").append(option);
+            $("#pay_client").append(option);
+            $("#dis_client").append(option);
+            $("#gift_client").append(option);
+            $("#terminatedclientform select").append(option);
+            // 2) update list
+            var item = "<li>" + name + "</li>"
+            $("#client_list ul").append(item);
+
+          }
+            
+        },
+        error: function(jqxhr, errorText, error){
+            jQuery("#ajaxwrapper").prepend('<span class="error">There was an error</span>');
+            //errorText would be : <span class="error">The form didn't validate!</span>'
+        },
+        beforeSubmit: function(){
+            jQuery("#ajaxwrapper").prepend('<span>Sending message, please wait... </span>')
+        }
+    }
+    jQuery("#clientform").ajaxForm(options);
+     
+    var contact_options = {
+        success: function(responseText, statusText, xhr, h){
+
+            update_option('<option value="{{ client.id }}">{{ client.client_name }}</option>', '#contactform', '#contact_client');
+        } 
+    }
+    jQuery("#contactform").ajaxForm(contact_options);
+
+           
+  });
+  /*]]>*/
+  </script>
+
+
+
+
+
+{% block script %} 
+{% endblock script %} 
+  
+</head>
+<body>
+<div id="left">
+   <iframe height=100% width="700" scrolling="yes" src="{{ url }}"></iframe>
+</div>
+
+
+
+
+<div id="right">
+
+<div align="right"><p><a href="{% url 'full-list' %}">select a different form</a></p></div>
+
+{% block formquestions %}{% endblock formquestions %}
+<br>
+<br>
+{% block quicklinks %}{% endblock quicklinks %}<br>
+<br><div align="right">
+<a href="{{ url }}">view form source</a></div>
+</div>

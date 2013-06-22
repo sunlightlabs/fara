@@ -1,5 +1,8 @@
 # Django settings for fara project.
 
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 #still can't get Debug tool bar to work?????
 
 DEBUG = True
@@ -62,14 +65,14 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static_root')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
 
-# Additional locations of static files
 STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -120,6 +123,7 @@ INSTALLED_APPS = (
     'FaraData',
     'debug_toolbar',
     'fara_feed',
+    'fara',
 )
 
 INTERNAL_IPS = ('127.0.0.1',)

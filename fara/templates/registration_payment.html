@@ -1,0 +1,53 @@
+{% extends "registration_base.html" %}
+
+{% block formquestions %}
+<h3>Payment</h3>
+<p><i>Question 9</i></p>
+
+{% for pay in pay_list %}
+        {% if pay.2 == True %}
+        <li>${{ pay.1 }} from {{ pay.0 }} on {{ pay.3 }} (fee)</li>
+        {% else %}
+        <li>${{ pay.1 }} from {{ pay.0 }} on {{ pay.3 }}</li>
+        {% endif %}
+{% endfor %}
+
+<form method="GET" id="payform" action="/payment/create">
+    {% csrf_token %}
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+    <input type="hidden" name="link" value="{{ url }}">
+    
+    <p><label for="client">Clients:</label><select name="client">
+    	<option value="None">Please Select Client</option>
+    {% for client in reg_object.clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    {% for client in reg_object.terminated_clients.all %}
+    	<option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    </select></p>
+
+    <p><a href="{% url 'supplemental-first' form_id %}">Add a missing client</a></p>
+    
+    <p><input type="checkbox" name="fee">Fee</p>
+    
+    <p><label for="amount">Amount: $</label><input id="amount" type="text" name="amount" /></p> 
+    
+    <p><label for="description">description:</label><br \>
+    <textarea name="purpose" cols="25" rows="5"></textarea></p>
+    
+    <p><label for="date">Date: </label>
+    <input id="payment_date" type="text" name="date" /></p>
+    
+    <input type="submit" />
+</form>
+
+<hr />
+
+<div allign="center"><h3><a href="{% url 'registration-gift' form_id %}">  Continue to Gift</a></h3></div>
+
+<br />
+<br />
+
+
+{% endblock formquestions %}
