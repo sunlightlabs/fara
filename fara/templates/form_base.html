@@ -48,20 +48,21 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}select2.css"/>  
 
   
-  <script>
+<script>
   $(function() {
-    $( "#contact_date" ).datepicker();
-    $( "#disbursement_date" ).datepicker();
-    $( "#payment_date" ).datepicker();
-    $( "#contribution_date" ).datepicker();
-    $( "#gift_date" ).datepicker();
-    $( "#stamp_date").datepicker();
+    $("#contact_date").datepicker();
+    $("#disbursement_date").datepicker();
+    $("#payment_date").datepicker();
+    $("#contribution_date").datepicker();
+    $("#gift_date").datepicker();
+    $("#stamp_date").datepicker();
 
     //this is the search function, select2
     function createSelect(tag, resourse){
       
       $(tag).select2({
         minimumInputLength: 2,
+        allowClear: true,
         
         query: function(query) {
 
@@ -82,7 +83,7 @@
       
       $(tag).select2({
         minimumInputLength: 2,
-        //make a version that doesn't have this for the non-multiple select
+        allowClear: true,
         multiple: true,
         query: function(query) {
 
@@ -122,22 +123,31 @@
             var name = response.name;
             var id = response.id;
 
-            // 1) update forms
+            // 1) update forms (I still need this even with select 2)
             var option = "<option value='" + id + "'>" + name + "</option>";
             $("#contact_client").append(option);
             $("#pay_client").append(option);
             $("#dis_client").append(option);
             $("#gift_client").append(option);
-            $("#terminatedclientform select").append(option);
+            $("#terminated_client").append(option);
+        
             // 2) update list
             var item = "<li>" + name + "</li>"
             $("#client_list ul").append(item);
 
+            // 3) clear form
+            $('#clientform').each(function(){
+                this.reset();   
+            });
+            $('#add_clientform').each(function(){
+                this.reset(); 
+            });
+    
           }
             
         },
         error: function(jqxhr, errorText, error){
-            jQuery("#client_ajaxwrapper").prepend('<span class="error">There was an error</span>', error);
+            jQuery("#client_ajaxwrapper").prepend('<span class="error">There was an error: </span>', error);
         },
     }
     jQuery("#clientform").ajaxForm(options);
@@ -152,7 +162,89 @@
   });
   </script>
 
+<!-- This posts new lobbyist data without refreshing the page and updates the lobbyist choices -->
+<script type="text/javascript">
+  jQuery(document).ready(function() {
+  
+    var options = {
+        success: function(responses, statusText, xhr, h){
+          console.log(responses);
+          // response is an array of JSON objects returned from the server
+          for (var i=0; i<responses.length; i += 1) {
+            var response = responses[i];
 
+            var name = response.name;
+            var id = response.id;
+
+            // 1) update forms (I still need this even with select 2)
+            var option = "<option value='" + id + "'>" + name + "</option>";
+            $("#contact_lobbyist").append(option);
+            $("#cont_lobbyist").append(option);
+        
+            // 2) update list
+            var item = "<li>" + name + "</li>";
+            $("#lobby_list ul").append(item);
+
+            // 3) clear form
+            $('#lobbyform').each(function(){
+                this.reset();   
+            });
+            $('#add_lobbyform').each(function(){
+                this.reset();   
+            });
+
+          }
+            
+        },
+        error: function(jqxhr, errorText, error){
+            jQuery("#lobbyist_ajaxwrapper").prepend('<span class="error">There was an error: </span>', error);
+        },
+    }
+    jQuery("#lobbyform").ajaxForm(options);
+    jQuery("#add_lobbyform").ajaxForm(options);
+     
+    var contact_options = {
+        success: function(responseText, statusText, xhr, h){
+
+            update_option('<option value="{{ client.id }}">{{ client.client_name }}</option>', '#contactform', '#contact_client');
+        } 
+    }     
+  });
+  </script>
+<!-- adding ajax -->
+<script type="text/javascript">
+  jQuery(document).ready(function() {
+  
+  
+  var stamp = {
+    success: function(response, statusText, xhr, h){
+          console.log(response);
+
+            var name = response.name;
+            var id = response.id;
+          
+            // 1) clear form
+            $('#stampform').each(function(){
+                this.reset();   //Here form fields will be cleared.
+            });
+
+            //this doesn't work but it doesn't break it either
+            // 2) update list
+            var item = "<li>" + name + "</li>";
+            $("#stamp_list ul li").replaceWith(item);
+
+    },
+            
+    error: function(jqxhr, errorText, error){
+            jQuery("#stamp_ajaxwrapper").prepend('<span class="error">There was an error: </span>', error);
+    },
+  }
+
+    $("#stampform").ajaxForm(stamp);
+    $("#terminatedclientform").ajaxForm();
+
+  });
+</script>
 {% block script %} 
 {% endblock script %} 
   

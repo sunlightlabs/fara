@@ -391,12 +391,15 @@ def stamp_date(request):
         )
         if s_date < datetime.now():
             stamp.save()
-        else:
-            return render(request, 'success.html', {'status': 'date in the future'})   
+            stampinfo = {'id': form_id, 'name': request.GET['stamp_date']}
+            stampinfo = json.dumps(stampinfo , separators=(',',':'))
+            return HttpResponse(stampinfo, mimetype="application/json")
 
-        return render(request, 'success.html', {'status': request.GET['stamp_date']})
+        else:
+            return HttpResponse(request, {'error': 'date in the future'})   
+
     else:
-        return render(request, 'success.html', {'status': 'failed'})
+        return HttpResponse(request, {'error': 'failed'})
   
 #creates a new recipient
 def recipient(request):
@@ -425,41 +428,42 @@ def lobbyist(request):
                         lobby_id = request.GET['lobby_id'],
         )
         lobby.save()
+        # adds to registrant 
         lobby_obj = Lobbyist.objects.get(id = lobby.id)
         reg_id = request.GET['reg_id']
         registrant = Registrant.objects.get(reg_id = reg_id)
         registrant.lobbyists.add(lobby_obj)
-        #
-        message = '<li><b>' + str(request.GET['lobbyist_name']) + '</b></li>'
-        return render(request, 'success.html', {'status':'yes', 'message': message}) 
-         
+        # returns lobbyist info to add to other fields with jQuery
+        name = lobby_obj.lobbyist_name + lobby_obj.PAC_name
+        lobbyist_choice = [{'name': name,'id': lobby_obj.id,}]
+        lobbyist_choice = json.dumps(lobbyist_choice, separators=(',',':'))
+
+        return HttpResponse(lobbyist_choice, mimetype="application/json")
+        
     else:
-        return render(request, 'success.html', {'status': 'failed'})
+        HttpResponse(request, {'error': 'failed'})
 
 # assigns a lobbyist or lobbyists to a reg. all_lobbyists
-#### it is only adding the first one-- I thought this was fixed?
-
 def reg_lobbyist(request):
     if request.method == 'GET': 
         reg_id = request.GET['reg_id']
-        registrant = Registrant.objects.get(reg_id=reg_id)
-        
-        # lobbyists = request.GET.getlist('lobbyists')
-        # if not lobbyists:
-        #     lobbyists = [request.GET.get('lobbyists'),]
-        message = ''  
-        
+        registrant = Registrant.objects.get(reg_id=reg_id) 
         lobby_ids = request.GET.get('lobbyists')
-        lobbyists =lobby_ids.split(',')
+        lobbyists = lobby_ids.split(',')
+        lobby_choice = []
+        
         for l_id in lobbyists:
             lobbyist = Lobbyist.objects.get(id=l_id)
             if lobbyist not in registrant.lobbyists.all():
                 registrant.lobbyists.add(lobbyist)
-                message += 'We added %s to lobbyists.' % l_id
-            else:
-                message += '%s was already in the lobbyists' % l_id
-
-        return render(request, 'success.html', {'status': 'yay', 'message': message}) 
+                l = {"name" : lobbyist.lobbyist_name, "id": lobbyist.id}
+                lobby_choice.append(l)
+            
+        lobby_choice =  json.dumps(lobby_choice, separators=(',',':')) 
+        return HttpResponse(lobby_choice, mimetype="application/json") 
+   
+    else:
+        HttpResponse(request, {'error': 'failed'})
 
 #creates a new client and adds it to the registrant 
 def client(request):
@@ -490,6 +494,7 @@ def client(request):
             HttpResponse(request, {'error': 'failed'})
 
 #want to phase out this one because it doesn't auto suggest reg number
+###for some reason if I comment this out it cripples the doc choices page????????
 #creates a new registrant 
 def registrant(request):
     if request.method == 'GET': # If the form has been submitted...
@@ -530,29 +535,30 @@ def new_registrant(request):
 def reg_client(request):
     if request.method == 'GET': # If the form has been submitted...
         reg_id = request.GET['reg_id'] # A form bound to the POST data
-        clients = request.GET.getlist('clients')      
-        message = ''
+        clients = request.GET['clients']     
+        clients = clients.split(',')
         registrant = Registrant.objects.get(reg_id=reg_id)
         client_choices = []
+
         for c_id in clients:
             client = Client.objects.get(id=c_id)
+
             if client not in registrant.clients.all():
                 registrant.clients.add(client)
-                message += 'We added %s to clients.' % c_id
-            else:
-                message += '%s was already in the clients' % c_id
+                client_choices.append({
+                            'name': client.client_name,
+                            'id': client.id
+                })
+
             if client in registrant.terminated_clients.all():
                 registrant.terminated_clients.remove(client)
-            client_choices.append({
-                'name': client.client_name,
-                'id': client.id
-                })
+            
 
         client_choices = json.dumps(client_choices, separators=(',',':'))
         return HttpResponse(client_choices, mimetype="application/json") 
          
     else:
-        return render(request, 'choices.html', {'choices': client_choices})
+        HttpResponse({'error': 'failed'}, mimetype="application/json")
 
 
 #adds client as terminated in registrant 
