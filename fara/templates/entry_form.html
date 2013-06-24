@@ -64,18 +64,16 @@ Registration No: <b>{{ reg_id }}</b></p>
 <form method="GET" id='lobbyform' action="/registrant/add_lobbyist">
     {% csrf_token %}
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
-    <p><label for="lobbyists">Lobbyist: </label><select multiple="multiple" name="lobbyists">
-    {% for lobbyist in all_lobbyists %}
-        <option value="{{ lobbyist.id }}">{{ lobbyist.lobbyist_name }}</option>
-    {% endfor %}
-    </select>
+    
+    <p><label for="lobbyists">Lobbyist: </label><input type="hidden" id="lobbyist_lobbyist" name="lobbyists" style="width: 300px"/>
+
     <input type="submit" /></p>
 </form>
 </div>
 
 <div id="lobbyist_create">
 <a id="lobbyist"><h4>Add a new lobbyist</h4><a id="lobbyist">
-<form method="GET" action="/lobbyist/create">
+<form method="GET" id="add_lobbyform" action="/lobbyist/create">
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <p><label for="id_lobby_id">Lobby id:</label> <input id="id_lobby_id" maxlength="150" name="lobby_id" type="text" /></p>
     <p><label for="id_lobbyist_name">Lobbyist name:</label> <input id="id_lobbyist_name" maxlength="150" name="lobbyist_name" type="text" /></p>
@@ -98,16 +96,13 @@ Registration No: <b>{{ reg_id }}</b></p>
     </ul>
 </div>
 
+<div id="client_ajaxwrapper"></div>
 <form method="GET" id='clientform' action="/registrant/add_client" id='clientform'>
     {% csrf_token %}
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
-    <label><b>Add active client:</b></label><select multiple="multiple" name="clients">
-    {% for client in all_clients %}
-        {% if not client in reg_object.clients.all %}
-        <option value="{{ client.id }}">{{ client.client_name }}</option>
-        {% endif %}
-    {% endfor %}
-    </select>
+    
+    <label>Add a client:  </label><input type="hidden" id="client_client" name="clients" style="width: 300px"/>
+
     <input type="submit" />
 </form>
 <hr>
@@ -174,12 +169,13 @@ Contacts related to this form:<br>
     {% endfor %}
     </select></p>
 
-    <p><label for="recipient">Recipient (who they are meeting with):</label><select multiple="multiple" name="recipient">
+    (who is being contacted)
+    <p><label for="recipient">Recipient: </label><input type="hidden" id="contact_recip" name="recipient" style="width: 300px"/>
+
     {% for recipient in all_recipients %}
         <option value="{{ recipient.id }}">{{ recipient.title }} {{ recipient.name }}, {{ recipient.agency }}</option>
     {% endfor %}
     </select></p><a href="#recip">add a new recipient</a>
-
     
     <p><label for="lobbyist">Lobbyists:</label><select multiple="multiple" name="lobbyist">
     {% for lobbyist in reg_object.lobbyists.all %}
@@ -231,10 +227,10 @@ Contacts related to this form:<br>
 
 <form method="GET" id="payform" action="/payment/create">
     {% csrf_token %}
-    <input type="hidden" name="reg_id" value="{{ reg_id }}">
-    <input type="hidden" name="link" value="{{ url }}">
+    <input type="hidden" name="reg_id" value="{{ reg_id }}"/>
+    <input type="hidden" name="link" value="{{ url }}"/>
     
-    <p><label for="client">Clients:</label><select name="client" id="pay_client">
+   <p><label for="client">Clients:</label><select name="client" id="dis_client">
         <option value="None">Please Select Client</option>
     {% for client in reg_object.clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
@@ -242,8 +238,7 @@ Contacts related to this form:<br>
     {% for client in reg_object.terminated_clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}
-    </select></p><a href="#client">add a new client</a>
-
+    </select></p></p><a href="#client">add a new client</a>
     
     <p><input type="checkbox" name="fee">Fee</p>
     
@@ -314,14 +309,14 @@ Disbursements related to this form:
     
     <p><label for="date">Date: </label>
     <input id="contribution_date" type="text" name="date" /></p>
-    
-    <p><label for="recipient">Recipient (who they are meeting with):</label><select multiple="multiple" id="input" name="recipient">
-    {% for recipient in all_recipients %}
-        <option value="{{ recipient.id }}">{{ recipient.title }} {{ recipient.name }}, {{ recipient.agency }}</option>
-    {% endfor %}
-    </select></p><a href="#recip">add a new recipient</a>
+
+    (Who gets the contribution)
+    <p><label for="recipient">Recipient :</label><p><input type="hidden" id="cont_recip" name="recipient" style="width: 300px"/></p>
+
+    <a href="#recip">add a new recipient</a>
 
     <p><label for="lobbyist">Lobbyist or PAC:</label><select name="lobbyist">
+        <option value="">Select a lobbyist or PAC</option>
     {% for lobbyist in reg_object.lobbyists.all %}
         <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
     {% endfor %}

@@ -389,7 +389,11 @@ def stamp_date(request):
                         doc_type = document.doc_type,
                         stamp_date = s_date,
         )
-        stamp.save()
+        if s_date < datetime.now():
+            stamp.save()
+        else:
+            return render(request, 'success.html', {'status': 'date in the future'})   
+
         return render(request, 'success.html', {'status': request.GET['stamp_date']})
     else:
         return render(request, 'success.html', {'status': 'failed'})
@@ -438,20 +442,21 @@ def lobbyist(request):
 def reg_lobbyist(request):
     if request.method == 'GET': 
         reg_id = request.GET['reg_id']
-        
-        lobbyists = request.GET.getlist('lobbyists')
-        if not lobbyists:
-            lobbyists = [request.GET.get('lobbyists'),]
-        message = ''  
-        count = 0
         registrant = Registrant.objects.get(reg_id=reg_id)
+        
+        # lobbyists = request.GET.getlist('lobbyists')
+        # if not lobbyists:
+        #     lobbyists = [request.GET.get('lobbyists'),]
+        message = ''  
+        
+        lobby_ids = request.GET.get('lobbyists')
+        lobbyists =lobby_ids.split(',')
         for l_id in lobbyists:
             lobbyist = Lobbyist.objects.get(id=l_id)
             if lobbyist not in registrant.lobbyists.all():
                 registrant.lobbyists.add(lobbyist)
                 message += 'We added %s to lobbyists.' % l_id
             else:
-                continue
                 message += '%s was already in the lobbyists' % l_id
 
         return render(request, 'success.html', {'status': 'yay', 'message': message}) 
@@ -460,7 +465,7 @@ def reg_lobbyist(request):
 def client(request):
     if request.method == 'GET': # If the form has been submitted...
         form = ClientForm(request.GET) # A form bound to the POST data
-        if form.is_valid(): # All validation rules pass
+        if form.is_valid():
             client = Client(client_name = form.cleaned_data['client_name'], 
                             location = form.cleaned_data['location'],
                             address1 = form.cleaned_data['address1'],
@@ -468,17 +473,21 @@ def client(request):
                             state = form.cleaned_data['state'],
                             country = form.cleaned_data['country'],
             )
-            client.save()
-            registrant = Registrant.objects.get(reg_id=request.GET['reg_id'])
-            client_choice = {'name': client.client_name,'id': client.id,}
-            client_choice = json.dumps(client_choice, separators=(',',':')) 
-            
-            if client not in registrant.clients.all():
-                registrant.clients.add(client)
-            return HttpResponse(client_choice, mimetype="application/json")  
+            if Client.objects.filter(client_name = client.client_name).exists():
+                error = json.dumps({'error': "name in system"}, separators=(',',':')) 
+                return HttpResponse(error, mimetype="application/json")
+            else:
+                client.save()
+                registrant = Registrant.objects.get(reg_id=request.GET['reg_id'])
+                client_choice = [{'name': client.client_name,'id': client.id,}]
+                client_choice = json.dumps(client_choice, separators=(',',':')) 
+                
+                if client not in registrant.clients.all():
+                    registrant.clients.add(client)
+                return HttpResponse(client_choice, mimetype="application/json")  
          
         else:
-            return render(request, 'success.html', {'status': 'failed'})
+            HttpResponse(request, {'error': 'failed'})
 
 #want to phase out this one because it doesn't auto suggest reg number
 #creates a new registrant 
@@ -543,7 +552,7 @@ def reg_client(request):
         return HttpResponse(client_choices, mimetype="application/json") 
          
     else:
-        return render(request, 'success.html', {'status': 'failed'})
+        return render(request, 'choices.html', {'choices': client_choices})
 
 
 #adds client as terminated in registrant 
@@ -575,15 +584,10 @@ def contact(request):
         lobbyists_ids = request.GET.getlist('lobbyist')
         if not lobbyists_ids:
             lobbyists_ids = [request.GET.get('lobbyists'),]
-            
-        recipients_ids = request.GET.getlist('recipient')
-        if not recipients_ids:
-            recipients_ids = [request.GET.get('recipient'),]
-        
+
         client = Client.objects.get(id=int(request.GET['client']))
         reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
-        recipients = Recipient.objects.filter(id__in=recipients_ids)
         lobbyists = Lobbyist.objects.filter(id__in=lobbyists_ids)
         description = cleantext(request.GET['description'])
         
@@ -597,12 +601,19 @@ def contact(request):
         )
         contact.save()
 
+        # this formats the results from the multiple select 
+        recipient_ids = request.GET.get('recipient')
+        recipients = recipient_ids.split(',')
+        
         for r in recipients:
-            if r not in contact.recipient.all():
-                contact.recipient.add(r)
+            recip = Recipient.objects.get(id=r)
+            if recip not in contact.recipient.all():
+                contact.recipient.add(recip)
+        
         for l in lobbyists:
             if l not in contact.lobbyist.all():
                 contact.lobbyist.add(l)
+        
         return render(request, 'success.html', {'status': 'contact_name'}) 
      
     else:

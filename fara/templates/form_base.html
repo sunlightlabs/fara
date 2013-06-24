@@ -37,14 +37,17 @@
     }
     </style>
 
-<!-- jQuery UI Datepicker -->
-<link rel="stylesheet" href="{{ STATIC_URL }}jquery-ui.css" />
+  <!-- jQuery UI Datepicker -->
+<link rel="stylesheet" href="{{ STATIC_URL }}jquery-ui.css"/>
 <script src="{{ STATIC_URL }}jquery-1.9.1.js"></script>
 <script src="/static/jquery-ui.js"></script>
 <script src="/static/jquery.form.js"></script>
+<link rel="stylesheet" href="/resources/demos/style.css"/>
+<!-- token search -->
+<script src="{{ STATIC_URL }}select2.min.js"></script>
+<link rel="stylesheet" href="{{ STATIC_URL }}select2.css"/>  
 
   
-  <link rel="stylesheet" href="/resources/demos/style.css" />
   <script>
   $(function() {
     $( "#contact_date" ).datepicker();
@@ -53,20 +56,62 @@
     $( "#contribution_date" ).datepicker();
     $( "#gift_date" ).datepicker();
     $( "#stamp_date").datepicker();
+
+    //this is the search function, select2
+    function createSelect(tag, resourse){
+      
+      $(tag).select2({
+        minimumInputLength: 2,
+        
+        query: function(query) {
+
+          $.getJSON(resourse, {q: query.term}, function(results){
+            // console.log(results);
+              
+              data = {
+                results: results
+              };
+              // results is now set to [{id: "whatever", text: "whatever"}]
+
+            query.callback(data);
+          });
+        }
+      });
+    }
+    function createMSelect(tag, resourse){
+      
+      $(tag).select2({
+        minimumInputLength: 2,
+        //make a version that doesn't have this for the non-multiple select
+        multiple: true,
+        query: function(query) {
+
+          $.getJSON(resourse, {q: query.term}, function(results){
+            // console.log(results);
+              
+              data = {
+                results: results
+              };
+              // results is now set to [{id: "whatever", text: "whatever"}]
+
+            query.callback(data);
+          });
+        }
+      });
+    }
+
+  createMSelect("#contact_recip", "/formchoices/recip");
+  createMSelect("#client_client", "/formchoices/client");
+  createMSelect("#lobbyist_lobbyist", "/formchoices/lobbyist");
+  createSelect("#cont_recip", "/formchoices/recip");
+
   });
   </script>
 
-<!-- This posts new client data without refreshing the page and updates the option choices -->
+<!-- This posts new client data without refreshing the page and updates the client choices -->
 <script type="text/javascript">
-  /*<![CDATA[*/
   jQuery(document).ready(function() {
   
-    var update_option = function(optionText, formID, selectID){
-        jQuery(formID).find(selectID).append(optionText);
-    }
-    var update_list = function(optionText, divID){
-        jQuery(divID).append(optionText);
-    }
     var options = {
         success: function(responses, statusText, xhr, h){
           console.log(responses);
@@ -92,30 +137,20 @@
             
         },
         error: function(jqxhr, errorText, error){
-            jQuery("#ajaxwrapper").prepend('<span class="error">There was an error</span>');
-            //errorText would be : <span class="error">The form didn't validate!</span>'
+            jQuery("#client_ajaxwrapper").prepend('<span class="error">There was an error</span>', error);
         },
-        beforeSubmit: function(){
-            jQuery("#ajaxwrapper").prepend('<span>Sending message, please wait... </span>')
-        }
     }
     jQuery("#clientform").ajaxForm(options);
+    jQuery("#add_clientform").ajaxForm(options);
      
     var contact_options = {
         success: function(responseText, statusText, xhr, h){
 
             update_option('<option value="{{ client.id }}">{{ client.client_name }}</option>', '#contactform', '#contact_client');
         } 
-    }
-    jQuery("#contactform").ajaxForm(contact_options);
-
-           
+    }      
   });
-  /*]]>*/
   </script>
-
-
-
 
 
 {% block script %} 
@@ -126,9 +161,6 @@
 <div id="left">
    <iframe height=100% width="700" scrolling="yes" src="{{ url }}"></iframe>
 </div>
-
-
-
 
 <div id="right">
 
