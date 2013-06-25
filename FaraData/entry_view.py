@@ -35,7 +35,7 @@ def dis_info(url):
     dis_objects = Disbursement.objects.filter(link = url)
     dis_list = []
     for dis in dis_objects: 
-        dis_list.append([dis.client, dis.amount]) 
+        dis_list.append([dis.client, dis.amount, dis.date]) 
     return dis_list 
 
 #finds payments attached to this form 
@@ -60,7 +60,7 @@ def cont_info(url):
     cont_objects = Contribution.objects.filter(link = url) 
     cont_list = []
     for cont in cont_objects: 
-        cont_list.append([cont.lobbyist, cont.amount, cont.recipient])
+        cont_list.append([cont.lobbyist, cont.amount, cont.recipient, cont.date])
     return cont_list
                
 #finds gifts attached to the form
@@ -396,10 +396,10 @@ def stamp_date(request):
             return HttpResponse(stampinfo, mimetype="application/json")
 
         else:
-            return HttpResponse(request, {'error': 'date in the future'})   
+            return HttpResponse({'error': 'date in the future'}, mimetype="application/json")   
 
     else:
-        return HttpResponse(request, {'error': 'failed'})
+        return HttpResponse({'error': 'failed'}, mimetype="application/json")
   
 #creates a new recipient
 def recipient(request):
@@ -596,7 +596,11 @@ def contact(request):
 
         client = Client.objects.get(id=int(request.GET['client']))
         reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
+        
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        if date_obj > datetime.now():
+            return HttpResponse({'error': 'date in future'}, mimetype="application/json")
+
         lobbyists = Lobbyist.objects.filter(id__in=lobbyists_ids)
         description = cleantext(request.GET['description'])
         
@@ -613,20 +617,35 @@ def contact(request):
         # this formats the results from the multiple select 
         recipient_ids = request.GET.get('recipient')
         recipients = recipient_ids.split(',')
-        
+        # names is formating for adding to the list in the form
+        names = ''
         for r in recipients:
             recip = Recipient.objects.get(id=r)
             if recip not in contact.recipient.all():
                 contact.recipient.add(recip)
+                if len(recip.title) > 0:
+                    names = names + recip.title + ' ' + recip.name
+                else:
+                    names = names + recip.name
+                
+                if len(recip.agency) > 0:
+                    names = names + ' (' + recip.agency + '), ' 
+                elif len(recip.office_detail): 
+                    names = names + ' (' +  recip.office_detail + '), ' 
+                else:
+                    names = names + ', '
         
         for l in lobbyists:
             if l not in contact.lobbyist.all():
                 contact.lobbyist.add(l)
         
-        return render(request, 'success.html', {'status': 'contact_name'}) 
+        contactinfo = [{'date': request.GET['date'], 'name': names}]
+        contactinfo = json.dumps(contactinfo , separators=(',',':'))
+        return HttpResponse(contactinfo, mimetype="application/json")
+
      
     else:
-        return render(request, 'success.html', {'status': 'failed'})
+        return HttpResponse({'error': 'failed'}, mimetype="application/json")  
         
         
 #creates payment
@@ -636,10 +655,15 @@ def payment(request):
         reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']) )
         message = ''
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        if date_obj > datetime.now():
+            return HttpResponse([{'error': 'date in future'}], mimetype="application/json")
+
         if request.method == 'GET' and 'fee' in request.GET:
             fee = True
         else:
             fee = False
+
         purpose = cleantext(request.GET['purpose'])
         amount = cleanmoney(request.GET['amount'])
         
@@ -652,16 +676,26 @@ def payment(request):
                             link = request.GET['link'],
         )
         payment.save()
-        return render(request, 'success.html', {'status': 'amount'})
+        # return info to update the entry form
+        payinfo = {"amount": payment.amount, 
+                    "fee": payment.fee, 
+                    "date": request.GET['date'], 
+                    "client": str(payment.client),
+        }
+        payinfo = json.dumps(payinfo , separators=(',',':'))
+        return HttpResponse(payinfo, mimetype="application/json")
         
     else:
-        return render(request, 'success.html', {'status': 'failed'})
+        return HttpResponse([{'error': 'failed'}], mimetype="application/json")  
 
 
 #creates contributions
 def contribution(request):
     if request.method == 'GET':
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        if date_obj > datetime.now():
+            return HttpResponse([{'error': 'date in future'}], mimetype="application/json")
+
         registrant = Registrant.objects.get(reg_id=int(request.GET['registrant']))
         recipient = Recipient.objects.get(id=int(request.GET['recipient']))
         lobby = Lobbyist.objects.get(id=int(request.GET['lobbyist']))
@@ -675,16 +709,26 @@ def contribution(request):
                                     lobbyist = lobby, 
         ) 
         contribution.save()
-        return render(request, 'success.html', {'status': 'amount'}) 
-        
+
+        continfo = {'amount': contribution.amount, 
+                    'date': request.GET['date'], 
+                    'recipient': str(contribution.recipient),
+                    'lobbyist' : str(contribution.lobbyist)
+        }
+        continfo = json.dumps(continfo , separators=(',',':'))
+        return HttpResponse(continfo, mimetype="application/json")  
+
     else:
-        return render(request, 'success.html', {'status': 'failed'})
+        return HttpResponse([{'error': 'failed'}], mimetype="application/json") 
 
 
 #creates disbursements 
 def disbursement(request):
     if request.method == 'GET':
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        if date_obj > datetime.now():
+            return HttpResponse([{'error': 'date in future'}], mimetype="application/json")
+
         registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         client = Client.objects.get(id=int(request.GET['client']))
         message = ''
@@ -700,17 +744,26 @@ def disbursement(request):
                             link = request.GET['link'],
         )
         disbursement.save()
-            
-        return render(request, 'success.html', {'status': 'amount'}) 
+        disinfo = {'amount': disbursement.amount,
+                    'date': request.GET['date'],
+                    'registrant': str(disbursement.registrant),
+                    'client': str(disbursement.client), 
+        }
+        disinfo = json.dumps(disinfo , separators=(',',':'))
+        return HttpResponse(disinfo, mimetype="application/json")
+
          
     else:
-        return render(request, 'success.html', {'status': 'failed'})
+        return HttpResponse([{'error': 'failed'}], mimetype="application/json") 
 
 
 #creates gifts
 def gift(request):
     if request.method == 'GET':
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        if date_obj > datetime.now():
+            return HttpResponse([{'error': 'date in future'}], mimetype="application/json")
+
         registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         clients = Client.objects.filter(id=int(request.GET['client']))
         message = []
@@ -725,14 +778,17 @@ def gift(request):
             link = request.GET['link'],
         )
         gift.save()
+        client_names = ''
         for client in clients:
             gift.client.add(client)
-            message += 'We added %s to clients.' % client
-            
-        return render(request, 'success.html', {'status': 'yay', 'message': message}) 
+            client_names = client_names + str(client.client_name) + ", " 
+        
+        giftinfo = {'client': client_names, 'date': request.GET['date'], 'discription': gift.discription}
+        giftinfo = json.dumps(giftinfo , separators=(',',':'))
+        return HttpResponse(giftinfo, mimetype="application/json")
          
     else:
-        return render(request, 'success.html', {'status': 'failed'})
+        return HttpResponse([{'error': 'failed'}], mimetype="application/json") 
 
 #tracks processing
 def metadata(request):      

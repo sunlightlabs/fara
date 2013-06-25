@@ -222,14 +222,27 @@ Contacts related to this form:<br>
 
 <h3>Payment</h3>
 <p><i>Question 14(a)</i></p>
+
+<p><b>Payments associated with this form</b></p>
 <div id="pay_list">
-{% for pay in pay_list %}
-        {% if pay.2 == True %}
-        <li>${{ pay.1 }} from {{ pay.0 }} on {{ pay.3 }} (fee)</li>
-        {% else %}
-        <li>${{ pay.1 }} from {{ pay.0 }} on {{ pay.3 }}</li>
-        {% endif %}
-{% endfor %}
+<table id = 'pay_table' width="100%">
+    <thread>
+    <tr>
+    <td>Amount</td><td>Client</td><td>Date</td><td>Fee</td>
+    </tr>
+    </thread> 
+    <tbody>   
+    {% for pay in pay_list %}
+            <tr>
+            {% if pay.2 == True %}
+            <td>${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>fee</td>
+            {% else %}
+            <td>${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>no</td>
+            {% endif %}
+            <tr>
+    {% endfor %}
+    </tbody>
+</table>
 </div>
 
 <form method="GET" id="payform" action="/payment/create">
@@ -264,13 +277,25 @@ Contacts related to this form:<br>
 
 <h3>Disbursement</h3>
 <p>Question 15(a)</p>
-Disbursements related to this form:
+
+<p><b>Disbursements associated with this form</b></p>
 <div id="dis_list">
-{% for dis in dis_list %}
-    <li>${{ dis.1 }} {{ dis.0 }}</li>
-{% endfor %}
+<table id = 'dis_table' width="100%">
+    <thread>
+    <tr>
+    <td>Amount</td><td>Date</td><td>Client</td>
+    </tr>
+    </thread> 
+    
+    <tbody>   
+    {% for dis in dis_list %}
+            <tr>
+            <td>${{ dis.1 }}</td><td>{{ dis.0 }}</td><td>{{ dis.2 }}</td>
+            <tr>
+    {% endfor %}
+    </tbody>
+</table>
 </div>
-</p>
 
 
 <form method="GET" id='disform' action="/disbursement/create">
@@ -302,10 +327,24 @@ Disbursements related to this form:
 <h3>Contribution</h3>
 <p><i>Question 15(c)</i></p>
 
-{% for cont in cont_list %}
-        <li>{{ cont.0 }} ${{ cont.1 }} to: {{ cont.2 }}</li>
-{% endfor %}
-
+<div id="cont_list">
+<table id = 'cont_table' width="100%">
+    <thread>
+    <tr>
+    <td>Amount</td><td>From</td><td>To</td><td>Date</td>
+    </tr>
+    </thread> 
+    
+    <tbody>   
+    {% for cont in cont_list %}
+            <tr>
+            <td>${{ cont.1 }}</td><td>{{ cont.0 }}</td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td>
+            <tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<p><b>Enter Contribution</b></p>
 <form method="GET" id='contform' action="/contribution/create">
     {% csrf_token %}
     <input type="hidden" name="registrant" value="{{ reg_id }}">
@@ -338,9 +377,11 @@ Disbursements related to this form:
 <p><i>Question 14(c)</i></p>
 Gifts associated with this form:
 <div id="gift_list">
+<ul>
 {% for g in gift_list %}
 <li>{{ g.0 }} from {{ g.2 }} on {{ g.1 }}  </li>
 {% endfor %} 
+</ul>
 </div>
 <form method="GET" id="giftform" action="/gift/create">
     {% csrf_token %}

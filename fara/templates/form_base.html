@@ -253,7 +253,6 @@ jQuery(document).ready(function(){
         if (tag = "#stampform"){
           var date = response.date;
           var id = response.id;
-
           var item = "<p>" + date + "</p>";
           $("#stamp_list").replaceWith(item);
         }
@@ -261,15 +260,64 @@ jQuery(document).ready(function(){
         if (tag = "#terminatedclientform"){
           for (var i=0; i<response.length; i += 1) {
             var responses = response[i];
-            console.log(responses)
             var name = responses.name;
             var id = responses.id;
-
             var item = "<li>" + name + "</li>";
           $("#terminated_client_list ul").append(item)
           }
         }
 
+        if (tag = "#contactform"){
+          var date = response.date;
+          var name = response.name;
+          var item = "<li>"+ name + " " + date + "</li>";
+          $("#stamp_list").replaceWith(item);
+        }
+
+        if (tag = "#payform"){
+          var amount = response.amount;
+          var date = response.date;
+          var client = response.client;
+          var fee = response.fee;
+          
+          if (fee = "True"){
+            fee = "fee"
+          }
+          else{
+            fee = ""
+          }
+          
+          item = '<td>'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td>'
+          $('#pay_table').append(item);
+        }
+
+        if (tag = "#disform"){
+          var amount = response.amount;
+          var date = response.date;
+          var client = response.client;
+
+          item = '<tr><td>$'+ amount +'</td><td>'+ date + '</td><td>'+ client +'</td><tr>'
+          $('#dis_table').append(item);
+        }
+
+        if (tag = '#contform'){
+          var amount = response.amount;
+          var lobbyist = response.lobbyist;
+          var recipient = response.recipient;
+          var date =  response.date;
+
+          item = '<tr><td>$' + amount + '</td><td>' + lobbyist+ '</td><td>'+ recipient +'</td><td>'+date + '</td></tr>'
+          $("#cont_table").append(item);
+        }
+         
+        if (tag = '#giftform'){
+          var date = response.date;
+          var discription = response.discription;
+          var client = response.client;
+
+          item = '<li>' + discription + " from " + client + " on " + date
+          $("#gift_list ul").append(item) 
+        }
       }
     }
     
@@ -281,12 +329,18 @@ jQuery(document).ready(function(){
 
   update('#stampform');
   update('#terminatedclientform');
-  update('#contactform')
+  update('#contactform');
   // I don't think I need to display recipients so just clearing for now
   $("#recipform").ajaxForm();
+  update('#payform');
+  update('#disform');
+  update('#contform');
+  update('#giftform');
   
 });
+
 </script>
+
 {% block script %} 
 {% endblock script %} 
   
