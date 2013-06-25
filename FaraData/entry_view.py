@@ -391,7 +391,7 @@ def stamp_date(request):
         )
         if s_date < datetime.now():
             stamp.save()
-            stampinfo = {'id': form_id, 'name': request.GET['stamp_date']}
+            stampinfo = {'id': form_id, 'date': request.GET['stamp_date']}
             stampinfo = json.dumps(stampinfo , separators=(',',':'))
             return HttpResponse(stampinfo, mimetype="application/json")
 
@@ -566,21 +566,24 @@ def terminated(request):
     if request.method == 'GET': # If the form has been submitted...
         reg_id = request.GET['reg_id'] # A form bound to the POST data
         clients = request.GET.getlist('clients')
-        message = ''
+        terminateinfo = []
         registrant = Registrant.objects.get(reg_id=reg_id)
+        
         for c_id in clients:
             client = Client.objects.get(id=c_id)
+            terminateinfo.append({"id":client.id, "name":client.client_name})
+            
             if client not in registrant.terminated_clients.all():
                 registrant.terminated_clients.add(client)
+                
                 if client in registrant.clients.all():
                     registrant.clients.remove(client)
-                message += 'We added %s to terminated clients.' % c_id
-            else:
-                message += '%s was already in the terminated clients' % c_id
-        return render(request, 'success.html', {'status': 'yay', 'message': message}) 
+
+        terminateinfo = json.dumps(terminateinfo , separators=(',',':'))
+        return HttpResponse(terminateinfo, mimetype="application/json")           
          
     else:
-        return render(request, 'success.html', {'status': 'failed'})
+        return HttpResponse({'error': 'failed'}, mimetype="application/json")
         
         
 #creates contact

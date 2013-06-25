@@ -11,12 +11,10 @@ Registration No: <b>{{ reg_id }}</b></p>
 <hr>
 
 <h3>Stamp date:</h3>
-<div id="#stamp_list">
-<ul>
+<div id="stamp_list">
 {% ifnotequal s_date None %}
-    <li>{{ s_date }}</li>
+    <p>{{ s_date }}</p>
 {% endifnotequal %}
-</ul>
 </div>
 
 <form action="{% url 'stamp-date' %}"method="GET" id="stampform">

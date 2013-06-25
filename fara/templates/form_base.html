@@ -164,7 +164,7 @@
 
 <!-- This posts new lobbyist data without refreshing the page and updates the lobbyist choices -->
 <script type="text/javascript">
-  jQuery(document).ready(function() {
+  jQuery(document).ready(function(){
   
     var options = {
         success: function(responses, statusText, xhr, h){
@@ -213,37 +213,79 @@
   </script>
 <!-- adding ajax -->
 <script type="text/javascript">
-  jQuery(document).ready(function() {
-  
-  
-  var stamp = {
-    success: function(response, statusText, xhr, h){
-          console.log(response);
+// jQuery(document).ready(function() {
+  // this works I just want to make the reusable version
+  // var stamp = {
+  //   success: function(response, statusText, xhr, h){
+  //         console.log(response);
 
-            var name = response.name;
-            var id = response.id;
+  //           var name = response.name;
+  //           var id = response.id;
           
-            // 1) clear form
-            $('#stampform').each(function(){
-                this.reset();   //Here form fields will be cleared.
-            });
+  //           // 1) clear form
+  //           $('#stampform').each(function(){
+  //               this.reset();   //Here form fields will be cleared.
+  //           });
 
-            //this doesn't work but it doesn't break it either
-            // 2) update list
-            var item = "<li>" + name + "</li>";
-            $("#stamp_list ul li").replaceWith(item);
-
-    },
+  //           // 2) update list
+  //           var item = "<p>" + name + "</p>";
+  //           $("#stamp_list").replaceWith(item);
+  //   },
             
-    error: function(jqxhr, errorText, error){
-            jQuery("#stamp_ajaxwrapper").prepend('<span class="error">There was an error: </span>', error);
-    },
-  }
+  //   error: function(jqxhr, errorText, error){
+  //           jQuery("#stamp_ajaxwrapper").prepend('<span class="error">There was an error: </span>', error);
+  //   },
+  // }
+jQuery(document).ready(function(){
 
-    $("#stampform").ajaxForm(stamp);
-    $("#terminatedclientform").ajaxForm();
+  function update(tag){
 
-  });
+    var opt = {
+      success: function(response, statusText, xhr, h){
+        // 2) clear form
+        $(tag).each(function(){
+          this.reset();
+        }); 
+        
+        //3) update display
+        console.log(response);
+
+        if (tag = "#stampform"){
+          var date = response.date;
+          var id = response.id;
+
+          var item = "<p>" + date + "</p>";
+          $("#stamp_list").replaceWith(item);
+        }
+
+        if (tag = "#terminatedclientform"){
+          for (var i=0; i<response.length; i += 1) {
+            var responses = response[i];
+            console.log(responses)
+            var name = responses.name;
+            var id = responses.id;
+
+            var item = "<li>" + name + "</li>";
+          $("#terminated_client_list ul").append(item)
+          }
+        }
+
+      }
+    }
+    
+    // 1) submit form
+    $(tag).ajaxForm(opt);
+
+  };
+     
+
+  update('#stampform');
+  update('#terminatedclientform');
+  update('#contactform')
+  // I don't think I need to display recipients so just clearing for now
+  $("#recipform").ajaxForm();
+  
+});
 </script>
 {% block script %} 
 {% endblock script %} 
