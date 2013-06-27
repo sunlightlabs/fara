@@ -7,7 +7,7 @@ from django.forms import ModelForm, Select
 
 # the person, like a congressperson, that receives communication or contribution
 class Recipient(models.Model):
-    bioguide_id = models.CharField(max_length=7, null=True, blank=True)
+    crp_id = models.CharField(max_length=7, null=True, blank=True)
     agency = models.CharField(max_length=100, blank=True, null=True)
     office_detail = models.CharField(max_length=100, blank=True, null=True)# formerly agency and office in agency detail
     name = models.CharField(max_length=150, null=True)
@@ -26,15 +26,24 @@ class Lobbyist(models.Model):
         name = re.sub('None','', name)
         return "%s" %(name)
 
+class Location(models.Model):
+    location = models.CharField(max_length=200, unique=True)
+    country_grouping = models.CharField(max_length=200)
+    region = models.CharField(max_length=200)
+
+    def __unicode__(self):
+        return self.location
+
 #Questions 7, 8 and 9
 class Client(models.Model):
-    location = models.CharField(max_length=100, null=True, blank=True)
-    client_name = models.CharField(max_length=200)
+    location = models.ForeignKey(Location)
+    client_name = models.CharField(max_length=200, unique=True)
     address1 = models.CharField(max_length=300, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=100, null=True, blank=True)#long to accommodate foreign addresses
     zip_code = models.CharField(max_length=50, null=True, blank=True) 
-    country = models.CharField(max_length=100, null=True, blank=True)
+    #not using this right now but Bill mentioned he would like to do it in the future. 
+    client_type = models.CharField(max_length=25, null=True, blank=True)
     
     def __unicode__(self):
         return self.client_name
@@ -42,7 +51,7 @@ class Client(models.Model):
 # the firm or person doing the lobbying and registering with FARA (including those that represent themselves)       
 class Registrant(models.Model):
     reg_id = models.IntegerField(primary_key=True) #this is assigned by DOJ
-    reg_name = models.CharField(max_length=200)
+    reg_name = models.CharField(max_length=200, unique=True)
     address = models.CharField(max_length=300, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=2, null=True, blank=True)
@@ -62,10 +71,10 @@ class Gift(models.Model):
     client = models.ManyToManyField(Client, null=True, blank=True)
     date = models.DateField(null=True, blank=True) 
     purpose = models.TextField(null=True, blank=True)
-    discription = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     link = models.CharField(max_length=100)
     registrant = models.ForeignKey(Registrant)
-    #recipient = models.ForeignKey(Recipient, null=True, blank=True)
+    recipient = models.ForeignKey(Recipient, null=True, blank=True)
     
     def __unicode__(self):
         return "%s to %s" % (self.discription, self.registrant)
@@ -89,7 +98,7 @@ class Contact(models.Model):
     link = models.CharField(max_length=100)
 
     def __unicode__(self):
-        return "%s - %s - %s" % (self.client, self.registrant, self.date  )
+        return "%s - %s - %s" % (self.client, self.registrant, self.date )
 
 #question 14 (a)
 class Payment(models.Model):
@@ -112,6 +121,7 @@ class Disbursement(models.Model):
     purpose = models.TextField(null=True, blank=True)
     date = models.DateField(null=True)
     link = models.CharField(max_length=100) 
+    subcontractor = models.ForeignKey(Registrant, related_name='subcontractor')
     
     def __unicode__(self):
         return "%s - %s - $%s" % (self.client, self.registrant, self.amount )
@@ -133,7 +143,7 @@ class MetaData(models.Model):
     link = models.CharField(primary_key=True, max_length=255)
     upload_date = models.DateField(null=True)
     reviewed = models.BooleanField(default=False)
-    processed = models.BooleanField(default=False)
+    processed = models.BooleanField(default=False)#processed means form is finished and info can be displayed on front end
     is_amendment = models.BooleanField(default=False)
     form = models.CharField(max_length=300)# I am guessing on this, we are storing on amazon
     notes = models.TextField(blank=True, null=True)
@@ -143,6 +153,7 @@ class MetaData(models.Model):
             return self.link
         else:
             return "%s (%s)" %(self.link, self.notes)
+
     
 #models for the data entry form.
 #would like to phase this one out
@@ -155,6 +166,7 @@ class RecipientForm(ModelForm):
     class Meta:
         model = Recipient
 
+#also phasing out this one
 class ClientForm(ModelForm):
     class Meta:
         model = Client

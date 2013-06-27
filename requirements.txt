@@ -1,5 +1,16 @@
+BeautifulSoup==3.2.1
 Django==1.5
 MySQL-python==1.2.4
+SQLAlchemy==0.6.6
+argparse==1.2.1
+beautifulsoup4==4.2.0
+cssselect==0.8
+csvkit==0.5.0
+dbf==0.94.003
 django-debug-toolbar==0.9.4
-#something!`
+lxml==3.2.1
+openpyxl==1.5.7
+pyPdf==1.13
+python-dateutil==1.5
 wsgiref==0.1.2
+xlrd==0.7.1

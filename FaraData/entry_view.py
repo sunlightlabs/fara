@@ -68,7 +68,7 @@ def gift_info(url):
     gift_objects = Gift.objects.filter(link = url) 
     gift_list = []
     for g in gift_objects:
-        gift = [g.discription, g.date]
+        gift = [g.description, g.date]
         for g in g.client.all():
             gift.append(g.client_name)
         gift_list.append(gift)
@@ -139,7 +139,6 @@ def supplemental_base(request, form_id):
 def supplemental_first(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    #reg_form = RegForm()
     all_clients = Client.objects.all()
     client_form = ClientForm()
 
@@ -147,7 +146,6 @@ def supplemental_first(request, form_id):
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
-        #'reg_form': reg_form,
         'all_clients': all_clients,
         'client_form': client_form,
         'form_id': form_id,
@@ -349,7 +347,6 @@ def registration_last(request, form_id):
 def enter_AB(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    #reg_form = RegForm()
     all_clients = Client.objects.all()
     client_form = ClientForm()
     meta_list = meta_info(url)
@@ -358,7 +355,6 @@ def enter_AB(request, form_id):
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
-        #'reg_form': reg_form,
         'all_clients': all_clients,
         'client_form': client_form,
         'form_id': form_id,
@@ -389,24 +385,26 @@ def stamp_date(request):
                         doc_type = document.doc_type,
                         stamp_date = s_date,
         )
-        if s_date < datetime.now():
+        if s_date > datetime.now():
+            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
+
+        else:    
             stamp.save()
             stampinfo = {'id': form_id, 'date': request.GET['stamp_date']}
             stampinfo = json.dumps(stampinfo , separators=(',',':'))
-            return HttpResponse(stampinfo, mimetype="application/json")
-
-        else:
-            return HttpResponse({'error': 'date in the future'}, mimetype="application/json")   
+            return HttpResponse(stampinfo, mimetype="application/json")   
 
     else:
-        return HttpResponse({'error': 'failed'}, mimetype="application/json")
+        error = json.dumps({'error': 'failed'} , separators=(',',':'))
+        return HttpResponse(error, mimetype="application/json")
   
 #creates a new recipient
 def recipient(request):
     if request.method == 'GET':
         form = RecipientForm(request.GET)
         if form.is_valid():
-            recipient = Recipient(bioguide_id = form.cleaned_data['bioguide_id'],
+            recipient = Recipient(crp_id = form.cleaned_data['crp_id'],
                                 agency = form.cleaned_data['agency'],
                                 office_detail = form.cleaned_data['office_detail'],
                                 name  = form.cleaned_data['name'],
@@ -453,6 +451,7 @@ def reg_lobbyist(request):
         lobby_choice = []
         
         for l_id in lobbyists:
+            print "WORKING                 ....                       ....             ....."
             lobbyist = Lobbyist.objects.get(id=l_id)
             if lobbyist not in registrant.lobbyists.all():
                 registrant.lobbyists.add(lobbyist)
@@ -467,31 +466,56 @@ def reg_lobbyist(request):
 
 #creates a new client and adds it to the registrant 
 def client(request):
-    if request.method == 'GET': # If the form has been submitted...
-        form = ClientForm(request.GET) # A form bound to the POST data
-        if form.is_valid():
-            client = Client(client_name = form.cleaned_data['client_name'], 
-                            location = form.cleaned_data['location'],
-                            address1 = form.cleaned_data['address1'],
-                            city = form.cleaned_data['city'],
-                            state = form.cleaned_data['state'],
-                            country = form.cleaned_data['country'],
-            )
-            if Client.objects.filter(client_name = client.client_name).exists():
-                error = json.dumps({'error': "name in system"}, separators=(',',':')) 
-                return HttpResponse(error, mimetype="application/json")
-            else:
-                client.save()
-                registrant = Registrant.objects.get(reg_id=request.GET['reg_id'])
-                client_choice = [{'name': client.client_name,'id': client.id,}]
-                client_choice = json.dumps(client_choice, separators=(',',':')) 
-                
-                if client not in registrant.clients.all():
-                    registrant.clients.add(client)
-                return HttpResponse(client_choice, mimetype="application/json")  
-         
+    if request.method == 'GET': 
+        # this returns a tuple
+
+        location = request.GET['location'],
+        for l in location:
+            location = int(l)
+            
+        location = Location.objects.get(id=location)
+
+        client = Client(client_name = request.GET['client_name'], 
+                        location = location,
+                        address1 = request.GET['address1'],
+                        city = request.GET['city'],
+                        state = request.GET['state'],
+                        zip_code = request.GET['zip_code'],
+        )
+        if Client.objects.filter(client_name = client.client_name).exists():
+            error = json.dumps({'error': "name in system"}, separators=(',',':')) 
+            print error
+            return HttpResponse(error, mimetype="application/json")
+            
         else:
-            HttpResponse(request, {'error': 'failed'})
+            client.save()
+            registrant = Registrant.objects.get(reg_id=request.GET['reg_id'])
+            client_choice = [{'name': client.client_name,'id': client.id,}]
+            client_choice = json.dumps(client_choice, separators=(',',':')) 
+
+            if client not in registrant.clients.all():
+                registrant.clients.add(client)
+                
+            return HttpResponse(client_choice, mimetype="application/json")  
+     
+    else:
+        HttpResponse(request, {'error': 'failed'})
+
+def location(request):
+    if request.method == 'GET': 
+        location = Location(location = request.GET['location'],
+                            country_grouping = request.GET['country'],
+                            region = request.GET['region'],
+        )
+        location.save()
+        location_info = json.dumps({'location': location.location, 'country': location.country_grouping, 'region': location.region} , separators=(',',':'))
+        return HttpResponse(location_info, mimetype="application/json")
+
+    else:
+        error = json.dumps({'error': 'failed'} , separators=(',',':'))
+        return HttpResponse(error, mimetype="application/json")
+
+
 
 #want to phase out this one because it doesn't auto suggest reg number
 ###for some reason if I comment this out it cripples the doc choices page????????
@@ -508,12 +532,14 @@ def registrant(request):
                             zip = form.cleaned_data['zip'],
                             country = form.cleaned_data['country'],
                             #description = form.cleaned_data['description'],
-
             )
             registrant.save()
-            return render(request, 'registrant_success.html', {'status': 'reg_name', 'reg': registrant})
+            reg_info = json.dumps({'reg_id': registrant.reg_id, 'reg_name': registrant.reg_name} , separators=(',',':'))
+            return HttpResponse(reg_info, mimetype="application/json")
+
         else:
-            return render(request, 'success.html', {'status': form.errors}, status=400)
+            error = json.dumps({'error': 'failed'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
 
 def new_registrant(request):
     if request.method == 'GET':
@@ -524,11 +550,15 @@ def new_registrant(request):
                             state = request.GET['state'],
                             zip = request.GET['zip'],
                             country = request.GET['country'],
-                            )
+        )
         registrant.save()
-        return render(request, 'registrant_success.html', {'status': 'reg_name', 'reg': registrant})
+        reginfo = {'id': registrant.reg_id, 'name': registrant.reg_name}
+        reginfo = json.dumps(reginfo , separators=(',',':'))
+        return HttpResponse(reginfo, mimetype="application/json")
+        
     else:
-        return render(request, 'success.html', {'status': form.errors}, status=400)
+        error = json.dumps({'error': 'failed'} , separators=(',',':'))
+        return HttpResponse(error, mimetype="application/json") 
 
                   
 #adds existing client to registrant 
@@ -547,7 +577,7 @@ def reg_client(request):
                 registrant.clients.add(client)
                 client_choices.append({
                             'name': client.client_name,
-                            'id': client.id
+                            'id': client.id,
                 })
 
             if client in registrant.terminated_clients.all():
@@ -558,7 +588,8 @@ def reg_client(request):
         return HttpResponse(client_choices, mimetype="application/json") 
          
     else:
-        HttpResponse({'error': 'failed'}, mimetype="application/json")
+        error = json.dumps({'error': 'failed'}, separators=(',',':'))
+        return HttpResponse(error, mimetype="application/json")
 
 
 #adds client as terminated in registrant 
@@ -583,9 +614,25 @@ def terminated(request):
         return HttpResponse(terminateinfo, mimetype="application/json")           
          
     else:
-        return HttpResponse({'error': 'failed'}, mimetype="application/json")
+        error = json.dumps({'error': 'failed'} , separators=(',',':'))
+        return HttpResponse(error, mimetype="application/json")
         
-        
+#adds description
+def description(request):
+    if request.method == 'GET':
+        description = cleantext(request.GET['description'])
+        reg_id = int(request.GET['reg_id'])
+        reg = Registrant.objects.get(reg_id=reg_id)
+        reg.description = description
+        reg.save(update_fields=['description'])
+        description = json.dumps({'description': description} , separators=(',',':'))
+        return HttpResponse(description, mimetype="application/json")
+
+    else:
+        error = json.dumps({'error': 'failed'} , separators=(',',':'))
+        return HttpResponse(error, mimetype="application/json") 
+
+
 #creates contact
 def contact(request):
     if request.method == 'GET':
@@ -599,7 +646,8 @@ def contact(request):
         
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
         if date_obj > datetime.now():
-            return HttpResponse({'error': 'date in future'}, mimetype="application/json")
+            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
 
         lobbyists = Lobbyist.objects.filter(id__in=lobbyists_ids)
         description = cleantext(request.GET['description'])
@@ -623,12 +671,12 @@ def contact(request):
             recip = Recipient.objects.get(id=r)
             if recip not in contact.recipient.all():
                 contact.recipient.add(recip)
-                if len(recip.title) > 0:
+                if len(recip.title) > 1:
                     names = names + recip.title + ' ' + recip.name
                 else:
                     names = names + recip.name
                 
-                if len(recip.agency) > 0:
+                if len(recip.agency) > 1:
                     names = names + ' (' + recip.agency + '), ' 
                 elif len(recip.office_detail): 
                     names = names + ' (' +  recip.office_detail + '), ' 
@@ -639,13 +687,14 @@ def contact(request):
             if l not in contact.lobbyist.all():
                 contact.lobbyist.add(l)
         
-        contactinfo = [{'date': request.GET['date'], 'name': names}]
+        contactinfo = {'date': request.GET['date'], 'name': str(names)}
         contactinfo = json.dumps(contactinfo , separators=(',',':'))
         return HttpResponse(contactinfo, mimetype="application/json")
 
      
     else:
-        return HttpResponse({'error': 'failed'}, mimetype="application/json")  
+        error = json.dumps({'error': 'failed'} , separators=(',',':'))
+        return HttpResponse(error, mimetype="application/json")  
         
         
 #creates payment
@@ -657,7 +706,8 @@ def payment(request):
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
         if date_obj > datetime.now():
-            return HttpResponse([{'error': 'date in future'}], mimetype="application/json")
+            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
 
         if request.method == 'GET' and 'fee' in request.GET:
             fee = True
@@ -686,7 +736,8 @@ def payment(request):
         return HttpResponse(payinfo, mimetype="application/json")
         
     else:
-        return HttpResponse([{'error': 'failed'}], mimetype="application/json")  
+        error = json.dumps({'error': 'failed'} , separators=(',',':'))
+        return HttpResponse(error, mimetype="application/json")  
 
 
 #creates contributions
@@ -694,7 +745,8 @@ def contribution(request):
     if request.method == 'GET':
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
         if date_obj > datetime.now():
-            return HttpResponse([{'error': 'date in future'}], mimetype="application/json")
+            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
 
         registrant = Registrant.objects.get(reg_id=int(request.GET['registrant']))
         recipient = Recipient.objects.get(id=int(request.GET['recipient']))
@@ -719,7 +771,8 @@ def contribution(request):
         return HttpResponse(continfo, mimetype="application/json")  
 
     else:
-        return HttpResponse([{'error': 'failed'}], mimetype="application/json") 
+        error = json.dumps({'error': 'failed'} , separators=(',',':'))
+        return HttpResponse(error, mimetype="application/json") 
 
 
 #creates disbursements 
@@ -727,11 +780,11 @@ def disbursement(request):
     if request.method == 'GET':
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
         if date_obj > datetime.now():
-            return HttpResponse([{'error': 'date in future'}], mimetype="application/json")
+            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
 
         registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         client = Client.objects.get(id=int(request.GET['client']))
-        message = ''
         purpose = cleantext(request.GET['purpose'])
         amount = cleanmoney(request.GET['amount'])
         
@@ -742,6 +795,7 @@ def disbursement(request):
                             purpose = purpose,
                             date = date_obj,
                             link = request.GET['link'],
+                            subcontractor_id= request.GET['subcontractor'],
         )
         disbursement.save()
         disinfo = {'amount': disbursement.amount,
@@ -754,7 +808,8 @@ def disbursement(request):
 
          
     else:
-        return HttpResponse([{'error': 'failed'}], mimetype="application/json") 
+        error = json.dumps({'error': 'failed'} , separators=(',',':'))
+        return HttpResponse(error, mimetype="application/json") 
 
 
 #creates gifts
@@ -762,19 +817,19 @@ def gift(request):
     if request.method == 'GET':
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
         if date_obj > datetime.now():
-            return HttpResponse([{'error': 'date in future'}], mimetype="application/json")
+            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
 
         registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         clients = Client.objects.filter(id=int(request.GET['client']))
-        message = []
         purpose = cleantext(request.GET['purpose'])
-        discription = cleantext(request.GET['discription'])
+        description = cleantext(request.GET['description'])
         
         gift= Gift(
             registrant =  registrant,
             date =  date_obj,
             purpose =  purpose,
-            discription =  discription,
+            description =  description,
             link = request.GET['link'],
         )
         gift.save()
@@ -783,12 +838,13 @@ def gift(request):
             gift.client.add(client)
             client_names = client_names + str(client.client_name) + ", " 
         
-        giftinfo = {'client': client_names, 'date': request.GET['date'], 'discription': gift.discription}
+        giftinfo = {'client': client_names, 'date': request.GET['date'], 'description': gift.description}
         giftinfo = json.dumps(giftinfo , separators=(',',':'))
         return HttpResponse(giftinfo, mimetype="application/json")
          
     else:
-        return HttpResponse([{'error': 'failed'}], mimetype="application/json") 
+        error = json.dumps({'error': 'failed'} , separators=(',',':'))
+        return HttpResponse(error, mimetype="application/json") 
 
 #tracks processing
 def metadata(request):      
@@ -816,10 +872,13 @@ def metadata(request):
             notes = request.GET['notes'],
         )
         metadata.save()
+        metadata_info = json.dumps({'processed': processed, 'reviewed': reviewed} , separators=(',',':'))
+        return HttpResponse(metadata_info, mimetype="application/json")
         return render(request, 'success.html', {'status': 'yay'}) 
          
     else:
-        return render(request, 'success.html', {'status': 'failed'})        
+        error = json.dumps({'error': 'failed'} , separators=(',',':'))
+        return HttpResponse(error, mimetype="application/json")        
     
         
         
