@@ -157,6 +157,12 @@ jQuery(document).ready(function() {
           $('#add_clientform').each(function(){
               this.reset(); 
           });
+
+          // clears select2 boxes
+          var $client_location = $('#client_location');
+          $client_location.select2('data', null)
+          var $location = $('#location');
+          $location.select2('data', null)
         }     
       //}
     }, 
@@ -181,48 +187,54 @@ jQuery(document).ready(function() {
   <!-- This posts new lobbyist data without refreshing the page and updates the lobbyist choices -->
 <script type="text/javascript">
 jQuery(document).ready(function(){
-
-  var options = {
+  function clearlselect(){
+    var $lobbyist_lobbyist = $('#lobbyist_lobbyist');
+    $lobbyist_lobbyist.select2('data', null);
+    console.log("running")
+  }
+  var lobby_options = {
     success: function(responses, statusText, xhr, h){
-
       for (var i=0; i<responses.length; i += 1) {
         var response = responses[i];
 
-        var name = response.name;
-        var id = response.id;
+        if (typeof response.error== 'undefined'){
+          var name = response.name;
+          var id = response.id;
+          console.log(name)
+          // 1) update forms (I still need this even with select 2)
+          var option = "<option value='" + id + "'>" + name + "</option>";
+          $("#contact_lobbyist").append(option);
+          $("#cont_lobbyist").append(option);
+      
+          // 2) update list
+          var item = "<li>" + name + "</li>";
+          $("#lobby_list ul").append(item);
 
-        // 1) update forms (I still need this even with select 2)
-        var option = "<option value='" + id + "'>" + name + "</option>";
-        $("#contact_lobbyist").append(option);
-        $("#cont_lobbyist").append(option);
-    
-        // 2) update list
-        var item = "<li>" + name + "</li>";
-        $("#lobby_list ul").append(item);
-
-        // 3) clear form
-        $('#lobbyform').each(function(){
-            this.reset();   
-        });
-        $('#add_lobbyform').each(function(){
-            this.reset();   
-        });
-      }
-     
-      // else{
-      //   var message = "Error: " + error
-      //   alert(message)
-      // } 
+          // 3) clear form
+          $('#lobbyform').each(function(){
+              this.reset();   
+          });
+          $('#add_lobbyform').each(function(){
+              this.reset(clearlselect());   
+          });
+        }
+      
+        else{
+          var errors = response.error
+          var message = "Error: " + errors
+          alert(message)
+        } 
+      } 
     },
     error: function(jqxhr, errorText, error){
-      var message = "Error: " + error
+      var message = "Error: failed"
       alert(message)
     },
   }
 
 
-jQuery("#lobbyform").ajaxForm(options);
-jQuery("#add_lobbyform").ajaxForm(options);
+jQuery("#lobbyform").ajaxForm(lobby_options);
+jQuery("#add_lobbyform").ajaxForm(lobby_options);
  
 var contact_options = {
     success: function(responseText, statusText, xhr, h){
@@ -251,14 +263,14 @@ jQuery(document).ready(function(){
           //3) update display
           console.log(response);
 
-          if (tag = "#stampform"){
+          if (tag == "#stampform"){
             var date = response.date;
             var id = response.id;
             var item = "<p>" + date + "</p>";
             $("#stamp_list").replaceWith(item);
           }
 
-          if (tag = "#terminatedclientform"){
+          if (tag == "#terminatedclientform"){
             for (var i=0; i<response.length; i += 1) {
               var responses = response[i];
               var name = responses.name;
@@ -268,14 +280,16 @@ jQuery(document).ready(function(){
             }
           }
 
-          if (tag = "#contactform"){
+          if (tag == "#contactform"){
             var date = response.date;
             var name = response.name;
             var item = "<li>"+ name + " " + date + "</li>";
             $("#contact_list ul").append(item);
+            var $contact_recip = $('#contact_recip');
+            $contact_recip.select2('data', null)
           }
 
-          if (tag = "#payform"){
+          if (tag == "#payform"){
             var amount = response.amount;
             var date = response.date;
             var client = response.client;
@@ -292,16 +306,18 @@ jQuery(document).ready(function(){
             $('#pay_table').append(item);
           }
 
-          if (tag = "#disform"){
+          if (tag == "#disform"){
             var amount = response.amount;
             var date = response.date;
             var client = response.client;
 
             item = '<tr><td>$'+ amount +'</td><td>'+ date + '</td><td>'+ client +'</td><tr>'
             $('#dis_table').append(item);
+            var $disbursement_subcontractor = $('#disbursement_subcontractor');
+            $disbursement_subcontractor.select2('data', null)
           }
 
-          if (tag = '#contform'){
+          if (tag == '#contform'){
             var amount = response.amount;
             var lobbyist = response.lobbyist;
             var recipient = response.recipient;
@@ -309,25 +325,27 @@ jQuery(document).ready(function(){
 
             item = '<tr><td>$' + amount + '</td><td>' + lobbyist+ '</td><td>'+ recipient +'</td><td>'+date + '</td></tr>'
             $('#cont_table').append(item);
+            var $cont_recip = $('#cont_recip');
+            $cont_recip.select2('data', null)
           }
            
-          if (tag = '#giftform'){
+          if (tag == '#giftform'){
             var date = response.date;
-            var description = response.description;
             var client = response.client;
+            var description = response.description;
 
             item = '<li>' + description + " from " + client + " on " + date
-            $('#gift_list').append(item) 
+            $('#gift_basket ul').append(item); 
           }
 
-          if (tag = '#descriptionform'){
+          if (tag == '#descriptionform'){
             var description = response.description;
 
             item =  '<p>Description: ' + description + '</p>'
             $('#discription_list').replaceWith(item);
           }
 
-          if (tag = '#locationform'){
+          if (tag == '#locationform'){
             var location = response.location
 
             item = '<p>' + location + ' added to locations </p>'

@@ -420,6 +420,25 @@ def recipient(request):
 # creates a new lobbyist and adds it to Registrant         
 def lobbyist(request):
     if request.method == 'GET':
+        lobbyist_name = request.GET['lobbyist_name'], 
+        PAC_name = request.GET['PAC_name'], 
+
+        for p in PAC_name:
+            pac_size = len(p)
+            
+        for l in lobbyist_name:
+            lobby_size = len (l)
+        # wrapped error messages in list so they work the same as a successful variable in the JS
+        if pac_size == 0 and lobby_size == 0:
+            error = json.dumps([{'error': "must have lobbyist name or PAC name"}], separators=(',',':')) 
+            print "too little"
+            return HttpResponse(error, mimetype="application/json")
+        
+        if pac_size > 1 and lobby_size > 1:
+            error = json.dumps([{'error': "Is this a lobbyist or a PAC? Only fill out the name in the appropriate field"}], separators=(',',':')) 
+            print "too much"
+            return HttpResponse(error, mimetype="application/json")
+        
         reg_id = request.GET['reg_id']
         lobby = Lobbyist(lobbyist_name = request.GET['lobbyist_name'], 
                         PAC_name = request.GET['PAC_name'], 
@@ -436,6 +455,7 @@ def lobbyist(request):
         lobbyist_choice = [{'name': name,'id': lobby_obj.id,}]
         lobbyist_choice = json.dumps(lobbyist_choice, separators=(',',':'))
 
+        
         return HttpResponse(lobbyist_choice, mimetype="application/json")
         
     else:
@@ -451,18 +471,22 @@ def reg_lobbyist(request):
         lobby_choice = []
         
         for l_id in lobbyists:
-            print "WORKING                 ....                       ....             ....."
             lobbyist = Lobbyist.objects.get(id=l_id)
             if lobbyist not in registrant.lobbyists.all():
                 registrant.lobbyists.add(lobbyist)
                 l = {"name" : lobbyist.lobbyist_name, "id": lobbyist.id}
                 lobby_choice.append(l)
-            
-        lobby_choice =  json.dumps(lobby_choice, separators=(',',':')) 
-        return HttpResponse(lobby_choice, mimetype="application/json") 
-   
+
+        if len(l_id) >= 1:    
+            lobby_choice =  json.dumps(lobby_choice, separators=(',',':')) 
+            return HttpResponse(lobby_choice, mimetype="application/json") 
+        else:
+            error = json.dumps({'error': "no lobbyists added"}, separators=(',',':')) 
+            return HttpResponse(error, mimetype="application/json")
+
     else:
-        HttpResponse(request, {'error': 'failed'})
+        error = json.dumps({'error': "failed"}, separators=(',',':')) 
+        return HttpResponse(error, mimetype="application/json")
 
 #creates a new client and adds it to the registrant 
 def client(request):
@@ -484,7 +508,6 @@ def client(request):
         )
         if Client.objects.filter(client_name = client.client_name).exists():
             error = json.dumps({'error': "name in system"}, separators=(',',':')) 
-            print error
             return HttpResponse(error, mimetype="application/json")
             
         else:

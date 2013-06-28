@@ -473,13 +473,14 @@ Contacts related to this form:<br>
 <p><i>Question 14(c)</i></p>
 Gifts associated with this form:
 
-<div id="gift_list">
+<div id="gift_basket">
 <ul>
 {% for g in gift_list %}
 <li>{{ g.0 }} from {{ g.2 }} on {{ g.1 }}  </li>
 {% endfor %} 
 </ul>
 </div>
+
 
 <form method="GET" id="giftform" action="/gift/create">
     {% csrf_token %}
@@ -494,7 +495,6 @@ Gifts associated with this form:
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}
     </select></p>  <a href="#client">add a new client</a>
-
     
     <p><label for="date">Date: </label>
     <input id="gift_date" type="text" name= "date" /></p>
