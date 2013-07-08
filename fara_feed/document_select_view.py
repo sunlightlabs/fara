@@ -41,34 +41,11 @@ def fast_supplemental(request):
     page = request.GET.get('page')
     supplementals = make_pages(supplementals, page)
     
-    return render_to_response('supplemental_choices.html', { 'supplementals' : supplementals,
+    return render_to_response('fara_feed/supplemental_choices.html', { 'supplementals' : supplementals,
                                                             'processed_true': processed_true,
                                                             'reviewed_true': reviewed_true,
                                                             'notes': notes,
         })
-
-#this one was too slow
-def supplemental_list(request):
-    supplemental_docs = Document.objects.filter(doc_type = "Supplemental")
-    supplementals = []
-    
-    for d in supplemental_docs:
-        supplementals.append(d)
-        try:
-            docdata = MetaData.objects.get(link=d.url)
-            processed_true.append(docdata.link)
-            reviewed =  docdata.reviewed
-            if reviewed == True:
-                reviewed_true.append(docdata.link)
-        except:
-            continue
-    
-    supplementals = sorted(supplementals, key=lambda document: document.stamp_date, reverse=True)
-    page = request.GET.get('page')
-
-    supplementals = make_pages(supplementals, page)
-
-    return render_to_response('supplemental_choices.html', { 'supplementals' : supplementals})
 
 
 def full_list(request):
@@ -106,13 +83,13 @@ def full_list(request):
     other_forms = ['Exhibit C', 'Exhibit D', 'Conflict Provision']
     for other in other_forms:
         docs = Document.objects.filter(doc_type = other) 
-        print docs
         others.append(docs)
+    
     others = list(itertools.chain(*others))
     # don't have stamp dates
     others = make_pages(others, o_page)
     
-    return render_to_response('doc_choices.html', { 'supplementals' : supplementals,
+    return render_to_response('fara_feed/doc_choices.html', { 'supplementals' : supplementals,
                                                     'registrations': registrations,
                                                     'amendments' : amendments,
                                                     'short_forms' : short_forms,

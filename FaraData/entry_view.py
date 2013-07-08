@@ -110,7 +110,7 @@ def index(request, form_id):
     gift_list = gift_info(url)
     meta_list = meta_info(url)
     
-    return render(request, 'entry_form.html',{
+    return render(request, 'FaraData/entry_form.html',{
         'recipient_form': recipient_form,
         #'lobby_form': lobby_form,
         'client_form': client_form,
@@ -134,7 +134,7 @@ def index(request, form_id):
 
 #multi-step supplemental form
 def supplemental_base(request, form_id):
-    return render(request, 'supplemental_base.html', {'form_id': form_id})   
+    return render(request, 'FaraData/supplemental_base.html', {'form_id': form_id})   
 
 def supplemental_first(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
@@ -142,7 +142,7 @@ def supplemental_first(request, form_id):
     all_clients = Client.objects.all()
     client_form = ClientForm()
 
-    return render(request, 'supplemental_first.html',{
+    return render(request, 'FaraData/supplemental_first.html',{
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
@@ -161,7 +161,7 @@ def supplemental_contact(request, form_id):
     all_recipients = Recipient.objects.all()
     all_lobbyists = Lobbyist.objects.all()
 
-    return render(request, 'supplemental_contact.html',{
+    return render(request, 'FaraData/supplemental_contact.html',{
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
@@ -178,7 +178,7 @@ def supplemental_payment(request, form_id):
     pay_list = pay_info(url)
     reg_object = reg_info(reg_id)
 
-    return render(request, 'supplemental_payment.html',{
+    return render(request, 'FaraData/supplemental_payment.html',{
     'reg_id' : reg_id,
     'url': url,
     'pay_list' : pay_list,
@@ -190,13 +190,15 @@ def supplemental_gift(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     gift_list = gift_info(url)
     reg_object = reg_info(reg_id)
+    recipient_form= RecipientForm()
 
-    return render(request, 'supplemental_gift.html',{
+    return render(request, 'FaraData/supplemental_gift.html',{
     'reg_id' : reg_id,
     'url': url,
     'form_id': form_id,
     'reg_object': reg_object,
     'gift_list': gift_list,
+    'recipient_form': recipient_form,
     })
 
 def supplemental_disbursement(request, form_id):
@@ -204,7 +206,7 @@ def supplemental_disbursement(request, form_id):
     reg_object = reg_info(reg_id)
     dis_list = dis_info(url)
 
-    return render(request, 'supplemental_disbursement.html',{
+    return render(request, 'FaraData/supplemental_disbursement.html',{
     'reg_id' : reg_id,
     'url': url,
     'form_id': form_id,
@@ -219,7 +221,7 @@ def supplemental_contribution(request, form_id):
     all_recipients = Recipient.objects.all()
     recipient_form = RecipientForm()
 
-    return render(request, 'supplemental_contribution.html',{
+    return render(request, 'FaraData/supplemental_contribution.html',{
     'reg_id': reg_id,
     'url': url,
     'form_id': form_id,
@@ -233,7 +235,7 @@ def supplemental_last(request, form_id):
     url, reg_id, s_date= doc_id(form_id)
     meta_list = meta_info(url)
 
-    return render(request, 'supplemental_last.html',{
+    return render(request, 'FaraData/supplemental_last.html',{
     'reg_id' : reg_id,
     'url': url,
     'form_id': form_id,
@@ -242,7 +244,7 @@ def supplemental_last(request, form_id):
 
 # segmented registration form
 def registration_base(request, form_id):
-    return render(request, 'registration_base.html', {'form_id': form_id})   
+    return render(request, 'FaraData/registration_base.html', {'form_id': form_id})   
 
 def registration_first(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
@@ -250,7 +252,7 @@ def registration_first(request, form_id):
     all_clients = Client.objects.all()
     client_form = ClientForm()
 
-    return render(request, 'registration_first.html',{
+    return render(request, 'FaraData/registration_first.html',{
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
@@ -259,7 +261,7 @@ def registration_first(request, form_id):
         'form_id': form_id,
         's_date': s_date,
     })
-
+### I don't see this template
 def registration_contact(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
@@ -268,7 +270,7 @@ def registration_contact(request, form_id):
     recipient_form = RecipientForm()
     all_recipients = Recipient.objects.all()
 
-    return render(request, 'registration_contact.html',{
+    return render(request, 'FaraData/registration_contact.html',{
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
@@ -284,7 +286,7 @@ def registration_payment(request, form_id):
     pay_list = pay_info(url)
     reg_object = reg_info(reg_id)
 
-    return render(request, 'registration_payment.html',{
+    return render(request, 'FaraData/registration_payment.html',{
     'reg_id' : reg_id,
     'url': url,
     'pay_list' : pay_list,
@@ -295,12 +297,16 @@ def registration_payment(request, form_id):
 def registration_gift(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     gift_list = gift_info(url)
+    recipient_form = RecipientForm()
+    reg_object = reg_info(reg_id)
 
-    return render(request, 'registration_gift.html',{
+    return render(request, 'FaraData/registration_gift.html',{
     'reg_id' : reg_id,
     'url': url,
     'form_id': form_id,
     'gift_list': gift_list,
+    'recipient_form': recipient_form,
+    'reg_object': reg_object,
     })
 
 def registration_disbursement(request, form_id):
@@ -308,7 +314,7 @@ def registration_disbursement(request, form_id):
     reg_object = reg_info(reg_id)
     dis_list = dis_info(url)
 
-    return render(request, 'registration_disbursement.html',{
+    return render(request, 'FaraData/registration_disbursement.html',{
     'reg_id' : reg_id,
     'url': url,
     'form_id': form_id,
@@ -323,7 +329,7 @@ def registration_contribution(request, form_id):
     all_recipients = Recipient.objects.all()
     recipient_form = RecipientForm()
 
-    return render(request, 'registration_contribution.html',{
+    return render(request, 'FaraData/registration_contribution.html',{
     'reg_id': reg_id,
     'url': url,
     'form_id': form_id,
@@ -337,7 +343,7 @@ def registration_last(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     meta_list = meta_info(url)
 
-    return render(request, 'registration_last.html',{
+    return render(request, 'FaraData/registration_last.html',{
     'reg_id' : reg_id,
     'url': url,
     'form_id': form_id,
@@ -351,7 +357,7 @@ def enter_AB(request, form_id):
     client_form = ClientForm()
     meta_list = meta_info(url)
 
-    return render(request, 'enter_AB.html',{
+    return render(request, 'FaraData/enter_AB.html',{
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
@@ -377,6 +383,8 @@ def cleanmoney(money):
 def stamp_date(request):
     if request.method == 'GET':
         s_date = datetime.strptime(request.GET['stamp_date'], "%m/%d/%Y")
+        date = s_date.strftime("%B %d, %Y")
+        print date
         form_id = request.GET['form_id']
         document = Document.objects.get(id = form_id)
         stamp = Document(id = document.id,
@@ -391,7 +399,7 @@ def stamp_date(request):
 
         else:    
             stamp.save()
-            stampinfo = {'id': form_id, 'date': request.GET['stamp_date']}
+            stampinfo = {'id': form_id, 'date': date}
             stampinfo = json.dumps(stampinfo , separators=(',',':'))
             return HttpResponse(stampinfo, mimetype="application/json")   
 
@@ -410,11 +418,12 @@ def recipient(request):
                                 name  = form.cleaned_data['name'],
                                 title = form.cleaned_data['title'], 
             )
-            recipient.stamp_date.add()
-            return render(request, 'success.html', {'status': form.cleaned_data['name']}) 
+            recipient.save()
+            recip_choice = json.dumps({'name': recipient.name}, separators=(',',':'))        
+            return HttpResponse(recip_choice, mimetype="application/json")
             
         else:
-            return render(request, 'success.html', {'status': 'failed'})
+            return HttpResponse(request, {'error': 'failed'})
 
             
 # creates a new lobbyist and adds it to Registrant         
@@ -453,9 +462,7 @@ def lobbyist(request):
         # returns lobbyist info to add to other fields with jQuery
         name = lobby_obj.lobbyist_name + lobby_obj.PAC_name
         lobbyist_choice = [{'name': name,'id': lobby_obj.id,}]
-        lobbyist_choice = json.dumps(lobbyist_choice, separators=(',',':'))
-
-        
+        lobbyist_choice = json.dumps(lobbyist_choice, separators=(',',':'))        
         return HttpResponse(lobbyist_choice, mimetype="application/json")
         
     else:
@@ -464,7 +471,7 @@ def lobbyist(request):
 # assigns a lobbyist or lobbyists to a reg. all_lobbyists
 def reg_lobbyist(request):
     if request.method == 'GET': 
-        reg_id = request.GET['reg_id']
+        reg_id = (request.GET['reg_id'])
         registrant = Registrant.objects.get(reg_id=reg_id) 
         lobby_ids = request.GET.get('lobbyists')
         lobbyists = lobby_ids.split(',')
@@ -512,12 +519,15 @@ def client(request):
             
         else:
             client.save()
-            registrant = Registrant.objects.get(reg_id=request.GET['reg_id'])
-            client_choice = [{'name': client.client_name,'id': client.id,}]
-            client_choice = json.dumps(client_choice, separators=(',',':')) 
-
+            registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
+            print registrant
+            print registrant.clients.all()
             if client not in registrant.clients.all():
                 registrant.clients.add(client)
+                print "added"
+
+            client_choice = [{'name': client.client_name,'id': client.id,}]
+            client_choice = json.dumps(client_choice, separators=(',',':')) 
                 
             return HttpResponse(client_choice, mimetype="application/json")  
      
@@ -709,8 +719,8 @@ def contact(request):
         for l in lobbyists:
             if l not in contact.lobbyist.all():
                 contact.lobbyist.add(l)
-        
-        contactinfo = {'date': request.GET['date'], 'name': str(names)}
+        date = contact.date.strftime("%B %d, %Y")
+        contactinfo = {'date': date, 'name': str(names)}
         contactinfo = json.dumps(contactinfo , separators=(',',':'))
         return HttpResponse(contactinfo, mimetype="application/json")
 
@@ -752,7 +762,7 @@ def payment(request):
         # return info to update the entry form
         payinfo = {"amount": payment.amount, 
                     "fee": payment.fee, 
-                    "date": request.GET['date'], 
+                    "date": payment.date.strftime("%B %d, %Y"), 
                     "client": str(payment.client),
         }
         payinfo = json.dumps(payinfo , separators=(',',':'))
@@ -786,7 +796,7 @@ def contribution(request):
         contribution.save()
 
         continfo = {'amount': contribution.amount, 
-                    'date': request.GET['date'], 
+                    'date': contribution.date.strftime("%B %d, %Y"), 
                     'recipient': str(contribution.recipient),
                     'lobbyist' : str(contribution.lobbyist)
         }
@@ -822,7 +832,7 @@ def disbursement(request):
         )
         disbursement.save()
         disinfo = {'amount': disbursement.amount,
-                    'date': request.GET['date'],
+                    'date': disbursement.date.strftime("%B %d, %Y"),
                     'registrant': str(disbursement.registrant),
                     'client': str(disbursement.client), 
         }
@@ -847,6 +857,7 @@ def gift(request):
         clients = Client.objects.filter(id=int(request.GET['client']))
         purpose = cleantext(request.GET['purpose'])
         description = cleantext(request.GET['description'])
+        recipient = Recipient.objects.get(id=int(request.GET['recipient']))
         
         gift= Gift(
             registrant =  registrant,
@@ -854,6 +865,7 @@ def gift(request):
             purpose =  purpose,
             description =  description,
             link = request.GET['link'],
+            recipient = recipient,
         )
         gift.save()
         client_names = ''
@@ -861,7 +873,10 @@ def gift(request):
             gift.client.add(client)
             client_names = client_names + str(client.client_name) + ", " 
         
-        giftinfo = {'client': client_names, 'date': request.GET['date'], 'description': gift.description}
+        giftinfo = {'client': client_names,
+                    'date': gift.date.strftime("%B %d, %Y"), 
+                    'description': gift.description
+        }
         giftinfo = json.dumps(giftinfo , separators=(',',':'))
         return HttpResponse(giftinfo, mimetype="application/json")
          
@@ -897,7 +912,6 @@ def metadata(request):
         metadata.save()
         metadata_info = json.dumps({'processed': processed, 'reviewed': reviewed} , separators=(',',':'))
         return HttpResponse(metadata_info, mimetype="application/json")
-        return render(request, 'success.html', {'status': 'yay'}) 
          
     else:
         error = json.dumps({'error': 'failed'} , separators=(',',':'))

@@ -1,0 +1,148 @@
+{% extends "FaraData/supplemental_base.html" %}
+
+{% block formquestions %}
+
+<h3> Contacts</h3>
+
+<p><a href="http://127.0.0.1:8000/full_list/">select a different form</a></p>
+{% if not reg_object %}
+  <a href="{% url 'supplemental-first' form_id %}">Click here to Create Registrant</a>
+
+
+{% else %}
+  <p><b>{{ reg_object.reg_name }}</b><br />
+<hr />
+
+<h3>Contact</h3>
+<p><i>Question 12</i></p>
+Contacts related to this form:<br>
+<div id="contact_list">
+<ul>
+{% for c in contact_list %}
+{% if c.2 %}
+<li>{{ c.0 }} {{ c.1 }} ({{ c.2 }}) {{ c.3 }}</li>
+{% else %}
+<li>{{ c.0 }} {{ c.1 }} {{ c.3 }}</li>
+{% endif %}
+{% endfor %}
+</ul>
+</div>
+
+<p><b>Enter Contact</b></p>
+
+<form method="GET" id="contactform" action="/contact/create"> 
+    {% csrf_token %}
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+    <input type="hidden" name="link" value="{{ url }}">
+
+    <p><label for="client">Clients:</label><select name="client" id="contact_client">
+        <option value="None">Please Select Client</option>
+    {% for client in reg_object.clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    {% for client in reg_object.terminated_clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    </select></p>
+
+    (who is being contacted)
+    <p><label for="recipient">Recipient: </label><input type="hidden" id="contact_recip" name="recipient" style="width: 300px"/>
+
+    {% for recipient in all_recipients %}
+        <option value="{{ recipient.id }}">{{ recipient.title }} {{ recipient.name }}, {{ recipient.agency }}</option>
+    {% endfor %}
+    </select></p><a href="#recip">add a new recipient</a>
+    
+    <p><label for="lobbyist">Lobbyists:</label><select multiple="multiple" id="contact_lobbyist" name="lobbyist">
+    {% for lobbyist in reg_object.lobbyists.all %}
+        <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
+    {% endfor %}
+    </select></p><a href="#lobbyist">add a new lobbyist</a>
+
+    <p><label for="date">Date: </label>
+    <input id="contact_date" type="text" name="date" /></p>
+
+    <p><label for="type">Type: </label>
+        <select name="contact_type">
+            <option value="U">unknown</option>
+            <option value="P">phone</option>
+            <option value="E">email</option>
+            <option value="M">meeting</option>
+            <option value="O">other</option>
+        </select></p>
+    
+    <p><label for="description">Description: </label><br />
+    <textarea cols="40" id="id_description" name="description" rows="10">
+    </textarea></p>
+
+    <input type="submit" />
+</form>
+
+<div class="help" ><a href="{% url 'instructions' %}#Contact" target="blank">Help</a></div><br>
+<hr>
+
+
+
+
+<a id="recip"><h3> Add a new Recipient (person who is being contacted):</h3></a>
+<a href="{% url 'find-form' %}" target="blank"><b>Add a new member of Congress</b></a>
+<p> <i>People being meet, given contributions and gifts</i></p>
+<form method="GET" id='recipform' action="/recipient/create">
+    {{ recipient_form.as_p }}
+    
+    <input type="submit" />
+</form>    
+
+<div class="help" ><a href="{% url 'instructions' %}#Recipient" target="blank">Help</a></div><br>
+<hr>
+
+
+
+<h4>Add a lobbyist</h4>
+
+<p>Lobbists already in system:<br>
+<div id="lobby_list">
+    <ul>
+{% for lobbyist in reg_object.lobbyists.all %}
+    <li>{{ lobbyist }}</li>
+{% endfor %}
+    </ul>
+</div>
+<div id="lobbyist_ajaxwrapper"></div>
+</p>
+
+<h4>Select additional lobbyists for registrant</h4>
+
+<div id="lobbyist_add">
+<form method="GET" id='lobbyform' action="/registrant/add_lobbyist">
+    {% csrf_token %}
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+    
+    <p><label for="lobbyists">Lobbyist: </label><input type="hidden" id="lobbyist_lobbyist" name="lobbyists" style="width: 300px"/>
+
+    <input type="submit" /></p>
+</form>
+</div>
+
+<div id="lobbyist_create">
+<a id="lobbyist"><h4>Add a new lobbyist</h4><a id="lobbyist">
+<form method="GET" id="add_lobbyform" action="/lobbyist/create">
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+    <p><label for="id_lobby_id">Lobby id:</label> <input id="id_lobby_id" maxlength="150" name="lobby_id" type="text" /></p>
+    <p><label for="id_lobbyist_name">Lobbyist name:</label> <input id="id_lobbyist_name" maxlength="150" name="lobbyist_name" type="text" /></p>
+    <label class="lobbyists_error" for="lobbyist_name" id="name_error">This field is required.</label>
+    <input type="hidden" id="id_PAC_name" name="PAC_name" value='' /></p>
+    <input type="submit" />
+</form>
+
+<div class="help" ><a href="{% url 'instructions' %}#Lobbyist" target="blank">Help</a></div><br>
+<hr />
+</div>
+
+<div allign="center"><h3><a href="{% url 'supplemental-payment' form_id %}">  Continue to Payments</a></h3></div>
+
+<br />
+<br />
+{% endif %}
+
+{% endblock formquestions %}

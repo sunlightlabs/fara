@@ -9,4 +9,4 @@ class Document(models.Model):
     #add some file storage or links to lobby tracker?
     
     def __unicode__(self):
-        return "%s---  Date: %s" %(self.url, self.stamp_date)
+        return "%s ---%s---  Date: %s" %(self.reg_id, self.url, self.stamp_date)

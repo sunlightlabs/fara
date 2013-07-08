@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8" />
+<title>Member lookup</title>
+
+<body>
+<h1>Member lookup:</h1>
+<p> Try just using the last name.</p>
+
+<form method="GET" id='memberform' action="{% url 'find-member' %}">
+<p><label for="member">Member name: </label><br />
+    <input type="text" name="member">
+    </p>
+    <input type="submit" />
+</form>
+{% if member %}
+<p>Added {{ member }} to recipients.</p> 
+{% endif %}
+
+{% if results %}
+Choose result:
+{% for r in results %}
+<form method="GET" id='add_member_form' action="{% url 'add-member' %}">
+<p>{{ r.5 }}
+<input type="hidden" name="crp_id" value="{{ r.0 }}">
+<input type="hidden" name="agency" value="{{ r.1 }}"> 
+<input type="hidden" name="office_detail" value="{{ r.2 }}">
+<input type="hidden" name="name"  value="{{ r.3 }}">
+<input type="hidden" name="title" value="{{ r.4 }}">
+<input type="submit" />
+</form>
+</p>
+{% endfor %}
+{% endif %}
+</body>

@@ -1,0 +1,67 @@
+{% extends "FaraData/supplemental_base.html" %}
+{% block formquestions %}
+
+
+<h3>Gifts</h3>
+<p><i>Question 14(c)</i></p>
+Gifts associated with this form:
+
+<div id="gift_basket">
+<ul>
+{% for g in gift_list %}
+<li>{{ g.0 }} from {{ g.2 }} on {{ g.1 }}  </li>
+{% endfor %} 
+</ul>
+</div>
+
+
+<form method="GET" id="giftform" action="/gift/create">
+    {% csrf_token %}
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+    <input type="hidden" name="link" value="{{  url }}">
+    <p><label for="client">Clients:</label><select name="client" id="gift_client">
+        <option value="None">Please Select Client</option>
+    {% for client in reg_object.clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    {% for client in reg_object.terminated_clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    </select></p>  <a href="#client">add a new client</a>
+    
+    <p><label for="date">Date: </label>
+    <input id="gift_date" type="text" name= "date" /></p>
+    
+    <label for "purpose">Purpose: </label><br \>
+    <textarea name="purpose" cols="25" rows="5"></textarea></p>
+    
+    <p><label for="description">Thing of Value:</label><br \>
+    <textarea name="description" cols="25" rows="5"></textarea></p>
+
+    <p><label for="recipient">Recipient: </label><input type="hidden" id="gift_recip" name="recipient" style="width: 300px"/></p>
+    
+    <input type="submit" />
+</form>
+    
+<div class="help" ><a href="{% url 'instructions' %}#Gift" target="blank">Help</a></div><br>
+<hr />
+
+
+<a id="recip"><h3> Add a new Recipient (person who is being contacted):</h3></a>
+<a href="{% url 'find-form' %}" target="blank"><b>Add a new member of Congress</b></a>
+<p> <i>People or entities given gifts</i></p>
+<form method="GET" id='recipform' action="/recipient/create">
+    {{ recipient_form.as_p }}
+    
+    <input type="submit" />
+</form>    
+
+<div class="help" ><a href="{% url 'instructions' %}#Recipient" target="blank">Help</a></div><br>
+<hr>
+
+
+
+<div allign="center"><h3><a href="{% url 'supplemental-contribution' form_id %}">  Continue to Contribution</a></h3></div>
+
+
+{% endblock formquestions %}

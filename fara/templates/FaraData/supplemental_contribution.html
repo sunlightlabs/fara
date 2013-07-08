@@ -1,0 +1,115 @@
+{% extends "FaraData/supplemental_base.html" %}
+{% block formquestions %}
+
+<h3>Contribution</h3>
+<p><i>Question 15(c)</i></p>
+
+<div id="cont_list">
+<table id = 'cont_table' width="100%">
+    <thread>
+    <tr>
+    <td>Amount</td><td>From</td><td>To</td><td>Date</td>
+    </tr>
+    </thread> 
+    
+    <tbody>   
+    {% for cont in cont_list %}
+            <tr>
+            <td>${{ cont.1 }}</td><td>{{ cont.0 }}</td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td>
+            <tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<p><b>Enter Contribution</b></p>
+<form method="GET" id='contform' action="/contribution/create">
+    {% csrf_token %}
+    <input type="hidden" name="registrant" value="{{ reg_id }}">
+    <input type="hidden" name="link" value="{{ url }}">
+    
+    <p><label for="id_amount">Amount: $</label> 
+    <input id="id_amount" name="amount" type="text" /></p>
+    
+    <p><label for="date">Date: </label>
+    <input id="contribution_date" type="text" name="date" /></p>
+
+    (Who gets the contribution)
+    <p><label for="recipient">Recipient :</label><p><input type="hidden" id="cont_recip" name="recipient" style="width: 300px"/></p>
+
+    <a href="#recip">add a new recipient</a>
+
+    <p><label for="lobbyist">Lobbyist or PAC:</label><select id="cont_lobbyist" name="lobbyist">
+        <option value="">Select a lobbyist or PAC</option>
+    {% for lobbyist in reg_object.lobbyists.all %}
+        <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
+    {% endfor %}
+    </select></p><a href="#lobbyist">add a new lobbyist or PAC</a></p>
+
+    
+    <input type="submit" />
+</form>
+
+<div class="help" ><a href="{% url 'instructions' %}#Contribution" target="blank">Help</a></div><br>
+<hr /> 
+
+
+
+<a id="recip"><h3> Add a new Recipient (person who is being contacted):</h3></a>
+<a href="{% url 'find-form' %}" target="blank"><b>Add a new member of Congress</b></a>
+<p> <i>People being meet, given contributions and gifts</i></p>
+<form method="GET" id='recipform' action="/recipient/create">
+    {{ recipient_form.as_p }}
+    
+    <input type="submit" />
+</form>    
+
+<div class="help" ><a href="{% url 'instructions' %}#Recipient" target="blank">Help</a></div><br>
+<hr>
+
+
+
+<h3>Add a Lobbyist or PAC</h3>
+<p>Lobbists already in system:<br>
+<div id="lobby_list">
+    <ul>
+{% for lobbyist in reg_object.lobbyists.all %}
+    <li>{{ lobbyist }}</li>
+{% endfor %}
+    </ul>
+</div>
+<div id="lobbyist_ajaxwrapper"></div>
+</p>
+
+<h4>Select additional lobbyists or PACs for registrant</h4>
+
+<div id="lobbyist_add">
+<form method="GET" id='lobbyform' action="/registrant/add_lobbyist">
+    {% csrf_token %}
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+    
+    <p><label for="lobbyists">Lobbyist: </label><input type="hidden" id="lobbyist_lobbyist" name="lobbyists" style="width: 300px"/>
+
+    <input type="submit" /></p>
+</form>
+</div>
+
+<div id="lobbyist_create">
+<a id="lobbyist"><h4>Add a new lobbyist or PAC</h4><a id="lobbyist">
+<form method="GET" id="add_lobbyform" action="/lobbyist/create">
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+    <p><label for="id_lobby_id">Lobby id:</label> <input id="id_lobby_id" maxlength="150" name="lobby_id" type="text" /></p>
+    <p><label for="id_lobbyist_name">Lobbyist name:</label> <input id="id_lobbyist_name" maxlength="150" name="lobbyist_name" type="text" /></p>
+    <label class="lobbyists_error" for="lobbyist_name" id="name_error">This field is required.</label>
+    <p><label for="id_PAC_name">PAC name:</label> <input id="id_PAC_name" maxlength="150" name="PAC_name" type="text" /></p>
+    <input type="submit" />
+</form>
+
+<div class="help" ><a href="{% url 'instructions' %}#Lobbyist" target="blank">Help</a></div><br>
+</div>
+
+
+<hr />
+<h3><a href="{% url 'supplemental-last' form_id %}">Finish form</a></h3>
+
+{% endblock formquestions %}

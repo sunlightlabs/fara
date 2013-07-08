@@ -124,6 +124,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'fara_feed',
     'fara',
+    'util',
 )
 
 INTERNAL_IPS = ('127.0.0.1',)

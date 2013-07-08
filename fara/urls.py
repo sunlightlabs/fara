@@ -57,6 +57,10 @@ urlpatterns = patterns('',
     url(r'^formchoices/client', 'FaraData.json_creator_view.client_choice', name='json-client-choices'),
     url(r'^formchoices/location', 'FaraData.json_creator_view.location_choice', name='json-location-choices'),
     url(r'^formchoices/reg', 'FaraData.json_creator_view.reg_choice', name='json-reg-choices'),
+    #API lookup
+    url(r'^find_form/', 'FaraData.find_api_view.find_form', name='find-form'),
+    url(r'^find_member/', 'FaraData.find_api_view.find_member', name='find-member'),
+    url(r'^add_member/', 'FaraData.find_api_view.add_member', name='add-member'),
     #Document managers
     url(r'^full_list', 'fara_feed.document_select_view.full_list', name='full-list'),
     url(r'^supplemental_list', 'fara_feed.document_select_view.fast_supplemental', name='supplemental-list'),

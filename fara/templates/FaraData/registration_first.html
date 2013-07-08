@@ -1,0 +1,152 @@
+{% extends "FaraData/registration_base.html" %}
+
+{% block formquestions %}
+
+<h1>Registration data entry form</h1>
+<h3>Part one: Registrant and Clients</h3>
+
+<h3>Stamp date:</h3>
+Correct month!
+<div id="stamp_list">
+{% ifnotequal s_date None %}
+    <p>{{ s_date }}</p>
+{% endifnotequal %}
+</div>
+
+<form action="{% url 'stamp-date' %}" method="GET" id="stampform">
+<input id="form_id" name="form_id" type="hidden" value="{{ form_id }}"/>
+<p><label for="stamp_date">Correct date: </label>
+    <input id="stamp_date" type="text" name="stamp_date" /></p>
+    <input type="submit" />
+</form>
+
+<div class="help" ><a href="{% url 'instructions' %}#Stamp_Date" target="blank">Help</a></div><br>
+<hr>
+
+
+    
+
+<h3>Registrant</h3>
+<p><i>Section I</i></p>
+<p>Registration id: <b>{{ reg_id }}</b></p>
+
+{% if not reg_object %}
+  <h3>Create Registrant:</h3>
+  <p>Section I</p>
+
+  <div id="reg_list"></div>
+
+  <form action="{% url 'new-registrant' %}" id="regform" method="GET" id="regform">
+  
+  <p><label for="id_reg_id">Reg id:</label> <input id="id_reg_id" name="reg_id" type="text" value="{{ reg_id }}"/></p>
+  <p><label for="id_reg_name">Reg name:</label> <input id="id_reg_name" maxlength="200" name="reg_name" type="text" /></p>
+  <p><label for="id_address">Address:</label> <input id="id_address" maxlength="300" name="address" type="text" /></p>
+  <p><label for="id_city">City:</label> <input id="id_city" maxlength="100" name="city" type="text" /></p>
+  <p><label for="id_state">State:</label> <input id="id_state" maxlength="2" name="state" type="text" /></p>
+  <p><label for="id_zip">Zip:</label> <input id="id_zip" maxlength="10" name="zip" type="text" /></p>
+  <p><label for="id_country">Country:</label> <input id="id_country" maxlength="100" name="country" type="text" /></p>
+    
+  <input type="submit" value="Send" id="sendbutton"/>
+  </form>
+
+<div class="help" ><a href="{% url 'instructions' %}#Registrant" target="blank">Help</a></div><br>
+
+{% else %}
+ <h3>Registrant:</h3>
+
+  <p><b>{{ reg_object.reg_name }}</b><br />
+  {{ reg_object.address }}<br />
+  {{ reg_object.city }}, {{ reg_object.state }} {{ reg_object.zip }}<br />
+  {{ reg_object.country }}</p>
+{% endif %}
+
+<hr />
+
+
+
+<h3>Client</h3>
+<p><i>Question 7</i></p>
+
+<a id="client">Clients in the system for the registrant:<br></a>
+<div id="client_list">
+    <ul>
+{% for client in reg_object.clients.all %}
+    <li>{{ client }}</li>
+{% endfor %}
+    </ul>
+</div>
+
+<form method="GET" id='clientform' action="/registrant/add_client" id='clientform'>
+    {% csrf_token %}
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+    
+    <label>Add a client:  </label><input type="hidden" id="client_client" name="clients" style="width: 300px"/>
+
+    <input type="submit" />
+</form>
+<hr>
+
+
+<h4>Add a brand new client to the database:</h4>
+<p><i>Questions 8 and 9</i></p>
+
+<form method="GET" id="add_clientform" action="/client/create">
+    
+    <p><label for="location">Location: </label><input type="hidden" id="client_location" name="location" style="width: 300px"/>
+    <p><label for="client_name">Client name:</label> <input id="id_client_name" maxlength="200" name="client_name" type="text" /></p>
+    <p><label for="address1">Address1:</label> <input id="id_address1" maxlength="300" name="address1" type="text" /></p>
+    <p><label for="city">City:</label> <input id="id_city" maxlength="100" name="city" type="text" /></p>
+    <p><label for="state">State:</label> <input id="id_state" maxlength="100" name="state" type="text" /></p>
+    <p><label for="zip_code">Zip code:</label> <input id="id_zip_code" maxlength="50" name="zip_code" type="text" /></p>
+    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+    <input type="submit" />
+</form>
+ 
+<div class="help" ><a href="{% url 'instructions' %}#Client" target="blank">Help</a></div>
+<br>
+<hr>
+
+<h3>Add new location for client field</h3>
+<div id="location_list"></div>
+<form method="GET" id="locationform" action="/location/create">
+    <p><label for="location">Location as appears on the form: </label> <input id="location" maxlength="300" name="location" type="text" /></p>
+    <p><label for="country">Country grouping: </label> <input id="country" maxlength="300" name="country" type="text" /></p>
+    <p>Refer to UN regions- <a href="http://unstats.un.org/unsd/methods/m49/m49regin.htm">here</a>.</p>
+    <p><label for="region">Region:</label> <select id="region" maxlength="300" name="region" type="text">
+        <option value="Eastern Africa">Eastern Africa</option>
+        <option value="Western Africa">Western Africa</option>
+        <option value="Middle Africa">Middle Africa</option>
+        <option value="Northern Africa">Northern Africa</option>
+        <option value="Southern Africa">Southern Africa</option>
+        <option value="Caribbean">Caribbean</option>
+        <option value="Central America">Central America</option>
+        <option value="South America">South America</option>
+        <option value="North America">North America</option>
+        <option value="Central Asia">Central Asia</option>
+        <option value="Eastern Asia">Eastern Asia</option>
+        <option value="Southern Asia">Southern Asia</option>
+        <option value="South-Eastern Asia">South-Eastern Asia</option>
+        <option value="Western Asia">Western Asia</option>
+        <option value="Eastern Europe">Eastern Europe</option>
+        <option value="Western Europe">Western Europe</option>
+        <option value="Northern Europe">Northern Europe</option>
+        <option value="Southern Europe">Southern Europe</option>
+        <option value="Australia and New Zealand">Australia and New Zealand</option>
+        <option value="Melanesia">Melanesia</option>
+        <option value="Polynesia">Polynesia</option>
+        <option value="Micronesia"> Micronesia</option>
+    </select></p>
+
+  <input type="submit" />
+</form>
+<div class="help" ><a href="{% url 'instructions' %}#Location" target="blank">Help</a></div><br>
+<hr>
+
+<div align="center">
+<h3><a href="{% url 'registration-payment' form_id %}">  Continue to Payments</a></h3></div>
+<br />
+<br />
+
+
+{% endblock formquestions %}
+

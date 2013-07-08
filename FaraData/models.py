@@ -77,7 +77,7 @@ class Gift(models.Model):
     recipient = models.ForeignKey(Recipient, null=True, blank=True)
     
     def __unicode__(self):
-        return "%s to %s" % (self.discription, self.registrant)
+        return "%s to %s" % (self.description, self.registrant)
          
 MEETING_TYPES = (
     ('P', 'Phone'),
@@ -107,7 +107,7 @@ class Payment(models.Model):
     fee = models.BooleanField(default=False)# was feesretainer = models.CharField(max_length=1)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     purpose = models.TextField(null=True)
-    date = models.DateField(null=True)
+    date = models.DateField(null=True, blank=True)
     link = models.CharField(max_length=100)
     
     def __unicode__(self):
@@ -119,8 +119,9 @@ class Disbursement(models.Model):
     registrant = models.ForeignKey(Registrant)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     purpose = models.TextField(null=True, blank=True)
-    date = models.DateField(null=True)
+    date = models.DateField(null=True, blank=True)
     link = models.CharField(max_length=100) 
+    #maybe this should be with payment?
     subcontractor = models.ForeignKey(Registrant, related_name='subcontractor')
     
     def __unicode__(self):

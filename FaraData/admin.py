@@ -25,7 +25,7 @@ admin.site.register(MetaData, meta_admin)
 
 #would be good to add reg but it doesn't work
 class gift_admin(admin.ModelAdmin):
-    search_fields=['discription', 'link']
+    search_fields=['description', 'link']
 admin.site.register(Gift, gift_admin)
 
 class location_admin(admin.ModelAdmin):

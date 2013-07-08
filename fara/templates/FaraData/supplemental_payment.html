@@ -1,0 +1,66 @@
+{% extends "FaraData/supplemental_base.html" %}
+
+{% block formquestions %}
+<h3>Payment</h3>
+<p><i>Question 14(a)</i></p>
+
+<p><b>Payments associated with this form</b></p>
+<div id="pay_list">
+<table id = 'pay_table' width="100%">
+    <thread>
+    <tr>
+    <td>Amount</td><td>Client</td><td>Date</td><td>Fee</td>
+    </tr>
+    </thread> 
+    <tbody>   
+    {% for pay in pay_list %}
+            <tr>
+            {% if pay.2 == True %}
+            <td>${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>fee</td>
+            {% else %}
+            <td>${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>no</td>
+            {% endif %}
+            <tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<form method="GET" id="payform" action="/payment/create">
+    {% csrf_token %}
+    <input type="hidden" name="reg_id" value="{{ reg_id }}"/>
+    <input type="hidden" name="link" value="{{ url }}"/>
+    
+   <p><label for="client">Clients:</label><select name="client" id="pay_client">
+        <option value="None">Please Select Client</option>
+    {% for client in reg_object.clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    {% for client in reg_object.terminated_clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    </select></p></p><a href="#client">add a new client</a>
+    
+    <p><input type="checkbox" name="fee">Fee</p>
+    
+    <p><label for="amount">Amount: $</label><input id="amount" type="text" name="amount" /></p> 
+    
+    <p><label for="description">description:</label><br \>
+    <textarea name="purpose" cols="25" rows="5"></textarea></p>
+    
+    <p><label for="date">Date: </label>
+    <input id="payment_date" type="text" name="date" /></p>
+    
+    <input type="submit" />
+</form>
+
+<div class="help" ><a href="{% url 'instructions' %}#Payment" target="blank">Help</a></div><br>
+<hr />
+
+<div allign="center"><h3><a href="{% url 'supplemental-disbursement' form_id %}">  Continue to Disbursements</a></h3></div>
+
+<br />
+<br />
+
+
+{% endblock formquestions %}
