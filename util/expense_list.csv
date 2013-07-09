@@ -1,4 +1,4 @@
-client_name,client_id,reg_id,fee,amount,purpose,dateNEW,link
+amount,date,purpose,clientreg_id,nclient_id,approved,file_id
 Oromo Liberation Front Foreign Relations Office in North America (OLF-FRONA),5,1481,False,16450.00,,2007-10-11,download_cache/1481-Supplemental-Statement-20080429-6.xml
 Oromo Liberation Front Foreign Relations Office in North America (OLF-FRONA),5,1481,False,16450.00,,2007-11-14,download_cache/1481-Supplemental-Statement-20080429-6.xml
 Oromo Liberation Front Foreign Relations Office in North America (OLF-FRONA),5,1481,False,16450.00,,2007-12-13,download_cache/1481-Supplemental-Statement-20080429-6.xml

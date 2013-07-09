@@ -49,30 +49,39 @@ creg_reg_client = {}
 client_nclient ={}
 reg_link = {}
 cid_name = {}
+reg_file = {}
 
-crosswalk_reader = csv.reader(open("client-crosswalk.csv", "rU"))
-crosswalk_reader.next()
-for line in crosswalk_reader:
-	#[clientreg_id, registration, reg_id, client_id, nclient_id]
-	clientreg_id = int(line[0])
-	registration_id = int(line[1])
-	reg_id = int(line[2])
-	try:
-		client_id = int(line[3])
-		nclient_id = int(line[4])
-		client_nclient[client_id] = nclient_id
-	except:
-		print line
-	
+
+# crosswalk_reader = csv.reader(open("client-crosswalk.csv", "rU"))
+# crosswalk_reader.next()
+# for line in crosswalk_reader:
+# 	#[clientreg_id, registration, reg_id, client_id, nclient_id, file_id]
+# 	clientreg_id = line[0]
+# 	registration_id = line[1]
+# 	reg_id = line[2]
+# 	client_id = line[3]
+# 	nclient_id = line[4]
+# 	try:
+# 		file_id = line [5]
+# 	except:
+# 		file_id = "x"
+# 	if client_id != None:
+# 		client_nclient[client_id] = nclient_id
+# 		client_reg[client_id] = reg_id
+# 	if registration_id != None:
+# 		reg_file[registration_id] = file_id
+
+# print "Cross has been walked!"	
 
 for line in data:
 	if line['model'] == 'fara.registration':
 		registration_id = line['pk']
 		fara_id = line['fields']['registrant']	
-		
 		reg_fara[registration_id] = fara_id
 		fara_reg[fara_id] = registration_id
 		reg_link[registration_id] = line['fields']['source_file']
+		file_id = line['fields']['source_file']
+		reg_file[registration_id]= file_id
 
 	if line['model'] == 'fara.clientregistration':
 		client_id = line['fields']['client']
@@ -148,11 +157,6 @@ for line in data:
 		client_name = line['fields']['name']
 		client_name = client_names[client_name]
 		loc = Location.objects.get(location=entered)
-		
-		# if client_id == '' or client_id == None:
-		# 	client = Client.objects.get(client_name=line['fields']['name'])
-		# 	client_id = int(client.id) + 1000
-		# 	nclient_id = client.id
 
 
 		if line['fields']['client'] not in client_id_list:
@@ -167,14 +171,12 @@ for line in data:
     							location = loc,
 				)
 				#save client and make an id object mapping 
-				###client.save()
+				client.save()
 				nclient_id = client.id
 				client_nclient[client_id] = nclient_id
 
-				client_crosswalk.append()
-
 			except:
-				print line, " SAVE ERROR" 
+				print line, " SAVE ERROR \n" 
 
 		client_list.append([client_id, 
 						line['fields']['name'], 
@@ -188,13 +190,17 @@ for line in data:
 						line['fields']['approved'],
 						line['pk'],
 		])
-
+		client_crossing.append([clientreg_id, 
+								line['fields']['registration'], 
+								reg_id, 
+								line['fields']['client'], 
+								nclient_id, 
+								file_id])
 print "Loop 3"
 # adding a loop to make sure we are not asking for keys that don't exist yet
 for line in data:
 	if line['model'] == "fara.fee": 
 		clientreg_id = line['fields']['client_registration']
-		
 		registration = creg_reg_client[clientreg_id][0]
 		reg_id = reg_fara[registration]
 		
@@ -207,13 +213,15 @@ for line in data:
 					 			reg_id, 
 					 			client_id, 
 					 			nclient_id,
+					 			file_id,
 		])
 		
 		client_obj = Client.objects.get(id=nclient_id)
-
 		reg_obj = Registrant.objects.get(reg_id=reg_id)
-		link = reg_link[registration]
+		
 		fee = str(line['fields']['feesretainer']).strip()
+		file_id = reg_file[registration]
+
 		if fee == '' or fee == "None":
 			fee = False
 		elif fee == "x":
@@ -221,10 +229,15 @@ for line in data:
 		else:
 			print fee
 			fee = False
+		approved = line['fields']['approved']
+		if approved == 1:
+			approved = True
+		else:
+			approved = False
 
-		if fee == True:
+		if approved == True:
 			if line['fields']['amount'] == '' or line['fields']['amount'] == None:
-				pay_list_reject.append([client_name, client_id, reg_id, fee, line['fields']['amount'], line['fields']['purpose'], line['fields']['dateNEW'], link])
+				pay_list_reject.append([client_name, client_id, reg_id, fee, line['fields']['amount'], line['fields']['purpose'], line['fields']['dateNEW'], file_id])
 			else:
 				payment = Payment(client = client_obj,
 		 		  					registrant = reg_obj,
@@ -232,55 +245,73 @@ for line in data:
 								    amount = line['fields']['amount'],
 								    purpose = line['fields']['purpose'],
 								    date = line['fields']['dateNEW'],
-								    link = link, #file name
+								    link = file_id, 
 				)
 		# Only save this once, there is not a good way to check if it has been added before
-				###payment.save()
+				#payment.save()
+
 		else:
 			client_name = cid_name[client_id]
-			pay_list_reject.append([client_name, client_id, reg_id, fee, line['fields']['amount'], line['fields']['purpose'], line['fields']['dateNEW'], link])
+			pay_list_reject.append([client_name, client_id, reg_id, fee, line['fields']['amount'], line['fields']['purpose'], line['fields']['dateNEW'], file_id])
 
-		pay_list.append([client_name, client_id, reg_id, fee, line['fields']['amount'], line['fields']['purpose'], line['fields']['dateNEW'], link])
+		pay_list.append([client_name, client_id, reg_id, fee, line['fields']['amount'], line['fields']['purpose'], line['fields']['dateNEW'], file_id])
 
 
 	if line['model'] == "fara.expense": 
-		line_id = line['pk']
+		clientreg_id = line['fields']['client_registration']
+		registration = creg_reg_client[clientreg_id][0]
+		reg_id = reg_fara[registration]
+		client_id = creg_reg_client[clientreg_id][1]
+		nclient_id = client_nclient[client_id]
+		link = reg_link[registration]
+		file_id = reg_file[registration]
+
 		amount = line['fields']['amount']
 		date = line['fields']['date']
 		purpose = line['fields']['purpose']
-		clientreg_id = line['fields']['client_registration']
-		reg_id = client_reg[client_id]
-		nclient_id = client_nclient[clientreg_id]
-		print client_id, nclient_id
+
+		reg_obj = Registrant.objects.get(reg_id=reg_id)
+
+		try:
+			nclient_id = client_nclient[client_id]
+			client_obj = Client.objects.get(id=nclient_id)
+			print "sucessful look up by new client id"
+		except:
+			name = cid_name[client_id]
+			client_obj = Client.objects.get(client_name=name)
+			print "lookup by name"
 
 		approved = int(line['fields']['approved'])
-		# there is no source file for this one- errrrr
 
 		if approved == 1:
 			approved = True
 		else:
 			approved = False
 
-		if approved == False or amount == '' or amount == None or nclient_id == '' or nclient_id == None:
+		if approved == False or amount == '' or amount == None:
 			expense_list_reject.append([amount, 
 				date, 
 				purpose, 
 				clientreg_id, 
 				nclient_id, 
 				approved,
-				line_id,
+				file_id,
 				])
 
 		else:	
-			print nclient_id
-			disbursement = Disbursement(client = nclient_id,
-								    registrant = reg_id,
-								    amount = amount,
-								    purpose = purpose,
-								    date = date,
-								    link = line_id,
-			)
-			disbursement.save()
+			try:
+				reg_obj = Registrant.objects.get(reg_id=reg_id)
+				disbursement = Disbursement(client = client_obj,
+									    registrant = reg_obj,
+									    amount = amount,
+									    purpose = purpose,
+									    # tooo 'effed up for now date = date,
+									    link = file_id,
+				)
+				disbursement.save()
+				print "Got it saved--------!!!!!"
+			except:
+				print "Save Errorr!!!! client ", client_obj," reg ", reg_obj, amount, purpose, date, file_id
 
 		expense_list.append([amount,
 				date,
@@ -288,14 +319,14 @@ for line in data:
 				clientreg_id,
 				nclient_id,
 				approved,
-				line_id,
+				file_id,
 		])
 
 print "WRITING               ...................................."
 
 dupes = []
 writer = csv.writer(open('client-crosswalk.csv','wb'))
-writer.writerow(["clientreg_id", "registration", "reg_id", "client_id", "nclient_id"])
+writer.writerow(["clientreg_id", "registration", "reg_id", "client_id", "nclient_id", "file_id"])
 for k in client_crossing:	
 		if k not in dupes:
 			writer.writerow(k)
@@ -337,12 +368,12 @@ for k in pay_list:
 		writer.writerow(k)	
 
 writer = csv.writer(open('expense_list_reject.csv','wb'))
-writer.writerow(['amount', 'date', 'purpose', 'clientreg_id', 'nclient_id', 'approved', 'line_id'])
+writer.writerow(['amount', 'date', 'purpose', 'clientreg_id', 'nclient_id', 'approved', 'file_id'])
 for k in pay_list:	
 		writer.writerow(k)	
 
 writer = csv.writer(open('expense_list.csv','wb'))
-writer.writerow(['amount', 'date', 'purpose', 'clientreg_id', 'nclient_id', 'approved', 'line_id'])
+writer.writerow(['amount', 'date', 'purpose', 'clientreg_id', 'nclient_id', 'approved', 'file_id'])
 for k in pay_list:	
 		writer.writerow(k)	
 json_data.close()
