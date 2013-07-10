@@ -7,11 +7,13 @@ from django.forms import ModelForm, Select
 
 # the person, like a congressperson, that receives communication or contribution
 class Recipient(models.Model):
-    crp_id = models.CharField(max_length=7, null=True, blank=True)
+    crp_id = models.CharField(max_length=9, null=True, blank=True)
     agency = models.CharField(max_length=100, blank=True, null=True)
     office_detail = models.CharField(max_length=100, blank=True, null=True)# formerly agency and office in agency detail
     name = models.CharField(max_length=150, null=True)
-    title = models.CharField(max_length=300, null=True)  
+    title = models.CharField(max_length=300, null=True, blank=True)  
+    # this would be for contributions to state or local candidates
+    state_local = models.BooleanField(default=False)
     
     def __unicode__(self):
         return "%s %s of %s" %(self.title, self.name, self.agency) 
@@ -109,6 +111,7 @@ class Payment(models.Model):
     purpose = models.TextField(null=True)
     date = models.DateField(null=True, blank=True)
     link = models.CharField(max_length=100)
+    subcontractor = models.ForeignKey(Registrant, related_name='payment_subcontractor', null=True, blank=True)
     
     def __unicode__(self):
          return "$%s from %s to %s" %(self.amount, self.client, self.registrant)
@@ -121,8 +124,8 @@ class Disbursement(models.Model):
     purpose = models.TextField(null=True, blank=True)
     date = models.DateField(null=True, blank=True)
     link = models.CharField(max_length=100) 
-    #maybe this should be with payment?
-    subcontractor = models.ForeignKey(Registrant, related_name='subcontractor')
+    #maybe this should only be with payment?
+    subcontractor = models.ForeignKey(Registrant, related_name='subcontractor', null=True, blank=True)
     
     def __unicode__(self):
         return "%s - %s - $%s" % (self.client, self.registrant, self.amount )

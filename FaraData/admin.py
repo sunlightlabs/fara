@@ -3,7 +3,7 @@ from django.contrib import admin
 from FaraData.models import Registrant, Client, Recipient, Lobbyist, Gift, Contact, Payment, Disbursement, Contribution, MetaData, Location
 
 class reg_admin(admin.ModelAdmin):
-    search_fields=['reg_name', 'reg_id' ]
+    search_fields=['reg_name']
 admin.site.register(Registrant, reg_admin)
     
 class client_admin(admin.ModelAdmin):

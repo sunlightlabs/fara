@@ -2,6 +2,7 @@ import json
 import csv
 
 from sys import path
+from dateutil import parser
 
 from FaraData.models import *
 
@@ -235,6 +236,9 @@ for line in data:
 		else:
 			approved = False
 
+		date = line['fields']['date']
+		date_obj = datetime.strptime(date, "%m/%d/%Y")
+
 		if approved == True:
 			if line['fields']['amount'] == '' or line['fields']['amount'] == None:
 				pay_list_reject.append([client_name, client_id, reg_id, fee, line['fields']['amount'], line['fields']['purpose'], line['fields']['dateNEW'], file_id])
@@ -244,11 +248,11 @@ for line in data:
 								    fee = fee,
 								    amount = line['fields']['amount'],
 								    purpose = line['fields']['purpose'],
-								    date = line['fields']['dateNEW'],
+								    date = date_obj,
 								    link = file_id, 
 				)
 		# Only save this once, there is not a good way to check if it has been added before
-				#payment.save()
+				payment.save()
 
 		else:
 			client_name = cid_name[client_id]
@@ -265,7 +269,6 @@ for line in data:
 		nclient_id = client_nclient[client_id]
 		link = reg_link[registration]
 		file_id = reg_file[registration]
-
 		amount = line['fields']['amount']
 		date = line['fields']['date']
 		purpose = line['fields']['purpose']
@@ -275,7 +278,7 @@ for line in data:
 		try:
 			nclient_id = client_nclient[client_id]
 			client_obj = Client.objects.get(id=nclient_id)
-			print "sucessful look up by new client id"
+		
 		except:
 			name = cid_name[client_id]
 			client_obj = Client.objects.get(client_name=name)
@@ -287,6 +290,17 @@ for line in data:
 			approved = True
 		else:
 			approved = False
+		
+		new_date =parser.parse(date, fuzzy=true)
+		
+		if type(arg) is not datetime.date:
+			date = None
+		else:
+			#Checking to make sure the date is in the range of the document date 
+			if new_date > datetime.date(2011, 04, 1) and new_date < datetime.date(2007, 1, 1):
+				date = new_date
+			else:
+				date = None
 
 		if approved == False or amount == '' or amount == None:
 			expense_list_reject.append([amount, 
@@ -308,8 +322,8 @@ for line in data:
 									    # tooo 'effed up for now date = date,
 									    link = file_id,
 				)
-				disbursement.save()
-				print "Got it saved--------!!!!!"
+				#disbursement.save()
+				
 			except:
 				print "Save Errorr!!!! client ", client_obj," reg ", reg_obj, amount, purpose, date, file_id
 
@@ -321,6 +335,41 @@ for line in data:
 				approved,
 				file_id,
 		])
+
+	if line['model'] == "fara.contribution":
+		if approved == 1:
+			amount = line['fields']['amount']
+			if amount != None or amount != '':
+				amount = float(amount)
+				date = line['fields']['date']
+				date_obj = datetime.strptime(date, "%m/%d/%Y")
+				link = line['pk']# this is the best I can do I can't find anything to link it back
+				reg_obj = Registrant.objects.get(reg_id=reg_id)
+				
+				crp_id = line['fields']['candidate_id']
+				if crp_id == None:
+					crp_id = ''
+				#congressional
+				if len(crp_id) == 9:
+					if "PAC" in str(line['fields']['recipient_type']):
+						recipient = Recipient.objects.get(crp_id=crp_id, name=committee)
+					else:
+						recipient = Recipient.objects.get(crp_id=crp_id, agency="Congress")
+				#non congressional
+				else:
+					recipient = Recipient.objects.get(crp_id=crp_id, name=committee, office_detail=candidate)
+
+				lobbyist = Lobbyist.objects.get(lobbyist_name = lobbyist)
+
+
+				contribution = Contribution( amount = models.DecimalField(max_digits=8, decimal_places=2)
+										    date = date_obj,
+										    link = link,#place holder
+										    registrant = registrant,
+										    recipient = recipient, 
+										    lobbyist = lobbyist,
+
+	if line['model'] == "fara.contact": 
 
 print "WRITING               ...................................."
 
