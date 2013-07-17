@@ -11,8 +11,8 @@ class client_admin(admin.ModelAdmin):
 admin.site.register(Client, client_admin) 
 
 class recip_admin(admin.ModelAdmin):
-    search_fields=['client_name']
-admin.site.register(Recipient)
+    search_fields=['name']
+admin.site.register(Recipient, recip_admin)
 
 #this one look a but weird if you have time go back to it
 class lobby_admin(admin.ModelAdmin):
@@ -32,8 +32,10 @@ class location_admin(admin.ModelAdmin):
     search_fields=['location', 'country_group']
 admin.site.register(Location, location_admin)
 
-#may want to add search to these later
-admin.site.register(Contact)
+#class contact_admin(admin.ModelAdmin):
+	#search_fields=['description']
+admin.site.register(Contact) #, contact_admin)
+
 admin.site.register(Payment)
 admin.site.register(Disbursement)
 admin.site.register(Contribution)

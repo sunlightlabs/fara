@@ -18,6 +18,9 @@ class Recipient(models.Model):
     def __unicode__(self):
         return "%s %s of %s" %(self.title, self.name, self.agency) 
 
+    def __str__(self):
+        return "%s %s of %s".encode('ascii', errors='ignore') % (self.title, self.name, self.agency)
+
 class Lobbyist(models.Model):
     lobby_id = models.CharField(max_length=150, null=True, blank=True)# this would be good for looking up contribs
     lobbyist_name = models.CharField(max_length=150, null=True, blank=True)
@@ -142,6 +145,9 @@ class Contribution(models.Model):
     
     def __unicode__(self):
         return "%s - %s - $%s" % (self.recipient, self.registrant, self.amount )
+
+    def __str__(self):
+        return "%s - %s - $%s".encode('ascii', errors='ignore') % (self.recipient, self.registrant, self.amount)
     
 class MetaData(models.Model):
     link = models.CharField(primary_key=True, max_length=255)
