@@ -7,8 +7,7 @@
 
 <table>
 	<tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Reg name</td><td>Entered</td><td>Processed</td><td>Notes</td></tr> 
-{% for d in supplementals %}
-		{{d.id}}		
+{% for d in supplementals %}	
 		<tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td><td>Reg name</td>
 		{% if d.url in processed_true %}	
 			<td>Started</td>

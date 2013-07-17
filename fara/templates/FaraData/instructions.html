@@ -55,7 +55,7 @@
 <p>The recipient is the person that the registrant is attempting to contact. Add a a lobbyist if he is mentioned in the contact, otherwise, leave this blank. Don't forget to select what client for the contact. If they don't supply a date, use the supplemental end date. </p>
 
 <a id="Recipient"></a><h3>Recipient</h3>
-<p> This is the target of the communication, gift or political donation.</p>
+<p> This is the target of the communication, gift or political donation. </p>
 <ul>
 <li><b>CRP id</b>: Look this up for members of Congress and Congressional staff
 </li>
@@ -67,6 +67,51 @@
 </li>
 <li><b>Title</b>: Mr., Sen., Rep., etc.
 </li>
+</ul>
+
+<p>Adding a Congressional Staffer:</p>
+<ul>
+crp id = the CRP ID of the member
+Agency either House or Senate {never use Congress that is reserved for members of congress, You may use Congressional if they are some weird exception.}</li>
+<li>
+Office Detail = the Member's Name ie. Rep. Nancy Peolosi</li>
+<li>
+name = name of staffer contacted</li>
+<li>
+title = Whatever it is- Leg. Director etc.</li>
+<li>
+</ul>
+
+<p>Adding a PAC or candidate committee (to recipients):</p>
+<ul>
+<li>committee name = name of the committee ie. Friends of John Boehner
+	</li>
+<li>office detail = the candidate name ie. Rep. John Boehner
+	</li>
+<li>crp_id = crp_id of member if it is a leadership PAC or candidate committee
+	</li>
+<li>state local is true if it is a non-federal candidate or PAC
+		</li>
+</ul>
+
+<p>Adding journalists:</p>
+<ul>
+<li>Agency = Media
+</li>
+<li>Office detail = employer
+</li>
+<li>name = name of journalist
+</li>	
+</ul>
+
+<p>Adding State Department Employee:</p>
+<ul>
+<li>Agency = Media
+</li>
+<li>Office detail = division if applicable 
+</li>
+<li>name = name of contact
+</li>	
 </ul>
 
 <a id="Payment"></a><h3>Payment</h3>

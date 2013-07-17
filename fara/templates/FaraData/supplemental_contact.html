@@ -4,10 +4,9 @@
 
 <h3> Contacts</h3>
 
-<p><a href="http://127.0.0.1:8000/full_list/">select a different form</a></p>
 {% if not reg_object %}
-  <a href="{% url 'supplemental-first' form_id %}">Click here to Create Registrant</a>
-
+  <h1><a href="{% url 'supplemental-first' form_id %}">Click here to Create Registrant</a></h1>
+  <p> You must have a registrant to proceed with the form </p>
 
 {% else %}
   <p><b>{{ reg_object.reg_name }}</b><br />
