@@ -363,6 +363,9 @@ Contacts related to this form:<br>
     
     <p><label for="date">Date: </label>
     <input id="payment_date" type="text" name="date" /></p>
+
+    (Add this field if the money is coming from to another registrant.)
+    <p><label for="subcontractor">Subcontractor: </label><input type="hidden" id="payment_subcontractor" name="subcontractor" style="width: 300px"/></p>
     
     <input type="submit" />
 </form>
@@ -413,6 +416,7 @@ Contacts related to this form:<br>
     
     <p><label for= "amount">Amount: <br />$</label><input id="amount" type="text" name="amount" /></p> 
     <p><lable for="purpose">Purpose: <br /><textarea name="purpose" cols="25" rows="5"></textarea></p>
+    
     (Add this field if the money is going to another registrant.)
     <p><label for="subcontractor">Subcontractor: </label><input type="hidden" id="disbursement_subcontractor" name="subcontractor" style="width: 300px"/></p>
 

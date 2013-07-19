@@ -1,36 +1,37 @@
 
 #  Use this to get rid of the "R" error, I just do it by hand
+# it is faster for me to delete with a script than admin so I have that here too
 # the rest are tests and print statements to look for mis-categorized information
 import re
-from FaraData.models import Recipient, Contribution, Payment, Disbursement, Contact
+from FaraData.models import *
 
 all_recips = Recipient.objects.all()
 everything = []
 
-all_clients = Client.objects.all()
-for cl in all_clients:
-	cl.delete()
+# all_clients = Client.objects.all()
+# for cl in all_clients:
+# 	cl.delete()
+# print "deleted clients"
 
-all_contribs = Contribution.objects.all()
-for a clean start
-for c in all_contribs:
-	c.delete()
-print "deleted contribs"
+# all_contribs = Contribution.objects.all()
+# for c in all_contribs:
+# 	c.delete()
+# print "deleted contribs"
 
-all_payments = Payment.objects.all()
-for p in all_payments:
-	p.delete()
-print "deleted payments"
+# all_payments = Payment.objects.all()
+# for p in all_payments:
+# 	p.delete()
+# print "deleted payments"
 
-all_disbursements = Disbursement.objects.all()
-for d in all_disbursements:
-	d.delete()
-print "deleted disbursements"
+# all_disbursements = Disbursement.objects.all()
+# for d in all_disbursements:
+# 	d.delete()
+# print "deleted disbursements"
 
-all_contacts = Contact.objects.all()
-for con in all_contacts:
-	con.delete()
-print "deleted_contacts"
+# all_contacts = Contact.objects.all()
+# for con in all_contacts:
+# 	con.delete()
+# print "deleted_contacts"
 
 name_dict = {}
 

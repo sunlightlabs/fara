@@ -6,6 +6,9 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    #login view
+    url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
+    #url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'login': 'FaraData/login.html'}, name= 'login'),
     #views for viewing
     url(r'^regview/', 'FaraData.reg_view.index', name='reg-view'),
     #data entry form
@@ -63,6 +66,7 @@ urlpatterns = patterns('',
     url(r'^add_member/', 'FaraData.find_api_view.add_member', name='add-member'),
     #Document managers
     url(r'^full_list', 'fara_feed.document_select_view.full_list', name='full-list'),
+    url(r'^entry_list', 'fara_feed.document_select_view.entry_list', name='entry-list'),
     url(r'^supplemental_list', 'fara_feed.document_select_view.fast_supplemental', name='supplemental-list'),
     #Temp landing page
     url(r'^$', 'FaraData.views.temp_home', name='temp-home'),

@@ -102,6 +102,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
 )
 
 ROOT_URLCONF = 'fara.urls'
@@ -109,6 +110,8 @@ ROOT_URLCONF = 'fara.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'fara.wsgi.application'
 
+LOGIN_URL = 'accounts/login'
+LOGIN_REDIRECT_URL = '/'
 
 
 INSTALLED_APPS = (

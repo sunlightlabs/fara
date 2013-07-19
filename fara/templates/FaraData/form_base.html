@@ -115,6 +115,7 @@ createMSelect("#lobbyist_lobbyist", "/formchoices/lobbyist");
 createSelect("#cont_recip", "/formchoices/recip");
 createSelect("#client_location", "/formchoices/location");
 createSelect("#disbursement_subcontractor", "/formchoices/reg");
+createSelect("#payment_subcontractor", "/formchoices/reg");
 createSelect("#gift_recip", "/formchoices/recip");
 
 });
@@ -309,6 +310,9 @@ jQuery(document).ready(function(){
             
             item = '<td>$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td>'
             $('#pay_table').append(item);
+            var $payment_subcontractor = $('#payment_subcontractor');
+            $payment_subcontractor.select2('data', null)
+
           }
 
           if (tag == "#disform"){

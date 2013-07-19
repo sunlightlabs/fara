@@ -6,7 +6,7 @@ from dateutil import parser
 from datetime import datetime
 
 from FaraData.models import *
-
+from fara_feed.models import Document
 
 # list of models:
 # fara.registrant
@@ -295,7 +295,6 @@ def find_reg_contact(line):
 
 	# this is because of the title error, it shouldn't be needed in the future
 	else:
-		print line
 		try:
 			recip_obj = Recipient.objects.get(crp_id=crp_id, name=name, agency=agency, office_detail=office)
 			return recip_obj
@@ -490,344 +489,356 @@ for line in data:
 							date = date_obj,
 							link = file_id,
 			)
-			#contact.save()
+			contact.save()
+
 			if lobby_obj != None:
-				#contact.lobbyist.add(lobby_obj)
+				contact.lobbyist.add(lobby_obj)
 				pass
 			if recip_obj != None:
-				#contact.recipient.add(recip_obj)
+				contact.recipient.add(recip_obj)
 				pass
+	
+	if line['model'] == "fara.registration":
+
+		reg_id = int(line['fields']['registrant'])
+		file_id = line['fields']['source_file']
+		date = line['fields']['filing_date']
+		try:
+			date_obj = datetime.strptime(date, "%Y-%m-%d")
+		except:
+			date_obj = None
+			print "bad date"
+
+		doc = Document(url = file_id,
+			    reg_id = reg_id,
+			    doc_type = "Supplemental",
+			    stamp_date =  date_obj,
+		)
+		doc.save()
+		
+	if line['model'] == "fara.fee": 
+		clientreg_id = line['fields']['client_registration']
+		registration = creg_reg_client[clientreg_id][0]
+		reg_id = reg_fara[registration]
+		client_id = creg_reg_client[clientreg_id][1]
+		nclient_id = client_nclient[client_id]
+		
+		client_obj = Client.objects.get(id=nclient_id)
+		reg_obj = Registrant.objects.get(reg_id=reg_id)
+		
+		fee = str(line['fields']['feesretainer']).strip()
+		file_id = reg_file[registration]
+
+		if fee == '' or fee == "None":
+			fee = False
+		elif fee == "x":
+			fee = True
+		else:
+			fee = False
+		
+		approved = line['fields']['approved']
+		if approved == 1:
+			approved = True
+		else:
+			approved = False
+
+		date = line['fields']['dateNEW']
+		
+		try:
+			date_obj = datetime.strptime(date, "%Y-%m-%d")
+		except:
+			date_obj = None
+
+		if approved == True:
+			if line['fields']['amount'] == '' or line['fields']['amount'] == None:
+				pay_list_reject.append([client_name, client_id, reg_id, fee, line['fields']['amount'], line['fields']['purpose'], line['fields']['dateNEW'], file_id])
+			else:
+				payment = Payment(client = client_obj,
+		 		  					registrant = reg_obj,
+								    fee = fee,
+								    amount = line['fields']['amount'],
+								    purpose = line['fields']['purpose'],
+								    date = date_obj,
+								    link = file_id, 
+				)
+		# Only save this once, there is not a good way to check if it has been added before
+				payment.save()
+
+		else:
+			client_name = cid_name[client_id]
+			pay_list_reject.append((client_name, client_id, reg_id, fee, line['fields']['amount'], line['fields']['purpose'], line['fields']['dateNEW'], file_id))
+
+		pay_list.append((client_name, client_id, reg_id, fee, line['fields']['amount'], line['fields']['purpose'], line['fields']['dateNEW'], file_id))
+
+
+	if line['model'] == "fara.expense": 
+		clientreg_id = line['fields']['client_registration']
+		registration = creg_reg_client[clientreg_id][0]
+		reg_id = reg_fara[registration]
+		client_id = creg_reg_client[clientreg_id][1]
+		nclient_id = client_nclient[client_id]
+		file_id = reg_file[registration]
+
+		amount = line['fields']['amount']
+		date = line['fields']['date']
+		purpose = line['fields']['purpose']
+
+		reg_obj = Registrant.objects.get(reg_id=reg_id)
+
+		try:
+			nclient_id = client_nclient[client_id]
+			client_obj = Client.objects.get(id=nclient_id)
+		
+		except:
+			name = cid_name[client_id]
+			client_obj = Client.objects.get(client_name=name)
+			print "lookup by name"
+
+		approved = int(line['fields']['approved'])
+
+		if approved == 1:
+			approved = True
+		else:
+			approved = False
+		
+		try:
+			new_date =parser.parse(date, fuzzy=True)
 			
+			if type(new_date) is not datetime.date:
+				date = None
+			else:
+				#Checking to make sure the date is in the range of the document that wwere in the old system
+				if new_date > datetime.date(2011, 04, 1) and new_date < datetime.date(2007, 1, 1):
+					date = new_date
+				else:
+					date = None
+		except:
+			date = None
 
-# 	if line['model'] == "fara.fee": 
-# 		clientreg_id = line['fields']['client_registration']
-# 		registration = creg_reg_client[clientreg_id][0]
-# 		reg_id = reg_fara[registration]
-# 		client_id = creg_reg_client[clientreg_id][1]
-# 		nclient_id = client_nclient[client_id]
-		
-# 		client_obj = Client.objects.get(id=nclient_id)
-# 		reg_obj = Registrant.objects.get(reg_id=reg_id)
-		
-# 		fee = str(line['fields']['feesretainer']).strip()
-# 		file_id = reg_file[registration]
+		if approved == False or amount == '' or amount == None:
+			expense_list_reject.append((amount, 
+				date, 
+				purpose, 
+				clientreg_id, 
+				nclient_id, 
+				approved,
+				file_id,
+				))
 
-# 		if fee == '' or fee == "None":
-# 			fee = False
-# 		elif fee == "x":
-# 			fee = True
-# 		else:
-# 			print fee
-# 			fee = False
-		
-# 		approved = line['fields']['approved']
-# 		if approved == 1:
-# 			approved = True
-# 		else:
-# 			approved = False
-
-# 		date = line['fields']['dateNEW']
-		
-# 		try:
-# 			date_obj = datetime.strptime(date, "%Y-%m-%d")
-# 		except:
-# 			date_obj = None
-
-# 		if approved == True:
-# 			if line['fields']['amount'] == '' or line['fields']['amount'] == None:
-# 				pay_list_reject.append([client_name, client_id, reg_id, fee, line['fields']['amount'], line['fields']['purpose'], line['fields']['dateNEW'], file_id])
-# 			else:
-# 				payment = Payment(client = client_obj,
-# 		 		  					registrant = reg_obj,
-# 								    fee = fee,
-# 								    amount = line['fields']['amount'],
-# 								    purpose = line['fields']['purpose'],
-# 								    date = date_obj,
-# 								    link = file_id, 
-# 				)
-# 		# Only save this once, there is not a good way to check if it has been added before
-# 				#payment.save()
-
-# 		else:
-# 			client_name = cid_name[client_id]
-# 			pay_list_reject.append((client_name, client_id, reg_id, fee, line['fields']['amount'], line['fields']['purpose'], line['fields']['dateNEW'], file_id))
-
-# 		pay_list.append((client_name, client_id, reg_id, fee, line['fields']['amount'], line['fields']['purpose'], line['fields']['dateNEW'], file_id))
-
-
-# 	if line['model'] == "fara.expense": 
-# 		clientreg_id = line['fields']['client_registration']
-# 		registration = creg_reg_client[clientreg_id][0]
-# 		reg_id = reg_fara[registration]
-# 		client_id = creg_reg_client[clientreg_id][1]
-# 		nclient_id = client_nclient[client_id]
-# 		file_id = reg_file[registration]
-
-# 		amount = line['fields']['amount']
-# 		date = line['fields']['date']
-# 		purpose = line['fields']['purpose']
-
-# 		reg_obj = Registrant.objects.get(reg_id=reg_id)
-
-# 		try:
-# 			nclient_id = client_nclient[client_id]
-# 			client_obj = Client.objects.get(id=nclient_id)
-		
-# 		except:
-# 			name = cid_name[client_id]
-# 			client_obj = Client.objects.get(client_name=name)
-# 			print "lookup by name"
-
-# 		approved = int(line['fields']['approved'])
-
-# 		if approved == 1:
-# 			approved = True
-# 		else:
-# 			approved = False
-		
-# 		try:
-# 			new_date =parser.parse(date, fuzzy=True)
-			
-# 			if type(new_date) is not datetime.date:
-# 				date = None
-# 			else:
-# 				#Checking to make sure the date is in the range of the document that wwere in the old system
-# 				if new_date > datetime.date(2011, 04, 1) and new_date < datetime.date(2007, 1, 1):
-# 					date = new_date
-# 				else:
-# 					date = None
-# 		except:
-# 			date = None
-
-# 		if approved == False or amount == '' or amount == None:
-# 			expense_list_reject.append((amount, 
-# 				date, 
-# 				purpose, 
-# 				clientreg_id, 
-# 				nclient_id, 
-# 				approved,
-# 				file_id,
-# 				))
-
-# 		else:	
-# 			try:
-# 				reg_obj = Registrant.objects.get(reg_id=reg_id)
-# 				disbursement = Disbursement(client = client_obj,
-# 									    registrant = reg_obj,
-# 									    amount = amount,
-# 									    purpose = purpose,
-# 									    date = date,
-# 									    link = file_id,
-# 				)
-# 				#disbursement.save()
+		else:	
+			try:
+				reg_obj = Registrant.objects.get(reg_id=reg_id)
+				disbursement = Disbursement(client = client_obj,
+									    registrant = reg_obj,
+									    amount = amount,
+									    purpose = purpose,
+									    date = date,
+									    link = file_id,
+				)
+				disbursement.save()
 				
-# 			except:
-# 				print "Save Errorr!!!! client ", client_obj," reg ", reg_obj, amount, purpose, date, file_id
+			except:
+				print "Save Errorr!!!! client ", client_obj," reg ", reg_obj, amount, purpose, date, file_id
 
-# 		expense_list.append((amount,
-# 				date,
-# 				purpose,
-# 				clientreg_id,
-# 				nclient_id,
-# 				approved,
-# 				file_id,
-# 		))
+		expense_list.append((amount,
+				date,
+				purpose,
+				clientreg_id,
+				nclient_id,
+				approved,
+				file_id,
+		))
 
-# 	# this takes forever
-# 	if line['model'] == "fara.contribution":
-# 		approved = line['fields']['approved']
-# 		if approved == 1:
-# 			amount = line['fields']['amount']
-# 			if amount != None or amount != '':
-# 				amount = float(amount)
+	# this takes forever
+	if line['model'] == "fara.contribution":
+		approved = line['fields']['approved']
+		if approved == 1:
+			amount = line['fields']['amount']
+			if amount != None or amount != '':
+				amount = float(amount)
 				
-# 				date = line['fields']['date']
-# 				if date != None:
-# 					date_obj = datetime.strptime(date, "%Y-%m-%d")
-# 				else:
-# 					date_obj = None
+				date = line['fields']['date']
+				if date != None:
+					date_obj = datetime.strptime(date, "%Y-%m-%d")
+				else:
+					date_obj = None
 
-# 				line_num = line['pk']
-# 				reg_obj = Registrant.objects.get(reg_id=reg_id)
-# 				registration = line['fields']['registration']
-# 				file_id = reg_file[registration]
-# 				lobbyist = str(line['fields']['lobbyist'])
+				line_num = line['pk']
+				reg_obj = Registrant.objects.get(reg_id=reg_id)
+				registration = line['fields']['registration']
+				file_id = reg_file[registration]
+				lobbyist = str(line['fields']['lobbyist'])
 				
-# 				candidate = line['fields']['candidate_name']
-# 				if candidate == '':
-# 					candidate = None
+				candidate = line['fields']['candidate_name']
+				if candidate == '':
+					candidate = None
 				
-# 				committee = line['fields']['committee']
-# 				if committee == None:
-# 					committee = candidate
-# 				else:
-# 					committee = committee.strip()
+				committee = line['fields']['committee']
+				if committee == None:
+					committee = candidate
+				else:
+					committee = committee.strip()
 
-# 				crp_id = line['fields']['candidate_id']
-# 				if crp_id != None:
-# 					crp_id = crp_id.replace('&', '')
-# 					crp_id = crp_id.replace('=', '')
+				crp_id = line['fields']['candidate_id']
+				if crp_id != None:
+					crp_id = crp_id.replace('&', '')
+					crp_id = crp_id.replace('=', '')
 				
-# 					#congressional
-# 					if crp_id in bad_ids:
-# 						if committee == None:
-# 							committee = ''
+					#congressional
+					if crp_id in bad_ids:
+						if committee == None:
+							committee = ''
 
-# 						com_type= line['fields']['recipient_type']
-# 						if candidate == None and (com_type != None or com_type != ''):
-# 							candidate = com_type
+						com_type= line['fields']['recipient_type']
+						if candidate == None and (com_type != None or com_type != ''):
+							candidate = com_type
 						
-# 						try:
-# 							recipient = Recipient.objects.get(crp_id=crp_id, name=committee, office_detail=candidate)
-# 						except:
-# 							try: 
-# 								recipient = Recipient.objects.get(crp_id=crp_id, name=committee)
-# 							except:
-# 								try:
-# 									recipient = Recipient.objects.get(crp_id=crp_id)	
-# 								except:
-# 									if committee == None or committee == '':
-# 										print "messed up", line
-# 									else:
-# 										recipient = Recipient.objects.get(name=committee)
+						try:
+							recipient = Recipient.objects.get(crp_id=crp_id, name=committee, office_detail=candidate)
+						except:
+							try: 
+								recipient = Recipient.objects.get(crp_id=crp_id, name=committee)
+							except:
+								try:
+									recipient = Recipient.objects.get(crp_id=crp_id)	
+								except:
+									if committee == None or committee == '':
+										print "messed up", line
+									else:
+										recipient = Recipient.objects.get(name=committee)
 
-# 					elif crp_id == 'N00013870' and committee == 'DLA Piper PAC':
-# 						print "messed up- ", line
+					elif crp_id == 'N00013870' and committee == 'DLA Piper PAC':
+						print "messed up- ", line
 
-# 					else: 
-# 						if len(crp_id) == 9:
-# 							#Leasership PACs
-# 							if "PAC" in str(line['fields']['recipient_type']):
-# 								recipient = Recipient.objects.get(crp_id=crp_id, name=committee)
-# 							#Members of Congress
-# 							else:
-# 								#recips = Recipient.objects.filter(crp_id=crp_id, agency="Congress")
-# 								recipient = Recipient.objects.get(crp_id=crp_id, agency="Congress")
+					else: 
+						if len(crp_id) == 9:
+							#Leasership PACs
+							if "PAC" in str(line['fields']['recipient_type']):
+								recipient = Recipient.objects.get(crp_id=crp_id, name=committee)
+							#Members of Congress
+							else:
+								recipient = Recipient.objects.get(crp_id=crp_id, agency="Congress")
 
-# 					#non congressional
-# 						else:
-# 							com_type= line['fields']['recipient_type']
-# 							if (candidate == None or candidate == '') and (com_type != None or com_type != ''):
-# 								candidate = com_type
+					#non congressional
+						else:
+							com_type= line['fields']['recipient_type']
+							if (candidate == None or candidate == '') and (com_type != None or com_type != ''):
+								candidate = com_type
 
-# 							if crp_id == '':
-# 								crp_id = None
+							if crp_id == '':
+								crp_id = None
 
-# 							if candidate == '':
-# 								candidate = None
+							if candidate == '':
+								candidate = None
 							
-# 							if Recipient.objects.filter(crp_id=crp_id, name=committee, office_detail=candidate).exists():
-# 								if crp_id == None and committee == None and candidate == None:
-# 									pass
-# 								else:
-# 									recipient = Recipient.objects.get(crp_id=crp_id, name=committee, office_detail=candidate)
-# 							else:
-# 								try:
-# 									recipient = Recipient.objects.get(crp_id=crp_id, name=committee)
-# 								except:
-# 									try:
-# 										recipient = Recipient.objects.get(crp_id=crp_id)
-# 									except:
-# 										try:
-# 											recipient = Recipient.objects.get(name=committee, office_detail=com_type)
-# 										except:
-# 											recipients = Recipient.objects.get(name=committee)
+							if Recipient.objects.filter(crp_id=crp_id, name=committee, office_detail=candidate).exists():
+								if crp_id == None and committee == None and candidate == None:
+									pass
+								else:
+									recipient = Recipient.objects.get(crp_id=crp_id, name=committee, office_detail=candidate)
+							else:
+								try:
+									recipient = Recipient.objects.get(crp_id=crp_id, name=committee)
+								except:
+									try:
+										recipient = Recipient.objects.get(crp_id=crp_id)
+									except:
+										try:
+											recipient = Recipient.objects.get(name=committee, office_detail=com_type)
+										except:
+											recipients = Recipient.objects.get(name=committee)
 
 								
-# 				if lobbyist != None and lobbyist != '' and lobbyist != "None":
-# 					lobbyist = Lobbyist.objects.get(lobbyist_name = lobbyist)
-# 				else:
-# 					lobbyist = None
+				if lobbyist != None and lobbyist != '' and lobbyist != "None":
+					lobbyist = Lobbyist.objects.get(lobbyist_name = lobbyist)
+				else:
+					lobbyist = None
 
-# 				try:
-# 					contribution = Contribution(amount = amount,
-# 											    date = date_obj,
-# 											    link = file_id,
-# 											    registrant = reg_obj,
-# 											    recipient = recipient, 
-# 											    lobbyist = lobbyist,
-# 					)
-# 					contribution.save()
-# 					print "saved", amount
+				try:
+					contribution = Contribution(amount = amount,
+											    date = date_obj,
+											    link = file_id,
+											    registrant = reg_obj,
+											    recipient = recipient, 
+											    lobbyist = lobbyist,
+					)
+					contribution.save()
 
-# 				except:
-# 					print "FAIL line------", line
+				except:
+					print "FAIL line------", line
 				
-# 			else:
-# 				contribution_reject.append((amount, date, file_id, reg_id, recipient.name, lobbyist, line_num))
-# 		else:
-# 			contribution_reject.append((amount, date, file_id, reg_id, recipient.name, lobbyist, line_num))
+			else:
+				contribution_reject.append((amount, date, file_id, reg_id, recipient.name, lobbyist, line_num))
+		else:
+			contribution_reject.append((amount, date, file_id, reg_id, recipient.name, lobbyist, line_num))
 		
-# 		contribution_list.append((amount, date, file_id, reg_id, recipient.name, lobbyist, line_num))
+		contribution_list.append((amount, date, file_id, reg_id, recipient.name, lobbyist, line_num))
 
 
-# print "WRITING               ...................................."
+print "WRITING               ...................................."
 
-# dupes = []
-# writer = csv.writer(open('client-crosswalk.csv','wb'))
-# writer.writerow(["clientreg_id", "registration", "reg_id", "client_id", "nclient_id", "file_id"])
-# for k in client_crossing:	
-# 		if k not in dupes:
-# 			writer.writerow(k)
-# 			dupes.append(k)
+dupes = []
+writer = csv.writer(open('client-crosswalk.csv','wb'))
+writer.writerow(["clientreg_id", "registration", "reg_id", "client_id", "nclient_id", "file_id"])
+for k in client_crossing:	
+		if k not in dupes:
+			writer.writerow(k)
+			dupes.append(k)
 														
-# regwriter = csv.writer(open('registrant.csv','wb'))
-# for k in reg:
-# 	if not isinstance(k, list):
-# 		print k, " what the hell"
-# 	else:
-# 		regwriter.writerow(k)
+regwriter = csv.writer(open('registrant.csv','wb'))
+for k in reg:
+		regwriter.writerow(k)
 
-# clientwriter = csv.writer(open('client.csv','wb'))
-# for k in client_list:
-# 	if not isinstance(k, list):
-# 		print k, " what the hell"
-# 	else:
-# 		clientwriter.writerow(k)
+clientwriter = csv.writer(open('client.csv','wb'))
+for k in client_list:
+	if not isinstance(k, list):
+		print k, " what the hell"
+	else:
+		clientwriter.writerow(k)
 
-# writer = csv.writer(open('location.csv','wb'))
-# for k in countries.keys():
-#     writer.writerow([countries[k], k])
+writer = csv.writer(open('location.csv','wb'))
+for k in countries.keys():
+    writer.writerow([countries[k], k])
 
-# c_id = []
-# writer = csv.writer(open('client-by-id.csv','wb'))
-# for k in client_list:
-# 	if k[8] not in c_id:
-# 		writer.writerow(k)
-# 		c_id.append(k[8])	
+c_id = []
+writer = csv.writer(open('client-by-id.csv','wb'))
+for k in client_list:
+	if k[8] not in c_id:
+		writer.writerow(k)
+		c_id.append(k[8])	
 
-# writer = csv.writer(open('Payment-fee.csv','wb'))
-# writer.writerow(['client', 'registrant', 'fee', 'amount', 'purpose', 'date'])
-# for k in pay_list:	
-# 		writer.writerow(k)
+writer = csv.writer(open('Payment-fee.csv','wb'))
+writer.writerow(['client', 'registrant', 'fee', 'amount', 'purpose', 'date'])
+for k in pay_list:	
+		writer.writerow(k)
 
-# writer = csv.writer(open('Pay_list_reject.csv','wb'))
-# writer.writerow(['client_name', 'client_id', 'reg_id', 'fee', 'amount', 'purpose', 'dateNEW', 'link'])
-# for k in pay_list:	
-# 		writer.writerow(k)	
+writer = csv.writer(open('Pay_list_reject.csv','wb'))
+writer.writerow(['client_name', 'client_id', 'reg_id', 'fee', 'amount', 'purpose', 'dateNEW', 'link'])
+for k in pay_list:	
+		writer.writerow(k)	
 
-# writer = csv.writer(open('expense_list_reject.csv','wb'))
-# writer.writerow(['amount', 'date', 'purpose', 'clientreg_id', 'nclient_id', 'approved', 'file_id'])
-# for k in pay_list:	
-# 		writer.writerow(k)	
+writer = csv.writer(open('expense_list_reject.csv','wb'))
+writer.writerow(['amount', 'date', 'purpose', 'clientreg_id', 'nclient_id', 'approved', 'file_id'])
+for k in pay_list:	
+		writer.writerow(k)	
 
-# writer = csv.writer(open('expense_list.csv','wb'))
-# writer.writerow(['amount', 'date', 'purpose', 'clientreg_id', 'nclient_id', 'approved', 'file_id'])
-# for k in pay_list:	
-# 		writer.writerow(k)	
-# json_data.close()
+writer = csv.writer(open('expense_list.csv','wb'))
+writer.writerow(['amount', 'date', 'purpose', 'clientreg_id', 'nclient_id', 'approved', 'file_id'])
+for k in pay_list:	
+		writer.writerow(k)	
+json_data.close()
 
-# writer = csv.writer(open('contribution_list.csv','wb'))
-# writer.writerow(['amount', 'date', 'file_id', 'reg_id', 'recipient.name', 'lobbyist', 'line'])
-# for k in contribution_list:	
-# 		writer.writerow(k)	
-# json_data.close()
+writer = csv.writer(open('contribution_list.csv','wb'))
+writer.writerow(['amount', 'date', 'file_id', 'reg_id', 'recipient.name', 'lobbyist', 'line'])
+for k in contribution_list:	
+		writer.writerow(k)	
+json_data.close()
 
-# writer = csv.writer(open('contribution_reject.csv','wb'))
-# writer.writerow(['amount', 'date', 'file_id', 'reg_id', 'recipient.name', 'lobbyist', 'line'])
-# for k in pay_list:	
-# 		writer.writerow(k)	
-# json_data.close()
+writer = csv.writer(open('contribution_reject.csv','wb'))
+writer.writerow(['amount', 'date', 'file_id', 'reg_id', 'recipient.name', 'lobbyist', 'line'])
+for k in pay_list:	
+		writer.writerow(k)	
+json_data.close()
 
 
 

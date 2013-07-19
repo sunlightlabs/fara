@@ -1,17 +1,16 @@
 import requests
 
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
-from django.http import HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse
+from django.contrib.auth.decorators import login_required
 
 from FaraData.models import Recipient
 
-q = "Smith"
-
+@login_required(login_url='/admin')
 def find_form(request):
  	return render(request, 'FaraData/api_lookup.html') 
          
-
+@login_required(login_url='/admin')        
 def find_member(request):
 	q = request.GET['member'],
 	query_params = { 'query': q,
@@ -65,6 +64,7 @@ def find_member(request):
 	read_response(old_data, "old")
 	return render(request, 'FaraData/api_lookup.html', {'results': results}) 
 
+@login_required(login_url='/admin')
 def add_member(request):
 	member = Recipient(crp_id = request.GET['crp_id'],
 					    agency = request.GET['agency'],

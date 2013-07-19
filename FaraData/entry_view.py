@@ -2,10 +2,10 @@ import re
 import json
 from datetime import datetime, date
 
-
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 
 from FaraData.models import * #LobbyistForm, ClientForm, RegForm, RecipientForm, ContactForm, PaymentForm, ContributionForm, Disbursement, DisbursementForm
 from fara_feed.models import Document
@@ -91,6 +91,7 @@ def meta_info(url):
     return meta_list 
 
 #all in one supplemental data entry form- good for amendments
+@login_required(login_url='/admin')
 def index(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     #forms
@@ -133,9 +134,11 @@ def index(request, form_id):
     })
 
 #multi-step supplemental form
+@login_required(login_url='/admin')
 def supplemental_base(request, form_id):
     return render(request, 'FaraData/supplemental_base.html', {'form_id': form_id})   
 
+@login_required(login_url='/admin')
 def supplemental_first(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
@@ -152,6 +155,7 @@ def supplemental_first(request, form_id):
         's_date': s_date,
     })
 
+@login_required(login_url='/admin')
 def supplemental_contact(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
@@ -173,6 +177,7 @@ def supplemental_contact(request, form_id):
         'all_lobbyists': all_lobbyists,
     })
 
+@login_required(login_url='/admin')
 def supplemental_payment(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     pay_list = pay_info(url)
@@ -186,6 +191,7 @@ def supplemental_payment(request, form_id):
     'form_id': form_id,
     })
 
+@login_required(login_url='/admin')
 def supplemental_gift(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     gift_list = gift_info(url)
@@ -201,6 +207,7 @@ def supplemental_gift(request, form_id):
     'recipient_form': recipient_form,
     })
 
+@login_required(login_url='/admin')
 def supplemental_disbursement(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
@@ -214,6 +221,7 @@ def supplemental_disbursement(request, form_id):
     'dis_list' : dis_list,
     })
 
+@login_required(login_url='/admin')
 def supplemental_contribution(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
@@ -231,6 +239,7 @@ def supplemental_contribution(request, form_id):
     'recipient_form': recipient_form,
     })
 
+@login_required(login_url='/admin')
 def supplemental_last(request, form_id):
     url, reg_id, s_date= doc_id(form_id)
     meta_list = meta_info(url)
@@ -243,9 +252,11 @@ def supplemental_last(request, form_id):
     })
 
 # segmented registration form
+@login_required(login_url='/admin')
 def registration_base(request, form_id):
     return render(request, 'FaraData/registration_base.html', {'form_id': form_id})   
 
+@login_required(login_url='/admin')
 def registration_first(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
@@ -261,7 +272,8 @@ def registration_first(request, form_id):
         'form_id': form_id,
         's_date': s_date,
     })
-### I don't see this template
+
+@login_required(login_url='/admin')
 def registration_contact(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
@@ -281,6 +293,7 @@ def registration_contact(request, form_id):
         'contact_list': contact_list,
     })
 
+@login_required(login_url='/admin')
 def registration_payment(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     pay_list = pay_info(url)
@@ -294,6 +307,7 @@ def registration_payment(request, form_id):
     'form_id': form_id,
     })
 
+@login_required(login_url='/admin')
 def registration_gift(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     gift_list = gift_info(url)
@@ -309,6 +323,7 @@ def registration_gift(request, form_id):
     'reg_object': reg_object,
     })
 
+@login_required(login_url='/admin')
 def registration_disbursement(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
@@ -322,6 +337,7 @@ def registration_disbursement(request, form_id):
     'dis_list' : dis_list,
     })
 
+@login_required(login_url='/admin')
 def registration_contribution(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
@@ -339,6 +355,7 @@ def registration_contribution(request, form_id):
     'recipient_form': recipient_form,
     })
 
+@login_required(login_url='/admin')
 def registration_last(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     meta_list = meta_info(url)
@@ -350,6 +367,7 @@ def registration_last(request, form_id):
     'meta_list': meta_list,
     })
 
+@login_required(login_url='/admin')
 def enter_AB(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
@@ -380,6 +398,7 @@ def cleanmoney(money):
     return money
  
 #corrects stamp date
+@login_required(login_url='/admin')
 def stamp_date(request):
     if request.method == 'GET':
         s_date = datetime.strptime(request.GET['stamp_date'], "%m/%d/%Y")
@@ -408,6 +427,7 @@ def stamp_date(request):
         return HttpResponse(error, mimetype="application/json")
   
 #creates a new recipient
+@login_required(login_url='/admin')
 def recipient(request):
     if request.method == 'GET':
         form = RecipientForm(request.GET)
@@ -426,7 +446,8 @@ def recipient(request):
             return HttpResponse(request, {'error': 'failed'})
 
             
-# creates a new lobbyist and adds it to Registrant         
+# creates a new lobbyist and adds it to Registrant  
+@login_required(login_url='/admin')       
 def lobbyist(request):
     if request.method == 'GET':
         lobbyist_name = request.GET['lobbyist_name'], 
@@ -469,6 +490,7 @@ def lobbyist(request):
         HttpResponse(request, {'error': 'failed'})
 
 # assigns a lobbyist or lobbyists to a reg. all_lobbyists
+@login_required(login_url='/admin')
 def reg_lobbyist(request):
     if request.method == 'GET': 
         reg_id = (request.GET['reg_id'])
@@ -496,6 +518,7 @@ def reg_lobbyist(request):
         return HttpResponse(error, mimetype="application/json")
 
 #creates a new client and adds it to the registrant 
+@login_required(login_url='/admin')
 def client(request):
     if request.method == 'GET': 
         # this returns a tuple
@@ -534,6 +557,7 @@ def client(request):
     else:
         HttpResponse(request, {'error': 'failed'})
 
+@login_required(login_url='/admin')
 def location(request):
     if request.method == 'GET': 
         location = Location(location = request.GET['location'],
@@ -549,10 +573,8 @@ def location(request):
         return HttpResponse(error, mimetype="application/json")
 
 
-
-#want to phase out this one because it doesn't auto suggest reg number
-###for some reason if I comment this out it cripples the doc choices page????????
-#creates a new registrant 
+#creates a new registrant
+@login_required(login_url='/admin') 
 def registrant(request):
     if request.method == 'GET': # If the form has been submitted...
         form = RegForm(request.GET) # A form bound to the POST data
@@ -574,6 +596,7 @@ def registrant(request):
             error = json.dumps({'error': 'failed'} , separators=(',',':'))
             return HttpResponse(error, mimetype="application/json")
 
+@login_required(login_url='/admin')
 def new_registrant(request):
     if request.method == 'GET':
         registrant = Registrant(reg_id = request.GET['reg_id'],
@@ -595,6 +618,7 @@ def new_registrant(request):
 
                   
 #adds existing client to registrant 
+@login_required(login_url='/admin')
 def reg_client(request):
     if request.method == 'GET': # If the form has been submitted...
         reg_id = request.GET['reg_id'] # A form bound to the POST data
@@ -626,6 +650,7 @@ def reg_client(request):
 
 
 #adds client as terminated in registrant 
+@login_required(login_url='/admin')
 def terminated(request):
     if request.method == 'GET': # If the form has been submitted...
         reg_id = request.GET['reg_id'] # A form bound to the POST data
@@ -651,6 +676,7 @@ def terminated(request):
         return HttpResponse(error, mimetype="application/json")
         
 #adds description
+@login_required(login_url='/admin')
 def description(request):
     if request.method == 'GET':
         description = cleantext(request.GET['description'])
@@ -667,6 +693,7 @@ def description(request):
 
 
 #creates contact
+@login_required(login_url='/admin')
 def contact(request):
     if request.method == 'GET':
         
@@ -731,6 +758,7 @@ def contact(request):
         
         
 #creates payment
+@login_required(login_url='/admin')
 def payment(request):
     if request.method == 'GET':
         client = Client.objects.get(id=int(request.GET['client']))
@@ -759,6 +787,13 @@ def payment(request):
                             link = request.GET['link'],
         )
         payment.save()
+
+        subcontractor_id = request.GET['subcontractor']
+        if subcontractor_id != '' or None:
+            subcontractor = Registrant.objects.get(reg_id = subcontractor_id )
+            payment.subcontractor = subcontractor
+            payment.save()
+
         # return info to update the entry form
         payinfo = {"amount": payment.amount, 
                     "fee": payment.fee, 
@@ -774,6 +809,7 @@ def payment(request):
 
 
 #creates contributions
+@login_required(login_url='/admin')
 def contribution(request):
     if request.method == 'GET':
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
@@ -809,6 +845,7 @@ def contribution(request):
 
 
 #creates disbursements 
+@login_required(login_url='/admin')
 def disbursement(request):
     if request.method == 'GET':
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
@@ -820,7 +857,7 @@ def disbursement(request):
         client = Client.objects.get(id=int(request.GET['client']))
         purpose = cleantext(request.GET['purpose'])
         amount = cleanmoney(request.GET['amount'])
-        
+
         disbursement = Disbursement(
                             registrant = registrant,
                             client = client,
@@ -828,9 +865,16 @@ def disbursement(request):
                             purpose = purpose,
                             date = date_obj,
                             link = request.GET['link'],
-                            subcontractor_id= request.GET['subcontractor'],
         )
         disbursement.save()
+
+        subcontractor_id = request.GET['subcontractor']
+        if subcontractor_id != '' or None:
+            subcontractor = Registrant.objects.get(reg_id = subcontractor_id )
+            disbursement.subcontractor = subcontractor
+            disbursement.save()
+
+
         disinfo = {'amount': disbursement.amount,
                     'date': disbursement.date.strftime("%B %d, %Y"),
                     'registrant': str(disbursement.registrant),
@@ -846,6 +890,7 @@ def disbursement(request):
 
 
 #creates gifts
+@login_required(login_url='/admin')
 def gift(request):
     if request.method == 'GET':
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
@@ -885,6 +930,7 @@ def gift(request):
         return HttpResponse(error, mimetype="application/json") 
 
 #tracks processing
+@login_required(login_url='/admin')
 def metadata(request):      
     if request.method == 'GET':
         if request.method == 'GET' and 'reviewed' in request.GET:
@@ -899,17 +945,28 @@ def metadata(request):
             is_amendment = True
         else:
             is_amendment = False
+        form = request.GET['form']
+        link = request.GET['link']
         date_obj = date.today()
         metadata= MetaData(
-            link = request.GET['link'],
+            link = link,
             upload_date = date_obj,
             reviewed = reviewed,
             processed = processed,
             is_amendment = is_amendment,
-            form = request.GET['form'],
+            form = form,
             notes = request.GET['notes'],
         )
         metadata.save()
+
+        document = Document.objects.get(url=link)
+        if processed == True:
+            document.processed = True
+            document.save()
+        else:
+            document.processed = False
+            document.save()
+
         metadata_info = json.dumps({'processed': processed, 'reviewed': reviewed} , separators=(',',':'))
         return HttpResponse(metadata_info, mimetype="application/json")
          
