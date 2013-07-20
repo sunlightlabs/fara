@@ -1,36 +1,57 @@
 {% load dictionary_extras %}
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8" />
+<title>FARA entry</title>
+<head>
+<style type="text/css">	
+table 
+{
+width:75%;
+}
+th
+{
+height:50px;
+}
+</style>
+<body>
+
 <h1>Data Entry</h1>
 
 <hr>
 
 <h3>Enter Forms</h3>
 
+
 <table>
-	<tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Reg name</td><td>Entered</td><td>Processed</td><td>Doc type</td><td>Notes</td></tr> 
+	<tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Entered</td><td>Processed</td><td>Doc type</td><td>Notes</td></tr> 
+
 {% for d in entry_docs %}	
 		<tr>
 			<td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td>
+			
 			{% if d.doc_type == "Supplemental" %}
-			<td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td><td>Reg name</td>
+			<td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td>
 			{% elif d.doc_type == "Amendment" %}
-			<td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td><td>Reg name</td>
+			<td><a href="{% url 'enter-amendment' d.id %}"> Enter form </a></td>
 			{% elif d.doc_type == "'Registration'" %}
-			<td><a href="{% url 'registration-first' d.id %}"> Enter form </a></td><td>Reg name</td>
-			{% elif d.doc_type == "'Exhibit AB" %}
-			<td><a href="{% url 'enter-AB' d.id %}"> Enter form </a></td><td>Reg name</td>
+			<td><a href="{% url 'registration-first' d.id %}"> Enter form </a></td>
+			{% elif d.doc_type == "Exhibit AB" %}
+			<td><a href="{% url 'enter-AB' d.id %}"> Enter form </a></td>
 			{% endif %}
 
 		{% if d.url in processed_true %}	
-			<td>Started</td>
+			<td>Processed</td>
 		{% else %}
-			<td><i>NOT started</i></td>
+			<td><i>NOT prcessed</i></td>
 		{% endif %}
 		
 		{% if d.url in reviewed_true %}
-			<td>Processed</td>
+			<td>Reviewed</td>
 		{% else %}
-			<td><i>NOT Processed</i></td>
+			<td><i>NOT Reviewed</i></td>
 		{% endif %}
+
 		{% if d.url in notes %}
 			<td>{{ notes|access:d.url }}</td></tr>
 		{% else %}
@@ -42,17 +63,19 @@
 
 <div class="pagination">
     <span class="step-links">
-        {% if supplementals.has_previous %}
-            <a href="?page={{ supplementals.previous_page_number }}">previous</a>
+        {% if entry_docs.has_previous %}
+            <a href="?page={{ entry_docs.previous_page_number }}">previous</a>
         {% endif %}
 
         <span class="current">
-            Page {{ supplementals.number }} of {{ supplementals.paginator.num_pages }}.
+            Page {{ entry_docs.number }} of {{ entry_docs.paginator.num_pages }}.
         </span>
 
-        {% if supplementals.has_next %}
-            <a href="?page={{ supplementals.next_page_number }}">next</a>
+        {% if entry_docs.has_next %}
+            <a href="?page={{ entry_docs.next_page_number }}">next</a>
         {% endif %}
     </span>
 </div>
 <hr>
+<a href="{% url 'instructions' %}">Instructions</a>
+</body>

@@ -112,8 +112,8 @@ class Command(BaseCommand):
                     continue
                 data.append((input.attrib['name'], input.attrib['value']))
 
-        start_date = datetime.date(2011, 01, 01) - datetime.timedelta(9)
-        #start_date = datetime.date(2011, 01, 01) - datetime.date(2013, 02, 01)
+        start_date = datetime.date.today() - datetime.timedelta(days=10)
+        #start_date = datetime.date(2011, 01, 01) 
         
         print start_date
         end_date = datetime.date.today()
@@ -137,7 +137,7 @@ class Command(BaseCommand):
         url_end = page.find("a", {"class":"t14pagination"})
         count = 0 
         
-        while url_end != "None":
+        while url_end != "None" and url_end != None:
             print "while loop"
             #### I am sure this is wrong but it works :(
             url_end = str(url_end)

@@ -9,18 +9,15 @@ for d in all_docs:
 	file_id =  d.url
 	if str(d.url)[:4] == "http":
 		print file_id
+		d.processed = False
+		d.save()
+		print "working"
+
 	else:
-		# meta =  MetaData(link=file_id,
-		# 	processed=True,
-		# 	notes = "Legacy data",
-		# 	)
-		#meta.save()
-		# try:
-		# 	d.processed = True
-		# 	d.save()
-		# 	print "working"
-		# except:
-		# 	print "NOT saved"
+		d.processed = True
+		d.save()
+		print "working"
+		
 
 
 # this takes out all clients in the system
