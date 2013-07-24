@@ -29,18 +29,24 @@ def parse_and_save(page):
     new_fara_docs = []
     ##new_info = []
 
-    for l in filings.find_all("a"):
+    for l in filings.find_all("tr"):
         #print "starting l loop"
-        link = str(l)
-        url = str(re.findall(r'href="(.*?)"', link))
+        row = str(l)
+        url = str(re.findall(r'href="(.*?)"', row))
+        print url
+        url = str(url)
         url = re.sub("\['",'', re.sub("'\]", '', url))
     
         if url[:4] == "http":
+            stamp_date = l.find_all('td',{"headers" : "STAMPED/RECEIVEDDATE"})
+            stamp_date = str(stamp_date)[-16:-6]
+            stamp_date_obj = datetime.datetime.strptime(stamp_date, "%m/%d/%Y")
+
             if Document.objects.filter(url = url).exists():
                 print url, " in system"
             else:    
                 print "new--- ", url 
-                reg_id = re.sub('-','', link[34:38])
+                reg_id = re.sub('-','', url[25:29])
                 reg_id = re.sub('S','', reg_id)
                 reg_id = re.sub('L','', reg_id)
                 re.findall(r'href="(.*?)"', url)
@@ -48,49 +54,47 @@ def parse_and_save(page):
 
                 if info[0] == 'Amendment':
                     doc_type = 'Amendment'
-                    raw_date = None
+
+                elif info[0] == 'Short':
+                    doc_type = 'Short Form'
+
+                elif info[0] == 'Exhibit':
+                    if "AB" in url:
+                        doc_type = 'Exhibit AB'  
+                    if "C" in url:
+                        doc_type = 'Exhibit C'    
+                    if "D" in url:
+                        doc_type = 'Exhibit D'
+
+                elif info[0] == 'Conflict':
+                    doc_type = 'Conflict Provision'
+
+                elif info[0] == 'Registration':
+                    doc_type = 'Registration'
+
+                elif info[0] == 'Supplemental':
+                    doc_type = 'Supplemental' 
 
                 else:
-                    raw_date = info[1]
+                    print "Can't identify form-- ", url
 
-                    if info[0] == 'Short':
-                        doc_type = 'Short Form'
+                if stamp_date_obj != None:
+                    try:
+                        raw_date = info[1]
+                        raw_date = raw_date[3:5] + raw_date[-2:] + raw_date[:4]
+                        stamp_date_obj = datetime.datetime.strptime(raw_date, "%M%d%Y")
 
-                    elif info[0] == 'Exhibit':
-                        if "AB" in url:
-                            doc_type = 'Exhibit AB'  
-                        if "C" in url:
-                            doc_type = 'Exhibit C'    
-                        if "D" in url:
-                            doc_type = 'Exhibit D'
+                    except:
+                        stamp_date_obj = None
 
-                    elif info[0] == 'Conflict':
-                        doc_type = 'Conflict Provision'
-
-                    elif info[0] == 'Registration':
-                        doc_type = 'Registration'
-
-                    elif info[0] == 'Supplemental':
-                        doc_type = 'Supplemental' 
-
-                    else:
-                        print "Can't identify form-- ", url
-
-                if raw_date != None:
-                    raw_date = raw_date[3:5] + raw_date[-2:] + raw_date[:4]
-                    stamp_date = datetime.datetime.strptime(raw_date, "%M%d%Y")
-
-                else:
-                    stamp_date = raw_date
-
-                url_info= [url, reg_id, doc_type, stamp_date]
+                url_info= [url, reg_id, doc_type, stamp_date_obj]
                 #saves url info
                 add_document(url_info)
 
                 new_fara_docs.append(url_info)
                 print "saving", url_info
                 ##new_info.append(new_fara_docs)
-    print "loop"               
+                   
     return new_fara_docs
 
 class Command(BaseCommand):

@@ -39,7 +39,7 @@ def make_pages(form, page):
 @login_required(login_url='/admin')
 def fast_supplemental(request):
     supplementals = Document.objects.filter(doc_type = "Supplemental")
-    supplementals = sorted(supplementals, key=lambda document: document.id, reverse=True)
+    supplementals = sorted(supplementals, key=lambda document: document.id)
     page = request.GET.get('page')
     supplementals = make_pages(supplementals, page)
     
@@ -114,21 +114,15 @@ def entry_list(request):
 
     entry_docs = []
     
-    forms = ['Supplemental', 'Registration', 'Amendment', 'Exhibit AB']
+    forms = ['Supplemental', 'Registration', 'Amendment', 'Exhibit AB', 'Conflict Provision']
     
     for kind in forms:
         docs = Document.objects.filter(doc_type=kind, processed=False) 
-
         entry_docs.append(docs)
-        
-
-    print entry_docs
 
     entry_docs = list(itertools.chain(*entry_docs))
     entry_docs  = sorted(entry_docs , key=lambda document: document.id) 
     entry_docs = make_pages(entry_docs, page)
-
-    print entry_docs
     
     return render_to_response('fara_feed/entry_list.html', {'entry_docs' : entry_docs,
                                                             'processed_true': processed_true,

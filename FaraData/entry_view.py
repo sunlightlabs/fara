@@ -78,7 +78,7 @@ def gift_info(url):
 def meta_info(url):
     try:
         m = MetaData.objects.get(link=url)
-        meta_list = [ m.reviewed, m.processed, m.upload_date, m.is_amendment, m.notes] 
+        meta_list = [ m.reviewed, m.processed, m.upload_date, m.is_amendment, m.notes, m.end_date] 
     except:
         metadata= MetaData(
             link = url,
@@ -604,7 +604,7 @@ def new_registrant(request):
                             address = request.GET['address'],
                             city = request.GET['city'],
                             state = request.GET['state'],
-                            zip = request.GET['zip'],
+                            zip_code = request.GET['zip'],
                             country = request.GET['country'],
         )
         registrant.save()
@@ -948,9 +948,18 @@ def metadata(request):
         form = request.GET['form']
         link = request.GET['link']
         date_obj = date.today()
+
+        try:
+            end_date = datetime.strptime(request.GET['end_date'], "%m/%d/%Y")
+            print_date = end_date.strftime("%B %d, %Y")
+            print print_date
+        except:
+            end_date =  None
+
         metadata= MetaData(
             link = link,
             upload_date = date_obj,
+            end_date = end_date,
             reviewed = reviewed,
             processed = processed,
             is_amendment = is_amendment,

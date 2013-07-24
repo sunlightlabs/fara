@@ -29,7 +29,7 @@ class gift_admin(admin.ModelAdmin):
 admin.site.register(Gift, gift_admin)
 
 class location_admin(admin.ModelAdmin):
-    search_fields=['location', 'country_group']
+    search_fields=['location', 'country_grouping']
 admin.site.register(Location, location_admin)
 
 #class contact_admin(admin.ModelAdmin):

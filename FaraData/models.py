@@ -34,7 +34,7 @@ class Lobbyist(models.Model):
 class Location(models.Model):
     location = models.CharField(max_length=200, unique=True)
     country_grouping = models.CharField(max_length=200)
-    region = models.CharField(max_length=200)
+    region = models.CharField(max_length=200, blank= True, null=True)
 
     def __unicode__(self):
         return self.location
@@ -60,7 +60,7 @@ class Registrant(models.Model):
     address = models.CharField(max_length=300, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=2, null=True, blank=True)
-    zip = models.CharField(max_length=10, null=True, blank=True)
+    zip_code = models.CharField(max_length=10, null=True, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True)# currently with clients
     terminated_clients = models.ManyToManyField(Client, related_name='terminated_clients', null=True, blank=True)
@@ -111,7 +111,7 @@ class Payment(models.Model):
     registrant = models.ForeignKey(Registrant)
     fee = models.BooleanField(default=False)# was feesretainer = models.CharField(max_length=1)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
-    purpose = models.TextField(null=True)
+    purpose = models.TextField(null=True, blank=True)
     date = models.DateField(null=True, blank=True)
     link = models.CharField(max_length=100)
     subcontractor = models.ForeignKey(Registrant, related_name='payment_subcontractor', null=True, blank=True)
@@ -157,6 +157,8 @@ class MetaData(models.Model):
     is_amendment = models.BooleanField(default=False)
     form = models.CharField(max_length=300)# I am guessing on this, we are storing on amazon
     notes = models.TextField(blank=True, null=True)
+    # this is just for supplementals
+    end_date = models.DateField(null=True, blank=True)
     
     def __unicode__(self):
         if len(str(self.notes)) < 1:
