@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 
 @login_required(login_url='/admin')
 def temp_home(request):
-	return render(request, 'temp_home.html')
+	return render(request, 'fara_feed/temp_home.html')
 
 @login_required(login_url='/admin')
 def instructions(request):
