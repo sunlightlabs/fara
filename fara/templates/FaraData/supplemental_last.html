@@ -9,6 +9,14 @@ Upload date: {{ meta_list.2 }}
     <input type="hidden" name="link" value="{{  url }}">
     <input type="hidden" name="form" value="{{ form_id }}">
     <input type="hidden" name="upload_date" value="{{ s_date }}">
+
+    {% if meta_list.5 %}
+    <p><label for="end_date">Supplemental end date: </label>
+    <input id="end_date" type="text" name="end_date" value="{{ meta_list.5 }}" /></p>
+    {% else %}
+    <p><label for="end_date">Supplemental end date: </label>
+    <input id="end_date" type="text" name="end_date" /></p>
+    {% endif %}
   
     {% if meta_list.0 == True %}   
         <p><input type="checkbox" name="reviewed" checked>reviewed</p>

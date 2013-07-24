@@ -7,23 +7,26 @@
 <h1>Ask Fara</h1>
 
 
-<img height="25%" width="12%"  src="http://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Farrah_Fawcett_1977.JPG/476px-Farrah_Fawcett_1977.JPG" />
+<img height="25%" width="12%"  src="{{ STATIC_URL }}fara.jpg"/>
 <hr>
 <h1>Instructions</h1>
 
 <h2>Data Entry tips</h2>
 <p>You can copy and paste into all text fields. Don't worry if it looks ugly, extra spaces and line breaks will be removed. For currency fields commas and dollar signs, leading and trailing whitespace will be removed.
 </p>
-
+<p>When adding dates, if they don't supply a date, leave it blank, if the date is a range, give the first date. 
+</p>
 <br>
 
 <h2>Instructions on data fields</h2>
 <a id="Registrant"></a><h3>Registrant</h3>
 <p> A registraint is the entity filling out the form. Usually it is a lobbying firm, PR firm or individual. If a registraint is representing itself, fill out the information in the registrant section and the client section.
 </p>
+<p>If the system is showing the incorrect id for the Registrant you need to fix this in the "Document" model of the admin. You can find the form by id. The id for the document is the number in the data form url.
+</p>
 
 <a id="Lobbyist"></a><h3>Lobbyist</h3>
-<p>This is somone working for the registraint. We identify lobbyists when they make contacts or contributions, you don't have to enter everyone who appears in questions 5(a) and 5(b) of the supplemental.
+<p>This is someone working for the registrant. We identify lobbyists when they make contacts or contributions, you don't have to enter everyone who appears in questions 5(a) and 5(b) of the supplemental.
 </p>
 <p>Try to make sure the lobbyist is not already in the system before adding a new lobbyist to the system. Try searching just the last name to make sure a lobbyist is not already in the system.
 </p>
@@ -52,7 +55,9 @@
 <a id="Contact"></a><h3>Contact</h3>
 <p>These are meetings, phone calls, emails, letters or other forms of contact that appear on question 12 of the supplemental. Contacts are often include press, Congress or a governmental departments. 
 </p>
-<p>The recipient is the person that the registrant is attempting to contact. Add a a lobbyist if he is mentioned in the contact, otherwise, leave this blank. Don't forget to select what client for the contact. If they don't supply a date, use the supplemental end date. </p>
+<p>The recipient is the person that the registrant is attempting to contact. Add a a lobbyist if he is mentioned in the contact, otherwise, leave this blank. Don't forget to select what client for the contact.</p>
+<p>Enter contact with media, press releases etc. but you don't need to document the client's own publications. This is generally in propaganda files and we haven't been tracking. If you don't know if it should be added, ask or be safe and add it anyways.  
+</p>
 
 <a id="Recipient"></a><h3>Recipient</h3>
 <p> This is the target of the communication, gift or political donation. </p>
@@ -71,48 +76,47 @@
 
 <p>Adding a Congressional Staffer:</p>
 <ul>
-crp id = the CRP ID of the member
+<li><b>CRP id</b> = the CRP ID of the member
 Agency either House or Senate {never use Congress that is reserved for members of congress, You may use Congressional if they are some weird exception.}</li>
 <li>
-Office Detail = the Member's Name ie. Rep. Nancy Peolosi</li>
+<b>Office Detail</b> = the Member's Name ie. Rep. Nancy Pelosi</li>
 <li>
-name = name of staffer contacted</li>
+<b>Name</b> = name of staffer contacted</li>
 <li>
-title = Whatever it is- Leg. Director etc.</li>
-<li>
+<b>title</b> = Whatever it is- Leg. Director etc.</li>
 </ul>
 
 <p>Adding a PAC or candidate committee (to recipients):</p>
 <ul>
-<li>committee name = name of the committee ie. Friends of John Boehner
+<li><b>Committee name</b> = name of the committee ie. Friends of John Boehner
 	</li>
-<li>agency = Congress if it is a congressional PAC
+<li><b>Agency</b> = Congress if it is a congressional PAC
 </li>
-<li>office detail = the candidate name ie. Rep. John Boehner
+<li><b>Office detail</b> = the candidate name ie. Rep. John Boehner
 	</li>
-<li>crp_id = crp_id of member if it is a leadership PAC or candidate committee
+<li><b>CRP id</b> = CRP id of member if it is a leadership PAC or candidate committee
 	</li>
-<li>state local is true if it is a non-federal candidate or PAC
+<li><b>State local</b> is true if it is a non-federal candidate or PAC
 		</li>
 </ul>
 
 <p>Adding journalists:</p>
 <ul>
-<li>Agency = Media
+<li><b>Agency</b> = Media
 </li>
-<li>Office detail = employer
+<li><b>Office detail</b> = employer
 </li>
-<li>name = name of journalist
+<li><b>name</b> = name of journalist
 </li>	
 </ul>
 
 <p>Adding State Department Employee:</p>
 <ul>
-<li>Agency = Media
+<li><b>Agency</b> = Media
 </li>
-<li>Office detail = division if applicable 
+<li><b>Office detail</b> = division if applicable 
 </li>
-<li>name = name of contact
+<li><b>Name</b> = name of contact
 </li>	
 </ul>
 
@@ -133,13 +137,13 @@ title = Whatever it is- Leg. Director etc.</li>
 </p>
 
 <a id="Gifts"></a><h3>Gifts</h3>
-<p>This covers "things of value" in question 14(c) of the Supplemental.
+<p>This covers "things of value" in question 14(c) of the Supplemental. There are not going to be too many of these. 
 </p>
 
 <a id="Processing_Info"></a><h3>Processing Info</h3>
 <p>This tracks the form during the data entry process. When you are done with the form, check "Check when form is finished." This will make the data live on the front end.
 </p>
-<p>Forms that have been processed will say "Form is finished and info is displayed on front end." You can uncheck and click "submit" to hide the data form the front end of the website. Fix the errors and then resubmit. 
+<p>Forms that have been processed will say "Form is finished and info is displayed on front end." Once you mark this, the form will disappear from the data entry list but you can still find the document in the full list. You can uncheck and click "submit" to hide the data form the front end of the website. Fix the errors and then resubmit. 
 </p>
 
 <a id="Location"></a><h3>Location</h3>
@@ -174,9 +178,9 @@ The <b>Supplemental Statement</b> provides information on what kind of public re
 </p><p>
 <b>Exhibit C</b> contains the Articles of incorporation, bylaws and other documents that pertain to the registrant, the person or company that represents the foreign agent.
 </p><p>
-<b>Exhibit D</b> outlines fundraising information on behalf of the foreign agent. 
+<b>Exhibit D</b> outlines fund raising information on behalf of the foreign agent. 
 </p><p>
-<b>Conflict Provision</b>, a letter that is filed to allow a public official to represent a foreign entity. The employer must certify this position is to promote the national interest. These are very rare and might be worth writing about.
+<b>Conflict Provision</b>, a letter that is filed to allow a public official to represent a foreign entity. The employer must certify this position is to promote the national interest. These are very rare and might be worth writing about. 
 </p><p>
 
 <br>

@@ -333,7 +333,7 @@ Contacts related to this form:<br>
             {% else %}
             <td>${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>no</td>
             {% endif %}
-            <tr>
+            </tr>
     {% endfor %}
     </tbody>
 </table>
@@ -533,6 +533,9 @@ Upload date: {{ meta_list.2 }}
     <input type="hidden" name="link" value="{{  url }}">
     <input type="hidden" name="form" value="{{ form_id }}">
     <input type="hidden" name="upload_date" value="{{ s_date }}">
+
+    <p><label for="end_date">Supplemental end date: </label>
+    <input id="end_date" type="text" name="end_date" /></p>
   
     {% if meta_list.0 == True %}   
         <p><input type="checkbox" name="reviewed" checked>reviewed</p>

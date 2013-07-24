@@ -17,7 +17,6 @@ for d in all_docs:
 		d.processed = True
 		d.save()
 		print "working"
-		
 
 
 # this takes out all clients in the system

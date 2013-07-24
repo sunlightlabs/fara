@@ -9,3 +9,9 @@ pyPdf==1.13
 python-dateutil==1.5
 wsgiref==0.1.2
 xlrd==0.7.1
+cssselect==0.8
+python-dateutil==1.5
+requests==1.2.3
+simplejson==2.3.0
+virtualenv==1.7.1.2
+

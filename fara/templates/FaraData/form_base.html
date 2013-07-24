@@ -64,7 +64,8 @@ $(function() {
   $("#contribution_date").datepicker();
   $("#gift_date").datepicker();
   $("#stamp_date").datepicker();
-
+  $("#end_date").datepicker();
+  
   //this is the search function, select2
   function createSelect(tag, resourse){
     
@@ -308,7 +309,7 @@ jQuery(document).ready(function(){
               fee = ""
             }
             
-            item = '<td>$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td>'
+            item = '<tr><td>$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td></tr>'
             $('#pay_table').append(item);
             var $payment_subcontractor = $('#payment_subcontractor');
             $payment_subcontractor.select2('data', null)
@@ -437,7 +438,7 @@ $("#metaform").ajaxForm(direct);
 
 <div id="right">
 
-<div align="right"><p><a href="{% url 'full-list' %}">select a different form</a></p></div>
+<div align="right"><p><a href="{% url 'entry-list' %}">select a different form</a></p></div>
 
 {% block formquestions %}{% endblock formquestions %}
 <br>

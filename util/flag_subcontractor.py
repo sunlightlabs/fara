@@ -82,7 +82,7 @@ def replace_clients(model_obj):
 		client_id = int(c.client.id)
 		if new_id_dict.has_key(client_id):
 			new_id = new_id_dict[client_id]
-			n_client = Client.objects.get(id =new_id)
+			n_client = Client.objects.get(id = new_id)
 			c.client = n_client
 			c.save()
 			print "replacing here" 
@@ -90,8 +90,4 @@ def replace_clients(model_obj):
 #replace_clients(all_contacts)
 #replace_clients(all_disburments)
 #replace_clients(all_payments)
-
-for key in 
-
-
 
