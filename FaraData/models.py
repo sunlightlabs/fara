@@ -42,7 +42,7 @@ class Location(models.Model):
 #Questions 7, 8 and 9
 class Client(models.Model):
     location = models.ForeignKey(Location)
-    client_name = models.CharField(max_length=200, unique=True)
+    client_name = models.CharField(max_length=200)
     address1 = models.CharField(max_length=300, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=100, null=True, blank=True)#long to accommodate foreign addresses
