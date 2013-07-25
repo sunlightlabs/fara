@@ -56,7 +56,7 @@ class Client(models.Model):
 # the firm or person doing the lobbying and registering with FARA (including those that represent themselves)       
 class Registrant(models.Model):
     reg_id = models.IntegerField(primary_key=True) #this is assigned by DOJ
-    reg_name = models.CharField(max_length=200, unique=True)
+    reg_name = models.CharField(max_length=200)
     address = models.CharField(max_length=300, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=2, null=True, blank=True)
