@@ -33,7 +33,7 @@ class Lobbyist(models.Model):
 
 class Location(models.Model):
     location = models.CharField(max_length=200, unique=True)
-    country_grouping = models.CharField(max_length=200)
+    country_grouping = models.CharField(max_length=200, blank= True, null=True, default='')
     region = models.CharField(max_length=200, blank= True, null=True)
 
     def __unicode__(self):
