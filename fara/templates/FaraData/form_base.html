@@ -309,7 +309,7 @@ jQuery(document).ready(function(){
               fee = ""
             }
             
-            item = '<td>$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td>'
+            item = '<tr><td>$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td></tr>'
             $('#pay_table').append(item);
             var $payment_subcontractor = $('#payment_subcontractor');
             $payment_subcontractor.select2('data', null)
@@ -321,7 +321,7 @@ jQuery(document).ready(function(){
             var date = response.date;
             var client = response.client;
 
-            item = '<tr><td>$'+ amount +'</td><td>'+ date + '</td><td>'+ client +'</td><tr>'
+            item = '<tr><td>$'+ amount +'</td><td>'+ date + '</td><td>'+ client +'</td></tr>'
             $('#dis_table').append(item);
             var $disbursement_subcontractor = $('#disbursement_subcontractor');
             $disbursement_subcontractor.select2('data', null)
@@ -344,7 +344,7 @@ jQuery(document).ready(function(){
             var client = response.client;
             var description = response.description;
 
-            item = '<li>' + description + " from " + client + " on " + date
+            item = '<li>' + description + " from " + client + " on " + date + '</li>'
             $('#gift_basket ul').append(item);
             var $gift_recip = $('#gift_recip');
             $gift_recip.select2('data', null) 
