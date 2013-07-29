@@ -24,26 +24,30 @@ height:50px;
 
 
 <table>
-	<tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Entered</td><td>Processed</td><td>Doc type</td><td>Notes</td></tr> 
-
-{% for d in entry_docs %}	
+	<thead>
+		<tr><td><b>FARA ID</b></td><td><b>Registrant name</b></td> <td><b>Stamp date</b></td><td><b>Enter form</b></td><td><b>Reviewed</b></td><td><b>Doc type</b></td><td><b>Notes</b></td></b></tr> 
+	</thead>
+	<tbody>
+	{% for d in entry_docs %}	
 		<tr>
-			<td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td>
-			
-			{% if d.doc_type == "Supplemental" %}
-			<td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td>
-			{% elif d.doc_type == "Amendment" %}
-			<td><a href="{% url 'enter-amendment' d.id %}"> Enter form </a></td>
-			{% elif d.doc_type == "'Registration'" %}
-			<td><a href="{% url 'registration-first' d.id %}"> Enter form </a></td>
-			{% elif d.doc_type == "Exhibit AB" %}
-			<td><a href="{% url 'enter-AB' d.id %}"> Enter form </a></td>
-			{% endif %}
+			<td>{{ d.reg_id }}</td>
 
-		{% if d.url in processed_true %}	
-			<td>Processed</td>
+		{% if d.reg_id in names %}
+			<td>{{ names|access:d.reg_id }}</td>
 		{% else %}
-			<td><i>NOT prcessed</i></td>
+			<td></td>
+		{% endif %}
+			
+			<td>{{ d.stamp_date }}</td>
+			
+		{% if d.doc_type == "Supplemental" %}
+			<td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td>
+		{% elif d.doc_type == "Amendment" %}
+			<td><a href="{% url 'enter-amendment' d.id %}"> Enter form </a></td>
+		{% elif d.doc_type == "'Registration'" %}
+			<td><a href="{% url 'registration-first' d.id %}"> Enter form </a></td>
+		{% elif d.doc_type == "Exhibit AB" %}
+			<td><a href="{% url 'enter-AB' d.id %}"> Enter form </a></td>
 		{% endif %}
 		
 		{% if d.url in reviewed_true %}
@@ -51,14 +55,19 @@ height:50px;
 		{% else %}
 			<td><i>NOT Reviewed</i></td>
 		{% endif %}
-
-		{% if d.url in notes %}
-			<td>{{ notes|access:d.url }}</td></tr>
-		{% else %}
-		<td>{{ d.doc_type }}</td></tr>
-		{% endif %}
 		
-{% endfor %}
+			<td>{{ d.doc_type }}</td>
+		
+		{% if d.url in notes %}
+			<td>{{ notes|access:d.url }}</td>
+		{% else %}
+			<td></td>
+		{% endif %}
+
+		</tr>
+
+	{% endfor %}
+	</tbody>
 </table>
 
 <div class="pagination">
@@ -77,5 +86,6 @@ height:50px;
     </span>
 </div>
 <hr>
-<a href="{% url 'instructions' %}">Instructions</a>
+<p><a href="{% url 'instructions' %}">Instructions</a></p>
+<p><a href="{% url 'full-list' %}">View all Forms</a></p>
 </body>

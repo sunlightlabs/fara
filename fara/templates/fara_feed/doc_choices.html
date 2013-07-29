@@ -12,10 +12,24 @@
 <h3>Supplementals</h3>
 
 <table>
-    <tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Reg name</td><td>Entered</td><td>Processed</td><td>Notes</td></tr> 
-{% for d in supplementals %}
+    <thead>
+        <tr><td><b>FARA ID</b></td><td><b>Reg name</b></td><td><b>Stamp date</b></td><td><b>Enter form</b></td><td><b>Entered</b></td><td><b>Processed</b></td><td><b>Notes</b></td></tr>
+    </thread>
+    </tbody> 
+    {% for d in supplementals %}
     
-        <tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td><td>Reg name</td>
+            <tr><td>{{ d.reg_id }}</td>
+
+        {% if d.reg_id in names %}
+            <td>{{ names|access:d.reg_id}}  </td>
+        {% else %}
+            <td></td>
+        {% endif %}
+
+            <td>{{ d.stamp_date }}</td>
+
+            <td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td>
+
         {% if d.url in processed_true %}    
             <td>Started</td>
         {% else %}
@@ -29,10 +43,11 @@
         {% if d.url in notes %}
             <td>{{ notes|access:d.url }}</td></tr>
         {% else %}
-        <td></td></tr>
+            <td></td></tr>
         {% endif %}
 
-{% endfor %}
+    {% endfor %}
+    </tbody>
 </table>
 
 <div class="pagination">
@@ -55,27 +70,45 @@
 <h3>Registrations</h3>
 
 <table>
-    <tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Reg name</td><td>Entered</td><td>Processed</td><td>Notes</td></tr> 
-{% for d in registrations %}
-    
-        <tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{% url 'registration-first' d.id %}"> Enter form </a></td><td>Reg name</td>
+    <thead>
+        <tr><td><b>FARA ID</b></td><td><b>Reg name</b></td><td><b>Stamp date</b></td><td><b>Url</b></td><td><b>Entered</b></td><td><b>Processed</b></td><td><b>Notes</b></td></tr>
+    </thead>
+    <tbody>
+    {% for d in registrations %}
+        <tr>
+            <td>{{ d.reg_id }}</td>
+
+        {% if d.reg_id in names %}
+            <td>{{ names|access:d.reg_id }}</td>
+        {% else %}
+            <td></td>
+        {% endif %}
+
+
+            <td>{{ d.stamp_date }}</td>
+            <td><a href="{% url 'registration-first' d.id %}"> Enter form </a></td>
+            
         {% if d.url in processed_true %}    
             <td>Started</td>
         {% else %}
             <td><i>NOT started</i></td>
         {% endif %}
+        
         {% if d.url in reviewed_true %}
             <td>Processed</td>
         {% else %}
             <td><i>NOT Processed</i></td>
         {% endif %}
+
         {% if d.url in notes %}
-            <td>{{ notes|access:d.url }}</td></tr>
+            <td>{{ notes|access:d.url }}</td>
         {% else %}
-        <td></td></tr>
+            <td></td>
         {% endif %}
 
-{% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody> 
 </table>
 
 <div class="pagination">
@@ -98,27 +131,45 @@
 <h3>Amendments</h3>
 
 <table>
-    <tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Reg name</td><td>Entered</td><td>Processed</td></tr> 
-{% for d in amendments %}
+    <thead>
+        <tr><td><b>FARA ID</b></td><td><b>Reg name</b></td><td><b>Stamp date</b></td><td><b>Url</b></td><td><b>Entered</b></td><td><b>Processed</b></td></tr> 
+    </thead>
+    <tbody>
+       
+    {% for d in amendments %}
+         <tr>
+            <td>{{ d.reg_id }}</td>
 
-        <tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{% url 'enter-amendment' d.id %}"> Enter form </a></td><td>Reg name</td>
+        {% if d.reg_id in names %}
+            <td>{{ names|access:d.reg_id }}</td>
+        {% else %}
+            <td></td>
+        {% endif %}
+
+            <td>{{ d.stamp_date }}</td>
+
+            <td><a href="{% url 'enter-amendment' d.id %}"> Enter form </a></td>
+
         {% if d.url in processed_true %}    
             <td>Started</td>
         {% else %}
             <td><i>NOT started</i></td>
         {% endif %}
+        
         {% if d.url in reviewed_true %}
             <td>Processed</td>
         {% else %}
             <td><i>NOT Processed</i></td>
         {% endif %}
+        
         {% if d.url in notes %}
-            <td>{{ notes|access:d.url }}</td></tr>
+            <td>{{ notes|access:d.url }}</td>
         {% else %}
-        <td></td></tr>
+            <td></td>
         {% endif %}
-
-{% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
 </table>
 
 <div class="pagination">
@@ -142,27 +193,39 @@
 <h3>Exibit AB (New Clients)</h3>
 
 <table>
-    <tr><td>FARA ID</td><td>Stamp date</td><td>Url</td><td>Entered</td><td>Processed</td><td>Notes</td></tr> 
+
+    <thead>
+        <tr><td><b>FARA ID</b></td><td><b>Reg name</b></td><td><b>Stamp date</b></td><td><b>Url</b></td><td><b>Entered</b></td><td><b>Processed</b></td><td><b>Notes<b></td></tr> 
+    </thead>
+    <tbody>
+
     {% for d in ab %}
 
-        <tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{% url 'enter-AB' d.id %}"> Enter form </a></td>
+        <tr>
+            <td>{{ d.reg_id }}</td>
+            <td>{{ d.stamp_date }}</td>
+            <td><a href="{% url 'enter-AB' d.id %}"> Enter form </a></td>
+        
         {% if d.url in processed_true %}    
             <td>Started</td>
         {% else %}
             <td><i>NOT started</i></td>
         {% endif %}
+        
         {% if d.url in reviewed_true %}
             <td>Processed</td>
         {% else %}
             <td><i>NOT Processed</i></td>
         {% endif %}
+        
         {% if d.url in notes %}
-            <td>{{ notes|access:d.url }}</td></tr>
+            <td>{{ notes|access:d.url }}</td>
         {% else %}
-        <td></td></tr>
+            <td></td>
         {% endif %}
-
+        </tr>
     {% endfor %}
+    </tbody>
 </table>
 
 <div class="pagination">
@@ -186,10 +249,14 @@
 <h3>Short Forms (Lobbist registration)</h3>
 
 <table>
-    <tr><td>FARA ID</td><td>Stamp date</td><td>Url</td></tr> 
-{% for d in short_forms%}
+    <thead>
+        <tr><td>FARA ID</td><td>Stamp date</td><td>Url</td></tr> 
+    </thead>
+    <tbody>
+    {% for d in short_forms%}
         <tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{{ d.url }}">{{ d.url }}</a></td></tr>
-{% endfor %}
+    {% endfor %}
+    </tbody>
 </table>
 
 <div class="pagination">
@@ -213,10 +280,14 @@
 <h3>Articles of incorporation and Fundraising forms</h3>
 
 <table>
+    <thead>
     <tr><td>FARA ID</td><td>Stamp date</td><td>Url</td></tr> 
-{% for d in others %}
+    </thead>
+    <tbody>
+    {% for d in others %}
         <tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{{ d.url }}">{{ d.url }}</a></td></tr>
-{% endfor %}
+    {% endfor %}
+    <tbody>
 </table>
 
 <div class="pagination">

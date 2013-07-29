@@ -8,10 +8,11 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 
 from fara_feed.models import Document
-from FaraData.models import MetaData
+from FaraData.models import MetaData, Registrant
 
 processed_true = [] 
 reviewed_true = []
+names = {}
 doctype = {}
 notes = {}
 
@@ -34,6 +35,14 @@ def make_pages(form, page):
             notes[d.url] = docdata.notes
         except:
             continue
+        
+        try:
+            reg = Registrant.objects.get(reg_id=d.reg_id)
+            names[d.reg_id] = reg.reg_name
+            print names[d.reg_id]
+        except:
+            continue
+    
     return form 
 
 @login_required(login_url='/admin')
@@ -102,6 +111,7 @@ def full_list(request):
                                                     'processed_true': processed_true,
                                                     'reviewed_true': reviewed_true,
                                                     'notes': notes,
+                                                    'names': names,
     })
 
 
@@ -128,5 +138,6 @@ def entry_list(request):
                                                             'processed_true': processed_true,
                                                             'reviewed_true': reviewed_true,
                                                             'notes': notes,
+                                                            'names': names,
      })
 
