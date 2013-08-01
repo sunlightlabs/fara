@@ -129,6 +129,7 @@ INSTALLED_APPS = (
     'fara',
     'util',
     'south',
+    'gunicorn',
 )
 
 INTERNAL_IPS = ('127.0.0.1',)
