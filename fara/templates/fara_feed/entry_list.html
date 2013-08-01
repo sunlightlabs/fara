@@ -44,7 +44,7 @@ height:50px;
 			<td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td>
 		{% elif d.doc_type == "Amendment" %}
 			<td><a href="{% url 'enter-amendment' d.id %}"> Enter form </a></td>
-		{% elif d.doc_type == "'Registration'" %}
+		{% elif d.doc_type == "Registration" %}
 			<td><a href="{% url 'registration-first' d.id %}"> Enter form </a></td>
 		{% elif d.doc_type == "Exhibit AB" %}
 			<td><a href="{% url 'enter-AB' d.id %}"> Enter form </a></td>

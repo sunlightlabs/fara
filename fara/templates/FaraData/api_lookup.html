@@ -17,6 +17,10 @@
 <p>Added {{ member }} to recipients.</p> 
 {% endif %}
 
+{% if insystem %}
+<p>{{ insystem }} is already in system.</p> 
+{% endif %}
+
 {% if results %}
 Choose result:
 {% for r in results %}

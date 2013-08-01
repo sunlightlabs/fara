@@ -14,6 +14,7 @@ all_docs = Document.objects.all()
 doc_dict = {}
 stupid_list = []
 
+
 for d in all_docs:
 	if d.stamp_date == None:
 		stamp_date = re.findall(r'\d{8}', str(d.url))
@@ -48,18 +49,19 @@ for d in all_docs:
 print doc_dict
 print stupid_list
 
-def add_element(element, reg_date):
+def add_element(element, reg_date, url):
 	doc_id = doc_dict[reg_date]
 	doc = Document.objects.get(id=doc_id)
-	url = doc.url
+	link = doc.url
+	print "url ", url 
 
 
 	try:
-		objects = element.objects.filter(link=url)
+		objects = element.objects.filter(link=link)
 		for p in objects:
 			p.link = url
 			#p.save()
-			print "FIXED ", element
+			print "FIXED ", element, p.link, p.id, p
 	except:
 		print "no"
 
@@ -89,7 +91,7 @@ def doj_files():
 
 			stamp_date = l.find_all('td',{"headers" : "STAMPED/RECIEVED"})
 			stamp_date = str(stamp_date)[-16:-6]
-			print stamp_date
+
 			
 			try:	
 				stamp_date_obj = datetime.datetime.strptime(stamp_date, "%m/%d/%Y")
@@ -103,32 +105,38 @@ def doj_files():
 
 			if doc_dict.has_key(reg_date):
 				print "Match!"
-				add_element(Contact, reg_date)
-				add_element(Payment, reg_date)
-				add_element(Disbursement, reg_date)
-				add_element(Contribution, reg_date)
+				add_element(Contact, reg_date, url)
+				add_element(Payment, reg_date, url)
+				add_element(Disbursement, reg_date, url)
+				add_element(Contribution, reg_date, url)
 
 
 				try:
 					doc = Document.objects.get(id=doc_dict[reg_id, stamp_date])
 					file_name = str(doc.url)
 
-					try:
-						md = MetaData.objects.get(link=file_name)
-						md.link = url
-						md.processed = True
-						md.notes = "Legacy Data"
-						#md.save()
-						print "FIXED META DATA"
-					except:
-						md = MetaData(link = url,
-							processed = True,
-							notes = "Legacy Data",
-							)
-						#md.save()
-
 				except:
 					pass
+
+
+				if MetaData.objects.filter(link=file_name).exists():
+					md = MetaData.objects.get(link=file_name)
+					md.link = url
+					md.processed = True
+					md.notes = "Legacy Data"
+					md.save()
+					print "FIXED META DATA"
+				else:
+					if MetaData.objects.filter(link=url).exists():
+						pass
+
+
+					md = MetaData(link = url,
+						processed = True,
+						notes = "Legacy Data",
+						)
+					md.save()
+					print "new md"	
 				
 				try:
 					doc = Document.objects.get(id=doc_dict[reg_id, stamp_date])
@@ -145,6 +153,7 @@ def doj_files():
 			else:
 				pass
 doj_files()
+
 
 def deduper():
 	urls = []
@@ -166,6 +175,5 @@ def deduper():
 				#look at the list before deleting 
 				#d.delete()
 #deduper()
-
 
  

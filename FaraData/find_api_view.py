@@ -73,7 +73,7 @@ def add_member(request):
 					    title = request.GET['title'],
 	)
 	if Recipient.objects.filter(crp_id = member.crp_id).exists():
-		return HttpResponse(request, {'error': 'Member id already in system'})
+		return render(request, 'FaraData/api_lookup.html', {'insystem': member.name})
 	else:
 		member.save()
 		return render(request, 'FaraData/api_lookup.html', {'member': member.name})

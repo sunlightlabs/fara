@@ -21,13 +21,13 @@ def add_document(url_info):
         stamp_date = url_info[3],
     )
     document.save()
-    print "Document saved"
+    
 
 def parse_and_save(page):
     print "Starting parse and save"
     filings = page.find("table", {"class" : "t14Standard"})
     new_fara_docs = []
-    ##new_info = []
+    
 
     for l in filings.find_all("tr"):
         #print "starting l loop"
@@ -43,9 +43,8 @@ def parse_and_save(page):
             stamp_date_obj = datetime.datetime.strptime(stamp_date, "%m/%d/%Y")
 
             if Document.objects.filter(url = url).exists():
-                print url, " in system"
-            else:    
-                print "new--- ", url 
+                pass
+            else:     
                 reg_id = re.sub('-','', url[25:29])
                 reg_id = re.sub('S','', reg_id)
                 reg_id = re.sub('L','', reg_id)
@@ -117,7 +116,6 @@ class Command(BaseCommand):
                 data.append((input.attrib['name'], input.attrib['value']))
 
         start_date = datetime.date.today() - datetime.timedelta(days=10)
-        #start_date = datetime.date(2011, 01, 01) 
         
         print start_date
         end_date = datetime.date.today()
@@ -162,20 +160,14 @@ class Command(BaseCommand):
             if len(url_end) > 1:
                 url_end = url_end[1]
             else: 
-                break   
+                break
             
-            print url_end.text
+            
+            new_info = parse_and_save(filings)
+            print datetime.date.today()
+            print new_info
           
-            
-            print url_end
-            
-            print "next round = ", url_end
-            count += 1
-            print count
-            
-            
-            #new_info = parse_and_save(filings)
-            #print new_info
-        
-        print "done!"   
         #return new_fara_docs
+
+
+

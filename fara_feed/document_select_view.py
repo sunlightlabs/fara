@@ -131,7 +131,7 @@ def entry_list(request):
         entry_docs.append(docs)
 
     entry_docs = list(itertools.chain(*entry_docs))
-    entry_docs  = sorted(entry_docs , key=lambda document: document.id) 
+    entry_docs  = sorted(entry_docs , key=lambda document: document.stamp_date) 
     entry_docs = make_pages(entry_docs, page)
     
     return render_to_response('fara_feed/entry_list.html', {'entry_docs' : entry_docs,
