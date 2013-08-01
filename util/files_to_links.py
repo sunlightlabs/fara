@@ -1,3 +1,5 @@
+# USE THE EASY ONE INSTEAD
+
 # crosswalking files to links
 import datetime
 import re
