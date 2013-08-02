@@ -47,8 +47,9 @@ class Client(models.Model):
     city = models.CharField(max_length=100, null=True, blank=True)
     state = models.CharField(max_length=100, null=True, blank=True)#long to accommodate foreign addresses
     zip_code = models.CharField(max_length=50, null=True, blank=True) 
-    #not using this right now but Bill mentioned he would like to do it in the future. 
+    #These are for AB forms
     client_type = models.CharField(max_length=25, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     
     def __unicode__(self):
         return self.client_name
@@ -62,7 +63,6 @@ class Registrant(models.Model):
     state = models.CharField(max_length=2, null=True, blank=True)
     zip_code = models.CharField(max_length=10, null=True, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)# currently with clients
     terminated_clients = models.ManyToManyField(Client, related_name='terminated_clients', null=True, blank=True)
     clients = models.ManyToManyField(Client, null=True, blank=True)    
     lobbyists = models.ManyToManyField(Lobbyist, null=True, blank=True)

@@ -102,6 +102,7 @@
 
 <h3>Add new location for client field</h3>
 <div id="location_list"></div>
+
 <form method="GET" id="locationform" action="/location/create">
     <p><label for="location">Location as appears on the form: </label> <input id="location" maxlength="300" name="location" type="text" /></p>
     <p><label for="country">Country grouping: </label> <input id="country" maxlength="300" name="country" type="text" /></p>
@@ -137,12 +138,42 @@
 <hr>
 
 
+<h3>Client info:</h3>
+
+<div id="ab_client_info">
+</div>
+
+<form method="GET" id="client_infoform" action="/client_info">
+
+    <p><label for="client">Clients:</label><select name="client" id="ab_client">
+        <option value="None">Please Select Client</option>
+    {% for client in reg_object.clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    </select></p>
+  
+  <p><i>Exhibit A question 5</i></p>
+  <p><label for="client_type">Client type: </label> <input id="client_type" maxlength="300" name="client_type" type="text" /></p>
+
+  <p><i>Exhibit B Question 8</i></p>
+  <p><label for="description">Description:</label><br \>
+    <textarea name="description" cols="25" rows="5"></textarea></p>
+
+ <input type="submit" />
+</form>
+
+<div class="help" ><a href="{% url 'instructions' %}#Client" target="blank">Help</a></div>
+<br>
+<hr>
+
+
 <h3>Processing info:</h3>
 Upload date: {{ meta_list.2 }}
+
 <form method="GET" id="metaform" action="/metadata/create">
     {% csrf_token %}
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
-    <input type="hidden" name="link" value="{{  url }}">
+    <input type="hidden" name="link" value="{{ url }}">
     <input type="hidden" name="form" value="{{ form_id }}">
     <input type="hidden" name="upload_date" value="{{ s_date }}">
   

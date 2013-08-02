@@ -148,6 +148,7 @@ jQuery(document).ready(function() {
           $("#dis_client").append(option);
           $("#gift_client").append(option);
           $("#terminated_client").append(option);
+          $("#ab_client").append(option);
       
           // 2) update list
           var item = "<li>" + name + "</li>"
@@ -168,6 +169,7 @@ jQuery(document).ready(function() {
           $location.select2('data', null);
           var $client_client = $('#client_client');
           $client_client.select2('data', null);
+
         }     
       //}
     }, 
@@ -358,20 +360,26 @@ jQuery(document).ready(function(){
           }
 
           if (tag == '#locationform'){
-            var location = response.location
-
+            var location = response.location;
             item = '<p>' + location + ' added to locations </p>'
             $('#location_list').append(item);
           }
           if (tag == '#recipform'){
-            var name = response.name
+            var name = response.name;
             item = '<p>Added: ' + name + '</p>'
             $('#reg_list').append(item);
           }
           if (tag == '#regform'){
-            var name = response.name
+            var name = response.name;
             item = '<p>Added: ' + name + '</p>'
             $('#reg_list').append(item);
+          }
+          if (tag == '#client_infoform'){
+            var client_type = response.client_type;
+            var description = response.description;
+            item = '<p>Client type: '+ client_type + "</p><p>Description: " + description + '</p>'
+            console.log(item)
+            $('#ab_client_info').replaceWith(item);
           }
         }
         
@@ -394,7 +402,7 @@ jQuery(document).ready(function(){
     $(tag).ajaxForm(opt);
 
   };
-     
+
 
   update('#stampform');
   update('#terminatedclientform');
@@ -407,6 +415,7 @@ jQuery(document).ready(function(){
   update('#giftform');
   update('#descriptionform');
   update('#locationform');
+  update('#client_infoform');
   
 });
 

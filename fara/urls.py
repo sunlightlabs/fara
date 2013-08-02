@@ -54,6 +54,7 @@ urlpatterns = patterns('',
     url(r'^enter_amendment/(\d+)', 'FaraData.entry_view.index', name='enter-amendment'),
     #AB/ Client Registration
     url(r'^enter_AB/(\d+)', 'FaraData.entry_view.enter_AB', name='enter-AB'),
+    url(r'^client_info', 'FaraData.entry_view.client_info', name='client-info'),
     #json to generate choices for the forms
     url(r'^formchoices/recip', 'FaraData.json_creator_view.recip_choice', name='json-recip-choices'),
     url(r'^formchoices/lobby', 'FaraData.json_creator_view.lobby_choice', name='json-lobby-choices'),
