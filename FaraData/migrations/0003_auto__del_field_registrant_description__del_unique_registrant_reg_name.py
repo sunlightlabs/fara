@@ -9,10 +9,10 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Removing unique constraint on 'Client', fields ['client_name']
-        db.delete_unique(u'FaraData_client', ['client_name'])
+        #db.delete_unique(u'FaraData_client', ['client_name'])
 
         # Removing unique constraint on 'Registrant', fields ['reg_name']
-        db.delete_unique(u'FaraData_registrant', ['reg_name'])
+        #db.delete_unique(u'FaraData_registrant', ['reg_name'])
 
         # Deleting field 'Registrant.description'
         db.delete_column(u'FaraData_registrant', 'description')
