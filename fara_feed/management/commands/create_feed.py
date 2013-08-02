@@ -79,12 +79,11 @@ def parse_and_save(page):
 
                 if stamp_date_obj != None:
                     try:
-                        raw_date = info[1]
-                        raw_date = raw_date[3:5] + raw_date[-2:] + raw_date[:4]
-                        stamp_date_obj = datetime.datetime.strptime(raw_date, "%M%d%Y")
-
+                        stamp_date = re.findall(r'\d{8}', url)
+                        stamp_date = stamp_date[0]
+                        stamp_date_obj = datetime.datetime.strptime(raw_date, "%Y%m%d")
                     except:
-                        stamp_date_obj = None
+                        print "ERROR no date for url: ", url
 
                 url_info= [url, reg_id, doc_type, stamp_date_obj]
                 #saves url info
