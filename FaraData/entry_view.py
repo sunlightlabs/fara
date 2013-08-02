@@ -562,9 +562,8 @@ def client_info(request):
     if request.method == 'GET': 
         client_id = int(request.GET['client'])
         client = Client.objects.get(id = client_id)
-        client = Client(client_type = request.GET['client_type'],
-                        description = request.GET['description'],
-        )
+        client.client_type = request.GET['client_type']
+        client.description = request.GET['description']
         client.save()
         client_info = json.dumps({'client_id': client_id, 'client_type': request.GET['client_type'], 'description': request.GET['description']}, separators=(',',':'))
         return HttpResponse(client_info, mimetype="application/json")
