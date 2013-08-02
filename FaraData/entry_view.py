@@ -543,8 +543,7 @@ def client(request):
         else:
             client.save()
             registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
-            print registrant
-            print registrant.clients.all()
+
             if client not in registrant.clients.all():
                 registrant.clients.add(client)
                 print "added"
@@ -679,8 +678,8 @@ def terminated(request):
             if client not in registrant.terminated_clients.all():
                 registrant.terminated_clients.add(client)
                 
-                if client in registrant.clients.all():
-                    registrant.clients.remove(client)
+            if client in registrant.clients.all():
+                registrant.clients.remove(client)
 
         terminateinfo = json.dumps(terminateinfo , separators=(',',':'))
         return HttpResponse(terminateinfo, mimetype="application/json")           
@@ -726,8 +725,7 @@ def contact(request):
         lobbyists = Lobbyist.objects.filter(id__in=lobbyists_ids)
         description = cleantext(request.GET['description'])
         
-        contact = Contact(
-                            registrant = reg_id,
+        contact = Contact(registrant = reg_id,
                             contact_type = request.GET['contact_type'],
                             description = description,
                             date = date_obj,
@@ -872,8 +870,7 @@ def disbursement(request):
         purpose = cleantext(request.GET['purpose'])
         amount = cleanmoney(request.GET['amount'])
 
-        disbursement = Disbursement(
-                            registrant = registrant,
+        disbursement = Disbursement(registrant = registrant,
                             client = client,
                             amount = amount,
                             purpose = purpose,
@@ -918,8 +915,7 @@ def gift(request):
         description = cleantext(request.GET['description'])
         recipient = Recipient.objects.get(id=int(request.GET['recipient']))
         
-        gift= Gift(
-            registrant =  registrant,
+        gift= Gift(registrant =  registrant,
             date =  date_obj,
             purpose =  purpose,
             description =  description,
@@ -970,8 +966,7 @@ def metadata(request):
         except:
             end_date =  None
 
-        metadata= MetaData(
-            link = link,
+        metadata= MetaData(link = link,
             upload_date = date_obj,
             end_date = end_date,
             reviewed = reviewed,
