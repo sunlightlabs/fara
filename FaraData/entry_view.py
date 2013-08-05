@@ -749,9 +749,9 @@ def contact(request):
                 else:
                     names = names + recip.name
                 
-                if len(recip.agency) > 1:
+                if recip.agency != None and len(recip.agency) > 1:
                     names = names + ' (' + recip.agency + '), ' 
-                elif len(recip.office_detail): 
+                elif recip.office_detail != None and len(recip.office_detail) > 1: 
                     names = names + ' (' +  recip.office_detail + '), ' 
                 else:
                     names = names + ', '
