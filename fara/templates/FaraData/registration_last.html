@@ -11,9 +11,9 @@ Upload date: {{ meta_list.2 }}
     <input type="hidden" name="upload_date" value="{{ s_date }}">
   
     {% if meta_list.0 == True %}   
-        <p><input type="checkbox" name="reviewed" checked>reviewed</p>
+        <p><input type="checkbox" name="reviewed" checked>flag</p>
     {% else %}  
-        <p><input type="checkbox" name="reviewed">reviewed</p>
+        <p><input type="checkbox" name="reviewed">flag</p>
     {% endif %}
     
     {% if meta_list.1 == True %}

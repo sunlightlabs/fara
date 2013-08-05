@@ -28,10 +28,11 @@ def make_pages(form, page):
     for d in form:    
         try:
             docdata = MetaData.objects.get(link=d.url)
-            processed_true.append(docdata.link)
             reviewed =  docdata.reviewed
             if reviewed == True:
-                reviewed_true.append(docdata.link)
+                reviewed_true.append(str(docdata.link))
+                print d.url
+            
             notes[d.url] = docdata.notes
         except:
             continue
@@ -39,7 +40,6 @@ def make_pages(form, page):
         try:
             reg = Registrant.objects.get(reg_id=d.reg_id)
             names[d.reg_id] = reg.reg_name
-            print names[d.reg_id]
         except:
             continue
     
@@ -118,7 +118,6 @@ def full_list(request):
 @login_required(login_url='/admin')
 def entry_list(request):
     processed_true = []
-    reviewed_true = []
 
     page = request.GET.get('page')
 

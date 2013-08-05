@@ -22,10 +22,9 @@ height:50px;
 
 <h3>Enter Forms</h3>
 
-
 <table>
 	<thead>
-		<tr><td><b>FARA ID</b></td><td><b>Registrant name</b></td> <td><b>Stamp date</b></td><td><b>Enter form</b></td><td><b>Reviewed</b></td><td><b>Doc type</b></td><td><b>Notes</b></td></b></tr> 
+		<tr><td><b>FARA ID</b></td><td><b>Registrant name</b></td> <td><b>Stamp date</b></td><td><b>Enter form</b></td><td><b>Flagged</b></td><td><b>Doc type</b></td><td><b>Notes</b></td></b></tr> 
 	</thead>
 	<tbody>
 	{% for d in entry_docs %}	
@@ -51,9 +50,9 @@ height:50px;
 		{% endif %}
 		
 		{% if d.url in reviewed_true %}
-			<td>Reviewed</td>
+			<td><i>Flagged<i></td>
 		{% else %}
-			<td><i>NOT Reviewed</i></td>
+			<td></td>
 		{% endif %}
 		
 			<td>{{ d.doc_type }}</td>
