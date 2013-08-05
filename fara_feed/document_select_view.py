@@ -28,11 +28,14 @@ def make_pages(form, page):
     for d in form:    
         try:
             docdata = MetaData.objects.get(link=d.url)
-            reviewed =  docdata.reviewed
+            reviewed = docdata.reviewed
             if reviewed == True:
                 reviewed_true.append(str(docdata.link))
-                print d.url
-            
+                
+            processed = docdata.processed
+            if processed == True:
+                processed_true.append(str(docdata.link))
+
             notes[d.url] = docdata.notes
         except:
             continue
@@ -60,36 +63,34 @@ def fast_supplemental(request):
 
 @login_required(login_url='/admin')
 def full_list(request):
-    processed_true = []
-    reviewed_true = []
-
     sf_page = request.GET.get('sf_page')
     ab_page = request.GET.get('ab_page')
     o_page = request.GET.get('o_page')
+    a_page = request.GET.get('a_page')
     
     supplementals = Document.objects.filter(doc_type = 'Supplemental')
-    supplementals = sorted(supplementals, key=lambda document: document.id)
+    supplementals = sorted(supplementals, key=lambda document: document.stamp_date, reverse = True)
     s_page = request.GET.get('s_page')
     supplementals = make_pages(supplementals, s_page)
     
     registrations = Document.objects.filter(doc_type = 'Registration')
-    registrations = sorted(registrations, key=lambda document: document.id) 
+    registrations = sorted(registrations, key=lambda document: document.stamp_date, reverse = True) 
     r_page = request.GET.get('r_page')
     registrations = make_pages(registrations, r_page)
 
     amendments = Document.objects.filter(doc_type = 'Amendment')
    
     # these don't even have the crappy stamp date in url maybe add date in processing?
+    amendments = sorted(amendments, key=lambda document: document.stamp_date, reverse = True)
     a_page = request.GET.get('a_page')
     amendments = make_pages(amendments, a_page)
-    amendments = sorted(amendments, key=lambda document: document.id)
     
     short_forms = Document.objects.filter(doc_type = 'Short Form')
-    short_forms = sorted(short_forms, key=lambda document: document.id)
+    short_forms = sorted(short_forms, key=lambda document: document.stamp_date, reverse = True)
     short_forms = make_pages(short_forms, sf_page)
 
     ab = Document.objects.filter(doc_type = 'Exhibit AB')
-    ab = sorted(ab, key=lambda document: document.id)
+    ab = sorted(ab, key=lambda document: document.stamp_date, reverse = True)
     ab = make_pages(ab, ab_page)
     
     others = []
@@ -99,7 +100,7 @@ def full_list(request):
         others.append(docs)
     
     others = list(itertools.chain(*others))
-    # don't have stamp dates
+    others = sorted(others, key=lambda document: document.stamp_date, reverse = True)
     others = make_pages(others, o_page)
     
     return render_to_response('fara_feed/doc_choices.html', { 'supplementals' : supplementals,
