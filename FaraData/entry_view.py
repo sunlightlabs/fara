@@ -706,6 +706,7 @@ def description(request):
 
 
 #creates contact
+## fix contacts for no lobbyists
 @login_required(login_url='/admin')
 def contact(request):
     if request.method == 'GET':
@@ -743,7 +744,7 @@ def contact(request):
             recip = Recipient.objects.get(id=r)
             if recip not in contact.recipient.all():
                 contact.recipient.add(recip)
-                if len(recip.title) > 1:
+                if recip.title != None and len(recip.title) > 1:
                     names = names + recip.title + ' ' + recip.name
                 else:
                     names = names + recip.name
@@ -756,8 +757,9 @@ def contact(request):
                     names = names + ', '
         
         for l in lobbyists:
-            if l not in contact.lobbyist.all():
+            if l != None and l != '' and l not in contact.lobbyist.all():
                 contact.lobbyist.add(l)
+        
         date = contact.date.strftime("%B %d, %Y")
         contactinfo = {'date': date, 'name': str(names)}
         contactinfo = json.dumps(contactinfo , separators=(',',':'))
