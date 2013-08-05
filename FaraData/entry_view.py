@@ -559,16 +559,23 @@ def client(request):
 @login_required(login_url='/admin')
 def client_info(request):
     if request.method == 'GET': 
-        client_id = int(request.GET['client'])
-        client = Client.objects.get(id = client_id)
-        client.client_type = request.GET['client_type']
-        client.description = request.GET['description']
-        client.save()
-        client_info = json.dumps({'client_id': client_id, 'client_type': request.GET['client_type'], 'description': request.GET['description']}, separators=(',',':'))
-        return HttpResponse(client_info, mimetype="application/json")
-    else:
-        error = json.dumps({'error': 'failed'} , separators=(',',':'))
-        return HttpResponse(error, mimetype="application/json")
+        try:
+            client_id = int(request.GET['client'])
+            client = Client.objects.get(id = client_id)
+            client.client_type = request.GET['client_type']
+            client.description = request.GET['description']
+            client.save()
+            client_info = json.dumps({'client_id': client_id, 'client_type': request.GET['client_type'], 'description': request.GET['description']}, separators=(',',':'))
+            return HttpResponse(client_info, mimetype="application/json")
+   
+        except:
+            print request.GET['client'], "!!!!!!!"
+            if request.GET['client'] == None or request.GET['client'] == '' or request.GET['client'] == "None":
+                error = json.dumps({'error': 'Please select a client.'} , separators=(',',':'))
+                return HttpResponse(error, mimetype="application/json")
+            else:
+                error = json.dumps({'error': 'failed'} , separators=(',',':'))
+                return HttpResponse(error, mimetype="application/json")
 
 @login_required(login_url='/admin')
 def location(request):
