@@ -30,7 +30,29 @@ def recip_choice(request):
     else:
         recip_choices = Recipient.objects.all()
     
-    recip_choices = makeJson(recip_choices, 'name')
+    choice_list = []
+    for r in recip_choices:
+        name = r.name
+        office = r.office_detail
+        title = r.title
+
+        if title == None or title == '':
+            if office == None or office == '':
+                final_name = name
+            else:
+                final_name = name + " (" + office + ")"
+        else:
+            if office == None or office == '':
+                final_name = title +  " " + name
+            else:
+                final_name = title + " " + name + " (" + office + ")"
+
+
+
+        item = {"id": r.id, "text": final_name}
+        choice_list.append(item)
+    recip_choices = json.dumps(choice_list, separators=(',',':'))
+
     return HttpResponse(recip_choices, mimetype="application/json")
 
 
