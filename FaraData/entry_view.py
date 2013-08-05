@@ -831,22 +831,36 @@ def contribution(request):
 
         registrant = Registrant.objects.get(reg_id=int(request.GET['registrant']))
         recipient = Recipient.objects.get(id=int(request.GET['recipient']))
-        lobby = Lobbyist.objects.get(id=int(request.GET['lobbyist']))
+        
         amount = cleanmoney(request.GET['amount'])
-               
-        contribution = Contribution(amount = amount, 
-                                    date = date_obj, 
-                                    link = request.GET['link'],
-                                    registrant = registrant,
-                                    recipient = recipient,
-                                    lobbyist = lobby, 
-        ) 
-        contribution.save()
+        
+        lobby = request.GET['lobbyist']
+        if lobby == None or lobby == '':       
+            contribution = Contribution(amount = amount, 
+                                        date = date_obj, 
+                                        link = request.GET['link'],
+                                        registrant = registrant,
+                                        recipient = recipient,
+            ) 
+            contribution.save()
+            lobbyist = None
+            
+        else:
+            lobby = Lobbyist.objects.get(id=int(request.GET['lobbyist'])) 
+            contribution = Contribution(amount = amount, 
+                                        date = date_obj, 
+                                        link = request.GET['link'],
+                                        registrant = registrant,
+                                        recipient = recipient,
+                                        lobbyist = lobby,
+            ) 
+            contribution.save()
+            lobbyist = str(contribution.lobbyist)
 
         continfo = {'amount': contribution.amount, 
                     'date': contribution.date.strftime("%B %d, %Y"), 
                     'recipient': str(contribution.recipient),
-                    'lobbyist' : str(contribution.lobbyist)
+                    'lobbyist' : lobbyist
         }
         continfo = json.dumps(continfo , separators=(',',':'))
         return HttpResponse(continfo, mimetype="application/json")  
