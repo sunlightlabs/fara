@@ -79,8 +79,6 @@ def full_list(request):
     registrations = make_pages(registrations, r_page)
 
     amendments = Document.objects.filter(doc_type = 'Amendment')
-   
-    # these don't even have the crappy stamp date in url maybe add date in processing?
     amendments = sorted(amendments, key=lambda document: document.stamp_date, reverse = True)
     a_page = request.GET.get('a_page')
     amendments = make_pages(amendments, a_page)

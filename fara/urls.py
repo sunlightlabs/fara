@@ -31,7 +31,6 @@ urlpatterns = patterns('',
     url(r'^gift/create', 'FaraData.entry_view.gift', name='create-gift'),
     url(r'^metadata/create', 'FaraData.entry_view.metadata', name='metadata'),
     url(r'^stamp_date', 'FaraData.entry_view.stamp_date', name='stamp-date'),
-    url(r'^registrant/description', 'FaraData.entry_view.description', name='description'),
     url(r'^location/create', 'FaraData.entry_view.location', name='location'),
     #Segmented supplemental
     url(r'^supplemental_base/(\d+)', 'FaraData.entry_view.supplemental_base', name='supplemental-base'),

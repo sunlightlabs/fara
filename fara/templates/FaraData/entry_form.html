@@ -183,6 +183,34 @@ Registration No: <b>{{ reg_id }}</b></p>
 <div class="help" ><a href="{% url 'instructions' %}#Location" target="blank">Help</a></div><br>
 <hr>
 
+<h3>Client info:</h3>
+
+<div id="ab_client_info">
+</div>
+
+<form method="GET" id="client_infoform" action="/client_info">
+
+    <p><label for="client">Clients:</label><select name="client" id="ab_client">
+        <option value="None">Please Select Client</option>
+    {% for client in reg_object.clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    </select></p>
+  
+  <p><i>Exhibit A question 5</i></p>
+  <p><label for="client_type">Client type: </label> <input id="client_type" maxlength="25" name="client_type" type="text" /></p>
+
+  <p><i>Exhibit B Question 8</i></p>
+  <p><label for="description">Description:</label><br \>
+    <textarea name="description" cols="25" rows="5"></textarea></p>
+
+ <input type="submit" />
+</form>
+
+<div class="help" ><a href="{% url 'instructions' %}#Client" target="blank">Help</a></div>
+<br>
+<hr>
+
 <h4>Terminated Client</h4>
 <p><i>(question 7)</i></p>
 
@@ -218,17 +246,6 @@ Registration No: <b>{{ reg_id }}</b></p>
     <p>Current description: {{ reg_object.description }}</p>
 {% endif %}
 </div>
-
-<form method="GET" id='descriptionform' action="/registrant/description">
-<p><label for="description">Description: </label><br />
-    <input type="hidden" name="reg_id" value="{{ reg_id }}">
-    <textarea cols="40" id="id_description" name="description" rows="10">
-    </textarea></p>
-    <input type="submit" />
-</form>
-
-<div class="help" ><a href="{% url 'instructions' %}#Activity_Services" target="blank">Help</a></div><br>
-<hr>
 
 
 <h3>Contact</h3>

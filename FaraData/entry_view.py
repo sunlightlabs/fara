@@ -562,14 +562,22 @@ def client_info(request):
         try:
             client_id = int(request.GET['client'])
             client = Client.objects.get(id = client_id)
-            client.client_type = request.GET['client_type']
-            client.description = request.GET['description']
+            
+            # these are on 2 different form that usually come in together but I don't want them to overwrite the older entry when they come in separately 
+            client_type = request.GET['client_type']
+            if client_type != None and client_type != '' and client_type != "None":
+                client.client_type = client_type
+            
+            description = request.GET['description']
+            if description != None and description != '' and description != "None":
+                client.description = description
+            
             client.save()
+            
             client_info = json.dumps({'client_id': client_id, 'client_type': request.GET['client_type'], 'description': request.GET['description']}, separators=(',',':'))
             return HttpResponse(client_info, mimetype="application/json")
    
         except:
-            print request.GET['client'], "!!!!!!!"
             if request.GET['client'] == None or request.GET['client'] == '' or request.GET['client'] == "None":
                 error = json.dumps({'error': 'Please select a client.'} , separators=(',',':'))
                 return HttpResponse(error, mimetype="application/json")
@@ -694,22 +702,6 @@ def terminated(request):
     else:
         error = json.dumps({'error': 'failed'} , separators=(',',':'))
         return HttpResponse(error, mimetype="application/json")
-        
-#adds description
-@login_required(login_url='/admin')
-def description(request):
-    if request.method == 'GET':
-        description = cleantext(request.GET['description'])
-        reg_id = int(request.GET['reg_id'])
-        reg = Registrant.objects.get(reg_id=reg_id)
-        reg.description = description
-        reg.save(update_fields=['description'])
-        description = json.dumps({'description': description} , separators=(',',':'))
-        return HttpResponse(description, mimetype="application/json")
-
-    else:
-        error = json.dumps({'error': 'failed'} , separators=(',',':'))
-        return HttpResponse(error, mimetype="application/json") 
 
 
 #creates contact
