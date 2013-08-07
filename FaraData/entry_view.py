@@ -51,8 +51,9 @@ def contact_info(url):
     contact_objects = Contact.objects.filter(link = url)
     contact_list = []
     for con in contact_objects:
+        con_id = int(con.id)
         for recipient in con.recipient.all():
-            contact_list.append((recipient.title, recipient.name, recipient.agency, con.date))
+            contact_list.append([recipient.title, recipient.name, recipient.agency, con.date, con_id ])
     return (contact_list)
 
 #finds contributions attached to this form        
@@ -386,6 +387,27 @@ def enter_AB(request, form_id):
         's_date': s_date,
     })
 
+# easy fix forms
+@login_required(login_url='/admin')
+def fix_contact(request, contact_id): 
+    contact =  Contact.objects.get(id=contact_id)
+    reg_object = reg_info(contact.registrant.reg_id)
+    url = contact.link
+    lobbyists = reg_object.lobbyists.all()
+    current_lobby = contact.lobbyist.all()
+    recipients = contact.recipient.all()
+    date = contact.date.strftime('%m/%d/%Y')
+
+    return render(request, 'FaraData/fix_contact.html',{
+    'contact': contact,
+    'reg_object': reg_object,
+    'url': url,
+    'lobbyists': lobbyists,
+    'recipients': recipients,
+    'current_lobby': current_lobby,
+    'date': date,
+    })
+
 #data cleaning
 def cleantext(text):
     text = re.sub(' +',' ', text)
@@ -396,7 +418,10 @@ def cleanmoney(money):
     money = money.strip()
     money = money.replace('$', '').replace(',', '')
     return money
- 
+
+
+
+
 #corrects stamp date
 @login_required(login_url='/admin')
 def stamp_date(request):
@@ -1007,6 +1032,163 @@ def metadata(request):
         error = json.dumps({'error': 'failed'} , separators=(',',':'))
         return HttpResponse(error, mimetype="application/json")        
     
+#Easy fix forms
+
+# Contacts
+@login_required(login_url='/admin')
+def amend_contact(request):        
+    try:
+        contact_id = int(request.GET['contact_id'])
+        contact = Contact.objects.get(id=contact_id)
+        contact.client = Client.objects.get(id=int(request.GET['client']))
+        contact.contact_type = request.GET['contact_type']
+        contact.description = cleantext(request.GET['description'])
         
+        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        contact.date = date_obj
+        if date_obj > datetime.now():
+            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
         
+        contact.save()
+        # add additional recipients
+        try:
+            recipients = request.GET['recipient']
+            if "," in recipients:
+                recipients = recipients.split(',')
+            else:
+                recipients = [recipients]
         
+        except:
+            recipients = None
+        
+        if recipients != None and recipients != ['']:
+            print recipients
+            for r in recipients:
+                recipient = Recipient.objects.get(id=int(r))
+                if recipient not in contact.recipient.all():
+                    contact.recipient.add(recipient)
+        
+        # add additional lobbyists
+        try:
+            lobbyists = request.GET.getlist('lobbyist')
+        except:
+            try:
+                lobbyists = request.GET['lobbyist']
+            except:
+                lobbyists = None
+        
+        print lobbyists, "lobbyist"
+        
+        if lobbyists != None:
+            for l in lobbyists:
+                l = int(l)
+                lobbyist = Lobbyist.objects.get(id=l)
+                print lobbyist
+                if lobbyist in contact.lobbyist.all():
+                    pass
+                else:
+                    contact.lobbyist.add(lobbyist)
+                    
+
+        # finding redirect info
+        url = str(contact.link)
+        doc = Document.objects.get(url=url)
+        form_id = int(doc.id)
+        doc_type = str(doc.doc_type)
+        
+        if doc_type == "Supplemental":
+            prefix = "supplemental-contact"
+            url, reg_id, s_date = doc_id(form_id)
+            reg_object = reg_info(reg_id)
+            contact_list = contact_info(url)
+            client_form = ClientForm()
+            recipient_form = RecipientForm()
+            all_recipients = Recipient.objects.all()
+            all_lobbyists = Lobbyist.objects.all()
+
+            return render(request, 'FaraData/supplemental_contact.html',{
+                'reg_id' : reg_id,
+                'reg_object': reg_object,
+                'url': url,
+                'client_form': client_form,
+                'form_id': form_id,
+                'recipient_form': recipient_form,
+                'all_recipients': all_recipients,
+                'contact_list': contact_list,
+                'all_lobbyists': all_lobbyists,
+            })
+
+        if doc_type == "Amendment":
+            url, reg_id, s_date = doc_id(form_id)
+            #forms
+            client_form = ClientForm()
+            reg_form = RegForm()
+            recipient_form = RecipientForm()
+            #options for the forms
+            all_clients = Client.objects.all()
+            all_lobbyists = Lobbyist.objects.all()
+            all_recipients = Recipient.objects.all()
+            #for displaying information already in the system
+            reg_object = reg_info(reg_id)
+            contact_list = contact_info(url)
+            dis_list = dis_info(url)
+            pay_list = pay_info(url)
+            cont_list = cont_info(url)
+            gift_list = gift_info(url)
+            meta_list = meta_info(url)
+            
+            return render(request, 'FaraData/entry_form.html',{
+                'recipient_form': recipient_form,
+                #'lobby_form': lobby_form,
+                'client_form': client_form,
+                'reg_form': reg_form,
+                #options for forms
+                'all_clients': all_clients,
+                'all_lobbyists': all_lobbyists,
+                'all_recipients': all_recipients,
+                'url': url, 
+                'reg_object': reg_object,
+                'contact_list': contact_list,
+                'dis_list' : dis_list,
+                'gift_list': gift_list,
+                'pay_list' : pay_list,
+                'cont_list' : cont_list,
+                'meta_list' : meta_list,
+                'reg_id' : reg_id,
+                'form_id' : form_id,
+                's_date' : s_date,
+            })
+    
+    except:
+        error = json.dumps({'error': 'failed'} , separators=(',',':'))
+        return HttpResponse(error, mimetype="application/json") 
+
+@login_required(login_url='/admin')
+def contact_remove_lobby(request):
+    if request.method == 'GET': 
+        contact_id = int(request.GET['contact_id'])
+        lobby_id = int(request.GET['lobbyist'])
+        lobbyist = Lobbyist.objects.get(id=lobby_id)
+        contact = Contact.objects.get(id=contact_id)
+        contact.lobbyist.remove(lobbyist)
+
+        info = json.dumps({'lobby_id': lobby_id}, separators=(',',':'))
+        return HttpResponse(info, mimetype="application/json")
+
+@login_required(login_url='/admin')
+def contact_remove_recip(request):
+    if request.method == 'GET': 
+        contact_id = int(request.GET['contact_id'])
+        recip_id = int(request.GET['recip'])
+        recipient = Recipient.objects.get(id=recip_id)
+        contact = Contact.objects.get(id=contact_id)
+        contact.recipient.remove(recipient)
+
+        info = json.dumps({'recip_id': recip_id}, separators=(',',':'))
+        return HttpResponse(info, mimetype="application/json")
+
+
+
+
+

@@ -311,10 +311,10 @@ jQuery(document).ready(function(){
               fee = ""
             }
             
-            item = '<tr><td>$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td></tr>'
+            var item = '<tr><td>$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td></tr>';
             $('#pay_table').append(item);
             var $payment_subcontractor = $('#payment_subcontractor');
-            $payment_subcontractor.select2('data', null)
+            $payment_subcontractor.select2('data', null);
 
           }
 
@@ -335,7 +335,7 @@ jQuery(document).ready(function(){
             var recipient = response.recipient;
             var date =  response.date;
 
-            item = '<tr><td>$' + amount + '</td><td>' + lobbyist+ '</td><td>'+ recipient +'</td><td>'+date + '</td></tr>'
+            var item = '<tr><td>$' + amount + '</td><td>' + lobbyist+ '</td><td>'+ recipient +'</td><td>'+date + '</td></tr>';
             $('#cont_table').append(item);
             var $cont_recip = $('#cont_recip');
             $cont_recip.select2('data', null)
@@ -346,7 +346,7 @@ jQuery(document).ready(function(){
             var client = response.client;
             var description = response.description;
 
-            item = '<li>' + description + " from " + client + " on " + date + '</li>'
+            var item = '<li>' + description + " from " + client + " on " + date + '</li>'
             $('#gift_basket ul').append(item);
             var $gift_recip = $('#gift_recip');
             $gift_recip.select2('data', null) 
@@ -354,40 +354,48 @@ jQuery(document).ready(function(){
 
           if (tag == '#descriptionform'){
             var description = response.description;
-
-            item =  '<p>Description: ' + description + '</p>'
+            var item =  '<p>Description: ' + description + '</p>';
             $('#discription_list').replaceWith(item);
           }
 
           if (tag == '#locationform'){
             var location = response.location;
-            item = '<p>' + location + ' added to locations </p>'
+            var item = '<p>' + location + ' added to locations </p>';
             $('#location_list').append(item);
           }
           if (tag == '#recipform'){
             var name = response.name;
-            item = '<p>Added: ' + name + '</p>'
+            var item = '<p>Added: ' + name + '</p>';
             $('#reg_list').append(item);
           }
           if (tag == '#regform'){
             var name = response.name;
-            item = '<p>Added: ' + name + '</p>'
+            var item = '<p>Added: ' + name + '</p>';
             $('#reg_list').append(item);
           }
           if (tag == '#client_infoform'){
             var client_type = response.client_type;
             var description = response.description;
-            item = '<p>Client type: '+ client_type + "</p><p>Description: " + description + '</p>'
-            console.log(item)
+            var item = '<p>Client type: '+ client_type + "</p><p>Description: " + description + '</p>';
             $('#ab_client_info').replaceWith(item);
+          }
+          if (tag == '#contact_remove_recip'){
+            var recip_id = response.recip_id;
+            var div_name = "#recip" + recip_id;
+            $(div_name).remove();
+          }
+          if (tag == '#contact_remove_lobby'){
+            var lobby_id = response.lobby_id;
+            var div_name = "#lobby" + lobby_id;
+            $(div_name).remove();
           }
         }
         
         // creates error messages generated in views
         else{
           console.log("error")
-          var message = "Error: " + response.error
-          alert(message)
+          var message = "Error: " + response.error;
+          alert(message);
         }  
       },
 
@@ -416,6 +424,8 @@ jQuery(document).ready(function(){
   update('#descriptionform');
   update('#locationform');
   update('#client_infoform');
+  update('#contact_remove_recip');
+  update('#contact_remove_lobby');
   
 });
 
@@ -425,11 +435,11 @@ jQuery(document).ready(function(){
 <script>
 jQuery(document).ready(function() {
 
-var direct = {
-    success: function(response, statusText, xhr, h){
-         console.log(response);
-         window.location.href="{% url 'entry-list' %}";
-    }
+  var direct = {
+      success: function(response, statusText, xhr, h){
+           console.log(response);
+           window.location.href="{% url 'entry-list' %}";
+  }
 }
 
 $("#metaform").ajaxForm(direct);

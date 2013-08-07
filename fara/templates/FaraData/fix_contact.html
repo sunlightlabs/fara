@@ -1,0 +1,98 @@
+{% extends "FaraData/form_base.html" %}
+
+{% block formquestions %}
+
+<h3><b>Fix Contact</b></h3>
+
+<p>Delete Recipients for this contact:</p>
+
+{% for r in recipients %}
+    <div id="recip{{ r.id }}">
+    <form method="GET" id="contact_remove_recip" action="/contact_remove_recip">  
+            <input type="hidden" name="contact_id" value="{{ contact.id }}">
+            <input type="hidden" name="recip" value="{{ r.id }}">
+            {{ r.name }}
+            <input value="Delete" type="submit" />
+    </form> 
+    </div> 
+{% endfor %}
+
+
+<p>Delete Lobbyists for this contact:</p>
+{% for l in current_lobby %}
+    <div id="lobby{{ l.id }}">
+    <form method="GET" id="contact_remove_lobby" action="/contact_remove_lobby">  
+            <input type="hidden" name="contact_id" value="{{ contact.id }}">
+            <input type="hidden" name="lobbyist" value="{{ l.id }}">
+            {{ l }}
+            <input type="submit" value="Delete"  />
+    </form>  
+    </div>
+{% endfor %}
+
+<form method="GET" id="amend_contact" action="/amend_contact"> 
+    {% csrf_token %}
+    <input type="hidden" name="reg_id" value="{{ contact.registrant.reg_id }}">
+    <input type="hidden" name="link" value="{{ url }}">
+    <input type="hidden" name="contact_id" value="{{ contact.id }}">
+
+    <p><label for="client">Client:</label><select name="client" id="contact_client">
+        <option value="{{ contact.client.id }}">{{ contact.client.client_name }}</option>
+    {% for client in reg_object.clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    {% for client in reg_object.terminated_clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    </select></p>
+
+
+    (who is being contacted)
+    <p><label for="recipient">Add additional Recipients: </label><input type="hidden" id="contact_recip" name="recipient" style="width: 300px"/>
+
+    {% for recipient in all_recipients %}
+        <option value="{{ recipient.id }}">{{ recipient.title }} {{ recipient.name }}, {{ recipient.agency }}</option>
+    {% endfor %}
+    </select>
+   
+ 
+    <p><label for="lobbyist">Add Additional Lobbyists:</label><select multiple="multiple" id="contact_lobbyist" name="lobbyist">
+    {% for lobbyist in lobbyists %}
+        <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
+    {% endfor %}
+    </select>
+
+    
+    <p><label for="date">Date: </label>
+    <input id="contact_date" type="text" name="date" value="{{ date }}"/></p><br>
+
+    <p><label for="type">Type: </label>
+        <select name="contact_type">
+            <option value="{{ contact.contact_type }}">
+                {% if contact.contact_type == "O" %}
+                    other</option>
+                {% elif contact.contact_type == "P" %}
+                    phone</option>
+                {% elif contact.contact_type == "E" %}
+                    email</option>
+                {% elif contact.contact_type == "M" %}  
+                    meeting</option>
+                {% else %}
+                    unknown</option>
+                {% endif %}
+
+            <option value="U">unknown</option>
+            <option value="P">phone</option>
+            <option value="E">email</option>
+            <option value="M">meeting</option>
+            <option value="O">other</option>
+        </select></p>
+    
+    <p><label for="description">Edit Description: </label><br />
+    <textarea cols="40" id="id_description" name="description" rows="10">{{ contact.description }}
+    </textarea></p>
+
+    <input type="submit" />
+</form>
+
+{% endblock formquestions %}

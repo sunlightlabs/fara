@@ -32,6 +32,12 @@ urlpatterns = patterns('',
     url(r'^metadata/create', 'FaraData.entry_view.metadata', name='metadata'),
     url(r'^stamp_date', 'FaraData.entry_view.stamp_date', name='stamp-date'),
     url(r'^location/create', 'FaraData.entry_view.location', name='location'),
+    #Functions for fixing forms
+    url(r'^amend_contact', 'FaraData.entry_view.amend_contact', name='amend-contact'),
+    url(r'^contact_remove_recip', 'FaraData.entry_view.contact_remove_recip', name='contact-remove-recip'),
+    url(r'^contact_remove_lobby', 'FaraData.entry_view.contact_remove_lobby', name='contact-remove-lobby'),
+    #Easy fix forms
+    url(r'^fix_contact/(\d+)', 'FaraData.entry_view.fix_contact', name = 'fix-contact'),
     #Segmented supplemental
     url(r'^supplemental_base/(\d+)', 'FaraData.entry_view.supplemental_base', name='supplemental-base'),
     url(r'^supplemental_first/(\d+)', 'FaraData.entry_view.supplemental_first', name='supplemental-first'),

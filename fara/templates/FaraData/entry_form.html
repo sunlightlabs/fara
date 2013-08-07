@@ -238,26 +238,18 @@ Registration No: <b>{{ reg_id }}</b></p>
 <hr>
 
 
-
-<h3>Activities and Services</h3>
-<p><i>Question 11</i></p>
-<div id="discription_list">
-{% if reg_object.description %}
-    <p>Current description: {{ reg_object.description }}</p>
-{% endif %}
-</div>
-
-
 <h3>Contact</h3>
 <p><i>Question 12</i></p>
 Contacts related to this form:<br>
 <div id="contact_list">
 <ul>
+
+
 {% for c in contact_list %}
 {% if c.2 %}
-<li>{{ c.0 }} {{ c.1 }} ({{ c.2 }}) {{ c.3 }}</li>
+<li><a href="{% url 'fix-contact' c.4 %} ">{{ c.0 }} {{ c.1 }} ({{ c.2 }}) {{ c.3 }}</a></li>
 {% else %}
-<li>{{ c.0 }} {{ c.1 }} {{ c.3 }}</li>
+<li><a href="{% url 'fix-contact' c.4 %} ">{{ c.0 }} {{ c.1 }} {{ c.3 }}</a></li>
 {% endif %}
 {% endfor %}
 </ul>
