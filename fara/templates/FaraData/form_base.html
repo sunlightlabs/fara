@@ -379,15 +379,18 @@ jQuery(document).ready(function(){
             var item = '<p>Client type: '+ client_type + "</p><p>Description: " + description + '</p>';
             $('#ab_client_info').replaceWith(item);
           }
-          if (tag == '#contact_remove_recip'){
-            var recip_id = response.recip_id;
-            var div_name = "#recip" + recip_id;
-            $(div_name).remove();
-          }
-          if (tag == '#contact_remove_lobby'){
-            var lobby_id = response.lobby_id;
-            var div_name = "#lobby" + lobby_id;
-            $(div_name).remove();
+          // if (tag == '#contact_remove_recip'){
+          //   var recip_id = response.recip_id;
+          //   var div_name = "#recip" + recip_id;
+          //   $(div_name).remove();
+          // }
+          // if (tag == '#contact_remove_lobby'){
+          //   var lobby_id = response.lobby_id;
+          //   var div_name = "#lobby" + lobby_id;
+          //   $(div_name).remove();
+          // }
+          if (tag == '.deleteable'){
+            $(this).remove();
           }
         }
         
@@ -409,8 +412,12 @@ jQuery(document).ready(function(){
     // 1) submit form
     $(tag).ajaxForm(opt);
 
+//    $('.ajaxclass').ajaxForm(opt);
+      $('.deleteable').each(function(t){
+        $(t).ajaxForm(opt);
+        //$(this).remove();
+      }) 
   };
-
 
   update('#stampform');
   update('#terminatedclientform');
@@ -426,8 +433,11 @@ jQuery(document).ready(function(){
   update('#client_infoform');
   update('#contact_remove_recip');
   update('#contact_remove_lobby');
+  update('.deleteable');
   
 });
+
+
 
 </script>
 

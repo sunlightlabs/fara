@@ -8,7 +8,7 @@
 
 {% for r in recipients %}
     <div id="recip{{ r.id }}">
-    <form method="GET" id="contact_remove_recip" action="/contact_remove_recip">  
+    <form method="GET" class="deleteable" action="/contact_remove_recip">  
             <input type="hidden" name="contact_id" value="{{ contact.id }}">
             <input type="hidden" name="recip" value="{{ r.id }}">
             {{ r.name }}
@@ -21,7 +21,7 @@
 <p>Delete Lobbyists for this contact:</p>
 {% for l in current_lobby %}
     <div id="lobby{{ l.id }}">
-    <form method="GET" id="contact_remove_lobby" action="/contact_remove_lobby">  
+    <form method="GET" class="deleteable" action="/contact_remove_lobby">  
             <input type="hidden" name="contact_id" value="{{ contact.id }}">
             <input type="hidden" name="lobbyist" value="{{ l.id }}">
             {{ l }}
@@ -94,5 +94,6 @@
 
     <input type="submit" />
 </form>
+
 
 {% endblock formquestions %}
