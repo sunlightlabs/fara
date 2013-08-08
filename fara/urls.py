@@ -40,10 +40,12 @@ urlpatterns = patterns('',
     url(r'^payment_remove_sub', 'FaraData.entry_view.payment_remove_sub', name='payment-remove-sub'),
     url(r'^amend_disbursement', 'FaraData.entry_view.amend_disbursement', name='amend-disbursement'),
     url(r'^disbursement_remove_sub', 'FaraData.entry_view.disbursement_remove_sub', name='disbursement-remove-sub'),
+    url(r'^amend_contribution', 'FaraData.entry_view.amend_contribution', name='amend-contribution'),
     #Easy fix forms
     url(r'^fix_contact/(\d+)', 'FaraData.entry_view.fix_contact', name = 'fix-contact'),
     url(r'^fix_payment/(\d+)', 'FaraData.entry_view.fix_payment', name = 'fix-payment'),
     url(r'^fix_disbursement/(\d+)', 'FaraData.entry_view.fix_disbursement', name= 'fix-disbursement'),
+    url(r'^fix_contribution/(\d+)', 'FaraData.entry_view.fix_contribution', name= 'fix-contribution'),
     #Segmented supplemental
     url(r'^supplemental_base/(\d+)', 'FaraData.entry_view.supplemental_base', name='supplemental-base'),
     url(r'^supplemental_first/(\d+)', 'FaraData.entry_view.supplemental_first', name='supplemental-first'),

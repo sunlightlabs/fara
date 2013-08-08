@@ -61,7 +61,7 @@ def cont_info(url):
     cont_objects = Contribution.objects.filter(link = url) 
     cont_list = []
     for cont in cont_objects: 
-        cont_list.append([cont.lobbyist, cont.amount, cont.recipient, cont.date])
+        cont_list.append([cont.lobbyist, cont.amount, cont.recipient, cont.date, cont.id])
     return cont_list
                
 #finds gifts attached to the form
@@ -435,6 +435,20 @@ def fix_disbursement(request, dis_id):
 
     return render(request, 'FaraData/fix_disbursement.html',{
         'disbursement': disbursement,
+        'reg_object': reg_object,
+        'url': url,
+        'date': date,
+        })
+
+@login_required(login_url='/admin')
+def fix_contribution(request, cont_id):
+    contribution = Contribution.objects.get(id=cont_id)
+    reg_object = reg_info(contribution.registrant.reg_id)
+    url = contribution.link
+    date = contribution.date.strftime('%m/%d/%Y')
+
+    return render(request, 'FaraData/fix_contribution.html',{
+        'contribution': contribution,
         'reg_object': reg_object,
         'url': url,
         'date': date,
@@ -1254,7 +1268,6 @@ def amend_disbursement(request):
         doc = Document.objects.get(url=url)
         form_id = int(doc.id)
         doc_type = str(doc.doc_type)
-        print "Hello disbursement"
         
         if doc_type == "Supplemental":
             return supplemental_disbursement(request, form_id)
@@ -1269,15 +1282,53 @@ def amend_disbursement(request):
 @login_required(login_url='/admin')
 def disbursement_remove_sub(request):
     if request.method == 'GET':
-        print "hello"
         disbursement_id = int(request.GET['disbursement_id'])
-        print disbursement_id
         disbursement = Disbursement.objects.get(id=disbursement_id)
         disbursement.subcontractor = None
         disbursement.save()
 
         info = json.dumps({'disbursement_id': disbursement_id}, separators=(',',':'))
         return HttpResponse(info, mimetype="application/json")
+
+@login_required(login_url='/admin')
+def amend_contribution(request):
+    if request.method == 'GET':
+        contribution = Contribution.objects.get(id=request.GET['cont_id'])
+
+        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        if date_obj > datetime.now():
+            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
+
+        contribution.amount = cleanmoney(request.GET['amount'])
+        contribution.date = date_obj
+        
+        if request.GET['recipient'] != '' and request.GET['recipient'] != None:
+            contribution.recipient = Recipient.objects.get(id=int(request.GET['recipient']))
+        
+        lobby = request.GET['lobbyist']
+        if lobby != None and lobby != '':   
+            contribution.lobbyist = Lobbyist.objects.get(id=int(request.GET['lobbyist']))
+        else:
+            contribution.lobbyist = None
+
+        contribution.save()
+
+        url = str(contribution.link)
+        doc = Document.objects.get(url=url)
+        form_id = int(doc.id)
+        doc_type = str(doc.doc_type)
+        
+        if doc_type == "Supplemental":
+            return supplemental_contibution(request, form_id)
+
+        if doc_type == "Registration":
+            return registration_contribution(request, form_id)
+
+        if doc_type == "Amendment":
+            return return_big_form(request, form_id)
+
+
 
 
 

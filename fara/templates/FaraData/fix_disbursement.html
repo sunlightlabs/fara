@@ -2,7 +2,6 @@
 
 {% block formquestions %}
 
-
 <h3>Fix Disbursement</h3>
 
 {% if disbursement.subcontractor %}
@@ -36,7 +35,7 @@ Delete subcontractor:
     
     <p><label for= "amount">Amount: <br />$</label><input id="amount" type="text" name="amount" value="{{ disbursement.amount }}"/></p> 
 
-    <p><lable for="purpose">Purpose: <br /><textarea name="purpose" cols="25" rows="5"">{{ disbursement.purpose }}</textarea></p>
+    <p><lable for="purpose">Purpose: <br /><textarea name="purpose" cols="25" rows="5">{{ disbursement.purpose }}</textarea></p>
     
     (Add this field if the money is going to another registrant.)
     <p><label for="subcontractor">Add Subcontractor: </label><input type="hidden" id="disbursement_subcontractor" name="subcontractor" style="width: 300px"/></p>

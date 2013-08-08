@@ -452,8 +452,8 @@ Contacts related to this form:<br>
     <tbody>   
     {% for cont in cont_list %}
             <tr>
-            <td>${{ cont.1 }}</td><td>{{ cont.0 }}</td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td>
-            <tr>
+            <td>${{ cont.1 }}</td><td>{{ cont.0 }}</td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td><td><a href="{% url 'fix-contribution' cont.4 %}">fix</a></td>
+            </tr>
     {% endfor %}
     </tbody>
 </table>

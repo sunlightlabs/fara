@@ -1,0 +1,37 @@
+{% extends "FaraData/form_base.html" %}
+
+{% block formquestions %}
+
+<h3>Fix Contribution</h3>
+
+
+<form method="GET" id='amend_cont' action="/amend_contribution">
+    <input type="hidden" name="cont_id" value='{{ contribution.id }}'>
+    <input type="hidden" name="registrant" value="{{ reg_obj.reg_id }}">
+    <input type="hidden" name="link" value="{{ url }}">
+    
+    <p><label for="id_amount">Amount: $</label> 
+    <input id="id_amount" name="amount" type="text" value="{{ contribution.amount }}" /></p>
+    
+    <p><label for="date">Date: </label>
+    <input id="contribution_date" type="text" name="date" value="{{ date }}"/></p>
+
+    <p>(Who gets the contribution)</p>
+    Current Recipient: <b>{{ contribution.recipient }}</b></p>
+
+    <p><label for="recipient">Change Recipient :</label><p><input type="hidden" id="cont_recip" name="recipient" style="width: 300px"/></p>
+
+    (Who the money is coming from)
+    <p><label for="lobbyist">Add Lobbyist or PAC:</label><select id="cont_lobbyist" name="lobbyist">
+        <option value="{{ contrbution.lobbyist.id }}">{{ contribution.lobbyist }}</option>
+        <option value="">None</option>
+    {% for lobbyist in reg_object.lobbyists.all %}
+        <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
+    {% endfor %}
+	</select></p>
+    
+    <input type="submit" />
+</form>
+
+
+{% endblock formquestions %}
