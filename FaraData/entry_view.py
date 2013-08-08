@@ -43,7 +43,7 @@ def pay_info(url):
     pay_objects = Payment.objects.filter(link = url) 
     pay_list = []
     for pay in pay_objects: 
-        pay_list.append([pay.client, pay.amount, pay.fee, pay.date])
+        pay_list.append([pay.client, pay.amount, pay.fee, pay.date, pay.id])
     return pay_list
 
 #finds contacts attached to this form 
@@ -92,47 +92,51 @@ def meta_info(url):
     return meta_list 
 
 #all in one supplemental data entry form- good for amendments
+def return_big_form(request, form_id):
+        url, reg_id, s_date = doc_id(form_id)
+        #forms
+        client_form = ClientForm()
+        reg_form = RegForm()
+        recipient_form = RecipientForm()
+        #options for the forms
+        all_clients = Client.objects.all()
+        all_lobbyists = Lobbyist.objects.all()
+        all_recipients = Recipient.objects.all()
+        #for displaying information already in the system
+        reg_object = reg_info(reg_id)
+        contact_list = contact_info(url)
+        dis_list = dis_info(url)
+        pay_list = pay_info(url)
+        cont_list = cont_info(url)
+        gift_list = gift_info(url)
+        meta_list = meta_info(url)
+
+
+        return render(request, 'FaraData/entry_form.html',{
+            'recipient_form': recipient_form,
+            #'lobby_form': lobby_form,
+            'client_form': client_form,
+            'reg_form': reg_form,
+            #options for forms
+            'all_clients': all_clients,
+            'all_lobbyists': all_lobbyists,
+            'all_recipients': all_recipients,
+            'url': url, 
+            'reg_object': reg_object,
+            'contact_list': contact_list,
+            'dis_list' : dis_list,
+            'gift_list': gift_list,
+            'pay_list' : pay_list,
+            'cont_list' : cont_list,
+            'meta_list' : meta_list,
+            'reg_id' : reg_id,
+            'form_id' : form_id,
+            's_date' : s_date,
+        })
+
 @login_required(login_url='/admin')
 def index(request, form_id):
-    url, reg_id, s_date = doc_id(form_id)
-    #forms
-    client_form = ClientForm()
-    reg_form = RegForm()
-    recipient_form = RecipientForm()
-    #options for the forms
-    all_clients = Client.objects.all()
-    all_lobbyists = Lobbyist.objects.all()
-    all_recipients = Recipient.objects.all()
-    #for displaying information already in the system
-    reg_object = reg_info(reg_id)
-    contact_list = contact_info(url)
-    dis_list = dis_info(url)
-    pay_list = pay_info(url)
-    cont_list = cont_info(url)
-    gift_list = gift_info(url)
-    meta_list = meta_info(url)
-    
-    return render(request, 'FaraData/entry_form.html',{
-        'recipient_form': recipient_form,
-        #'lobby_form': lobby_form,
-        'client_form': client_form,
-        'reg_form': reg_form,
-        #options for forms
-        'all_clients': all_clients,
-        'all_lobbyists': all_lobbyists,
-        'all_recipients': all_recipients,
-        'url': url, 
-        'reg_object': reg_object,
-        'contact_list': contact_list,
-        'dis_list' : dis_list,
-        'gift_list': gift_list,
-        'pay_list' : pay_list,
-        'cont_list' : cont_list,
-        'meta_list' : meta_list,
-        'reg_id' : reg_id,
-        'form_id' : form_id,
-        's_date' : s_date,
-    })
+    return return_big_form(request, form_id)
 
 #multi-step supplemental form
 @login_required(login_url='/admin')
@@ -399,14 +403,28 @@ def fix_contact(request, contact_id):
     date = contact.date.strftime('%m/%d/%Y')
 
     return render(request, 'FaraData/fix_contact.html',{
-    'contact': contact,
-    'reg_object': reg_object,
-    'url': url,
-    'lobbyists': lobbyists,
-    'recipients': recipients,
-    'current_lobby': current_lobby,
-    'date': date,
+        'contact': contact,
+        'reg_object': reg_object,
+        'url': url,
+        'lobbyists': lobbyists,
+        'recipients': recipients,
+        'current_lobby': current_lobby,
+        'date': date,
     })
+
+@login_required(login_url='/admin')
+def fix_payment(request, payment_id):
+    payment = Payment.objects.get(id=payment_id)
+    reg_object = reg_info(payment.registrant.reg_id)
+    url = payment.link
+    date = payment.date.strftime('%m/%d/%Y')
+
+    return render(request, 'FaraData/fix_payment.html',{
+        'payment': payment,
+        'reg_object': reg_object,
+        'url': url,
+        'date': date,
+        })
 
 #data cleaning
 def cleantext(text):
@@ -1098,67 +1116,10 @@ def amend_contact(request):
         doc_type = str(doc.doc_type)
         
         if doc_type == "Supplemental":
-            prefix = "supplemental-contact"
-            url, reg_id, s_date = doc_id(form_id)
-            reg_object = reg_info(reg_id)
-            contact_list = contact_info(url)
-            client_form = ClientForm()
-            recipient_form = RecipientForm()
-            all_recipients = Recipient.objects.all()
-            all_lobbyists = Lobbyist.objects.all()
-
-            return render(request, 'FaraData/supplemental_contact.html',{
-                'reg_id' : reg_id,
-                'reg_object': reg_object,
-                'url': url,
-                'client_form': client_form,
-                'form_id': form_id,
-                'recipient_form': recipient_form,
-                'all_recipients': all_recipients,
-                'contact_list': contact_list,
-                'all_lobbyists': all_lobbyists,
-            })
+            return supplemental_contact(request, form_id)
 
         if doc_type == "Amendment":
-            url, reg_id, s_date = doc_id(form_id)
-            #forms
-            client_form = ClientForm()
-            reg_form = RegForm()
-            recipient_form = RecipientForm()
-            #options for the forms
-            all_clients = Client.objects.all()
-            all_lobbyists = Lobbyist.objects.all()
-            all_recipients = Recipient.objects.all()
-            #for displaying information already in the system
-            reg_object = reg_info(reg_id)
-            contact_list = contact_info(url)
-            dis_list = dis_info(url)
-            pay_list = pay_info(url)
-            cont_list = cont_info(url)
-            gift_list = gift_info(url)
-            meta_list = meta_info(url)
-            
-            return render(request, 'FaraData/entry_form.html',{
-                'recipient_form': recipient_form,
-                #'lobby_form': lobby_form,
-                'client_form': client_form,
-                'reg_form': reg_form,
-                #options for forms
-                'all_clients': all_clients,
-                'all_lobbyists': all_lobbyists,
-                'all_recipients': all_recipients,
-                'url': url, 
-                'reg_object': reg_object,
-                'contact_list': contact_list,
-                'dis_list' : dis_list,
-                'gift_list': gift_list,
-                'pay_list' : pay_list,
-                'cont_list' : cont_list,
-                'meta_list' : meta_list,
-                'reg_id' : reg_id,
-                'form_id' : form_id,
-                's_date' : s_date,
-            })
+            return return_big_form(request, form_id)
     
     except:
         error = json.dumps({'error': 'failed'} , separators=(',',':'))
@@ -1183,12 +1144,80 @@ def contact_remove_recip(request):
         recip_id = int(request.GET['recip'])
         recipient = Recipient.objects.get(id=recip_id)
         contact = Contact.objects.get(id=contact_id)
+        
         contact.recipient.remove(recipient)
 
         info = json.dumps({'recip_id': recip_id}, separators=(',',':'))
         return HttpResponse(info, mimetype="application/json")
 
+@login_required(login_url='/admin')
+def amend_payment(request):
+   # try:
+        if request.method == 'GET':
+            payment_id = request.GET['pay_id']
+            client = Client.objects.get(id=int(request.GET['client']))
+            reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
+            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+            if date_obj > datetime.now():
+                date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
+                return HttpResponse(date_error, mimetype="application/json")
 
+            #print request.GET['fee']
+            if request.method == 'GET' and 'fee' in request.GET:
+                fee = True
+            else:
+                fee = False
+    
+            purpose = cleantext(request.GET['purpose'])
+            amount = cleanmoney(request.GET['amount'])
+            print fee
+            payment = Payment.objects.get(id=payment_id)
+            payment.client = client
+            payment.registrant = reg_id
+            payment.fee = fee
+            payment.amount = amount
+            payment.purpose = purpose
+            payment.date = date_obj
+            
+            payment.save()
+            print "SAVING"
 
+            subcontractor_id = request.GET['subcontractor']
+            if subcontractor_id != '' or None:
+                subcontractor = Registrant.objects.get(reg_id = subcontractor_id )
+                payment.subcontractor = subcontractor
+                payment.save()
+            
+            url = str(payment.link)
+            doc = Document.objects.get(url=url)
+            form_id = int(doc.id)
+            doc_type = str(doc.doc_type)
 
+            if doc_type == "Supplemental":
+                return supplemental_payment(request, form_id)
 
+            if doc_type == "Registration":
+                return registration_payment(request, form_id)
+
+            if doc_type == "Amendment":
+                return return_big_form(request, form_id)
+
+        else:
+            error = json.dumps({'error': 'Not GET'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")  
+    # except:
+    #     error = json.dumps({'error': 'failed'} , separators=(',',':'))
+    #     return HttpResponse(error, mimetype="application/json") 
+
+@login_required(login_url='/admin')
+def payment_remove_sub(request):
+    if request.method == 'GET':
+        payment_id = int(request.GET['payment_id'])
+        payment = Payment.objects.get(id=payment_id)
+        payment.subcontractor = None
+        payment.save()
+
+        info = json.dumps({'payment_id': payment_id}, separators=(',',':'))
+        return HttpResponse(info, mimetype="application/json")
+    

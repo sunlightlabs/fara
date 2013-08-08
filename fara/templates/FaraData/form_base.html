@@ -259,7 +259,6 @@ jQuery(document).ready(function(){
 
     var opt = {
       success: function(response, statusText, xhr, h){
-
         var error = response.error
         if (typeof error== 'undefined'){
           
@@ -379,18 +378,9 @@ jQuery(document).ready(function(){
             var item = '<p>Client type: '+ client_type + "</p><p>Description: " + description + '</p>';
             $('#ab_client_info').replaceWith(item);
           }
-          // if (tag == '#contact_remove_recip'){
-          //   var recip_id = response.recip_id;
-          //   var div_name = "#recip" + recip_id;
-          //   $(div_name).remove();
-          // }
-          // if (tag == '#contact_remove_lobby'){
-          //   var lobby_id = response.lobby_id;
-          //   var div_name = "#lobby" + lobby_id;
-          //   $(div_name).remove();
-          // }
+
           if (tag == '.deleteable'){
-            $(this).remove();
+            h.parent('div').remove();
           }
         }
         
@@ -404,8 +394,8 @@ jQuery(document).ready(function(){
 
       // creates error messages 
       error: function( jqxhr, errorText, error){
-        var message = "Error: " + error
-        alert(message)
+        var message = "Error: " + error;
+        alert(message);
       },
     }
     
@@ -413,10 +403,9 @@ jQuery(document).ready(function(){
     $(tag).ajaxForm(opt);
 
 //    $('.ajaxclass').ajaxForm(opt);
-      $('.deleteable').each(function(t){
-        $(t).ajaxForm(opt);
-        //$(this).remove();
-      }) 
+ //     $('.deleteable').each(function(t){
+   //     $(t).ajaxForm(opt);
+     // }) 
   };
 
   update('#stampform');
@@ -436,8 +425,14 @@ jQuery(document).ready(function(){
   update('.deleteable');
   
 });
-
-
+// function update_delete(tag){
+//   $(tag).ajaxForm(opt);
+//   //    $('.ajaxclass').ajaxForm(opt);
+//   $('.deleteable').each(function(t){
+//     $(t).ajaxForm(opt);
+// }
+// update_delete('.deleteable');
+// });
 
 </script>
 

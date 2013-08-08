@@ -1,0 +1,57 @@
+{% extends "FaraData/form_base.html" %}
+
+{% block formquestions %}
+
+
+{% if payment.subcontractor %}
+Delete subcontractor:
+<div id="sub{{ payment.subcontractor.reg_id }}">
+    <form method="GET" class="deleteable" action="/payment_remove_sub">  
+            <input type="hidden" name="payment_id" value="{{ payment.id }}">
+            {{ payment.subcontractor.reg_name }}
+            <input value="Delete" type="submit" />
+    </form> 
+</div> 
+{% endif  %}
+
+<form method="GET" id="amend_pay" action="/amend_payment">
+    <input type="hidden" name="pay_id" value="{{ payment.id }}" />
+    <input type="hidden" name="reg_id" value="{{ reg_object.reg_id }}"/>
+    <input type="hidden" name="link" value="{{ url }}"/>
+    
+   <p><label for="client">Clients:</label><select name="client" id="pay_client">
+            <option value="{{ payment.client.id }}">{{ payment.client.client_name }}</option>
+        {% for client in reg_object.clients.all %}
+            <option value="{{ client.id }}">{{ client.client_name }}</option>
+        {% endfor %}
+        {% for client in reg_object.terminated_clients.all %}
+            <option value="{{ client.id }}">{{ client.client_name }}</option>
+        {% endfor %}
+    </select></p>
+
+    <p>
+    {% if payment.fee == True %}   
+        <input type="checkbox" name="fee" checked>Fee
+    {% else %}  
+        <input type="checkbox" name="fee">Fee
+    {% endif %}
+    </p>
+    
+    <p><label for="amount">Amount: $</label><input id="amount" type="text" name="amount" value="{{ payment.amount }}"/></p> 
+    
+    <p><label for="description">description:</label><br \>
+    <textarea name="purpose" cols="25" rows="5" value="{{ payment.description }}"></textarea></p>
+    
+    <p><label for="date">Date: </label>
+    <input id="payment_date" type="text" name="date" value="{{ date}}"/></p>
+
+    (Add this field if the money is coming from to another registrant.)
+    <p><label for="subcontractor">Subcontractor: </label><input type="hidden" id="payment_subcontractor" name="subcontractor" style="width: 300px" /></p>
+    
+    <input type="submit" />
+</form>
+
+<div class="help" ><a href="{% url 'instructions' %}#Payment" target="blank">Help</a></div><br>
+<hr />
+
+{% endblock formquestions %}

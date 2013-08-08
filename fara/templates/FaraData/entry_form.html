@@ -241,16 +241,18 @@ Registration No: <b>{{ reg_id }}</b></p>
 <h3>Contact</h3>
 <p><i>Question 12</i></p>
 Contacts related to this form:<br>
+
 <div id="contact_list">
+
 <ul>
-
-
 {% for c in contact_list %}
-{% if c.2 %}
-<li><a href="{% url 'fix-contact' c.4 %} ">{{ c.0 }} {{ c.1 }} ({{ c.2 }}) {{ c.3 }}</a></li>
-{% else %}
-<li><a href="{% url 'fix-contact' c.4 %} ">{{ c.0 }} {{ c.1 }} {{ c.3 }}</a></li>
-{% endif %}
+    <li><a href="{% url 'fix-contact' c.4 %} ">
+        {% if c.2 %}
+            {{ c.0 }} {{ c.1 }} ({{ c.2 }}) {{ c.3 }}
+        {% else %}
+            {{ c.0 }} {{ c.1 }} {{ c.3 }}
+        {% endif %}
+    </a></li>
 {% endfor %}
 </ul>
 </div>
@@ -338,9 +340,9 @@ Contacts related to this form:<br>
     {% for pay in pay_list %}
             <tr>
             {% if pay.2 == True %}
-            <td>${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>fee</td>
+            <td>${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>fee</td><td><a href="{% url 'fix-payment' pay.4 %}">fix</a></td>
             {% else %}
-            <td>${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>no</td>
+            <td>${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>no</td><td><a href="{% url 'fix-payment' pay.4 %}">fix</a></td>
             {% endif %}
             </tr>
     {% endfor %}
@@ -473,7 +475,7 @@ Contacts related to this form:<br>
     <p><label for="recipient">Recipient :</label><p><input type="hidden" id="cont_recip" name="recipient" style="width: 300px"/></p>
 
     <a href="#recip">add a new recipient</a>
-
+    (Who the money is coming from)
     <p><label for="lobbyist">Lobbyist or PAC:</label><select id="cont_lobbyist" name="lobbyist">
         <option value="">Select a lobbyist or PAC</option>
     {% for lobbyist in reg_object.lobbyists.all %}
