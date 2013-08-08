@@ -1,0 +1,50 @@
+{% extends "FaraData/form_base.html" %}
+
+{% block formquestions %}
+
+
+<h3>Fix Disbursement</h3>
+
+{% if disbursement.subcontractor %}
+Delete subcontractor:
+<div>
+    <form method="GET" class="deleteable" action="/disbursement_remove_sub">  
+            <input type="hidden" name="disbursement_id" value="{{ disbursement.id }}">
+            {{ disbursement.subcontractor.reg_name }}
+            <input value="Delete" type="submit" />
+    </form> 
+</div> 
+{% endif  %}
+
+<form method="GET" id='dis_amend' action="/amend_disbursement">
+    <input type="hidden" name="dis_id" value="{{ disbursement.id }}">
+    <input type="hidden" name="reg_id" value="{{ reg_object.reg_id }}">
+    <input type="hidden" name="link" value="{{ url }}">
+    
+    <p><label for="client">Clients:</label><select name="client" id="dis_client">
+        <option value="{{ disbursement.client.id }}">{{ disbursement.client.client_name }}</option>
+    {% for client in reg_object.clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    {% for client in reg_object.terminated_clients.all %}
+        <option value="{{ client.id }}">{{ client.client_name }}</option>
+    {% endfor %}
+    </select></p></p><a href="#client">add a new client</a>
+    
+    <p><label for="date">Date: <br /></label>
+    <input id="disbursement_date" "text" name="date" value="{{ date }}" /></p>
+    
+    <p><label for= "amount">Amount: <br />$</label><input id="amount" type="text" name="amount" value="{{ disbursement.amount }}"/></p> 
+
+    <p><lable for="purpose">Purpose: <br /><textarea name="purpose" cols="25" rows="5"">{{ disbursement.purpose }}</textarea></p>
+    
+    (Add this field if the money is going to another registrant.)
+    <p><label for="subcontractor">Add Subcontractor: </label><input type="hidden" id="disbursement_subcontractor" name="subcontractor" style="width: 300px"/></p>
+
+    <input type="submit" />
+</form>
+
+<div class="help" ><a href="{% url 'instructions' %}#Disbursement" target="blank">Help</a></div><br>
+<hr />
+
+{% endblock formquestions %}

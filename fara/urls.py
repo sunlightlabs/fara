@@ -38,9 +38,12 @@ urlpatterns = patterns('',
     url(r'^contact_remove_lobby', 'FaraData.entry_view.contact_remove_lobby', name='contact-remove-lobby'),
     url(r'^amend_payment', 'FaraData.entry_view.amend_payment', name='amend-payment'),
     url(r'^payment_remove_sub', 'FaraData.entry_view.payment_remove_sub', name='payment-remove-sub'),
+    url(r'^amend_disbursement', 'FaraData.entry_view.amend_disbursement', name='amend-disbursement'),
+    url(r'^disbursement_remove_sub', 'FaraData.entry_view.disbursement_remove_sub', name='disbursement-remove-sub'),
     #Easy fix forms
     url(r'^fix_contact/(\d+)', 'FaraData.entry_view.fix_contact', name = 'fix-contact'),
     url(r'^fix_payment/(\d+)', 'FaraData.entry_view.fix_payment', name = 'fix-payment'),
+    url(r'^fix_disbursement/(\d+)', 'FaraData.entry_view.fix_disbursement', name= 'fix-disbursement'),
     #Segmented supplemental
     url(r'^supplemental_base/(\d+)', 'FaraData.entry_view.supplemental_base', name='supplemental-base'),
     url(r'^supplemental_first/(\d+)', 'FaraData.entry_view.supplemental_first', name='supplemental-first'),

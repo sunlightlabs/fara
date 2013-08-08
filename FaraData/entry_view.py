@@ -35,7 +35,7 @@ def dis_info(url):
     dis_objects = Disbursement.objects.filter(link = url)
     dis_list = []
     for dis in dis_objects: 
-        dis_list.append([dis.client, dis.amount, dis.date]) 
+        dis_list.append([dis.client, dis.amount, dis.date, dis.id]) 
     return dis_list 
 
 #finds payments attached to this form 
@@ -425,6 +425,21 @@ def fix_payment(request, payment_id):
         'url': url,
         'date': date,
         })
+
+@login_required(login_url='/admin')
+def fix_disbursement(request, dis_id):
+    disbursement = Disbursement.objects.get(id=dis_id)
+    reg_object = reg_info(disbursement.registrant.reg_id)
+    url = disbursement.link
+    date = disbursement.date.strftime('%m/%d/%Y')
+
+    return render(request, 'FaraData/fix_disbursement.html',{
+        'disbursement': disbursement,
+        'reg_object': reg_object,
+        'url': url,
+        'date': date,
+        })
+
 
 #data cleaning
 def cleantext(text):
@@ -845,7 +860,7 @@ def payment(request):
         payment.save()
 
         subcontractor_id = request.GET['subcontractor']
-        if subcontractor_id != '' or None:
+        if subcontractor_id != '' and subcontractor_id != None:
             subcontractor = Registrant.objects.get(reg_id = subcontractor_id )
             payment.subcontractor = subcontractor
             payment.save()
@@ -1152,63 +1167,53 @@ def contact_remove_recip(request):
 
 @login_required(login_url='/admin')
 def amend_payment(request):
-   # try:
-        if request.method == 'GET':
-            payment_id = request.GET['pay_id']
-            client = Client.objects.get(id=int(request.GET['client']))
-            reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
-            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
-            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
-            if date_obj > datetime.now():
-                date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
-                return HttpResponse(date_error, mimetype="application/json")
+    if request.method == 'GET':
+        payment_id = request.GET['pay_id']
+        client = Client.objects.get(id=int(request.GET['client']))
+        reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
+        
+        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        if date_obj > datetime.now():
+            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
 
-            #print request.GET['fee']
-            if request.method == 'GET' and 'fee' in request.GET:
-                fee = True
-            else:
-                fee = False
-    
-            purpose = cleantext(request.GET['purpose'])
-            amount = cleanmoney(request.GET['amount'])
-            print fee
-            payment = Payment.objects.get(id=payment_id)
-            payment.client = client
-            payment.registrant = reg_id
-            payment.fee = fee
-            payment.amount = amount
-            payment.purpose = purpose
-            payment.date = date_obj
-            
-            payment.save()
-            print "SAVING"
-
-            subcontractor_id = request.GET['subcontractor']
-            if subcontractor_id != '' or None:
-                subcontractor = Registrant.objects.get(reg_id = subcontractor_id )
-                payment.subcontractor = subcontractor
-                payment.save()
-            
-            url = str(payment.link)
-            doc = Document.objects.get(url=url)
-            form_id = int(doc.id)
-            doc_type = str(doc.doc_type)
-
-            if doc_type == "Supplemental":
-                return supplemental_payment(request, form_id)
-
-            if doc_type == "Registration":
-                return registration_payment(request, form_id)
-
-            if doc_type == "Amendment":
-                return return_big_form(request, form_id)
-
+        if request.method == 'GET' and 'fee' in request.GET:
+            fee = True
         else:
-            error = json.dumps({'error': 'Not GET'} , separators=(',',':'))
-            return HttpResponse(error, mimetype="application/json")  
-    # except:
-    #     error = json.dumps({'error': 'failed'} , separators=(',',':'))
-    #     return HttpResponse(error, mimetype="application/json") 
+            fee = False
+
+        payment = Payment.objects.get(id=payment_id)
+        payment.client = client
+        payment.registrant = reg_id
+        payment.fee = fee
+        payment.amount = cleanmoney(request.GET['amount'])
+        payment.purpose = cleantext(request.GET['purpose'])
+        payment.date = date_obj
+        
+        payment.save()
+        print "SAVING"
+
+        subcontractor_id = request.GET['subcontractor']
+        if subcontractor_id != '' or None:
+            subcontractor = Registrant.objects.get(reg_id = subcontractor_id )
+            payment.subcontractor = subcontractor
+            payment.save()
+        
+        url = str(payment.link)
+        doc = Document.objects.get(url=url)
+        form_id = int(doc.id)
+        doc_type = str(doc.doc_type)
+
+        if doc_type == "Supplemental":
+            return supplemental_payment(request, form_id)
+
+        if doc_type == "Registration":
+            return registration_payment(request, form_id)
+
+        if doc_type == "Amendment":
+            return return_big_form(request, form_id)
+
 
 @login_required(login_url='/admin')
 def payment_remove_sub(request):
@@ -1220,4 +1225,59 @@ def payment_remove_sub(request):
 
         info = json.dumps({'payment_id': payment_id}, separators=(',',':'))
         return HttpResponse(info, mimetype="application/json")
-    
+
+@login_required(login_url='/admin')
+def amend_disbursement(request):
+    if request.method == 'GET':
+        dis_id = request.GET['dis_id']
+        dis = Disbursement.objects.get(id=dis_id)
+
+        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        if date_obj > datetime.now():
+            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
+
+        dis.date = date_obj
+        dis.registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
+        dis.client = Client.objects.get(id=int(request.GET['client']))
+        dis.purpose = cleantext(request.GET['purpose'])
+        dis.amount = cleanmoney(request.GET['amount'])
+
+        subcontractor_id = request.GET['subcontractor']
+        if subcontractor_id != '' and subcontractor_id != None:
+            subcontractor = Registrant.objects.get(reg_id = subcontractor_id )
+            dis.subcontractor = subcontractor
+        
+        dis.save()
+
+        url = str(dis.link)
+        doc = Document.objects.get(url=url)
+        form_id = int(doc.id)
+        doc_type = str(doc.doc_type)
+        print "Hello disbursement"
+        
+        if doc_type == "Supplemental":
+            return supplemental_disbursement(request, form_id)
+
+        if doc_type == "Registration":
+            return registration_disbursement(request, form_id)
+
+        if doc_type == "Amendment":
+            return return_big_form(request, form_id)
+
+
+@login_required(login_url='/admin')
+def disbursement_remove_sub(request):
+    if request.method == 'GET':
+        print "hello"
+        disbursement_id = int(request.GET['disbursement_id'])
+        print disbursement_id
+        disbursement = Disbursement.objects.get(id=disbursement_id)
+        disbursement.subcontractor = None
+        disbursement.save()
+
+        info = json.dumps({'disbursement_id': disbursement_id}, separators=(',',':'))
+        return HttpResponse(info, mimetype="application/json")
+
+
+
