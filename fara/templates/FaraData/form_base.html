@@ -262,11 +262,15 @@ jQuery(document).ready(function(){
         var error = response.error
         if (typeof error== 'undefined'){
           
-          // 2) clear form
-          $(tag).each(function(){
-            this.reset();
-          }); 
-         
+          var no_clear = response.do_not_clear;
+          if (no_clear == "on"){
+                console.log("clear on")
+          }
+          else{
+            $(tag).each(function(){
+              this.reset();
+            }); 
+          }
           //3) update display
           console.log(response);
 

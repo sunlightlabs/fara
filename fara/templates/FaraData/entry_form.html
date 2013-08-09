@@ -260,6 +260,7 @@ Contacts related to this form:<br>
 <p><b>Enter Contact</b></p>
 
 <form method="GET" id="contactform" action="/contact/create"> 
+    <p><label for ="do_not_clear">Do not clear </label><input name="do_not_clear" type="checkbox"></p>
     {% csrf_token %}
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <input type="hidden" name="link" value="{{ url }}">

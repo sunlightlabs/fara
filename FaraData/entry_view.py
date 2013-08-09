@@ -831,8 +831,14 @@ def contact(request):
             if l != None and l != '' and l not in contact.lobbyist.all():
                 contact.lobbyist.add(l)
         
+        try:
+            clear = request.GET['do_not_clear']
+        except:
+            clear = "off"
+
+
         date = contact.date.strftime("%B %d, %Y")
-        contactinfo = {'date': date, 'name': str(names)}
+        contactinfo = {'date': date, 'name': str(names), 'do_not_clear': clear}
         contactinfo = json.dumps(contactinfo , separators=(',',':'))
         return HttpResponse(contactinfo, mimetype="application/json")
 
