@@ -1006,15 +1006,18 @@ def gift(request):
         clients = Client.objects.filter(id=int(request.GET['client']))
         purpose = cleantext(request.GET['purpose'])
         description = cleantext(request.GET['description'])
-        recipient = Recipient.objects.get(id=int(request.GET['recipient']))
         
         gift= Gift(registrant =  registrant,
             date =  date_obj,
             purpose =  purpose,
             description =  description,
             link = request.GET['link'],
-            recipient = recipient,
         )
+        
+        if request.GET['recipient'] != '':
+           recipient = Recipient.objects.get(id=int(request.GET['recipient']))
+           gift.recipient = recipient
+
         gift.save()
         client_names = ''
         for client in clients:
