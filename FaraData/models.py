@@ -16,10 +16,30 @@ class Recipient(models.Model):
     state_local = models.BooleanField(default=False)
     
     def __unicode__(self):
-        return "%s %s of %s" %(self.title, self.name, self.agency) 
+        if self.title != None:
+            if self.agency != None:
+                return "%s %s of %s" %(self.title, self.name, self.agency) 
+            else:
+                return "%s %s" %(self.title, self.name) 
+        else: 
+            if self.agency != None:
+                return "%s of %s" %(self.name, self.agency) 
+            else:
+                return "%s" % (self.name) 
+
 
     def __str__(self):
-        return "%s %s of %s".encode('ascii', errors='ignore') % (self.title, self.name, self.agency)
+        if self.title != None:
+            if self.agency != None:
+                return "%s %s of %s".encode('ascii', errors='ignore') % (self.title, self.name, self.agency)
+            else:
+                return "%s %s".encode('ascii', errors='ignore') % (self.title, self.name)
+        else:
+            if self.agency != None:
+                return "%s of %s".encode('ascii', errors='ignore') % (self.name, self.agency)
+            else:
+                return "%s".encode('ascii', errors='ignore') % (self.name)
+
 
 class Lobbyist(models.Model):
     lobby_id = models.CharField(max_length=150, null=True, blank=True)# this would be good for looking up contribs
