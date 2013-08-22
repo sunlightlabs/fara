@@ -81,9 +81,9 @@ def parse_and_save(page):
                     try:
                         stamp_date = re.findall(r'\d{8}', url)
                         stamp_date = stamp_date[0]
-                        stamp_date_obj = datetime.datetime.strptime(raw_date, "%Y%m%d")
+                        stamp_date_obj = datetime.datetime.strptime(stamp_date, "%Y%m%d")
                     except:
-                        print "ERROR no date for url: ", url
+                        stamp_date_obj = datetime.date.today()
 
                 url_info= [url, reg_id, doc_type, stamp_date_obj]
                 #saves url info
