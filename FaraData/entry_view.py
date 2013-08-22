@@ -939,7 +939,8 @@ def contribution(request):
         continfo = {'amount': contribution.amount, 
                     'date': contribution.date.strftime("%B %d, %Y"), 
                     'recipient': str(contribution.recipient),
-                    'lobbyist' : lobbyist
+                    'lobbyist': lobbyist,
+                    'cont_id': contribution.id,
         }
         continfo = json.dumps(continfo , separators=(',',':'))
         return HttpResponse(continfo, mimetype="application/json")  
