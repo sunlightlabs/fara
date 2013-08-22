@@ -19,9 +19,9 @@ Contacts related to this form:<br>
 <ul>
 {% for c in contact_list %}
     {% if c.2 %}
-        <li><a href="{% url 'fix-contact' c.4 %} ">{{ c.0 }} {{ c.1 }} ({{ c.2 }}) {{ c.3 }}</a></li>
+        <li>{{ c.0 }} {{ c.1 }} ({{ c.2 }}) {{ c.3 }} <a href="{% url 'fix-contact' c.4 %} ">fix</a></li>
     {% else %}
-        <li><a href="{% url 'fix-contact' c.4 %} ">{{ c.0 }} {{ c.1 }} {{ c.3 }}</a></li>
+        <li>{{ c.0 }} {{ c.1 }} {{ c.3 }} <a href="{% url 'fix-contact' c.4 %} ">fix</a></li>
     {% endif %}
 {% endfor %}
 </ul>

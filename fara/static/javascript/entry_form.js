@@ -237,7 +237,8 @@ jQuery(document).ready(function(){
           if (tag == "#contactform"){
             var date = response.date;
             var name = response.name;
-            var item = "<li>"+ name + " " + date + "</li>";
+            var contact_id = response.contact_id;
+            var item = "<li>"+ name + " " + date + "</li>" + "<a href={% url 'fix-contact' " + contact_id + "%}>fix</a></li>";
             $("#contact_list ul").append(item);
             var $contact_recip = $('#contact_recip');
             $contact_recip.select2('data', null)
@@ -248,6 +249,7 @@ jQuery(document).ready(function(){
             var date = response.date;
             var client = response.client;
             var fee = response.fee;
+            var pay_id = response.pay_id;
             
             if (fee = "True"){
               fee = "fee"
@@ -256,7 +258,7 @@ jQuery(document).ready(function(){
               fee = ""
             }
             
-            var item = '<tr><td>$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td></tr>';
+            var item = '<tr><td>$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td><td><a href="{% url "fix-payment" '+ pay_id +' %}>fix</a></td></tr>';
             $('#pay_table').append(item);
             var $payment_subcontractor = $('#payment_subcontractor');
             $payment_subcontractor.select2('data', null);
@@ -267,8 +269,9 @@ jQuery(document).ready(function(){
             var amount = response.amount;
             var date = response.date;
             var client = response.client;
+            var dis_id = response.dis_id;
 
-            item = '<tr><td>$'+ amount +'</td><td>'+ date + '</td><td>'+ client +'</td></tr>'
+            item = '<tr><td>$'+ amount +'</td><td>'+ date + '</td><td>'+ client +'</td><td><a href="{% "fix-contact" '+ dis_id +' %}> fix </a></td></tr>'
             $('#dis_table').append(item);
             var $disbursement_subcontractor = $('#disbursement_subcontractor');
             $disbursement_subcontractor.select2('data', null)
@@ -281,10 +284,10 @@ jQuery(document).ready(function(){
             var date =  response.date;
             var cont_id = response.cont_id;
 
-            var item = '<tr><td>$' + amount + '</td><td>' + lobbyist + '</td><td>'+ recipient +'</td><td>'+ date + '</td></tr>';
+            var item = '<tr><td>$' + amount + '</td><td>' + lobbyist + '</td><td>' + recipient + '</td><td>' + date + '</td><td><a href="{% url "fix-contribution" ' + cont_id + ' %}">fix</a></td></tr>';
             $('#cont_table').append(item);
             var $cont_recip = $('#cont_recip');
-            $cont_recip.select2('data', null)
+            $cont_recip.select2('data', null);
           }
            
           if (tag == '#giftform'){
@@ -385,4 +388,4 @@ $("#metaform").ajaxForm(direct);
 
 });  
 
-console.log("working")
+console.log("working");

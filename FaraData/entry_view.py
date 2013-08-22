@@ -838,7 +838,11 @@ def contact(request):
 
 
         date = contact.date.strftime("%B %d, %Y")
-        contactinfo = {'date': date, 'name': str(names), 'do_not_clear': clear}
+        contactinfo = {'date': date, 
+                        'name': str(names), 
+                        'do_not_clear': clear,
+                        'contact_id': contact.id,
+        }
         contactinfo = json.dumps(contactinfo , separators=(',',':'))
         return HttpResponse(contactinfo, mimetype="application/json")
 
@@ -890,6 +894,7 @@ def payment(request):
                     "fee": payment.fee, 
                     "date": payment.date.strftime("%B %d, %Y"), 
                     "client": str(payment.client),
+                    "pay_id": payment.id,
         }
         payinfo = json.dumps(payinfo , separators=(',',':'))
         return HttpResponse(payinfo, mimetype="application/json")
@@ -983,7 +988,8 @@ def disbursement(request):
         disinfo = {'amount': disbursement.amount,
                     'date': disbursement.date.strftime("%B %d, %Y"),
                     'registrant': str(disbursement.registrant),
-                    'client': str(disbursement.client), 
+                    'client': str(disbursement.client),
+                    'dis_id': disbursement.id, 
         }
         disinfo = json.dumps(disinfo , separators=(',',':'))
         return HttpResponse(disinfo, mimetype="application/json")

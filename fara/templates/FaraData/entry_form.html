@@ -246,13 +246,13 @@ Contacts related to this form:<br>
 
 <ul>
 {% for c in contact_list %}
-    <li><a href="{% url 'fix-contact' c.4 %} ">
+    <li>
         {% if c.2 %}
             {{ c.0 }} {{ c.1 }} ({{ c.2 }}) {{ c.3 }}
         {% else %}
             {{ c.0 }} {{ c.1 }} {{ c.3 }}
         {% endif %}
-    </a></li>
+    <a href="{% url 'fix-contact' c.4 %} "> fix</a></li>
 {% endfor %}
 </ul>
 </div>
