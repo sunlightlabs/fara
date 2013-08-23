@@ -139,20 +139,19 @@ class Command(BaseCommand):
         count = 0 
         
         while url_end != "None" and url_end != None:
-            print "while loop"
-            #### I am sure this is wrong but it works :(
+
             url_end = str(url_end)
             url_end = url_end.replace('&amp;', '&')
             url_end = re.sub('<a class="t14pagination" href="', '/', url_end) 
             url_end = re.sub('">Next &gt;</a>', '', url_end)
             #url_end = re.sub('>&lt;Previous</a>', '', url_end)
             next_url = 'https://efile.fara.gov/pls/apex' + url_end
-            print next_url
+            
             req = urllib2.Request(next_url)
             page = urllib2.urlopen(req).read()
             page = BeautifulSoup(page)
             new_info = parse_and_save(page)
-            print " made it here "
+            
             url_end = page.findAll("a", {"class":"t14pagination"})
             
             #for m in url_end:

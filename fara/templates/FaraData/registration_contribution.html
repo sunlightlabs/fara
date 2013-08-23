@@ -43,7 +43,7 @@
 
     <a href="#recip">add a new recipient</a>
 
-    <p><label for="lobbyist">Lobbyist or PAC:</label><select id="cont_lobbyist" name="lobbyist">
+    <p><label for="lobbyist">The Lobbyist or PAC that gave the money:</label><select id="cont_lobbyist" name="lobbyist">
         <option value="">Select a lobbyist or PAC</option>
     {% for lobbyist in reg_object.lobbyists.all %}
         <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
@@ -73,7 +73,7 @@
 
 
 
-<h3>Add a Lobbyist or PAC</h3>
+<h3>Add a donating Lobbyist or PAC</h3>
 <p>Lobbists already in system:<br>
 <div id="lobby_list">
     <ul>

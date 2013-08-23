@@ -510,6 +510,9 @@ def recipient(request):
                                 name  = form.cleaned_data['name'],
                                 title = form.cleaned_data['title'], 
             )
+            if form.cleaned_data['state_local'] == True:
+                recipient.state_local = True
+
             recipient.save()
             recip_choice = json.dumps({'name': recipient.name}, separators=(',',':'))        
             return HttpResponse(recip_choice, mimetype="application/json")
