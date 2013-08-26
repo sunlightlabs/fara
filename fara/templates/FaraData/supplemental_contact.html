@@ -36,15 +36,31 @@ Contacts related to this form:<br>
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <input type="hidden" name="link" value="{{ url }}">
 
-    <p><label for="client">Clients:</label><select name="client" id="contact_client">
-        <option value="None">Please Select Client</option>
-    {% for client in reg_object.clients.all %}
-        <option value="{{ client.id }}">{{ client.client_name }}</option>
-    {% endfor %}
-    {% for client in reg_object.terminated_clients.all %}
-        <option value="{{ client.id }}">{{ client.client_name }}</option>
-    {% endfor %}
-    </select></p>
+    {% if one_client == True %}
+
+        <p><label for="client">Clients:</label><select name="client" id="contact_client">
+            {% for client in reg_object.clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+            {% for client in reg_object.terminated_clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+        </select></p>
+        
+    {% else %}     
+
+        <p><label for="client">Clients:</label><select name="client" id="contact_client">
+                <option value="None">Please Select Client</option>
+            {% for client in reg_object.clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+            {% for client in reg_object.terminated_clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+        </select></p>
+
+    {% endif %}
+    <p><a href="{% url 'supplemental-first' form_id %}">Add new client</a></p>
 
     (who is being contacted)
     <p><label for="recipient">Recipient: </label><input type="hidden" id="contact_recip" name="recipient" style="width: 300px"/>

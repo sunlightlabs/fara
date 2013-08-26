@@ -12,6 +12,8 @@ from fara_feed.models import Document
 
 #change GET to POST, but GET is better for debugging
 
+# Section for functions that create variables for the templates 
+
 # this gets the info about the form
 def doc_id(form_id):
     doc = Document.objects.get(id = form_id)
@@ -91,6 +93,19 @@ def meta_info(url):
         meta_list = [ False, False, date.today(), False, '']
     return meta_list 
 
+def oneclient(reg_object):
+    try:
+        clients = reg_object.clients.all()
+        if len(reg_object.clients.all()) == 1:
+            one_client = True
+        else:
+            one_client = False
+    except:
+        one_client = False
+    return one_client
+
+# Section for rendering pages
+
 #all in one supplemental data entry form- good for amendments
 def return_big_form(request, form_id):
         url, reg_id, s_date = doc_id(form_id)
@@ -104,6 +119,7 @@ def return_big_form(request, form_id):
         all_recipients = Recipient.objects.all()
         #for displaying information already in the system
         reg_object = reg_info(reg_id)
+        one_client = oneclient(reg_object)
         contact_list = contact_info(url)
         dis_list = dis_info(url)
         pay_list = pay_info(url)
@@ -132,6 +148,7 @@ def return_big_form(request, form_id):
             'reg_id' : reg_id,
             'form_id' : form_id,
             's_date' : s_date,
+            'one_client' : one_client,
         })
 
 @login_required(login_url='/admin')
@@ -169,10 +186,12 @@ def supplemental_contact(request, form_id):
     recipient_form = RecipientForm()
     all_recipients = Recipient.objects.all()
     all_lobbyists = Lobbyist.objects.all()
+    one_client = oneclient(reg_object)
 
     return render(request, 'FaraData/supplemental_contact.html',{
         'reg_id' : reg_id,
         'reg_object': reg_object,
+        'one_client': one_client,
         'url': url,
         'client_form': client_form,
         'form_id': form_id,
@@ -187,6 +206,7 @@ def supplemental_payment(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     pay_list = pay_info(url)
     reg_object = reg_info(reg_id)
+    one_client = oneclient(reg_object)
 
     return render(request, 'FaraData/supplemental_payment.html',{
     'reg_id' : reg_id,
@@ -194,6 +214,7 @@ def supplemental_payment(request, form_id):
     'pay_list' : pay_list,
     'reg_object': reg_object,
     'form_id': form_id,
+    'one_client': one_client,
     })
 
 @login_required(login_url='/admin')
@@ -217,6 +238,7 @@ def supplemental_disbursement(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     dis_list = dis_info(url)
+    one_client = oneclient(reg_object)
 
     return render(request, 'FaraData/supplemental_disbursement.html',{
     'reg_id' : reg_id,
@@ -224,6 +246,7 @@ def supplemental_disbursement(request, form_id):
     'form_id': form_id,
     'reg_object': reg_object,
     'dis_list' : dis_list,
+    'one_client': one_client,
     })
 
 @login_required(login_url='/admin')
@@ -286,6 +309,7 @@ def registration_contact(request, form_id):
     client_form = ClientForm()
     recipient_form = RecipientForm()
     all_recipients = Recipient.objects.all()
+    one_client = oneclient(reg_object)
 
     return render(request, 'FaraData/registration_contact.html',{
         'reg_id' : reg_id,
@@ -296,6 +320,7 @@ def registration_contact(request, form_id):
         'recipient_form': recipient_form,
         'all_recipients': all_recipients,
         'contact_list': contact_list,
+        'one_client': one_client,
     })
 
 @login_required(login_url='/admin')
@@ -303,6 +328,7 @@ def registration_payment(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     pay_list = pay_info(url)
     reg_object = reg_info(reg_id)
+    one_client = oneclient(reg_object)
 
     return render(request, 'FaraData/registration_payment.html',{
     'reg_id' : reg_id,
@@ -310,6 +336,7 @@ def registration_payment(request, form_id):
     'pay_list' : pay_list,
     'reg_object': reg_object,
     'form_id': form_id,
+    'one_client': one_client,
     })
 
 @login_required(login_url='/admin')
@@ -333,6 +360,7 @@ def registration_disbursement(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     dis_list = dis_info(url)
+    one_client = oneclient(reg_object)
 
     return render(request, 'FaraData/registration_disbursement.html',{
     'reg_id' : reg_id,
@@ -340,6 +368,7 @@ def registration_disbursement(request, form_id):
     'form_id': form_id,
     'reg_object': reg_object,
     'dis_list' : dis_list,
+    'one_client': one_client,
     })
 
 @login_required(login_url='/admin')
@@ -379,6 +408,7 @@ def enter_AB(request, form_id):
     all_clients = Client.objects.all()
     client_form = ClientForm()
     meta_list = meta_info(url)
+    one_client = oneclient(reg_object)
 
     return render(request, 'FaraData/enter_AB.html',{
         'reg_id' : reg_id,
@@ -389,6 +419,7 @@ def enter_AB(request, form_id):
         'form_id': form_id,
         'meta_list': meta_list,
         's_date': s_date,
+        'one_client' : one_client,
     })
 
 # easy fix forms
@@ -454,6 +485,7 @@ def fix_contribution(request, cont_id):
         'date': date,
         })
 
+# Section for functions that process forms
 
 #data cleaning
 def cleantext(text):
@@ -465,9 +497,6 @@ def cleanmoney(money):
     money = money.strip()
     money = money.replace('$', '').replace(',', '')
     return money
-
-
-
 
 #corrects stamp date
 @login_required(login_url='/admin')
@@ -892,12 +921,18 @@ def payment(request):
             payment.subcontractor = subcontractor
             payment.save()
 
+        try:
+            clear = request.GET['do_not_clear']
+        except:
+            clear = "off"
+
         # return info to update the entry form
         payinfo = {"amount": payment.amount, 
                     "fee": payment.fee, 
                     "date": payment.date.strftime("%B %d, %Y"), 
                     "client": str(payment.client),
                     "pay_id": payment.id,
+                    "do_not_clear": clear,
         }
         payinfo = json.dumps(payinfo , separators=(',',':'))
         return HttpResponse(payinfo, mimetype="application/json")
@@ -987,12 +1022,17 @@ def disbursement(request):
             disbursement.subcontractor = subcontractor
             disbursement.save()
 
+        try:
+            clear = request.GET['do_not_clear']
+        except:
+            clear = "off"
 
         disinfo = {'amount': disbursement.amount,
                     'date': disbursement.date.strftime("%B %d, %Y"),
                     'registrant': str(disbursement.registrant),
                     'client': str(disbursement.client),
                     'dis_id': disbursement.id, 
+                    'do_not_clear': clear,
         }
         disinfo = json.dumps(disinfo , separators=(',',':'))
         return HttpResponse(disinfo, mimetype="application/json")

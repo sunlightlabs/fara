@@ -25,18 +25,35 @@
 
 <form method="GET" id='disform' action="/disbursement/create">
     {% csrf_token %}
+    <p><label for ="do_not_clear">Do not clear </label><input name="do_not_clear" type="checkbox"></p>
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <input type="hidden" name="link" value="{{ url }}">
     
-    <p><label for="client">Clients:</label><select name="client" id="dis_client">
-        <option value="None">Please Select Client</option>
-    {% for client in reg_object.clients.all %}
-        <option value="{{ client.id }}">{{ client.client_name }}</option>
-    {% endfor %}
-    {% for client in reg_object.terminated_clients.all %}
-        <option value="{{ client.id }}">{{ client.client_name }}</option>
-    {% endfor %}
-    </select></p></p><a href="#client">add a new client</a>
+    {% if one_client == True %}
+
+        <p><label for="client">Clients:</label><select name="client" id="dis_client">
+            {% for client in reg_object.clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+            {% for client in reg_object.terminated_clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+        </select></p>
+        
+    {% else %}     
+
+        <p><label for="client">Clients:</label><select name="client" id="dis_client">
+                <option value="None">Please Select Client</option>
+            {% for client in reg_object.clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+            {% for client in reg_object.terminated_clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+        </select></p>
+
+    {% endif %}
+    <a href="{% url 'registration-first' form_id %}">Add a new client</a>
     
     <p><label for="date">Date: <br /></label>
     <input id="disbursement_date" "text" name="date" /></p>

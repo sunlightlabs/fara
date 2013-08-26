@@ -28,18 +28,36 @@
 
 <form method="GET" id="payform" action="/payment/create">
     {% csrf_token %}
+    <p><label for ="do_not_clear">Do not clear </label><input name="do_not_clear" type="checkbox"></p>
     <input type="hidden" name="reg_id" value="{{ reg_id }}"/>
     <input type="hidden" name="link" value="{{ url }}"/>
     
-   <p><label for="client">Clients:</label><select name="client" id="pay_client">
-        <option value="None">Please Select Client</option>
-    {% for client in reg_object.clients.all %}
-        <option value="{{ client.id }}">{{ client.client_name }}</option>
-    {% endfor %}
-    {% for client in reg_object.terminated_clients.all %}
-        <option value="{{ client.id }}">{{ client.client_name }}</option>
-    {% endfor %}
-    </select></p></p><a href="#client">add a new client</a>
+    {% if one_client == True %}
+
+        <p><label for="client">Clients:</label><select name="client" id="pay_client">
+            {% for client in reg_object.clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+            {% for client in reg_object.terminated_clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+        </select></p>
+        
+    {% else %}     
+
+        <p><label for="client">Clients:</label><select name="client" id="pay_client">
+                <option value="None">Please Select Client</option>
+            {% for client in reg_object.clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+            {% for client in reg_object.terminated_clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+        </select></p>
+
+    {% endif %}
+
+    <a href="{% url 'supplemental-first' form_id %}">add a new client</a>
     
     <p><input type="checkbox" name="fee">Fee</p>
     

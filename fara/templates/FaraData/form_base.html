@@ -131,7 +131,8 @@ jQuery(document).ready(function() {
           $("#dis_client").append(option);
           $("#gift_client").append(option);
           $("#terminated_client").append(option);
-          $("#ab_client").append(option);
+          var ab_option = '<p><label for="client">Clients:</label><select name="client" id="ab_client">' + option + '</option>'
+          $("#ab_client").replaceWith(ab_option);
       
           // 2) update list
           var item = "<li>" + name + "</li>"
@@ -253,8 +254,9 @@ jQuery(document).ready(function(){
               this.reset();
             }); 
           }
+
           //3) update display
-          console.log(response);
+          // console.log(response);
 
           if (tag == "#stampform"){
             var date = response.date;
