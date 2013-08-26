@@ -498,13 +498,30 @@ def cleanmoney(money):
     money = money.replace('$', '').replace(',', '')
     return money
 
+def cleandate(date):
+        try:
+            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+            if date_obj > datetime.now():
+                date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
+                return HttpResponse(date_error, mimetype="application/json")
+            return date_obj
+            
+        except:
+            date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
+
+
 #corrects stamp date
 @login_required(login_url='/admin')
 def stamp_date(request):
     if request.method == 'GET':
-        s_date = datetime.strptime(request.GET['stamp_date'], "%m/%d/%Y")
-        date = s_date.strftime("%B %d, %Y")
-        print date
+        try:
+            s_date = datetime.strptime(request.GET['stamp_date'], "%m/%d/%Y")
+            date = s_date.strftime("%B %d, %Y")
+        except:
+            date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
+
         form_id = request.GET['form_id']
         document = Document.objects.get(id = form_id)
         stamp = Document(id = document.id,
@@ -627,11 +644,15 @@ def client(request):
     if request.method == 'GET': 
         # this returns a tuple
 
-        location = request.GET['location'],
-        for l in location:
-            location = int(l)
-            
-        location = Location.objects.get(id=location)
+        try:
+            location = Location.objects.get(id=int(request.GET['location']))
+        except:
+            error = json.dumps({'error': "Please add location"}, separators=(',',':')) 
+            return HttpResponse(error, mimetype="application/json")
+
+        if request.GET['client_name'] == '' or request.GET['client_name'] == None:
+            error = json.dumps({'error': "Please add Client Name"}, separators=(',',':')) 
+            return HttpResponse(error, mimetype="application/json")
 
         client = Client(client_name = request.GET['client_name'], 
                         location = location,
@@ -752,10 +773,15 @@ def new_registrant(request):
 #adds existing client to registrant 
 @login_required(login_url='/admin')
 def reg_client(request):
-    if request.method == 'GET': # If the form has been submitted...
-        reg_id = request.GET['reg_id'] # A form bound to the POST data
-        clients = request.GET['clients']     
+    if request.method == 'GET': 
+        reg_id = request.GET['reg_id'] 
+
+        clients = request.GET['clients']   
+        if clients == '':
+            error = json.dumps({'error': 'Please select a client'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
         clients = clients.split(',')
+
         registrant = Registrant.objects.get(reg_id=reg_id)
         client_choices = []
 
@@ -818,7 +844,12 @@ def contact(request):
         if not lobbyists_ids:
             lobbyists_ids = [request.GET.get('lobbyists'),]
 
+        client = request.GET['client']
+        if client == None:
+            error = json.dumps({'error': 'Please select a client.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
         client = Client.objects.get(id=int(request.GET['client']))
+
         reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         
         date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
@@ -888,11 +919,20 @@ def contact(request):
 @login_required(login_url='/admin')
 def payment(request):
     if request.method == 'GET':
-        client = Client.objects.get(id=int(request.GET['client']))
+        client = request.GET['client']
+        if client == "None":
+            error = json.dumps({'error': 'Please select a client.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
+        client = Client.objects.get(id=int(client))
+        
         reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']) )
-        message = ''
-        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
-        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        
+        try:
+            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        except:
+            error = json.dumps({'error': 'Invalid date format'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
+        
         if date_obj > datetime.now():
             date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
             return HttpResponse(date_error, mimetype="application/json")
@@ -946,7 +986,12 @@ def payment(request):
 @login_required(login_url='/admin')
 def contribution(request):
     if request.method == 'GET':
-        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        try:
+            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        except:
+            error = json.dumps({'error': 'Incorrect date format'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
+
         if date_obj > datetime.now():
             date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
             return HttpResponse(date_error, mimetype="application/json")
@@ -997,14 +1042,28 @@ def contribution(request):
 @login_required(login_url='/admin')
 def disbursement(request):
     if request.method == 'GET':
-        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        try:
+            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        except:
+            error = json.dumps({'error': 'Incorrect date format'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
+        
         if date_obj > datetime.now():
             date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
             return HttpResponse(date_error, mimetype="application/json")
 
         registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
+        
+        client = request.GET['client']
+        if client == "None":
+            error = json.dumps({'error': 'Please select a client.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
         client = Client.objects.get(id=int(request.GET['client']))
+        
         purpose = cleantext(request.GET['purpose'])
+        if request.GET['amount'] == '':
+            error = json.dumps({'error': 'Disbursements must have an amount.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
         amount = cleanmoney(request.GET['amount'])
 
         disbursement = Disbursement(registrant = registrant,
@@ -1047,13 +1106,22 @@ def disbursement(request):
 @login_required(login_url='/admin')
 def gift(request):
     if request.method == 'GET':
-        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        try:
+            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        except:
+            date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
         if date_obj > datetime.now():
             date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
             return HttpResponse(date_error, mimetype="application/json")
 
         registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
+        
+        if request.GET['client'] == "None":
+            error = json.dumps({'error': 'Please select a client.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
         clients = Client.objects.filter(id=int(request.GET['client']))
+        
         purpose = cleantext(request.GET['purpose'])
         description = cleantext(request.GET['description'])
         
@@ -1146,11 +1214,16 @@ def amend_contact(request):
     try:
         contact_id = int(request.GET['contact_id'])
         contact = Contact.objects.get(id=contact_id)
+
         contact.client = Client.objects.get(id=int(request.GET['client']))
         contact.contact_type = request.GET['contact_type']
         contact.description = cleantext(request.GET['description'])
         
-        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        try:
+            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        except:
+            date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
         contact.date = date_obj
         if date_obj > datetime.now():
             date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
@@ -1245,8 +1318,11 @@ def amend_payment(request):
         client = Client.objects.get(id=int(request.GET['client']))
         reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         
-        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
-        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        try:
+            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        except:
+            date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
         if date_obj > datetime.now():
             date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
             return HttpResponse(date_error, mimetype="application/json")
@@ -1354,7 +1430,11 @@ def amend_contribution(request):
     if request.method == 'GET':
         contribution = Contribution.objects.get(id=request.GET['cont_id'])
 
-        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        try:
+            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
+        except:
+            date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
+            return HttpResponse(date_error, mimetype="application/json")
         if date_obj > datetime.now():
             date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
             return HttpResponse(date_error, mimetype="application/json")
