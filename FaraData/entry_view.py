@@ -1,5 +1,7 @@
 import re
 import json
+import dateutil
+import dateutil.parser
 from datetime import datetime, date
 
 from django.shortcuts import render
@@ -499,28 +501,34 @@ def cleanmoney(money):
     return money
 
 def cleandate(date):
-        try:
-            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
-            if date_obj > datetime.now():
-                date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
-                return HttpResponse(date_error, mimetype="application/json")
-            return date_obj
-            
-        except:
-            date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
+        if len(date) == 10:
+            try:
+                date_obj = datetime.strptime(date, "%m/%d/%Y")
+                print date_obj
+                if date_obj > datetime.now():
+                    date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
+                    return date_error
+                else:
+                    return date_obj
+            except:
+                date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
+                return date_error
+        else:
+            try:
+                date_obj = dateutil.parser.parse(date)
+                return date_obj
+            except:
+                date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
+                return date_error
 
 
 #corrects stamp date
 @login_required(login_url='/admin')
 def stamp_date(request):
     if request.method == 'GET':
-        try:
-            s_date = datetime.strptime(request.GET['stamp_date'], "%m/%d/%Y")
-            date = s_date.strftime("%B %d, %Y")
-        except:
-            date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
+        date = cleandate(request.GET['stamp_date'])
+        if type(date) != datetime:
+            return HttpResponse(date, mimetype="application/json")
 
         form_id = request.GET['form_id']
         document = Document.objects.get(id = form_id)
@@ -528,17 +536,14 @@ def stamp_date(request):
                         url = document.url,
                         reg_id = document.reg_id,
                         doc_type = document.doc_type,
-                        stamp_date = s_date,
+                        stamp_date = date,
         )
-        if s_date > datetime.now():
-            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
+        stamp.save()
 
-        else:    
-            stamp.save()
-            stampinfo = {'id': form_id, 'date': date}
-            stampinfo = json.dumps(stampinfo , separators=(',',':'))
-            return HttpResponse(stampinfo, mimetype="application/json")   
+        date = date.strftime("%B %d, %Y")
+        stampinfo = {'id': form_id, 'date': date}
+        stampinfo = json.dumps(stampinfo , separators=(',',':'))
+        return HttpResponse(stampinfo, mimetype="application/json")   
 
     else:
         error = json.dumps({'error': 'failed'} , separators=(',',':'))
@@ -852,10 +857,9 @@ def contact(request):
 
         reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         
-        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
-        if date_obj > datetime.now():
-            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
+        date = cleandate(request.GET['date'])
+        if type(date) != datetime:
+            return HttpResponse(date, mimetype="application/json")
 
         lobbyists = Lobbyist.objects.filter(id__in=lobbyists_ids)
         description = cleantext(request.GET['description'])
@@ -863,7 +867,7 @@ def contact(request):
         contact = Contact(registrant = reg_id,
                             contact_type = request.GET['contact_type'],
                             description = description,
-                            date = date_obj,
+                            date = date,
                             link = request.GET['link'],
                             client = client,
         )
@@ -899,9 +903,7 @@ def contact(request):
         except:
             clear = "off"
 
-
-        date = contact.date.strftime("%B %d, %Y")
-        contactinfo = {'date': date, 
+        contactinfo = {'date': contact.date.strftime("%B %d, %Y"), 
                         'name': str(names), 
                         'do_not_clear': clear,
                         'contact_id': contact.id,
@@ -927,15 +929,9 @@ def payment(request):
         
         reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']) )
         
-        try:
-            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
-        except:
-            error = json.dumps({'error': 'Invalid date format'} , separators=(',',':'))
-            return HttpResponse(error, mimetype="application/json")
-        
-        if date_obj > datetime.now():
-            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
+        date = cleandate(request.GET['date'])
+        if type(date) != datetime:
+            return HttpResponse(date, mimetype="application/json")
 
         if request.method == 'GET' and 'fee' in request.GET:
             fee = True
@@ -950,7 +946,7 @@ def payment(request):
                             fee = fee,
                             amount = amount,
                             purpose = purpose,
-                            date = date_obj,
+                            date = date,
                             link = request.GET['link'],
         )
         payment.save()
@@ -986,15 +982,9 @@ def payment(request):
 @login_required(login_url='/admin')
 def contribution(request):
     if request.method == 'GET':
-        try:
-            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
-        except:
-            error = json.dumps({'error': 'Incorrect date format'} , separators=(',',':'))
-            return HttpResponse(error, mimetype="application/json")
-
-        if date_obj > datetime.now():
-            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
+        date = cleandate(request.GET['date'])
+        if type(date) != datetime:
+            return HttpResponse(date, mimetype="application/json")
 
         registrant = Registrant.objects.get(reg_id=int(request.GET['registrant']))
         recipient = Recipient.objects.get(id=int(request.GET['recipient']))
@@ -1004,7 +994,7 @@ def contribution(request):
         lobby = request.GET['lobbyist']
         if lobby == None or lobby == '':       
             contribution = Contribution(amount = amount, 
-                                        date = date_obj, 
+                                        date = date, 
                                         link = request.GET['link'],
                                         registrant = registrant,
                                         recipient = recipient,
@@ -1015,7 +1005,7 @@ def contribution(request):
         else:
             lobby = Lobbyist.objects.get(id=int(request.GET['lobbyist'])) 
             contribution = Contribution(amount = amount, 
-                                        date = date_obj, 
+                                        date = date, 
                                         link = request.GET['link'],
                                         registrant = registrant,
                                         recipient = recipient,
@@ -1042,15 +1032,9 @@ def contribution(request):
 @login_required(login_url='/admin')
 def disbursement(request):
     if request.method == 'GET':
-        try:
-            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
-        except:
-            error = json.dumps({'error': 'Incorrect date format'} , separators=(',',':'))
-            return HttpResponse(error, mimetype="application/json")
-        
-        if date_obj > datetime.now():
-            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
+        date = cleandate(request.GET['date'])
+        if type(date) != datetime:
+            return HttpResponse(date, mimetype="application/json")
 
         registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         
@@ -1070,7 +1054,7 @@ def disbursement(request):
                             client = client,
                             amount = amount,
                             purpose = purpose,
-                            date = date_obj,
+                            date = date,
                             link = request.GET['link'],
         )
         disbursement.save()
@@ -1106,14 +1090,9 @@ def disbursement(request):
 @login_required(login_url='/admin')
 def gift(request):
     if request.method == 'GET':
-        try:
-            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
-        except:
-            date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
-        if date_obj > datetime.now():
-            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
+        date = cleandate(request.GET['date'])
+        if type(date) != datetime:
+            return HttpResponse(date, mimetype="application/json")
 
         registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         
@@ -1126,7 +1105,7 @@ def gift(request):
         description = cleantext(request.GET['description'])
         
         gift= Gift(registrant =  registrant,
-            date =  date_obj,
+            date =  date,
             purpose =  purpose,
             description =  description,
             link = request.GET['link'],
@@ -1173,12 +1152,11 @@ def metadata(request):
         link = request.GET['link']
         date_obj = date.today()
 
-        try:
-            end_date = datetime.strptime(request.GET['end_date'], "%m/%d/%Y")
-            print_date = end_date.strftime("%B %d, %Y")
-            print print_date
-        except:
-            end_date =  None
+        end_date = cleandate(request.GET['upload_date'])
+        if type(end_date) != datetime:
+            return HttpResponse(end_date, mimetype="application/json")
+
+        registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
 
         metadata= MetaData(link = link,
             upload_date = date_obj,
@@ -1219,15 +1197,10 @@ def amend_contact(request):
         contact.contact_type = request.GET['contact_type']
         contact.description = cleantext(request.GET['description'])
         
-        try:
-            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
-        except:
-            date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
-        contact.date = date_obj
-        if date_obj > datetime.now():
-            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
+        date = cleandate(request.GET['date'])
+        if type(date) != datetime:
+            return HttpResponse(date, mimetype="application/json")
+        contact.date = date
         
         contact.save()
         # add additional recipients
@@ -1318,14 +1291,9 @@ def amend_payment(request):
         client = Client.objects.get(id=int(request.GET['client']))
         reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         
-        try:
-            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
-        except:
-            date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
-        if date_obj > datetime.now():
-            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
+        date = cleandate(request.GET['date'])
+        if type(date) != datetime:
+            return HttpResponse(date, mimetype="application/json")
 
         if request.method == 'GET' and 'fee' in request.GET:
             fee = True
@@ -1338,7 +1306,7 @@ def amend_payment(request):
         payment.fee = fee
         payment.amount = cleanmoney(request.GET['amount'])
         payment.purpose = cleantext(request.GET['purpose'])
-        payment.date = date_obj
+        payment.date = date
         
         payment.save()
         print "SAVING"
@@ -1381,12 +1349,11 @@ def amend_disbursement(request):
         dis_id = request.GET['dis_id']
         dis = Disbursement.objects.get(id=dis_id)
 
-        date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
-        if date_obj > datetime.now():
-            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
+        date = cleandate(request.GET['date'])
+        if type(date) != datetime:
+            return HttpResponse(date, mimetype="application/json")
+        dis.date = date
 
-        dis.date = date_obj
         dis.registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         dis.client = Client.objects.get(id=int(request.GET['client']))
         dis.purpose = cleantext(request.GET['purpose'])
@@ -1430,15 +1397,10 @@ def amend_contribution(request):
     if request.method == 'GET':
         contribution = Contribution.objects.get(id=request.GET['cont_id'])
 
-        try:
-            date_obj = datetime.strptime(request.GET['date'], "%m/%d/%Y")
-        except:
-            date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
-        if date_obj > datetime.now():
-            date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
-            return HttpResponse(date_error, mimetype="application/json")
-
+        date = cleandate(request.GET['date'])
+        if type(date) != datetime:
+            return HttpResponse(date, mimetype="application/json")
+        contribution.date =  date
         contribution.amount = cleanmoney(request.GET['amount'])
         contribution.date = date_obj
         

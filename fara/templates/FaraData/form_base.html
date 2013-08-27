@@ -262,7 +262,7 @@ jQuery(document).ready(function(){
           if (tag == "#stampform"){
             var date = response.date;
             var id = response.id;
-            var item = "<p>" + date + "</p>";
+            var item = '<div id="stamp_list"><p>' + date + "</p><div>";
             console.log(item);
             $("#stamp_list").replaceWith(item);
           }
