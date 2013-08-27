@@ -13,14 +13,16 @@
     </thread> 
     
     <tbody>   
-    {% for cont in cont_list %}
-             <tr>
-                <td>${{ cont.1 }}</td>
-                <td>{{ cont.0 }}</td>
-                <td>{{ cont.2 }}</td>
-                <td>{{ cont.3 }}</td>
-                <td><a href="{% url 'fix-contribution' cont.4 %}">fix</a></td>
+     {% for cont in cont_list %}
+        {% if cont.0 == None %}    
+            <tr>
+            <td>${{ cont.1 }}</td><td> </td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td><td><a href="{% url 'fix-contribution' cont.4 %}">fix</a></td>
             </tr>
+        {% else %}
+            <tr>
+            <td>${{ cont.1 }}</td><td>{{ cont.0 }}</td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td><td><a href="{% url 'fix-contribution' cont.4 %}">fix</a></td>
+            </tr>
+        {% endif %}
     {% endfor %}
     </tbody>
 </table>

@@ -30,7 +30,6 @@ Registration No: <b>{{ reg_id }}</b></p>
 <hr>
 
 
-
 {% if not reg_object %}
   <h3>Create Registrant:</h3>
   <p>Section I</p>
@@ -176,6 +175,7 @@ Registration No: <b>{{ reg_id }}</b></p>
         <option value="Melanesia">Melanesia</option>
         <option value="Polynesia">Polynesia</option>
         <option value="Micronesia"> Micronesia</option>
+        <option value="Multinational"> Multinational</option>
     </select></p>
 
   <input type="submit" />
@@ -442,9 +442,9 @@ Contacts related to this form:<br>
     
     <tbody>   
     {% for dis in dis_list %}
-            <tr>
-            <td>${{ dis.1 }}</td><td>{{ dis.0 }}</td><td>{{ dis.2 }}</td><td><a href="{% url 'fix-disbursement' dis.3 %}">fix</a></td>
-            </tr>
+        <tr>
+        <td>${{ dis.1 }}</td><td>{{ dis.2 }}</td><td>{{ dis.0 }}</td><td><a href="{% url 'fix-disbursement' dis.3 %}">fix</a></td>
+        </tr>
     {% endfor %}
     </tbody>
 </table>
@@ -509,9 +509,15 @@ Contacts related to this form:<br>
     
     <tbody>   
     {% for cont in cont_list %}
+        {% if cont.0 == None %}    
+            <tr>
+            <td>${{ cont.1 }}</td><td> </td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td><td><a href="{% url 'fix-contribution' cont.4 %}">fix</a></td>
+            </tr>
+        {% else %}
             <tr>
             <td>${{ cont.1 }}</td><td>{{ cont.0 }}</td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td><td><a href="{% url 'fix-contribution' cont.4 %}">fix</a></td>
             </tr>
+        {% endif %}
     {% endfor %}
     </tbody>
 </table>
@@ -533,7 +539,8 @@ Contacts related to this form:<br>
     <p><label for="recipient">Recipient :</label><p><input type="hidden" id="cont_recip" name="recipient" style="width: 300px"/></p>
 
     <a href="#recip">add a new recipient</a>
-    (Who the money is coming from)
+    
+    <p>(Who the money is coming from)<p>
     <p><label for="lobbyist">Lobbyist or PAC:</label><select id="cont_lobbyist" name="lobbyist">
         <option value="">Select a lobbyist or PAC</option>
     {% for lobbyist in reg_object.lobbyists.all %}

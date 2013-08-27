@@ -14,9 +14,9 @@
     
     <tbody>   
     {% for dis in dis_list %}
-            <tr>
-            <td>${{ dis.1 }}</td><td>{{ dis.2 }}</td><td>{{ dis.0 }}</td><td><a href="{% url 'fix-disbursement' dis.3 %}">fix</a></td>
-            </tr>
+        <tr>
+        <td>${{ dis.1 }}</td><td>{{ dis.2 }}</td><td>{{ dis.0 }}</td><td><a href="{% url 'fix-disbursement' dis.3 %}">fix</a></td>
+        </tr>
     {% endfor %}
     </tbody>
 </table>

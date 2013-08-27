@@ -1468,6 +1468,3 @@ def amend_contribution(request):
             return return_big_form(request, form_id)
 
 
-
-
-
