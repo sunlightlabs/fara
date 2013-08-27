@@ -43,7 +43,16 @@ Delete subcontractor:
     <input type="submit" />
 </form>
 
+<p>
+ <form method="GET" class= "help" action="/delete_disbursement">  
+    <input type="hidden" name="disbursement_id" value="{{ disbursement.id }}">
+    <input value="Delete this entry" type="submit" />
+ </form> 
+</p>
+<br>
+<p>
 <div class="help" ><a href="{% url 'instructions' %}#Disbursement" target="blank">Help</a></div><br>
+</p>
 <hr />
 
 {% endblock formquestions %}

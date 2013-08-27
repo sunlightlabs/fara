@@ -1,4 +1,5 @@
 import itertools
+from logging import debug
 
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -25,7 +26,7 @@ def make_pages(form, page):
     except EmptyPage:
         form = paginator.page(paginator.num_pages)
     
-    for d in form:    
+    for d in form: 
         try:
             docdata = MetaData.objects.get(link=d.url)
             reviewed = docdata.reviewed
@@ -37,13 +38,15 @@ def make_pages(form, page):
                 processed_true.append(str(docdata.link))
 
             notes[d.url] = docdata.notes
-        except:
+        except MetaData.DoesNotExist:
             continue
-        
+    
+    for d in form:  
         try:
+            debug(Registrant.objects.get(reg_id=int(d.reg_id)))
             reg = Registrant.objects.get(reg_id=d.reg_id)
             names[d.reg_id] = reg.reg_name
-        except:
+        except Registrant.DoesNotExist:
             continue
     
     return form 

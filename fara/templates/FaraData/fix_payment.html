@@ -52,7 +52,19 @@ Delete subcontractor:
     <input type="submit" />
 </form>
 
+<p>
+ <form method="GET" class= "help" action="/delete_payment">  
+    <input type="hidden" name="payment_id" value="{{ payment.id }}">
+    <input value="Delete this entry" type="submit" />
+ </form> 
+</p>
+<br>
+
+<p>
 <div class="help" ><a href="{% url 'instructions' %}#Payment" target="blank">Help</a></div><br>
+</p>
 <hr />
+
+
 
 {% endblock formquestions %}

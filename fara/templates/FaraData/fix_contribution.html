@@ -33,7 +33,14 @@
     <input type="submit" />
 </form>
 
-
+<p>
+ <form method="GET" class= "help" action="/delete_contribution">  
+    <input type="hidden" name="contribution_id" value="{{ contribution.id }}">
+    <input value="Delete this entry" type="submit" />
+ </form> 
+</p>
+<br>
+<p>
 <div class="help" ><a href="{% url 'instructions' %}#Contribution" target="blank">Help</a></div><br>
-
+</p>
 {% endblock formquestions %}

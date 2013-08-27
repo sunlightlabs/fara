@@ -50,7 +50,10 @@
   <p><b>{{ reg_object.reg_name }}</b><br />
   {{ reg_object.address }}<br />
   {{ reg_object.city }}, {{ reg_object.state }} {{ reg_object.zip }}<br />
-  {{ reg_object.country }}</p>
+  {% if reg_object.country != None %}
+    {{ reg_object.country }}
+  {% endif %}
+  </p>
 {% endif %}
 <div id="reg_list"></div>
 

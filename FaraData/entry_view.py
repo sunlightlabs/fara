@@ -1285,6 +1285,28 @@ def contact_remove_recip(request):
         return HttpResponse(info, mimetype="application/json")
 
 @login_required(login_url='/admin')
+def delete_contact(request):
+    if request.method == 'GET':
+        contact_id = int(request.GET['contact_id'])
+        contact = Contact.objects.get(id=contact_id)
+        url = str(contact.link)
+        contact.delete()
+
+        doc = Document.objects.get(url=url)
+        form_id = int(doc.id)
+        doc_type = str(doc.doc_type)
+        
+        if doc_type == "Supplemental":
+            return supplemental_contact(request, form_id)
+        if doc_type == "Amendment":
+            return return_big_form(request, form_id)
+    
+    else:
+        error = json.dumps({'error': 'failed'} , separators=(',',':'))
+        return HttpResponse(error, mimetype="application/json") 
+        
+
+@login_required(login_url='/admin')
 def amend_payment(request):
     if request.method == 'GET':
         payment_id = request.GET['pay_id']
@@ -1324,10 +1346,8 @@ def amend_payment(request):
 
         if doc_type == "Supplemental":
             return supplemental_payment(request, form_id)
-
         if doc_type == "Registration":
             return registration_payment(request, form_id)
-
         if doc_type == "Amendment":
             return return_big_form(request, form_id)
 
@@ -1342,6 +1362,25 @@ def payment_remove_sub(request):
 
         info = json.dumps({'payment_id': payment_id}, separators=(',',':'))
         return HttpResponse(info, mimetype="application/json")
+
+@login_required(login_url='/admin')
+def delete_payment(request):
+    if request.method == 'GET':
+        payment_id = int(request.GET['payment_id'])
+        payment = Payment.objects.get(id=payment_id)
+        url = payment.link
+        payment.delete()
+
+        doc = Document.objects.get(url=url)
+        form_id = int(doc.id)
+        doc_type = str(doc.doc_type)
+
+        if doc_type == "Supplemental":
+            return supplemental_payment(request, form_id)
+        if doc_type == "Registration":
+            return registration_payment(request, form_id)
+        if doc_type == "Amendment":
+            return return_big_form(request, form_id)
 
 @login_required(login_url='/admin')
 def amend_disbursement(request):
@@ -1373,10 +1412,8 @@ def amend_disbursement(request):
         
         if doc_type == "Supplemental":
             return supplemental_disbursement(request, form_id)
-
         if doc_type == "Registration":
             return registration_disbursement(request, form_id)
-
         if doc_type == "Amendment":
             return return_big_form(request, form_id)
 
@@ -1391,6 +1428,25 @@ def disbursement_remove_sub(request):
 
         info = json.dumps({'disbursement_id': disbursement_id}, separators=(',',':'))
         return HttpResponse(info, mimetype="application/json")
+
+@login_required(login_url='/admin')
+def delete_disbursement(request):
+    if request.method == 'GET':
+        disbursement_id = int(request.GET['disbursement_id'])
+        disbursement = Disbursement.objects.get(id=disbursement_id)
+        url = str(disbursement.link)
+        disbursement.delete()
+
+        doc = Document.objects.get(url=url)
+        form_id = int(doc.id)
+        doc_type = str(doc.doc_type)
+        
+        if doc_type == "Supplemental":
+            return supplemental_disbursement(request, form_id)
+        if doc_type == "Registration":
+            return registration_disbursement(request, form_id)
+        if doc_type == "Amendment":
+            return return_big_form(request, form_id)
 
 @login_required(login_url='/admin')
 def amend_contribution(request):
@@ -1421,12 +1477,32 @@ def amend_contribution(request):
         doc_type = str(doc.doc_type)
         
         if doc_type == "Supplemental":
-            return supplemental_contibution(request, form_id)
+            return supplemental_contribution(request, form_id)
 
         if doc_type == "Registration":
             return registration_contribution(request, form_id)
 
         if doc_type == "Amendment":
             return return_big_form(request, form_id)
+
+@login_required(login_url='/admin')
+def delete_contribution(request):
+    if request.method == 'GET':
+        contribution_id = int(request.GET['contribution_id'])
+        contribution = Contribution.objects.get(id=contribution_id)
+        url = str(contribution.link)
+        contribution.delete()
+
+        doc = Document.objects.get(url=url)
+        form_id = int(doc.id)
+        doc_type = str(doc.doc_type)
+        
+        if doc_type == "Supplemental":
+            return supplemental_contribution(request, form_id)
+        if doc_type == "Registration":
+            return registration_contribution(request, form_id)
+        if doc_type == "Amendment":
+            return return_big_form(request, form_id)
+
 
 

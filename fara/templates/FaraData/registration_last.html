@@ -28,8 +28,13 @@ Upload date: {{ meta_list.2 }}
         <p><input type="checkbox" name="is_amendment">is amended</p>
     {% endif %}
     
-    <p><label for="notes">Notes:</label><br \>
-    <textarea name="notes" cols="25" rows="5">{{ meta_list.4 }}</textarea></p>
+    {% if meta_list.4 == None %}
+        <p><label for="notes">Notes:</label><br \>
+        <textarea name="notes" cols="25" rows="5"></textarea></p>
+    {% else %}
+        <p><label for="notes">Notes:</label><br \>
+        <textarea name="notes" cols="25" rows="5">{{ meta_list.4 }}</textarea></p>
+    {% endif %}
  
  <input type="submit" />
 </form>
