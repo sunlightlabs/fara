@@ -1,17 +1,20 @@
+{% load staticfiles %}
 <!doctype html>
 <html lang="en">
 <meta charset="utf-8" />
 <title>FARA entry</title>
-<head></head>
+<head>
+<link rel="stylesheet" type="text/css" href="{% static 'css/sunlight.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/document_select.css' %}" />
+</head>
 <body>
-<h1>Ask Fara</h1>
 
+<img  src="{{ STATIC_URL }}images/askFara.jpg"/>
 
-<img  src="{{ STATIC_URL }}images/Fara.jpg"/>
-<hr>
 <h1>Instructions</h1>
 
 <h2>Data Entry tips</h2>
+<div class="explainer">
 <p>
 	You can copy and paste into all text fields. Don't worry if it looks ugly, extra spaces and line breaks will be removed. For currency fields commas and dollar signs, leading and trailing whitespace will be removed.
 </p>
@@ -25,27 +28,32 @@
 	For now, keep track of duplicates on <a href="https://docs.google.com/a/sunlightfoundation.com/spreadsheet/ccc?key=0AtVSwQeyEuFIdHJYQjVmanBXc3dJRFVEVk9SZUZUVWc#gid=2">this spreadsheet.</a> Everyone with a Sunlight gmail should have access. The tab corresponds to the category that has the dupe.
 </p>
 <br>
-
+</div>
 <hr>
 
 <h2>Instructions on data fields</h2>
 <a id="Registrant"></a><h3>Registrant</h3>
+<div class="explainer">
 <p>
 	A registraint is the entity filling out the form. Usually it is a lobbying firm, PR firm or individual. If a registraint is representing itself, fill out the information in the registrant section and the client section.
 </p>
 <p>
 	If the system is showing the incorrect id for the Registrant you need to fix this in the "Document" model of the admin. You can find the form by id. The id for the document is the number in the data form url.
 </p>
+</div>
 
 <a id="Lobbyist"></a><h3>Lobbyist</h3>
+<div class="explainer">
 <p>
 	This is someone working for the registrant. We identify lobbyists when they make contacts or contributions, you don't have to enter everyone who appears in questions 5(a) and 5(b) of the supplemental.
 </p>
 <p>
 	Try to make sure the lobbyist is not already in the system before adding a new lobbyist to the system. Try searching just the last name to make sure a lobbyist is not already in the system.
 </p>
+</div>
 
 <a id="Client"></a><h3>Client</h3>
+<div class="explainer">
 <p>
 	This is who the registrant is lobbying on behalf of. 
 </p>
@@ -64,8 +72,10 @@
 <p>
 	See explanation of location for clients <a href="#Location">here</a>.
 </p>
+</div>
 
 <a id="Terminated_Client"></a><h3>Terminated Client</h3>
+<div class="explainer">
 <p>
 	When a client is no longer being represented by a firm, mark them as a terminated client. This will happen when a client appears in question 7 of the supplemental or if a client that has been represented by the registrant and is longer reported in questions 8 and 9 of the supplemental.
 </p>
@@ -75,13 +85,17 @@
 <p>
 	Sometimes, you may have to add a client in the database first, to then transfer it to the terminated clients.
 </p>
+</div>
 
 <a id="Activity_Services"></a><h3>Activity and Services</h3>
+<div class="explainer">
 <p>
 	This appears on question 11 of the supplemental. Usually it is a paragraph explaining services. Copy and paste the response. If it refers to contacts, you do not need to double enter the data.
 </p>
+</div>
 
 <a id="Contact"></a><h3>Contact</h3>
+<div class="explainer">
 <p>
 	These are meetings, phone calls, emails, letters or other forms of contact that appear on question 12 of the supplemental. Contacts are often include press, Congress or a governmental departments. 
 </p>
@@ -93,8 +107,10 @@
 </p>
 <p>
 	Check "do not clear" when you are doing repetitive contacts that have slight variations, that way you can make the new contact by editing the appropriate details from the last contact.</p>
+</div>
 
 <a id="Recipient"></a><h3>Recipient</h3>
+<div class="explainer">
 <p> 
 	This is the target of the communication, gift or political donation. 
 </p>
@@ -209,9 +225,10 @@
 	</li>
 
 </ul>
+</div>
 
 <a id="Payment"></a><h3>Payment</h3>
-
+<div class="explainer">
 <p>
 	Money from the Client to the Registrant. This appears on question 14(a) of the supplemental. It is often added as an addendum so look at the bottom of the form if it is left blank.
 </p>
@@ -224,9 +241,11 @@
 		<b>Subcontractor</b>, add when money is coming from another FARA registrant. You may need to add a new registrant to the system.
 	</li>
 </ul>
+</div>
 
 <a id="Disbursement"></a><h3>Disbursement</h3>
-<p>
+<div class="explainer">
+	<p>
 	This is money that the registrant spends in service of the client. This can include subcontracts to other lobbying firms etc. This appears in 15(a) in the supplemental. 
 </p>
 
@@ -235,26 +254,32 @@
 		<b>Subcontractor</b>, add when money is coming from another FARA registrant. You may need to add a new registrant to the system.
 	</li>
 </ul>
+</div>
 
 <a id="Contribution"></a><h3>Contribution</h3>
+<div class="explainer">
 <p>
 	This covers political contributions from PACs and employees of the firm. It can be found on question 15(c) of the supplemental.
 </p>
-
+</div>
 <a id="Gifts"></a><h3>Gifts</h3>
+<div class="explainer">
 <p>
 	This covers "things of value" in question 14(c) of the Supplemental. There are not going to be too many of these. 
 </p>
-
+</div>
 <a id="Processing_Info"></a><h3>Processing Info</h3>
+<div class="explainer">
 <p>
 	This tracks the form during the data entry process. When you are done with the form, check "Check when form is finished." This will make the data live on the front end.
 </p>
 <p>
 	Forms that have been processed will say "Form is finished and info is displayed on front end." Once you mark this, the form will disappear from the data entry list but you can still find the document in the full list. You can uncheck and click "submit" to hide the data form the front end of the website. Fix the errors and then resubmit. 
 </p>
+</div>
 
 <a id="Location"></a><h3>Location</h3>
+<div class="explainer">
 <p>This section applies to the location of the clients. 
 </p>
 <ul>
@@ -265,16 +290,19 @@
 	<li>
 		<b>Region</b>: Use UN regions, find them <a href="http://unstats.un.org/unsd/methods/m49/m49regin.htm">here</a>. This will be used for alerts.</li>
 </ul>
-
+</div>
 
 <a id="Stamp_Date"></a><h3>Stamp Date</h3>
-<p>This is the day the DOJ Fara office received the form. This is not the start date or end date for the form.
+<div class="explainer">
+<p>
+	This is the day the DOJ Fara office received the form. This is not the start date or end date for the form.
 </p>
+</div>
 
 <hr>
 
 <h2>Explanation of forms</h2>
-
+<div class="explainer">
 <p>
 	<b>Registration Statement</b> is the first filing for the person or organization who lobbies on behalf of a foreign entity.
 </p>
@@ -302,10 +330,11 @@
 <p>
 	<b>Conflict Provision</b>, a letter that is filed to allow a public official to represent a foreign entity. The employer must certify this position is to promote the national interest. These are very rare and might be worth writing about. 
 </p>
-
+</div>
 <hr>
 
 <h2>Troubleshooting</h2>
+<div class="explainer">
 <p>
 	Use the Chrome or Safari.
 </p>
@@ -323,4 +352,6 @@
 <p>
 	If the form is incorrectly identified, for example an AB form is really an amendment. Fix the categorization in the document admin. 
 </p>
+</div>
+
 </body>
