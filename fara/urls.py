@@ -8,11 +8,8 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     #login view
     url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
-    #url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'login': 'FaraData/login.html'}, name= 'login'),
     #views for viewing
     url(r'^regview/', 'FaraData.reg_view.index', name='reg-view'),
-    #data entry form
-    #url(r'^entryform/', 'FaraData.entry_view.index', name='entryform'),
     url(r'^entersupplemental/(\d+)', 'FaraData.entry_view.index', name='enter-supplemental'),
     # functions for forms
     url(r'^registrant/create', 'FaraData.entry_view.registrant', name= 'create-registrant'),

@@ -4,17 +4,24 @@
 <meta charset="utf-8" />
 <title>FARA docs</title>
 <head>
+<link rel="stylesheet" type="text/css" href="http://127.0.0.1:8000/static/css/sunlight.css" />
+<link rel="stylesheet" type="text/css" href="http://127.0.0.1:8000/static/css/document_select.css" />
+<!-- <link rel="stylesheet" type="text/css" href="http://127.0.0.1:8000/static/css/bootstrap.min.css" /> -->
+</head>    
 <body>
-<h1>Document Choices</h1>
-<p>All documents in the system, by form type, newest to oldest.</p>
+
+<h1>FARA Document Choices</h1>
+<div class="explainer">
+<p>All documents in the system, by form type, newest to oldest. View <a href="{% url 'instructions' %}">instructions.</a></p>
+</div>
 <hr>
+<h2>Supplementals</h2>
+<br>
 
-<h3>Supplementals</h3>
-
-<table>
+<table id="hor-minimalist-a">
     <thead>
         <tr><td><b>FARA ID</b></td><td><b>Reg name</b></td><td><b>Stamp date</b></td><td><b>Enter form</b></td><td><b>Flagged</b></td><td><b>Entered</b></td><td><b>Notes</b></td></tr>
-    </thread>
+    </thead>
     </tbody> 
     {% for d in supplementals %}
     
@@ -68,13 +75,14 @@
         {% endif %}
     </span>
 </div>
-<hr>
 
-<h3>Registrations</h3>
+
+<h2>Registrations</h2>
+<br>
 
 <table>
     <thead>
-        <tr><td><b>FARA ID</b></td><td><b>Reg name</b></td><td><b>Stamp date</b></td><td><b>Url</b></td><td><b>Flagged </b></td><td><b>Entered</b></td><td><b>Notes</b></td></tr>
+        <tr><td><b>FARA ID</b></td><td><b>Reg name</b></td><td><b>Stamp date</b></td><td><b>Enter form</b></td><td><b>Flagged </b></td><td><b>Entered</b></td><td><b>Notes</b></td></tr>
     </thead>
     <tbody>
     {% for d in registrations %}
@@ -130,13 +138,13 @@
         {% endif %}
     </span>
 </div>
-<hr>
 
-<h3>Amendments</h3>
+<h2>Amendments</h2>
+<br>
 
 <table>
     <thead>
-        <tr><td><b>FARA ID</b></td><td><b>Reg name</b></td><td><b>Stamp date</b></td><td><b>Url</b></td><td><b>Flagged</b></td><td><b>Entered</b></td><td><b>Notes</b></td></tr> 
+        <tr><td><b>FARA ID</b></td><td><b>Reg name</b></td><td><b>Stamp date</b></td><td><b>Enter form</b></td><td><b>Flagged</b></td><td><b>Entered</b></td><td><b>Notes</b></td></tr> 
     </thead>
     <tbody>
        
@@ -192,14 +200,13 @@
     </span>
 </div>
 
-<hr>
 
-<h3>Exibit AB (New Clients)</h3>
+<h2>Exibit AB (New Clients)</h2>
+<br>
 
 <table>
-
     <thead>
-        <tr><td><b>FARA ID</b></td><td><b>Reg name</b></td><td><b>Stamp date</b></td><td><b>Url</b></td><td><b>Flagged</b></td><td><b>Entered</b></td><td><b>Notes<b></td></tr> 
+        <tr><td><b>FARA ID</b></td><td><b>Reg name</b></td><td><b>Stamp date</b></td><td><b>Enter form</b></td><td><b>Flagged</b></td><td><b>Entered</b></td><td><b>Notes<b></td></tr> 
     </thead>
     <tbody>
 
@@ -256,14 +263,14 @@
     </span>
 </div>
 
-<hr>
 
-<h3>Short Forms (Lobbist registration)</h3>
+<h2>Short Forms (Lobbist registration)</h2>
 <p>Reference only, we do not hand enter these.</p>
+<br>
 
 <table>
     <thead>
-        <tr><td>FARA ID</td><td>Stamp date</td><td>Url</td></tr> 
+        <tr><td><b>FARA ID</b></td><td><b>Stamp date</b></td><td><b>Url</b></td></tr> 
     </thead>
     <tbody>
     {% for d in short_forms%}
@@ -288,14 +295,14 @@
     </span>
 </div>
 
-<hr>
 
-<h3>Articles of incorporation and Fundraising forms</h3>
+<h2>Articles of incorporation and Fundraising forms</h2>
 <p>Reference only, we do not hand enter these.</p>
+<br>
 
 <table>
     <thead>
-    <tr><td>FARA ID</td><td>Stamp date</td><td>Url</td></tr> 
+    <tr><td><b>FARA ID</b></td><td><b>Stamp date</b></td><td><b>Url</b></td></tr> 
     </thead>
     <tbody>
     {% for d in others %}
@@ -321,6 +328,7 @@
 </div>
 
 <hr>
+<p><a href="{% url 'instructions' %}">Instructions</a></p>
 
 </body>
 

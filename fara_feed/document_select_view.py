@@ -18,7 +18,7 @@ doctype = {}
 notes = {}
 
 def make_pages(form, page):
-    paginator = Paginator(form, 20)
+    paginator = Paginator(form, 10)
     try:
         form = paginator.page(page)
     except PageNotAnInteger:
@@ -50,6 +50,16 @@ def make_pages(form, page):
             continue
     
     return form 
+
+def fast_pages(form, page):
+    paginator = Paginator(form, 10)
+    try:
+        form = paginator.page(page)
+    except PageNotAnInteger:
+        form = paginator.page(1)
+    except EmptyPage:
+        form = paginator.page(paginator.num_pages)
+    return form
 
 @login_required(login_url='/admin')
 def fast_supplemental(request):
@@ -88,7 +98,7 @@ def full_list(request):
     
     short_forms = Document.objects.filter(doc_type = 'Short Form')
     short_forms = sorted(short_forms, key=lambda document: document.stamp_date, reverse = True)
-    short_forms = make_pages(short_forms, sf_page)
+    short_forms = fast_pages(short_forms, sf_page)
 
     ab = Document.objects.filter(doc_type = 'Exhibit AB')
     ab = sorted(ab, key=lambda document: document.stamp_date, reverse = True)
@@ -102,7 +112,7 @@ def full_list(request):
     
     others = list(itertools.chain(*others))
     others = sorted(others, key=lambda document: document.stamp_date, reverse = True)
-    others = make_pages(others, o_page)
+    others = fast_pages(others, o_page)
     
     return render_to_response('fara_feed/doc_choices.html', { 'supplementals' : supplementals,
                                                     'registrations': registrations,

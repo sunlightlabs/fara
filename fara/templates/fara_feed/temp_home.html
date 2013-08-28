@@ -2,13 +2,26 @@
 <html lang="en">
 <meta charset="utf-8" />
 <title>FARA</title>
+<head>
+	<link rel="stylesheet" type="text/css" href="http://127.0.0.1:8000/static/css/sunlight.css" />
+	<link rel="stylesheet" type="text/css" href="http://127.0.0.1:8000/static/css/document_select.css" />
+</head>
 <body>
-<h1>Foreignlobbying.org</h1>
+<div class="headingtext">FARA</div>
+<div class="heading1"> </div>
 
-<p>Links:</p>
-<ul>
-	<li><a href="{% url 'entry-list' %}">Data entry list</a></li>
-	<li><a href="{% url 'full-list' %}">Document choices</a> </li>
-	<li><a href="{% url 'supplemental-list' %}">Supplemental choices</a></li>
-</ul>
+<div class="link_box">	
+<h1><a href="{% url 'full-list' %}">Document choices</a></h1>
+	<div class="explainer"><h3>All doc types, newest to oldest.</h3></div>
+</div>
+<br>
+<div class="link_box">	
+<h1><a href="{% url 'entry-list' %}">Data entry list</a></h1>
+	<div class="explainer"><h3>All doc types not yet entered, in one list, oldest to newest.</h3></div>
+</div>
+<br>
+<div class="link_box">
+<h1><a href="{% url 'supplemental-list' %}">Supplemental choices</a></h1>
+	<div class="explainer"><h3>Supplementals not yet entered, oldest to newest.</h3></div>
+</div>
 </body>

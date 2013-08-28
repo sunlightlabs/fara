@@ -1,39 +1,41 @@
 {% load dictionary_extras %}
-!doctype html>
+<!doctype html>
 <html lang="en">
 <meta charset="utf-8" />
 <title>FARA Supplementals</title>
 <head>
 {% load dictionary_extras %}
+<link rel="stylesheet" type="text/css" href="http://127.0.0.1:8000/static/css/sunlight.css" />
+<link rel="stylesheet" type="text/css" href="http://127.0.0.1:8000/static/css/document_select.css" />
+</head>
 <body>
 <h1>Supplemental Choices</h1>
-
+<div class="explainer"><p>Supplementals, oldest to newest.</p></div>
 <hr>
 
 <h3>Supplementals</h3>
 
 <table>
-	<tr><td>FARA ID</td><td>Stamp date</td><td>Link</td><td>Reviewed</td><td>Processed</td><td>Doc type</td><td>Notes</td></tr> 
+	<thead>
+		<tr><td>FARA ID</td><td>Stamp date</td><td>Link</td><td>Processed</td><td>Flagged</td><td>Notes</td></tr>
+	</thead> 
 {% for d in supplementals %}	
-		<tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td><td>Reg name</td>
-
+		<tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td>
+		
+		<td>
 		{% if d.url in processed_true %}	
-			<td>Processed</td>
+			Processed
 		{% else %}
-			<td><i>NOT processed</i></td>
+			<i>NOT processed</i>
 		{% endif %}
+		</td>
 		
 		<td>
 		{% if d.url in reviewed_true %}
-			Processed
+			Flaged
 		{% else %}
-			<i>NOT Processed</i>
 		{% endif %}
 		</td>
-		 
-		<td>
-			Supplemental
-		</td>	
 
 
 		{% if d.url in notes %}
