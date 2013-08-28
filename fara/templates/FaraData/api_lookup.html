@@ -1,9 +1,14 @@
+{% load staticfiles %}
 <!doctype html>
 <html lang="en">
 <meta charset="utf-8" />
 <title>Member lookup</title>
-
+<head>
+<link rel="stylesheet" type="text/css" href="{% static 'css/sunlight.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/document_select.css' %}" />
+</head>
 <body>
+<div class="explainer">	
 <h1>Member lookup:</h1>
 <p> Try just using the last name.</p>
 
@@ -36,4 +41,5 @@ Choose result:
 </p>
 {% endfor %}
 {% endif %}
+</div>
 </body>
