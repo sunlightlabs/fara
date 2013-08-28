@@ -1,5 +1,10 @@
 {% extends "FaraData/form_base.html" %}
 
+{% block formheading %}
+<h2>Registration</h2>
+<h2>{{ reg_object.reg_name }}</h2>
+{% endblock formheading %}
+
 {% block quicklinks %}
 <hr>
 <a href="{% url 'registration-first' form_id %}">Client and Registrant</a>  

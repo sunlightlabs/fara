@@ -1,11 +1,12 @@
 {% load dictionary_extras %}
+{% load staticfiles %}
 <!doctype html>
 <html lang="en">
 <meta charset="utf-8" />
 <title>FARA docs</title>
 <head>
-<link rel="stylesheet" type="text/css" href="http://127.0.0.1:8000/static/css/sunlight.css" />
-<link rel="stylesheet" type="text/css" href="http://127.0.0.1:8000/static/css/document_select.css" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/sunlight.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/document_select.css' %}" />
 <!-- <link rel="stylesheet" type="text/css" href="http://127.0.0.1:8000/static/css/bootstrap.min.css" /> -->
 </head>    
 <body>
@@ -266,7 +267,7 @@
 
 <h2>Short Forms (Lobbist registration)</h2>
 <p>Reference only, we do not hand enter these.</p>
-<br>
+
 
 <table>
     <thead>
@@ -298,7 +299,7 @@
 
 <h2>Articles of incorporation and Fundraising forms</h2>
 <p>Reference only, we do not hand enter these.</p>
-<br>
+
 
 <table>
     <thead>

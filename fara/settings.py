@@ -3,7 +3,6 @@
 import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-#still can't get Debug tool bar to work?????
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG

@@ -48,39 +48,4 @@ a.btn:hover { color: #fff; }
 
 .textReplace { text-indent: -9999em; display: block; border-bottom: none; border: none; }
 
-/*Extra Styling */
-
-body{
-	margin: 35px;
-}
-
-/* ------------------
- styling for the tables
-   ------------------   */
-
-table{
-	background: #fff;
-	margin: 5px;
-	width: 775px;
-	border-collapse: collapse;
-	text-align: left;
-}
-
-th{
-	font-size: 12px;
-	font-weight: bold;
-	color: #58595B;
-	padding: 11px 8px;
-	border-bottom: 2px solid 457b80;
-	vertical-align: bottom;
-}
-
-td{
-	color: #58595B;
-	padding: 9px 8px 0px 8px;
-}
-
-thead { background-color: #eeefeb; }
-/*tr.odd { background-color: #eeefeb; }*/
-/*tr.even { background-color: #dfe0da; }*/
 

@@ -1,8 +1,11 @@
 {% extends "FaraData/form_base.html" %}
 
-{% block formquestions %}
+{% block formheading %}
+<h2>Client Registration</h2>
+<h2>{{ reg_object.reg_name }}</h2>
+{% endblock formheading %}
 
-<h1>Client Registration data entry form</h1>
+{% block formquestions %}
 
 <h3>Stamp date:</h3>
 <p>Correct month!<p>
@@ -64,7 +67,7 @@
 <h3>Client</h3>
 <p><i>Question 3</i></p>
 
-<a id="client">Clients in the system for the registrant:<br></a>
+<a id="client"></a>Clients in the system for the registrant:<br>
 <div id="client_list">
     <ul>
 {% for client in reg_object.clients.all %}

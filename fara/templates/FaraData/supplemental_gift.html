@@ -1,8 +1,7 @@
 {% extends "FaraData/supplemental_base.html" %}
 {% block formquestions %}
 
-
-<h3>Gifts</h3>
+<h3>Gift</h3>
 <p><i>Question 15(b)</i></p>
 Gifts associated with this form:
 
@@ -48,7 +47,7 @@ Gifts associated with this form:
 <hr />
 
 
-<a id="recip"><h3> Add a new Recipient (person who is being contacted):</h3></a>
+<a id="recip"></a><h3> Add a new Recipient (person who is being contacted):</h3>
 <a href="{% url 'find-form' %}" target="blank"><b>Add a new member of Congress</b></a>
 <p> <i>People or entities given gifts</i></p>
 <form method="GET" id='recipform' action="/recipient/create">

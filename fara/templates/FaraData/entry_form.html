@@ -1,8 +1,11 @@
 {% extends "FaraData/form_base.html" %}
 
-{% block formquestions %}
+{% block formheading %}
+<h2>Amendment</h2>
+<h2>{{ reg_object.reg_name }}</h2>
+{% endblock formheading %}
 
-<h1>Data entry form</h1>
+{% block formquestions %}
 
 <h3>Registrant</h3>
 <p><i>Section I 1(c)</i><br>
@@ -92,7 +95,7 @@ Registration No: <b>{{ reg_id }}</b></p>
 </div>
 
 <div id="lobbyist_create">
-<a id="lobbyist"><h4>Add a new lobbyist</h4><a id="lobbyist">
+<a id="lobbyist"></a><h4>Add a new lobbyist</h4>
 <form method="GET" id="add_lobbyform" action="/lobbyist/create">
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <p><label for="id_lobby_id">Lobby id:</label> <input id="id_lobby_id" maxlength="150" name="lobby_id" type="text" /></p>
@@ -110,7 +113,7 @@ Registration No: <b>{{ reg_id }}</b></p>
 <h3>Client</h3>
 <p><i>Questions 7, 8, 9</i></p>
 
-<a id="client">Clients in the system for the registrant:<br></a>
+<a id="client"></a>Clients in the system for the registrant:<br>
 <div id="client_list">
     <ul>
 {% for client in reg_object.clients.all %}
@@ -343,7 +346,7 @@ Contacts related to this form:<br>
 
 
 
-<a id="recip"><h3> Add a new Recipient (person who is being contacted):</h3></a>
+<a id="recip"></a><h3> Add a new Recipient (person who is being contacted):</h3>
 <a href="{% url 'find-form' %}" target="blank"><b>Add a new member of Congress</b></a>
 <p> <i>People being meet, given contributions and gifts</i></p>
 <form method="GET" id='recipform' action="/recipient/create">

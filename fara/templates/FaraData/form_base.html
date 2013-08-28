@@ -4,7 +4,7 @@
 <title>FARA entry</title>
 
 <head>
-<link rel="stylesheet" type="text/css" href="http://127.0.0.1:8000/static/css/sunlight.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/sunlight.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/entry_form.css" />
 
 <!-- jQuery UI Datepicker -->
@@ -434,6 +434,8 @@ jQuery(document).ready(function(){
 
 <div align="right"><p><a href="{% url 'entry-list' %}">select a different form</a></p></div>
 
+{% block formheading %}{% endblock formheading %}
+<br>
 {% block formquestions %}{% endblock formquestions %}
 <br>
 <br>

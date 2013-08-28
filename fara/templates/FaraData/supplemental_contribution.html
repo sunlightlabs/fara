@@ -61,7 +61,7 @@
 
 
 
-<a id="recip"><h3> Add a new Recipient (person who is being contacted):</h3></a>
+<a id="recip"></a><h3> Add a new Recipient (person who is being contacted):</h3>
 <a href="{% url 'find-form' %}" target="blank"><b>Add a new member of Congress</b></a>
 <p> <i>People being meet, given contributions and gifts</i></p>
 <form method="GET" id='recipform' action="/recipient/create">
@@ -89,7 +89,7 @@
 
 <h4>Select additional lobbyists or PACs for registrant</h4>
 
-<div id="lobbyist_add">
+<div id="lobbyist_add"></a>
 <form method="GET" id='lobbyform' action="/registrant/add_lobbyist">
     {% csrf_token %}
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
@@ -101,7 +101,7 @@
 </div>
 
 <div id="lobbyist_create">
-<a id="lobbyist"><h4>Add a new lobbyist or PAC</h4><a id="lobbyist">
+<a id="lobbyist"></a><h4>Add a new lobbyist or PAC</h4>
 <form method="GET" id="add_lobbyform" action="/lobbyist/create">
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <p><label for="id_lobby_id">Lobby id:</label> <input id="id_lobby_id" maxlength="150" name="lobby_id" type="text" /></p>

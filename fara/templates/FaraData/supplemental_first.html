@@ -1,8 +1,6 @@
 {% extends "FaraData/supplemental_base.html" %}
 {% block formquestions %}
-
-
-<h1>Supplemental data entry form</h1>
+<h3>Registrant and Client</h3>
 
 <h3>Stamp date:</h3>
 <p>This is the date the Fara office received the form</p>
@@ -62,7 +60,7 @@
 <h3>Client</h3>
 <p><i>Questions 7, 8, 9</i></p>
 
-<a id="client">Clients in the system for the registrant:<br></a>
+<a id="client"></a>Clients in the system for the registrant:<br>
 <div id="client_list">
     <ul>
 {% for client in reg_object.clients.all %}
