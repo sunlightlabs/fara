@@ -487,6 +487,22 @@ def fix_contribution(request, cont_id):
         'date': date,
         })
 
+@login_required(login_url='/admin')
+def fix_registrant(request, reg_id, form_id):
+    reg = Registrant.objects.get(reg_id=reg_id)
+    doc = Document.objects.get(id=form_id)
+    url = doc.url
+
+    return render(request, 'FaraData/fix_reg.html', {
+        'reg' : reg,
+        'form_id': form_id,
+        'url' : url,
+        })
+
+
+@login_required(login_url='/admin')
+def fix_client(request, client_id):
+    print "placeholder"
 # Section for functions that process forms
 
 #data cleaning
@@ -1504,5 +1520,43 @@ def delete_contribution(request):
         if doc_type == "Amendment":
             return return_big_form(request, form_id)
 
+@login_required(login_url='/admin')
+def amend_client(request):
+    if request.method == 'GET':
+    
+        print "placeholder"
 
+@login_required(login_url='/admin')
+def amend_registrant(request):
+    if request.method == 'GET':
+        
+        reg_id = int(request.GET['reg_id'])
+        reg = Registrant.objects.get(reg_id=reg_id)
+        reg.reg_name = request.GET['reg_name']
+        reg.address = request.GET['address']
+        reg.city = request.GET['city']
+        reg.state = request.GET['state']
+        reg.zip_code = request.GET['zip_code']
+        reg.country = request.GET['country']
+        reg.save()
+
+        form_id = int(request.GET['form_id'])
+        doc = Document.objects.get(id=form_id)
+        doc_type = str(doc.doc_type)
+
+        if doc_type == "Supplemental":
+            return supplemental_first(request, form_id)
+        elif doc_type == "Registration":
+            return registration_first(request, form_id)
+        elif doc_type == "Exhibit AB":
+            return enter_AB(request, form_id)
+        else:
+            return return_big_form(request, form_id)
+
+
+
+
+
+
+        
 

@@ -40,8 +40,8 @@ Registration No: <b>{{ reg_id }}</b></p>
   <div id="reg_list"></div>
 
   <form action="{% url 'new-registrant' %}" id="regform" method="GET" id="regform">
-  
-  <p><label for="id_reg_id">Reg id:</label> <input id="id_reg_id" name="reg_id" type="text" value="{{ reg_id }}"/></p>
+  <p>Reg id: {{ reg_id }}</p>
+  <label for="id_reg_id">Reg id:</label> <input id="id_reg_id" name="reg_id" type="hidden" value="{{ reg_id }}"/>
   <p><label for="id_reg_name">Reg name:</label> <input id="id_reg_name" maxlength="200" name="reg_name" type="text" /></p>
   <p><label for="id_address">Address:</label> <input id="id_address" maxlength="300" name="address" type="text" /></p>
   <p><label for="id_city">City:</label> <input id="id_city" maxlength="100" name="city" type="text" /></p>
@@ -65,6 +65,10 @@ Registration No: <b>{{ reg_id }}</b></p>
   {% endif %}
   </p>
 {% endif %}
+
+<p>
+    <a href="{% url 'fix-registrant' reg_id form_id %}">Fix Registrant </a> 
+</p>
 
 <hr />
 

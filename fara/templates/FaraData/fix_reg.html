@@ -1,0 +1,28 @@
+{% extends "FaraData/form_base.html" %}
+
+{% block formquestions %}
+
+<h3>Fix Registrant</h3>
+
+  <form action="/amend_registrant" id="amend_registrant" method="GET">
+  
+  <p>Reg id:{{ reg.reg_id }}</p> 
+    <input id="reg_id" name="reg_id" type="hidden" value="{{ reg.reg_id }}" />
+    <input id="form_id" name="form_id" type="hidden" value="{{ form_id }}" />
+
+  <p><label for="reg_name">Reg name:</label> <input id="reg_name" maxlength="200" name="reg_name" type="text" value="{{ reg.reg_name }}" /></p>
+  <p><label for="address">Address:</label> <input id="address" maxlength="300" name="address" type="text" value="{{ reg.address }}" /></p>
+  <p><label for="city">City:</label> <input id="city" maxlength="100" name="city" type="text" value="{{ reg.city }}" /></p>
+  <p><label for="state">State:</label> <input id="state" maxlength="2" name="state" type="text" value="{{ reg.state }}" /></p>
+  <p><label for="zip_code">Zip:</label> <input id="zip_code" maxlength="10" name="zip_code" type="text" value="{{ reg.zip_code }}" /></p>
+  
+  {% if reg.country != None %}
+    <p><label for="country">Country:</label> <input id="country" maxlength="100" name="country" type="text" value="{{ reg.country }}" /></p>
+  {% else %}
+    <p><label for="country">Country:</label> <input id="country" maxlength="100" name="country" type="text" /></p>
+  {% endif %}
+
+  <input type="submit" value="Send" id="sendbutton"/>
+  </form>
+
+{% endblock %}
