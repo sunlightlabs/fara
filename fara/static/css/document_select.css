@@ -7,8 +7,8 @@
 	font-weight: bold;
 	height: 20px;
 	border-radius: 6px;
-	
 }
+
 .headingtext{
 	margin: 40px;
 	font-size: 45px;
@@ -67,4 +67,5 @@ td{
 	padding: 9px 8px 0px 8px;
 }
 
-thead { background-color: #eeefeb; }
+thead { background-color: #eeefeb; 
+}

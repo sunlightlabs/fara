@@ -63,8 +63,7 @@ def fast_pages(form, page):
 
 @login_required(login_url='/admin')
 def fast_supplemental(request):
-    supplementals = Document.objects.filter(doc_type = "Supplemental")
-    supplementals = sorted(supplementals, key=lambda document: document.id)
+    supplementals = Document.objects.filter(doc_type = "Supplemental").order_by('-stamp_date')
     page = request.GET.get('page')
     supplementals = make_pages(supplementals, page)
     
@@ -81,37 +80,27 @@ def full_list(request):
     o_page = request.GET.get('o_page')
     a_page = request.GET.get('a_page')
     
-    supplementals = Document.objects.filter(doc_type = 'Supplemental')
-    supplementals = sorted(supplementals, key=lambda document: document.stamp_date, reverse = True)
+    supplementals = Document.objects.filter(doc_type = 'Supplemental').order_by('-stamp_date')
     s_page = request.GET.get('s_page')
     supplementals = make_pages(supplementals, s_page)
     
-    registrations = Document.objects.filter(doc_type = 'Registration')
-    registrations = sorted(registrations, key=lambda document: document.stamp_date, reverse = True) 
+    registrations = Document.objects.filter(doc_type = 'Registration').order_by('-stamp_date') 
     r_page = request.GET.get('r_page')
     registrations = make_pages(registrations, r_page)
 
-    amendments = Document.objects.filter(doc_type = 'Amendment')
-    amendments = sorted(amendments, key=lambda document: document.stamp_date, reverse = True)
+    amendments = Document.objects.filter(doc_type = 'Amendment').order_by('-stamp_date')
     a_page = request.GET.get('a_page')
     amendments = make_pages(amendments, a_page)
     
-    short_forms = Document.objects.filter(doc_type = 'Short Form')
-    short_forms = sorted(short_forms, key=lambda document: document.stamp_date, reverse = True)
+    short_forms = Document.objects.filter(doc_type = 'Short Form').order_by('-stamp_date')
     short_forms = fast_pages(short_forms, sf_page)
 
-    ab = Document.objects.filter(doc_type = 'Exhibit AB')
-    ab = sorted(ab, key=lambda document: document.stamp_date, reverse = True)
+    ab = Document.objects.filter(doc_type = 'Exhibit AB').order_by('-stamp_date')
+    ab_page = request.GET.get('ab_page')
     ab = make_pages(ab, ab_page)
     
-    others = []
-    other_forms = ['Exhibit C', 'Exhibit D', 'Conflict Provision']
-    for other in other_forms:
-        docs = Document.objects.filter(doc_type = other) 
-        others.append(docs)
-    
-    others = list(itertools.chain(*others))
-    others = sorted(others, key=lambda document: document.stamp_date, reverse = True)
+    others = Document.objects.filter(doc_type__in=['Exhibit C', 'Exhibit D', 'Conflict Provision']).order_by('-stamp_date')
+    o_page = request.GET.get('o_page')
     others = fast_pages(others, o_page)
     
     return render_to_response('fara_feed/doc_choices.html', { 'supplementals' : supplementals,
@@ -129,20 +118,8 @@ def full_list(request):
 
 @login_required(login_url='/admin')
 def entry_list(request):
-    processed_true = []
-
+    entry_docs = Document.objects.filter(doc_type__in=['Supplemental', 'Registration', 'Amendment', 'Exhibit AB' ], processed=False).order_by('stamp_date')
     page = request.GET.get('page')
-
-    entry_docs = []
-    
-    forms = ['Supplemental', 'Registration', 'Amendment', 'Exhibit AB', 'Conflict Provision']
-    
-    for kind in forms:
-        docs = Document.objects.filter(doc_type=kind, processed=False) 
-        entry_docs.append(docs)
-
-    entry_docs = list(itertools.chain(*entry_docs))
-    entry_docs  = sorted(entry_docs , key=lambda document: document.stamp_date) 
     entry_docs = make_pages(entry_docs, page)
     
     return render_to_response('fara_feed/entry_list.html', {'entry_docs' : entry_docs,
