@@ -243,7 +243,6 @@ var total_pay = function pay_totaler(){
     var p = parseFloat(pay[i].innerHTML.slice(1))
     pay_total += p;
   }
-  console.log(pay_total)
   var pay_total_txt = '<div id="pay_total"> $ '+ pay_total +'</div>'
   $('#pay_total').replaceWith(pay_total_txt); 
 };
@@ -255,7 +254,6 @@ var total_dis = function dis_totaler(){
     var d = parseFloat(dis[i].innerHTML.slice(1))
     dis_total += d;
   }
-  console.log(dis_total)
   var dis_total_txt = '<div id="dis_total"> $ '+ dis_total +'</div>'
   $('#dis_total').replaceWith(dis_total_txt); 
 };
