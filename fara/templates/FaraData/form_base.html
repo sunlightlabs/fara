@@ -29,7 +29,7 @@ jQuery(document).ready(function() {
   var direct = {
       success: function(response, statusText, xhr, h){
            console.log(response);
-           window.location.href="{% url 'entry-list' %}";
+           window.location.href="{% url 'full-list' %}";
   }
 }
 
@@ -461,7 +461,7 @@ jQuery(document).ready(function(){
 
 <div id="right">
 
-<div align="right"><p><a href="{% url 'entry-list' %}">select a different form</a></p></div>
+<div align="right"><p><a href="{% url 'full-list' %}">select a different form</a></p></div>
 
 {% block formheading %}{% endblock formheading %}
 <br>
