@@ -5,18 +5,16 @@
 <h3>Contact</h3>
 
 {% if not reg_object %}
-  <h1><a href="{% url 'supplemental-first' form_id %}">Click here to Create Registrant</a></h1>
-  <p> You must have a registrant to proceed with the form </p>
+    <h1><a href="{% url 'supplemental-first' form_id %}">Click here to Create Registrant</a></h1>
+    <p> You must have a registrant to proceed with the form </p>
 
 {% else %}
-  <p><b>{{ reg_object.reg_name }}</b><br />
-<hr />
+    <p><i>Questions 11 and 12</i></p>
+    Contacts related to this form:<br>
+    <div id="contact_list">
+    <ul>
+{% endif %}
 
-<h3>Contact</h3>
-<p><i>Question 12</i></p>
-Contacts related to this form:<br>
-<div id="contact_list">
-<ul>
 {% for c in contact_list %}
     {% if c.2 %}
         <li>{{ c.0 }} {{ c.1 }} ({{ c.2 }}) {{ c.3 }} <a href="{% url 'fix-contact' c.4 %} ">fix</a></li>

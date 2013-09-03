@@ -67,7 +67,7 @@ Registration No: <b>{{ reg_id }}</b></p>
 {% endif %}
 
 <p>
-    <a href="{% url 'fix-registrant' reg_id form_id %}">Fix Registrant </a> 
+    <a href="{% url 'fix-registrant' reg_id form_id %}">Fix Registrant </a>
 </p>
 
 <hr />
@@ -378,14 +378,15 @@ Contacts related to this form:<br>
     {% for pay in pay_list %}
             <tr>
             {% if pay.2 == True %}
-            <td>${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>fee</td><td><a href="{% url 'fix-payment' pay.4 %}">fix</a></td>
+            <td class="pay">${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>fee</td><td><a href="{% url 'fix-payment' pay.4 %}">fix</a></td>
             {% else %}
-            <td>${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>no</td><td><a href="{% url 'fix-payment' pay.4 %}">fix</a></td>
+            <td class="pay">${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>no</td><td><a href="{% url 'fix-payment' pay.4 %}">fix</a></td>
             {% endif %}
             </tr>
     {% endfor %}
     </tbody>
 </table>
+<p>Total: <div id="pay_total"> </div></p>
 </div>
 
 <form method="GET" id="payform" action="/payment/create">

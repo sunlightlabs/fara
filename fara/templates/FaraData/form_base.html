@@ -1,9 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<meta charset="utf-8" />
 <title>FARA entry</title>
 
 <head>
+<meta charset="utf-8">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/sunlight.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/entry_form.css" />
 
@@ -12,7 +12,6 @@
 <script src="{{ STATIC_URL }}javascript/jquery-1.9.1.js"></script>
 <script src="{{ STATIC_URL }}javascript/jquery-ui.js"></script>
 <script src="{{ STATIC_URL }}javascript/jquery.form.js"></script>
-<link rel="stylesheet" href="/resources/demos/style.css"/>
 
 <!-- token search -->
 <script src="{{ STATIC_URL }}javascript/select2.min.js"></script>
@@ -235,10 +234,44 @@ var contact_options = {
   }     
 });
 
+var total_pay = function pay_totaler(){
+  console.log(":)")
+  var pay_total = 0;
+  var pay = document.getElementsByClassName('pay');
+  console.log(pay.length)
+  for (var i=0, max=pay.length; i < max; i++){
+    var p = parseFloat(pay[i].innerHTML.slice(1))
+    pay_total += p;
+    // console.log(p)
+  }
+  console.log(pay_total)
+  var pay_total_txt = '<div id="pay_total"> $ '+ pay_total +'</div>'
+  $('#pay_total').replaceWith(pay_total_txt);
+  
+  
+};
+
+// $(document).ready(function pay_totaler(){
+//   console.log(":)")
+//   var pay_total = 0;
+//   var pay = document.getElementsByClassName('pay');
+//   console.log(pay.length)
+//   for (var i=0, max=pay.length; i < max; i++){
+//     var p = parseFloat(pay[i].innerHTML.slice(1))
+//     pay_total += p;
+//     // console.log(p)
+//   }
+//   console.log(pay_total)
+//   var pay_total_txt = '<div id="pay_total"> $ '+ pay_total +'</div>'
+//   $('#pay_total').replaceWith(pay_total_txt);
+  
+  
+// });
+
 // <!-- adding ajax  and updating-->
 
 jQuery(document).ready(function(){
-
+  total_pay()
   function update(tag){
 
     var opt = {
@@ -302,10 +335,11 @@ jQuery(document).ready(function(){
               fee = ""
             }
             
-            var item = '<tr><td>$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td><td><a href="' + link + '/fix_payment/' + pay_id + '">fix</a><td></tr>';
+            var item = '<tr><td class="pay">$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td><td><a href="' + link + '/fix_payment/' + pay_id + '">fix</a><td></tr>';
             $('#pay_table').append(item);
             var $payment_subcontractor = $('#payment_subcontractor');
             $payment_subcontractor.select2('data', null);
+            total_pay()
 
           }
 
@@ -418,7 +452,6 @@ jQuery(document).ready(function(){
   update('.deleteable');
   
 });
-
 
 </script>
 
