@@ -234,44 +234,38 @@ var contact_options = {
   }     
 });
 
+// Functions for keeping track of totals
+
 var total_pay = function pay_totaler(){
-  console.log(":)")
   var pay_total = 0;
   var pay = document.getElementsByClassName('pay');
-  console.log(pay.length)
   for (var i=0, max=pay.length; i < max; i++){
     var p = parseFloat(pay[i].innerHTML.slice(1))
     pay_total += p;
-    // console.log(p)
   }
   console.log(pay_total)
   var pay_total_txt = '<div id="pay_total"> $ '+ pay_total +'</div>'
-  $('#pay_total').replaceWith(pay_total_txt);
-  
-  
+  $('#pay_total').replaceWith(pay_total_txt); 
 };
 
-// $(document).ready(function pay_totaler(){
-//   console.log(":)")
-//   var pay_total = 0;
-//   var pay = document.getElementsByClassName('pay');
-//   console.log(pay.length)
-//   for (var i=0, max=pay.length; i < max; i++){
-//     var p = parseFloat(pay[i].innerHTML.slice(1))
-//     pay_total += p;
-//     // console.log(p)
-//   }
-//   console.log(pay_total)
-//   var pay_total_txt = '<div id="pay_total"> $ '+ pay_total +'</div>'
-//   $('#pay_total').replaceWith(pay_total_txt);
-  
-  
-// });
+var total_dis = function dis_totaler(){
+  var dis_total = 0;
+  var dis = document.getElementsByClassName('dis');
+  for (var i=0, max=dis.length; i < max; i++){
+    var d = parseFloat(dis[i].innerHTML.slice(1))
+    dis_total += d;
+  }
+  console.log(dis_total)
+  var dis_total_txt = '<div id="dis_total"> $ '+ dis_total +'</div>'
+  $('#dis_total').replaceWith(dis_total_txt); 
+};
+
 
 // <!-- adding ajax  and updating-->
 
 jQuery(document).ready(function(){
   total_pay()
+  total_dis()
   function update(tag){
 
     var opt = {
@@ -349,10 +343,11 @@ jQuery(document).ready(function(){
             var client = response.client;
             var dis_id = response.dis_id;
 
-            item = '<tr><td>$'+ amount +'</td><td>'+ date + '</td><td>'+ client +'</td><td><a href="' + link + '/fix_disbursement/' + dis_id + '">fix</a><td></tr></tr>'
+            item = '<tr><td class="dis">$'+ amount +'</td><td>'+ date + '</td><td>'+ client +'</td><td><a href="' + link + '/fix_disbursement/' + dis_id + '">fix</a><td></tr></tr>'
             $('#dis_table').append(item);
             var $disbursement_subcontractor = $('#disbursement_subcontractor');
             $disbursement_subcontractor.select2('data', null)
+            total_dis()
           }
 
           if (tag == '#contform'){
