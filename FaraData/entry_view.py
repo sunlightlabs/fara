@@ -1474,7 +1474,6 @@ def amend_contribution(request):
             return HttpResponse(date, mimetype="application/json")
         contribution.date =  date
         contribution.amount = cleanmoney(request.GET['amount'])
-        contribution.date = date_obj
         
         if request.GET['recipient'] != '' and request.GET['recipient'] != None:
             contribution.recipient = Recipient.objects.get(id=int(request.GET['recipient']))
