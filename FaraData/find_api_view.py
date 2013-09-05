@@ -44,15 +44,15 @@ def find_member(request):
 				
 				first_name =  d['first_name']
 				last_name = d['last_name']
-				full_name = "{0} {1}".format(first_name, last_name)
+				full_name = "%s %s" %(first_name, last_name)
 				party = d['party']
 				crp_id = d['crp_id']
 				state = d['state']
 				
 				if time == 'old':
-					text = "{0}{1} {2}({3}-{4})(not in office) CRP ID = {5}".format(title, first_name, last_name, party, state, crp_id) 
+					text = "%s %s %s (%s-%s) (not in office) CRP ID = %s" %(title, first_name, last_name, party, state, crp_id) 
 				else:
-					text = "{0}{1} {2}({3}-{4}) CRP ID = {5}".format(title, first_name, last_name, party, state, crp_id) 
+					text = "%s %s %s (%s-%s) CRP ID = %s" %(title, first_name, last_name, party, state, crp_id) 
 				
 				result = [crp_id, "Congress", chamber,  full_name, title, text]
 				results.append(result)

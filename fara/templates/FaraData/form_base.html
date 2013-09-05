@@ -307,7 +307,7 @@ jQuery(document).ready(function(){
             var date = response.date;
             var name = response.name;
             var contact_id = response.contact_id;
-            var item = "<li>"+ name + " " + date + "</li>";
+            var item = "<li>"+ name + " " + date + ' <a href= "'+ link + '/fix_contact/' + contact_id + '">fix</a>'+ '</li>';
             $("#contact_list ul").append(item);
             var $contact_recip = $('#contact_recip');
             $contact_recip.select2('data', null)
