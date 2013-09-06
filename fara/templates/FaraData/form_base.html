@@ -243,7 +243,7 @@ var total_pay = function pay_totaler(){
     var p = parseFloat(pay[i].innerHTML.slice(1))
     pay_total += p;
   }
-  var pay_total_txt = '<div id="pay_total"> $ '+ pay_total +'</div>'
+  var pay_total_txt = '<div id="pay_total"> $ '+ (pay_total).toFixed(2) +'</div>'
   $('#pay_total').replaceWith(pay_total_txt); 
 };
 
@@ -254,7 +254,7 @@ var total_dis = function dis_totaler(){
     var d = parseFloat(dis[i].innerHTML.slice(1))
     dis_total += d;
   }
-  var dis_total_txt = '<div id="dis_total"> $ '+ dis_total +'</div>'
+  var dis_total_txt = '<div id="dis_total"> $ '+ (dis_total).toFixed(2) +'</div>'
   $('#dis_total').replaceWith(dis_total_txt); 
 };
 
@@ -349,15 +349,16 @@ jQuery(document).ready(function(){
           }
 
           if (tag == '#contform'){
+            
             var amount = response.amount;
             var lobbyist = response.lobbyist;
-            if(lobbyist = "null"){
-              var lobbyist = ''
-            }
+            // if(lobbyist = "null"){
+            //   var lobbyist = ''
+            // }
             var recipient = response.recipient;
             var date =  response.date;
             var cont_id = response.cont_id;
-
+            console.log("why you no print?");
             var item = '<tr><td>$' + amount + '</td><td>' + lobbyist + '</td><td>' + recipient + '</td><td>' + date + '</td><td><a href="' + link + '/fix_contribution/' + cont_id + '">fix</a><td></tr></tr>';
             $('#cont_table').append(item);
             var $cont_recip = $('#cont_recip');

@@ -531,6 +531,7 @@ def cleandate(date):
                 return date_error
         else:
             try:
+                date.strip()
                 date_obj = dateutil.parser.parse(date)
                 return date_obj
             except:
@@ -1028,7 +1029,7 @@ def contribution(request):
                                         lobbyist = lobby,
             ) 
             contribution.save()
-            lobbyist = str(contribution.lobbyist)
+            lobbyist = str(contribution.lobbyist.lobbyist_name)
 
         continfo = {'amount': contribution.amount, 
                     'date': contribution.date.strftime("%B %d, %Y"), 
