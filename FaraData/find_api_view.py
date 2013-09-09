@@ -9,6 +9,10 @@ from FaraData.models import Recipient
 @login_required(login_url='/admin')
 def find_form(request):
  	return render(request, 'FaraData/api_lookup.html') 
+
+@login_required(login_url='/admin')
+def find_staff(request):
+	return render(request, 'FaraData/api_staff_lookup.html')
          
 @login_required(login_url='/admin')        
 def find_member(request):
@@ -73,7 +77,26 @@ def add_member(request):
 					    title = request.GET['title'],
 	)
 	if Recipient.objects.filter(crp_id = member.crp_id).exists():
-		return render(request, 'FaraData/api_lookup.html', {'insystem': member.name})
+		message = member.name + "Recipient number: " + member.id
+		return render(request, 'FaraData/api_lookup.html', {'insystem': message})
 	else:
 		member.save()
 		return render(request, 'FaraData/api_lookup.html', {'member': member.name})
+
+@login_required(login_url='/admin')
+def add_staff(request):
+	staff = Recipient(crp_id = request.GET['crp_id'],
+					    agency = request.GET['agency'],
+					    office_detail = request.GET['office_detail'],
+					    name = request.GET['name'],
+					    title = request.GET['title'],
+	)
+	if Recipient.objects.filter(crp_id=staff.crp_id, name=staff.name).exists():
+		message = staff.name + " of " + staff.office_detail + " CRP id : " + staff.crp_id + "Recipient number: staff.id"
+		return render(request, 'FaraData/api_lookup.html', {'insystem': message})
+	else:
+		staff.save()
+		message = staff.name + " of " + staff.office_detail + "'s office"
+		return render(request, 'FaraData/api_lookup.html', {'member': message})
+
+
