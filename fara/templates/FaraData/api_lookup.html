@@ -10,7 +10,7 @@
 <body>
 <div class="explainer">	
 <h1>Member lookup:</h1>
-<p> Try just using the last name.</p>
+<p> Type the last name of the Member.</p>
 
 <form method="GET" id='memberform' action="{% url 'find-member' %}">
 <p><label for="member">Member name: </label><br />
@@ -39,6 +39,18 @@ Choose result:
 <input type="submit" />
 </form>
 </p>
+<div class="explainer">	
+<form method="GET" id='add_member_form' action="{% url 'add-staff' %}">
+<p> Add staff for {{ r.4 }} {{ r.3 }} 
+<input type="hidden" name="crp_id" value="{{ r.0 }}">
+<input type="hidden" name="agency" value="{{ r.2 }}"> 
+<input type="hidden" name="office_detail" value="{{ r.3 }}">
+<b>Staff Title: </b><input name="title" type="text">
+<b>Staff Name: </b><input name="name" type="text">
+<input type="submit" />
+</form>
+</div>
+
 {% endfor %}
 {% endif %}
 </div>

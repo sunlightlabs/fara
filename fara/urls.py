@@ -83,6 +83,7 @@ urlpatterns = patterns('',
     url(r'^find_form/', 'FaraData.find_api_view.find_form', name='find-form'),
     url(r'^find_member/', 'FaraData.find_api_view.find_member', name='find-member'),
     url(r'^add_member/', 'FaraData.find_api_view.add_member', name='add-member'),
+    url(r'^add_staff/', 'FaraData.find_api_view.add_staff', name='add-staff'),
     #Document managers
     url(r'^full_list', 'fara_feed.document_select_view.full_list', name='full-list'),
     url(r'^entry_list', 'fara_feed.document_select_view.entry_list', name='entry-list'),
