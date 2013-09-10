@@ -77,7 +77,7 @@ def add_member(request):
 					    title = request.GET['title'],
 	)
 	if Recipient.objects.filter(crp_id = member.crp_id).exists():
-		message = member.name + "Recipient number: " + member.id
+		message = member.name
 		return render(request, 'FaraData/api_lookup.html', {'insystem': message})
 	else:
 		member.save()
@@ -92,7 +92,7 @@ def add_staff(request):
 					    title = request.GET['title'],
 	)
 	if Recipient.objects.filter(crp_id=staff.crp_id, name=staff.name).exists():
-		message = staff.name + " of " + staff.office_detail + " CRP id : " + staff.crp_id + "Recipient number: staff.id"
+		message = staff.name + " of " + staff.office_detail + " CRP id : " + staff.crp_id 
 		return render(request, 'FaraData/api_lookup.html', {'insystem': message})
 	else:
 		staff.save()
