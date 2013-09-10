@@ -1033,7 +1033,7 @@ def contribution(request):
 
         continfo = {'amount': contribution.amount, 
                     'date': contribution.date.strftime("%B %d, %Y"), 
-                    'recipient': str(contribution.recipient),
+                    'recipient': contribution.recipient.name,
                     'lobbyist': lobbyist,
                     'cont_id': contribution.id,
         }
