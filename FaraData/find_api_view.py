@@ -76,7 +76,7 @@ def add_member(request):
 					    name = request.GET['name'],
 					    title = request.GET['title'],
 	)
-	if Recipient.objects.filter(crp_id = member.crp_id).exists():
+	if Recipient.objects.filter(crp_id = member.crp_id, agency="Congress").exists():
 		message = member.name
 		return render(request, 'FaraData/api_lookup.html', {'insystem': message})
 	else:
