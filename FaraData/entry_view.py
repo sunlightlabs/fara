@@ -433,7 +433,10 @@ def fix_contact(request, contact_id):
     lobbyists = reg_object.lobbyists.all()
     current_lobby = contact.lobbyist.all()
     recipients = contact.recipient.all()
-    date = contact.date.strftime('%m/%d/%Y')
+    try:
+        date = contact.date.strftime('%m/%d/%Y')
+    except:
+        date = ''
 
     return render(request, 'FaraData/fix_contact.html',{
         'contact': contact,
@@ -450,8 +453,12 @@ def fix_payment(request, payment_id):
     payment = Payment.objects.get(id=payment_id)
     reg_object = reg_info(payment.registrant.reg_id)
     url = payment.link
-    date = payment.date.strftime('%m/%d/%Y')
-
+    
+    try:
+        date = payment.date
+        date = date.strftime('%m/%d/%Y')
+    except:
+        date = ''
     return render(request, 'FaraData/fix_payment.html',{
         'payment': payment,
         'reg_object': reg_object,
@@ -464,8 +471,14 @@ def fix_disbursement(request, dis_id):
     disbursement = Disbursement.objects.get(id=dis_id)
     reg_object = reg_info(disbursement.registrant.reg_id)
     url = disbursement.link
-    date = disbursement.date.strftime('%m/%d/%Y')
-
+    
+    try:
+        date = disbursement.date
+        date = date.strftime('%m/%d/%Y')
+    except:
+        date = ''
+        
+    print date, "AAAAAAAHHHHHH please work"
     return render(request, 'FaraData/fix_disbursement.html',{
         'disbursement': disbursement,
         'reg_object': reg_object,
@@ -478,7 +491,10 @@ def fix_contribution(request, cont_id):
     contribution = Contribution.objects.get(id=cont_id)
     reg_object = reg_info(contribution.registrant.reg_id)
     url = contribution.link
-    date = contribution.date.strftime('%m/%d/%Y')
+    try:
+        date = payment.date.strftime('%m/%d/%Y')
+    except:
+        date = ''
 
     return render(request, 'FaraData/fix_contribution.html',{
         'contribution': contribution,
@@ -529,6 +545,9 @@ def cleandate(date):
             except:
                 date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
                 return date_error
+        elif date == None or date == '':
+                no_date = json.dumps({'error': 'No date'}, separators=(',',':'))
+                return no_date
         else:
             try:
                 date.strip()
@@ -874,20 +893,23 @@ def contact(request):
 
         reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         
-        date = cleandate(request.GET['date'])
-        if type(date) != datetime:
-            return HttpResponse(date, mimetype="application/json")
-
         lobbyists = Lobbyist.objects.filter(id__in=lobbyists_ids)
         description = cleantext(request.GET['description'])
-        
+
         contact = Contact(registrant = reg_id,
                             contact_type = request.GET['contact_type'],
                             description = description,
-                            date = date,
                             link = request.GET['link'],
                             client = client,
         )
+
+        date = cleandate(request.GET['date'])
+        if type(date) == datetime:
+            contact.date = date
+            date = contact.date.strftime("%B %d, %Y")
+        else:
+            date = ''
+
         contact.save()
 
         # this formats the results from the multiple select 
@@ -920,7 +942,7 @@ def contact(request):
         except:
             clear = "off"
 
-        contactinfo = {'date': contact.date.strftime("%B %d, %Y"), 
+        contactinfo = {'date': date, 
                         'name': str(names), 
                         'do_not_clear': clear,
                         'contact_id': contact.id,
@@ -946,10 +968,6 @@ def payment(request):
         
         reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']) )
         
-        date = cleandate(request.GET['date'])
-        if type(date) != datetime:
-            return HttpResponse(date, mimetype="application/json")
-
         if request.method == 'GET' and 'fee' in request.GET:
             fee = True
         else:
@@ -963,26 +981,34 @@ def payment(request):
                             fee = fee,
                             amount = amount,
                             purpose = purpose,
-                            date = date,
                             link = request.GET['link'],
         )
-        payment.save()
+
+        date = cleandate(request.GET['date'])
+        if type(date) == datetime:
+            payment.date = date
 
         subcontractor_id = request.GET['subcontractor']
         if subcontractor_id != '' and subcontractor_id != None:
             subcontractor = Registrant.objects.get(reg_id = subcontractor_id )
             payment.subcontractor = subcontractor
-            payment.save()
+        
+        payment.save()
 
         try:
             clear = request.GET['do_not_clear']
         except:
             clear = "off"
 
+        try:
+            date = payment.date.strftime("%B %d, %Y")
+        except:
+            date = ''
+
         # return info to update the entry form
         payinfo = {"amount": payment.amount, 
                     "fee": payment.fee, 
-                    "date": payment.date.strftime("%B %d, %Y"), 
+                    "date": date, 
                     "client": str(payment.client),
                     "pay_id": payment.id,
                     "do_not_clear": clear,
@@ -1049,10 +1075,6 @@ def contribution(request):
 @login_required(login_url='/admin')
 def disbursement(request):
     if request.method == 'GET':
-        date = cleandate(request.GET['date'])
-        if type(date) != datetime:
-            return HttpResponse(date, mimetype="application/json")
-
         registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         
         client = request.GET['client']
@@ -1071,16 +1093,25 @@ def disbursement(request):
                             client = client,
                             amount = amount,
                             purpose = purpose,
-                            date = date,
                             link = request.GET['link'],
         )
-        disbursement.save()
+
+        date = cleandate(request.GET['date'])
+        if type(date) == datetime:
+            disbursement.date = date
+            date = date.strftime("%B %d, %Y")
+        # allowes for empty dates that get filled in by stampdate later
+        elif date == '{"error":"No date"}':
+            date = ""
+        else:
+            return HttpResponse(date, mimetype="application/json")
 
         subcontractor_id = request.GET['subcontractor']
         if subcontractor_id != '' or None:
             subcontractor = Registrant.objects.get(reg_id = subcontractor_id )
             disbursement.subcontractor = subcontractor
-            disbursement.save()
+        
+        disbursement.save()
 
         try:
             clear = request.GET['do_not_clear']
@@ -1088,7 +1119,7 @@ def disbursement(request):
             clear = "off"
 
         disinfo = {'amount': disbursement.amount,
-                    'date': disbursement.date.strftime("%B %d, %Y"),
+                    'date': date,
                     'registrant': str(disbursement.registrant),
                     'client': str(disbursement.client),
                     'dis_id': disbursement.id, 
@@ -1107,10 +1138,6 @@ def disbursement(request):
 @login_required(login_url='/admin')
 def gift(request):
     if request.method == 'GET':
-        date = cleandate(request.GET['date'])
-        if type(date) != datetime:
-            return HttpResponse(date, mimetype="application/json")
-
         registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         
         if request.GET['client'] == "None":
@@ -1122,24 +1149,30 @@ def gift(request):
         description = cleantext(request.GET['description'])
         
         gift= Gift(registrant =  registrant,
-            date =  date,
             purpose =  purpose,
             description =  description,
             link = request.GET['link'],
         )
-        
+        date = cleandate(request.GET['date'])
+        if type(date) == datetime:
+            gift.date = date
+            date = date.strftime("%B %d, %Y")
+        else:
+            date = ""
+
         if request.GET['recipient'] != '':
            recipient = Recipient.objects.get(id=int(request.GET['recipient']))
            gift.recipient = recipient
 
         gift.save()
+
         client_names = ''
         for client in clients:
             gift.client.add(client)
             client_names = client_names + str(client.client_name) + ", " 
         
         giftinfo = {'client': client_names,
-                    'date': gift.date.strftime("%B %d, %Y"), 
+                    'date': date, 
                     'description': gift.description
         }
         giftinfo = json.dumps(giftinfo , separators=(',',':'))
@@ -1153,6 +1186,7 @@ def gift(request):
 @login_required(login_url='/admin')
 def metadata(request):      
     if request.method == 'GET':
+
         if request.method == 'GET' and 'reviewed' in request.GET:
             reviewed = True
         else:
@@ -1169,34 +1203,42 @@ def metadata(request):
         link = request.GET['link']
         date_obj = date.today()
 
-        end_date = cleandate(request.GET['upload_date'])
-        if type(end_date) != datetime:
-            return HttpResponse(end_date, mimetype="application/json")
-
         registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
 
         metadata= MetaData(link = link,
             upload_date = date_obj,
-            end_date = end_date,
             reviewed = reviewed,
             processed = processed,
             is_amendment = is_amendment,
             form = form,
             notes = request.GET['notes'],
         )
-        metadata.save()
 
         document = Document.objects.get(url=link)
+        
+        #supplemental end date- needed for supplementals, and some amendments
+        try:
+            end_date = cleandate(request.GET['end_date'])
+            if type(end_date) != datetime:
+                if document.doc_type == "Supplemental":
+                    return HttpResponse(end_date, mimetype="application/json")
+                elif end_date != '{"error":"No date"}':
+                    return HttpResponse(end_date, mimetype="application/json")
+            else:
+                metadata.end_date = end_date
+        except:
+            end_date = None
+        metadata.save()
+        
         if processed == True:
             document.processed = True
-            document.save()
         else:
             document.processed = False
-            document.save()
-
+        document.save()
+        
         metadata_info = json.dumps({'processed': processed, 'reviewed': reviewed} , separators=(',',':'))
         return HttpResponse(metadata_info, mimetype="application/json")
-         
+        
     else:
         error = json.dumps({'error': 'failed'} , separators=(',',':'))
         return HttpResponse(error, mimetype="application/json")        
@@ -1215,9 +1257,12 @@ def amend_contact(request):
         contact.description = cleantext(request.GET['description'])
         
         date = cleandate(request.GET['date'])
-        if type(date) != datetime:
+        if type(date) == datetime:
+            contact.date = date
+        elif date == '{"error":"No date"}':
+            date = ""
+        else:
             return HttpResponse(date, mimetype="application/json")
-        contact.date = date
         
         contact.save()
         # add additional recipients
@@ -1327,11 +1372,16 @@ def delete_contact(request):
 def amend_payment(request):
     if request.method == 'GET':
         payment_id = request.GET['pay_id']
+        payment = Payment.objects.get(id=payment_id)
         client = Client.objects.get(id=int(request.GET['client']))
         reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         
         date = cleandate(request.GET['date'])
-        if type(date) != datetime:
+        if type(date) == datetime:
+            payment.date = date
+        elif date == '{"error":"No date"}':
+            date = ""
+        else:
             return HttpResponse(date, mimetype="application/json")
 
         if request.method == 'GET' and 'fee' in request.GET:
@@ -1339,16 +1389,13 @@ def amend_payment(request):
         else:
             fee = False
 
-        payment = Payment.objects.get(id=payment_id)
         payment.client = client
         payment.registrant = reg_id
         payment.fee = fee
         payment.amount = cleanmoney(request.GET['amount'])
         payment.purpose = cleantext(request.GET['purpose'])
-        payment.date = date
         
         payment.save()
-        print "SAVING"
 
         subcontractor_id = request.GET['subcontractor']
         if subcontractor_id != '' or None:
@@ -1406,9 +1453,12 @@ def amend_disbursement(request):
         dis = Disbursement.objects.get(id=dis_id)
 
         date = cleandate(request.GET['date'])
-        if type(date) != datetime:
+        if type(date) == datetime:
+            dis.date = date
+        elif date == '{"error":"No date"}':
+            date = ""
+        else:
             return HttpResponse(date, mimetype="application/json")
-        dis.date = date
 
         dis.registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         dis.client = Client.objects.get(id=int(request.GET['client']))
@@ -1471,9 +1521,13 @@ def amend_contribution(request):
         contribution = Contribution.objects.get(id=request.GET['cont_id'])
 
         date = cleandate(request.GET['date'])
-        if type(date) != datetime:
+        if type(date) == datetime:
+            contribution.date =  date
+        elif date == '{"error":"No date"}':
+            date = ""
+        else:
             return HttpResponse(date, mimetype="application/json")
-        contribution.date =  date
+
         contribution.amount = cleanmoney(request.GET['amount'])
         
         if request.GET['recipient'] != '' and request.GET['recipient'] != None:

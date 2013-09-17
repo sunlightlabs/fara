@@ -27,11 +27,19 @@
 jQuery(document).ready(function() {
 
   var direct = {
-      success: function(response, statusText, xhr, h){
-           console.log(response);
-           window.location.href="{% url 'full-list' %}";
+    success: function(response, statusText, xhr, h){
+      var error = response.error
+      if (typeof error== 'undefined'){
+        console.log(response);
+        window.location.href="{% url 'full-list' %}";
+      }
+      else{
+        console.log("error")
+        var message = "Error: " + response.error;
+        alert(message);
+      }  
+    }
   }
-}
 
 $("#metaform").ajaxForm(direct);
 
@@ -110,7 +118,7 @@ createSelect("#gift_recip", "/formchoices/recip");
 jQuery(document).ready(function() {
   var options = {
     success: function(responses, statusText, xhr, h){
-      console.log(response)
+    
       // var response.error = error
       // if ((error== 'name in system') ||(error== 'failed')){
       //   var message = "Error: " + error

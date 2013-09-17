@@ -85,9 +85,16 @@ def add_member(request):
 
 @login_required(login_url='/admin')
 def add_staff(request):
+	agency = request.GET['agency']
+	member_name = request.GET['office_detail']
+	if agency == "House":
+		member_name = "Rep. " + member_name
+	elif agency == "Senate":
+		member_name = "Sen. " + member_name
+
 	staff = Recipient(crp_id = request.GET['crp_id'],
 					    agency = request.GET['agency'],
-					    office_detail = request.GET['office_detail'],
+					    office_detail = member_name,
 					    name = request.GET['name'],
 					    title = request.GET['title'],
 	)

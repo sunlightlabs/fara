@@ -40,11 +40,16 @@ Delete subcontractor:
     
     <p><label for="amount">Amount: $</label><input id="amount" type="text" name="amount" value="{{ payment.amount }}"/></p> 
     
-    <p><label for="description">description:</label><br \>
-    <textarea name="purpose" cols="25" rows="5" value="{{ payment.description }}"></textarea></p>
+    {% if payment.purpose %}
+        <p><label for="description">description:</label><br \>
+        <textarea name="purpose" cols="25" rows="5">{{ payment.purpose }}</textarea></p>
+    {% else %}
+        <p><label for="description">description:</label><br \>
+        <textarea name="purpose" cols="25" rows="5"></textarea></p>
+    {% endif %}
     
     <p><label for="date">Date: </label>
-    <input id="payment_date" type="text" name="date" value="{{ date}}"/></p>
+    <input id="payment_date" type="text" name="date" value="{{ date }}"/></p>
 
     (Add this field if the money is coming from to another registrant.)
     <p><label for="subcontractor">Subcontractor: </label><input type="hidden" id="payment_subcontractor" name="subcontractor" style="width: 300px" /></p>
