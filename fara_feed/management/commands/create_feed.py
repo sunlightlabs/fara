@@ -24,7 +24,6 @@ def add_document(url_info):
     
 
 def parse_and_save(page):
-    print "Starting parse and save"
     filings = page.find("table", {"class" : "t14Standard"})
     new_fara_docs = []
     
@@ -96,6 +95,7 @@ def parse_and_save(page):
     return new_fara_docs
 
 class Command(BaseCommand):
+    help = "Crawls the DOJ's FARA site looking for new documents."
     can_import_settings = True
     #option_list = BaseCommand.option_list + (
         #make_option()) to add more console command options

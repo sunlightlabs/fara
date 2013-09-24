@@ -454,8 +454,25 @@ jQuery(document).ready(function(){
   update('.deleteable');
   
 });
-
 </script>
+
+<script type="text/javascript">
+// expandable forms
+jQuery(document).ready(function(){
+  $(function() {
+    $('h3.toggleOpen').click(function() {
+        $(this).next('.toggle').slideDown("fast");
+    });
+    $('span.toggleClose').click(function() {
+        $(this).parents('.toggle').slideUp("fast");
+    });
+});
+
+});
+</script>
+
+
+
 
 </head>
 

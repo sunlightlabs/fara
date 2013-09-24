@@ -38,3 +38,7 @@
   .help {
     float: right;
   }
+/*hides forms */
+  .toggle {
+    display: none;
+  }

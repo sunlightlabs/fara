@@ -17,7 +17,7 @@ Correct month!
     <input type="submit" />
 </form>
 
-<div class="help" ><a href="{% url 'instructions' %}#Stamp_Date" target="blank">Help</a></div><br>
+<span class="help" ><a href="{% url 'instructions' %}#Stamp_Date" target="blank">Help</a></span><br>
 <hr>
 
 
@@ -47,7 +47,7 @@ Correct month!
   <input type="submit" value="Send" id="sendbutton"/>
   </form>
 
-<div class="help" ><a href="{% url 'instructions' %}#Registrant" target="blank">Help</a></div><br>
+<span class="help" ><a href="{% url 'instructions' %}#Registrant" target="blank">Help</a></span><br>
 
 {% else %}
  <h3>Registrant:</h3>
@@ -88,64 +88,78 @@ Correct month!
     <label>Add a client:  </label><input type="hidden" id="client_client" name="clients" style="width: 300px"/>
 
     <input type="submit" />
+    <span class="help" ><a href="{% url 'instructions' %}#Client" target="blank">Help</a></span>
 </form>
-<hr>
-
-
-<h4>Add a brand new client to the database:</h4>
-<p><i>Questions 8 and 9</i></p>
-
-<form method="GET" id="add_clientform" action="/client/create">
-    
-    <p><label for="location">Location: </label><input type="hidden" id="client_location" name="location" style="width: 300px"/>
-    <p><label for="client_name">Client name:</label> <input id="id_client_name" maxlength="200" name="client_name" type="text" /></p>
-    <p><label for="address1">Address1:</label> <input id="id_address1" maxlength="300" name="address1" type="text" /></p>
-    <p><label for="city">City:</label> <input id="id_city" maxlength="100" name="city" type="text" /></p>
-    <p><label for="state">State:</label> <input id="id_state" maxlength="100" name="state" type="text" /></p>
-    <p><label for="zip_code">Zip code:</label> <input id="id_zip_code" maxlength="50" name="zip_code" type="text" /></p>
-    <input type="hidden" name="reg_id" value="{{ reg_id }}">
-    <input type="submit" />
-</form>
- 
-<div class="help" ><a href="{% url 'instructions' %}#Client" target="blank">Help</a></div>
 <br>
 <hr>
 
-<h3>Add new location for client field</h3>
-<div id="location_list"></div>
-<form method="GET" id="locationform" action="/location/create">
-    <p><label for="location">Location as appears on the form: </label> <input id="location" maxlength="300" name="location" type="text" /></p>
-    <p><label for="country">Country grouping: </label> <input id="country" maxlength="300" name="country" type="text" /></p>
-    <p>Refer to UN regions- <a href="http://unstats.un.org/unsd/methods/m49/m49regin.htm">here</a>.</p>
-    <p><label for="region">Region:</label> <select id="region" maxlength="300" name="region" type="text">
-        <option value="Eastern Africa">Eastern Africa</option>
-        <option value="Western Africa">Western Africa</option>
-        <option value="Middle Africa">Middle Africa</option>
-        <option value="Northern Africa">Northern Africa</option>
-        <option value="Southern Africa">Southern Africa</option>
-        <option value="Caribbean">Caribbean</option>
-        <option value="Central America">Central America</option>
-        <option value="South America">South America</option>
-        <option value="North America">North America</option>
-        <option value="Central Asia">Central Asia</option>
-        <option value="Eastern Asia">Eastern Asia</option>
-        <option value="Southern Asia">Southern Asia</option>
-        <option value="South-Eastern Asia">South-Eastern Asia</option>
-        <option value="Western Asia">Western Asia</option>
-        <option value="Eastern Europe">Eastern Europe</option>
-        <option value="Western Europe">Western Europe</option>
-        <option value="Northern Europe">Northern Europe</option>
-        <option value="Southern Europe">Southern Europe</option>
-        <option value="Australia and New Zealand">Australia and New Zealand</option>
-        <option value="Melanesia">Melanesia</option>
-        <option value="Polynesia">Polynesia</option>
-        <option value="Micronesia"> Micronesia</option>
-        <option value="Multinational"> Multinational</option>
-    </select></p>
 
-  <input type="submit" />
-</form>
-<div class="help" ><a href="{% url 'instructions' %}#Location" target="blank">Help</a></div><br>
+<div id="client">
+  <div class="item">
+    <h3 class="toggleOpen">Add a brand new client to the database:</h3>
+    <div class="toggle">
+      <p><i>Questions 8 and 9</i></p>
+
+      <form method="GET" id="add_clientform" action="/client/create">
+          
+          <p><label for="location">Location: </label><input type="hidden" id="client_location" name="location" style="width: 300px"/>
+          <p><label for="client_name">Client name:</label> <input id="id_client_name" maxlength="200" name="client_name" type="text" /></p>
+          <p><label for="address1">Address1:</label> <input id="id_address1" maxlength="300" name="address1" type="text" /></p>
+          <p><label for="city">City:</label> <input id="id_city" maxlength="100" name="city" type="text" /></p>
+          <p><label for="state">State:</label> <input id="id_state" maxlength="100" name="state" type="text" /></p>
+          <p><label for="zip_code">Zip code:</label> <input id="id_zip_code" maxlength="50" name="zip_code" type="text" /></p>
+          <input type="hidden" name="reg_id" value="{{ reg_id }}">
+          <input type="submit" />
+      </form>
+
+      <span class="help" ><a href="{% url 'instructions' %}#Client" target="blank">Help</a></span>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<div id="client">
+  <div class="item">
+    <h3 class="toggleOpen">Add new location for client field</h3>
+    <div class="toggle">
+      <div id="location_list"></div>
+      <form method="GET" id="locationform" action="/location/create">
+          <p><label for="location">Location as appears on the form: </label> <input id="location" maxlength="300" name="location" type="text" /></p>
+          <p><label for="country">Country grouping: </label> <input id="country" maxlength="300" name="country" type="text" /></p>
+          <p>Refer to UN regions- <a href="http://unstats.un.org/unsd/methods/m49/m49regin.htm">here</a>.</p>
+          <p><label for="region">Region:</label> <select id="region" maxlength="300" name="region" type="text">
+              <option value="Eastern Africa">Eastern Africa</option>
+              <option value="Western Africa">Western Africa</option>
+              <option value="Middle Africa">Middle Africa</option>
+              <option value="Northern Africa">Northern Africa</option>
+              <option value="Southern Africa">Southern Africa</option>
+              <option value="Caribbean">Caribbean</option>
+              <option value="Central America">Central America</option>
+              <option value="South America">South America</option>
+              <option value="North America">North America</option>
+              <option value="Central Asia">Central Asia</option>
+              <option value="Eastern Asia">Eastern Asia</option>
+              <option value="Southern Asia">Southern Asia</option>
+              <option value="South-Eastern Asia">South-Eastern Asia</option>
+              <option value="Western Asia">Western Asia</option>
+              <option value="Eastern Europe">Eastern Europe</option>
+              <option value="Western Europe">Western Europe</option>
+              <option value="Northern Europe">Northern Europe</option>
+              <option value="Southern Europe">Southern Europe</option>
+              <option value="Australia and New Zealand">Australia and New Zealand</option>
+              <option value="Melanesia">Melanesia</option>
+              <option value="Polynesia">Polynesia</option>
+              <option value="Micronesia"> Micronesia</option>
+              <option value="Multinational"> Multinational</option>
+          </select></p>
+
+        <input type="submit" />
+      </form>
+      <span class="help" ><a href="{% url 'instructions' %}#Location" target="blank">Help</a></span><br>
+    </div>
+  </div>
+</div>
 <hr>
 
 <div align="center">

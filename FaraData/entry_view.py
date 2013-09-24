@@ -73,17 +73,19 @@ def gift_info(url):
     gift_objects = Gift.objects.filter(link = url) 
     gift_list = []
     for g in gift_objects:
-        gift = [g.description, g.date]
+        gift = [g.description, g.date, g.id]
         for g in g.client.all():
             gift.append(g.client_name)
         gift_list.append(gift)
+        
     return (gift_list)
 
 #finds meta data attached to form 
 def meta_info(url):
     try:
         m = MetaData.objects.get(link=url)
-        meta_list = [ m.reviewed, m.processed, m.upload_date, m.is_amendment, m.notes, m.end_date] 
+        end_date = m.end_date.strftime('%m/%d/%Y')
+        meta_list = [ m.reviewed, m.processed, m.upload_date, m.is_amendment, m.notes, end_date] 
     except:
         metadata= MetaData(
             link = url,
@@ -225,6 +227,7 @@ def supplemental_gift(request, form_id):
     gift_list = gift_info(url)
     reg_object = reg_info(reg_id)
     recipient_form= RecipientForm()
+    one_client = oneclient(reg_object)
 
     return render(request, 'FaraData/supplemental_gift.html',{
     'reg_id' : reg_id,
@@ -233,6 +236,7 @@ def supplemental_gift(request, form_id):
     'reg_object': reg_object,
     'gift_list': gift_list,
     'recipient_form': recipient_form,
+    'one_client' : one_client,
     })
 
 @login_required(login_url='/admin')
@@ -478,7 +482,6 @@ def fix_disbursement(request, dis_id):
     except:
         date = ''
         
-    print date, "AAAAAAAHHHHHH please work"
     return render(request, 'FaraData/fix_disbursement.html',{
         'disbursement': disbursement,
         'reg_object': reg_object,
@@ -515,10 +518,33 @@ def fix_registrant(request, reg_id, form_id):
         'url' : url,
         })
 
+@login_required(login_url='/admin')
+def fix_gift(request, gift_id):
+    gift = Gift.objects.get(id=gift_id)
+    url = gift.link
+    reg_object = reg_info(gift.registrant.reg_id)
+    date = gift.date.strftime('%m/%d/%Y')
+    for g in gift.client.all():
+        client = g
+    if len(gift.client.all()) < 1:
+        client = ''
+        
+
+    return render(request, 'FaraData/fix_gift.html', {
+        'gift': gift,
+        'reg_object': reg_object,
+        'url': url, 
+        'date': date,
+        'client': client,
+        })
+
 
 @login_required(login_url='/admin')
 def fix_client(request, client_id):
     print "placeholder"
+
+
+    
 # Section for functions that process forms
 
 #data cleaning
@@ -536,7 +562,6 @@ def cleandate(date):
         if len(date) == 10:
             try:
                 date_obj = datetime.strptime(date, "%m/%d/%Y")
-                print date_obj
                 if date_obj > datetime.now():
                     date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
                     return date_error
@@ -623,12 +648,10 @@ def lobbyist(request):
         # wrapped error messages in list so they work the same as a successful variable in the JS
         if pac_size == 0 and lobby_size == 0:
             error = json.dumps([{'error': "must have lobbyist name or PAC name"}], separators=(',',':')) 
-            print "too little"
             return HttpResponse(error, mimetype="application/json")
         
         if pac_size > 1 and lobby_size > 1:
             error = json.dumps([{'error': "Is this a lobbyist or a PAC? Only fill out the name in the appropriate field"}], separators=(',',':')) 
-            print "too much"
             return HttpResponse(error, mimetype="application/json")
         
         reg_id = request.GET['reg_id']
@@ -712,7 +735,6 @@ def client(request):
 
             if client not in registrant.clients.all():
                 registrant.clients.add(client)
-                print "added"
 
             client_choice = [{'name': client.client_name,'id': client.id,}]
             client_choice = json.dumps(client_choice, separators=(',',':')) 
@@ -1277,7 +1299,6 @@ def amend_contact(request):
             recipients = None
         
         if recipients != None and recipients != ['']:
-            print recipients
             for r in recipients:
                 recipient = Recipient.objects.get(id=int(r))
                 if recipient not in contact.recipient.all():
@@ -1292,13 +1313,10 @@ def amend_contact(request):
             except:
                 lobbyists = None
         
-        print lobbyists, "lobbyist"
-        
         if lobbyists != None:
             for l in lobbyists:
                 l = int(l)
                 lobbyist = Lobbyist.objects.get(id=l)
-                print lobbyist
                 if lobbyist in contact.lobbyist.all():
                     pass
                 else:
@@ -1607,10 +1625,78 @@ def amend_registrant(request):
         else:
             return return_big_form(request, form_id)
 
+@login_required(login_url='/admin')
+def amend_gift(request):
+    g_id = int(request.GET['gift_id'])
+    gift= Gift.objects.get(id=g_id)
+    date = cleandate(request.GET['date'])
+    if type(date) == datetime:
+        gift.date =  date
+    elif date == '{"error":"No date"}':
+        gift.date = ""
+    else:
+        return HttpResponse(date, mimetype="application/json") 
+
+    gift.purpose = request.GET['purpose']
+    gift.description = request.GET['description']
+    
+    client = request.GET['client']
+    if client != '':
+        client = Client.objects.get(id=int(request.GET['client']))
+        gift.client.add(client)
+    else:
+        clients = gift.client.all()
+        for c in clients:
+            gift.client.remove(c)
 
 
+    try:
+        recip = request.GET['recipient']
+        if recip != '':
+            recip_obj = Recipient.objects.get(id=int(recip))
+            print recip_obj
+            gift.recipient = recip_obj
+    except:
+        pass
+    
+    gift.save()
+
+    doc = Document.objects.get(url=gift.link)
+    form_id = int(doc.id)
+    doc_type = str(doc.doc_type)
+    
+    if doc_type == "Supplemental":
+        return supplemental_gift(request, form_id)
+    if doc_type == "Registration":
+        return registration_gift(request, form_id)
+    if doc_type == "Amendment":
+        return return_big_form(request, form_id)
 
 
+@login_required(login_url='/admin')
+def delete_gift(request):   
+    print "Working" 
+    gift= Gift.objects.get(id=request.GET['gift_id'])
+    url = str(gift.link)
+    gift.delete()
 
+    doc = Document.objects.get(url=url)
+    form_id = int(doc.id)
+    doc_type = str(doc.doc_type)
+    
+    if doc_type == "Supplemental":
+        return supplemental_gift(request, form_id)
+    if doc_type == "Registration":
+        return registration_gift(request, form_id)
+    if doc_type == "Amendment":
+        return return_big_form(request, form_id)
         
+@login_required(login_url='/admin')
+def gift_remove_recip(request):
+    if request.method == 'GET':
+        gift = Gift.objects.get(id=request.GET['gift_id'])
+        gift.recipient = None
+        gift.save()
 
+        info = json.dumps({'gift_id': gift.id}, separators=(',',':'))
+        return HttpResponse(info, mimetype="application/json")

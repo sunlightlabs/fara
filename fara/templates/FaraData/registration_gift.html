@@ -3,12 +3,13 @@
 
 <h3>Gift</h3>
 <p><i>Question 9(b), Question 10(b)</i></p>
+
 <div id="gift_basket">
-<ul>
-{% for g in gift_list %}
-<li>{{ g.0 }} from {{ g.2 }} on {{ g.1 }}  </li>
-{% endfor %} 
-</ul>
+    <ul>
+        {% for g in gift_list %}
+            <li>{{ g.0 }} from {{ g.3 }} on {{ g.1 }}  <a href="{% url 'fix-gift' g.2 %}">fix</a> </li>
+        {% endfor %} 
+    </ul>
 </div>
 
 
@@ -17,13 +18,16 @@
     <input type="hidden" name="reg_id" value="{{ reg_id }}">
     <input type="hidden" name="link" value="{{  url }}">
     <p><label for="client">Clients:</label><select name="client" id="gift_client">
+    {% if one_client == False %}    
         <option value="None">Please Select Client</option>
+    {% endif %}
     {% for client in reg_object.clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}
     {% for client in reg_object.terminated_clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}
+    
     </select></p>  <a href="#client">add a new client</a>
     
     <p><label for="date">Date: </label>
@@ -41,12 +45,13 @@
     <input type="submit" />
 </form>
     
-<div class="help" ><a href="{% url 'instructions' %}#Gift" target="blank">Help</a></div><br>
+<span class="help" ><a href="{% url 'instructions' %}#Gift" target="blank">Help</a></span><br>
 <hr />
 
 
 
-<a id="recip"></a><h3> Add a new Recipient (person who is being contacted):</h3>
+<a id="recip"></a><h3> Add a new Recipient:</h3>
+<p>(person who receives the gift other than the registrant or client)</p>
 <a href="{% url 'find-form' %}" target="blank"><b>Add a new member of Congress</b></a>
 <p> <i>People being meet, given contributions and gifts</i></p>
 <form method="GET" id='recipform' action="/recipient/create">
@@ -55,7 +60,7 @@
     <input type="submit" />
 </form>    
 
-<div class="help" ><a href="{% url 'instructions' %}#Recipient" target="blank">Help</a></div><br>
+<span class="help" ><a href="{% url 'instructions' %}#Recipient" target="blank">Help</a></span><br>
 <hr>
 
 

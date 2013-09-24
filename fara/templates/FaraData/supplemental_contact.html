@@ -93,7 +93,7 @@
     <input type="submit" />
 </form>
 
-<div class="help" ><a href="{% url 'instructions' %}#Contact" target="blank">Help</a></div><br>
+<span class="help" ><a href="{% url 'instructions' %}#Contact" target="blank">Help</a></span><br>
 <hr>
 
 
@@ -108,51 +108,47 @@
     <input type="submit" />
 </form>    
 
-<div class="help" ><a href="{% url 'instructions' %}#Recipient" target="blank">Help</a></div><br>
+<span class="help" ><a href="{% url 'instructions' %}#Recipient" target="blank">Help</a></span><br>
 <hr>
 
-
-
-<h3>Add a lobbyist</h3>
-
-<p>Lobbists already in system:<br>
-<div id="lobby_list">
-    <ul>
-{% for lobbyist in reg_object.lobbyists.all %}
-    <li>{{ lobbyist }}</li>
-{% endfor %}
-    </ul>
-</div>
-<div id="lobbyist_ajaxwrapper"></div>
-</p>
-
-<h4>Select additional lobbyists for registrant</h4>
-
-<div id="lobbyist_add">
-<form method="GET" id='lobbyform' action="/registrant/add_lobbyist">
-    {% csrf_token %}
-    <input type="hidden" name="reg_id" value="{{ reg_id }}">
-    
-    <p><label for="lobbyists">Lobbyist: </label><input type="hidden" id="lobbyist_lobbyist" name="lobbyists" style="width: 300px"/>
-
-    <input type="submit" /></p>
-</form>
-</div>
-
 <div id="lobbyist_create">
-<a id="lobbyist"></a><h4>Add a new lobbyist</h4>
-<form method="GET" id="add_lobbyform" action="/lobbyist/create">
-    <input type="hidden" name="reg_id" value="{{ reg_id }}">
-    <p><label for="id_lobby_id">Lobby id:</label> <input id="id_lobby_id" maxlength="150" name="lobby_id" type="text" /></p>
-    <p><label for="id_lobbyist_name">Lobbyist name:</label> <input id="id_lobbyist_name" maxlength="150" name="lobbyist_name" type="text" /></p>
-    <label class="lobbyists_error" for="lobbyist_name" id="name_error">This field is required.</label>
-    <input type="hidden" id="id_PAC_name" name="PAC_name" value='' /></p>
-    <input type="submit" />
-</form>
+    <div class="item">
+        <h3 class="toggleOpen">Add a lobbyist</h3>
+        <div class="toggle">
+            <p>Lobbists already in system:</p>
+            <div id="lobby_list">
+                    <ul>
+                {% for lobbyist in reg_object.lobbyists.all %}
+                    <li>{{ lobbyist }}</li>
+                {% endfor %}
+                    </ul>
+            </div>
+                
+            <h4>Select additional lobbyists for registrant</h4>
+                
+            <form method="GET" id='lobbyform' action="/registrant/add_lobbyist">
+                {% csrf_token %}
+                <input type="hidden" name="reg_id" value="{{ reg_id }}">
+                <p><label for="lobbyists">Lobbyist: </label><input type="hidden" id="lobbyist_lobbyist" name="lobbyists" style="width: 300px"/>
+                <input type="submit" /></p>
+            </form>
 
-<div class="help" ><a href="{% url 'instructions' %}#Lobbyist" target="blank">Help</a></div><br>
-<hr />
+            <a id="lobbyist"></a><h4>Add a new lobbyist</h4>
+            <form method="GET" id="add_lobbyform" action="/lobbyist/create">
+                <input type="hidden" name="reg_id" value="{{ reg_id }}">
+                <p><label for="id_lobby_id">Lobby id:</label> <input id="id_lobby_id" maxlength="150" name="lobby_id" type="text" /></p>
+                <p><label for="id_lobbyist_name">Lobbyist name:</label> <input id="id_lobbyist_name" maxlength="150" name="lobbyist_name" type="text" /></p>
+                <label class="lobbyists_error" for="lobbyist_name" id="name_error">This field is required.</label>
+                <input type="hidden" id="id_PAC_name" name="PAC_name" value='' /></p>
+                <input type="submit" />
+            </form>
+
+            <span class="help" ><a href="{% url 'instructions' %}#Lobbyist" target="blank">Help</a></span><br>
+            
+        </div>
+    </div>
 </div>
+<hr />
 
 <div allign="center"><h3><a href="{% url 'supplemental-payment' form_id %}">  Continue to Payments</a></h3></div>
 

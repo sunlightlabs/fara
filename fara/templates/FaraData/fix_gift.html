@@ -1,0 +1,64 @@
+{% extends "FaraData/form_base.html" %}
+
+{% block formquestions %}
+
+
+<h3>Fix Gift</h3>
+{% if gift.recipient %}
+Delete recipient:
+<div id="sub{{ gift.recipient.reg_id }}">
+    <form method="GET" class="deleteable" action="/gift_remove_recip">  
+            <input type="hidden" name="gift_id" value="{{ gift.id }}">
+            <b>{{gift.recipient.title}} {{ gift.recipient.name }}</b>
+            <input value="Delete" type="submit" />
+    </form> 
+</div> 
+{% endif  %}
+
+
+<form method="GET" id="amend_gift" action="/amend_gift">
+    <input type="hidden" name="gift_id" value="{{ gift.id }}" />
+    <input type="hidden" name="reg_id" value="{{ reg_object.reg_id }}"/>
+    <input type="hidden" name="link" value="{{ url }}"/>
+
+     <p><label for="client">Clients:</label><select name="client" id="pay_client">
+        {% if client %}
+    		<option value={{ client.id }}>{{ client.client_name }}</option>
+        {% endif %}
+        	<option value="">No Client</option>
+        {% for client in reg_object.clients.all %}
+            <option value="{{ client.id }}">{{ client.client_name }}</option>
+        {% endfor %}
+        {% for client in reg_object.terminated_clients.all %}
+            <option value="{{ client.id }}">{{ client.client_name }}</option>
+        {% endfor %}
+    </select></p>
+
+    <p><label for="date">Date: </label>
+                <input id="gift_date" type="text" name= "date" value="{{ date }}" /></p>
+
+    <p><a href="#client">add a new client</a></p>
+
+    <label for "purpose">Purpose: </label><br \>
+    <textarea name="purpose" cols="25" rows="5">{% if gift.purpose %}{{ gift.purpose }}{% endif %}</textarea></p>
+    
+    <p><label for="description">Thing of Value:</label><br \>
+    <textarea name="description" cols="25" rows="5">{% if gift.description %}{{ gift.description }}{% endif %}</textarea></p>
+
+    (If the gift is to someone other than the registrant)
+    <p><label for="recipient">Recipient: </label><input type="hidden" id="gift_recip" name="recipient" style="width: 300px"/></p>
+    
+    <input type="submit" /></form>
+
+    <span class="help" ><a href="{% url 'instructions' %}#Gift" target="blank">Help</a></span><br>
+
+    <span class="help" ><p>
+		 <form method="GET" class= "help" action="/delete_gift">  
+		    <input type="hidden" name="gift_id" value="{{ gift.id }}">
+		    <input value="Delete this entry" type="submit" />
+		 </form> 
+	</p></span>
+<br>
+
+
+{% endblock formquestions %}

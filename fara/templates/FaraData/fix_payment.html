@@ -9,7 +9,7 @@ Delete subcontractor:
 <div id="sub{{ payment.subcontractor.reg_id }}">
     <form method="GET" class="deleteable" action="/payment_remove_sub">  
             <input type="hidden" name="payment_id" value="{{ payment.id }}">
-            {{ payment.subcontractor.reg_name }}
+            <b>{{ payment.subcontractor.reg_name }}</b>
             <input value="Delete" type="submit" />
     </form> 
 </div> 
