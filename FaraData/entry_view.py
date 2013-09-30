@@ -551,6 +551,7 @@ def fix_client(request, client_id):
 def cleantext(text):
     text = re.sub(' +',' ', text)
     text = re.sub('\\r|\\n','', text)
+    text = text.strip()
     return text
 
 def cleanmoney(money):

@@ -1,4 +1,5 @@
 import requests
+import re
 
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
@@ -6,17 +7,21 @@ from django.contrib.auth.decorators import login_required
 
 from FaraData.models import Recipient
 
+def cleantext(text):
+    text = re.sub(' +',' ', text)
+    text = re.sub('\\r|\\n','', text)
+    text = text.strip()
+    return text
+
 @login_required(login_url='/admin')
 def find_form(request):
  	return render(request, 'FaraData/api_lookup.html') 
 
-@login_required(login_url='/admin')
-def find_staff(request):
-	return render(request, 'FaraData/api_staff_lookup.html')
          
 @login_required(login_url='/admin')        
 def find_member(request):
 	q = request.GET['member'],
+
 	query_params = { 'query': q,
 					'apikey': 'aaf0ab990fc4443ab8d9a7d899686694',
 	               }
@@ -31,6 +36,9 @@ def find_member(request):
 	response = requests.get(endpoint, params=query_params)
 	response_old = requests.get(endpoint, params=old_query_params)
 	response_url = response.url
+
+
+
 
 	results = []
 
@@ -54,7 +62,7 @@ def find_member(request):
 				state = d['state']
 				
 				if time == 'old':
-					text = "%s %s %s (%s-%s) (not in office) CRP ID = %s" %(title, first_name, last_name, party, state, crp_id) 
+					text = "%s %s %s (%s-%s) (NOT in office) CRP ID = %s" %(title, first_name, last_name, party, state, crp_id) 
 				else:
 					text = "%s %s %s (%s-%s) CRP ID = %s" %(title, first_name, last_name, party, state, crp_id) 
 				
@@ -64,8 +72,15 @@ def find_member(request):
 
 	data = response.json()
 	old_data = response_old.json()
+	
+	# if accent_response or accent_response_old in locals:
+	# 	read_response(data, "new")
+	# 	read_response(old_data, "old")
+
+
 	read_response(data, "new")
 	read_response(old_data, "old")
+
 	return render(request, 'FaraData/api_lookup.html', {'results': results}) 
 
 @login_required(login_url='/admin')
@@ -92,10 +107,12 @@ def add_staff(request):
 	elif agency == "Senate":
 		member_name = "Sen. " + member_name
 
+	name = cleantext(request.GET['name'])
+
 	staff = Recipient(crp_id = request.GET['crp_id'],
 					    agency = request.GET['agency'],
 					    office_detail = member_name,
-					    name = request.GET['name'],
+					    name = name,
 					    title = request.GET['title'],
 	)
 	if Recipient.objects.filter(crp_id=staff.crp_id, name=staff.name).exists():

@@ -1,5 +1,5 @@
 
-#import reversion
+import reversion
 
 from django.contrib import admin
 

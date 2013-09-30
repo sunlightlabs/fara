@@ -366,7 +366,6 @@ jQuery(document).ready(function(){
             var recipient = response.recipient;
             var date =  response.date;
             var cont_id = response.cont_id;
-            console.log("why you no print?");
             var item = '<tr><td>$' + amount + '</td><td>' + lobbyist + '</td><td>' + recipient + '</td><td>' + date + '</td><td><a href="' + link + '/fix_contribution/' + cont_id + '">fix</a><td></tr></tr>';
             $('#cont_table').append(item);
             var $cont_recip = $('#cont_recip');
