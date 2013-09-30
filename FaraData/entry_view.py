@@ -1196,7 +1196,8 @@ def gift(request):
         
         giftinfo = {'client': client_names,
                     'date': date, 
-                    'description': gift.description
+                    'description': gift.description,
+                    'gift_id': gift.id,
         }
         giftinfo = json.dumps(giftinfo , separators=(',',':'))
         return HttpResponse(giftinfo, mimetype="application/json")
