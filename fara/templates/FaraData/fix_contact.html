@@ -1,5 +1,8 @@
 {% extends "FaraData/form_base.html" %}
 
+{% block show_doc %}
+{% endblock show_doc %}
+
 {% block formquestions %}
 
 <h3>Fix Contact</h3>
@@ -30,7 +33,7 @@
     </div>
 {% endfor %}
 
-<form method="GET" id="amend_contact" action="/amend_contact"> 
+<form method="GET" id="amend_contact" class="fix" action="/amend_contact"> 
     {% csrf_token %}
     <input type="hidden" name="reg_id" value="{{ contact.registrant.reg_id }}">
     <input type="hidden" name="link" value="{{ url }}">
@@ -92,13 +95,13 @@
     <textarea cols="40" id="id_description" name="description" rows="10">{{ contact.description }}
     </textarea></p>
 
-    <input type="submit" />
+    <input type="submit" class="closer" />
 </form>
 
 <p>
  <form method="GET" class= "help" action="/delete_contact">  
     <input type="hidden" name="contact_id" value="{{ contact.id }}">
-    <input value="Delete this entry" type="submit" />
+    <input value="Delete this entry" class="closer" type="submit" />
  </form> 
 </p>
 <br>

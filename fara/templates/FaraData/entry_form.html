@@ -1,11 +1,13 @@
 {% extends "FaraData/form_base.html" %}
 
+
 {% block formheading %}
 <h2>Amendment</h2>
 <h2>{{ reg_object.reg_name }}</h2>
 {% endblock formheading %}
-
+<div>
 {% block formquestions %}
+
 
 <h3>Registrant</h3>
 <p><i>Section I 1(c)</i><br>
@@ -67,7 +69,8 @@ Registration No: <b>{{ reg_id }}</b></p>
 {% endif %}
 
 <p>
-    <a href="{% url 'fix-registrant' reg_id form_id %}">Fix Registrant </a>
+    <a href="{% url 'fix-registrant' reg_id form_id %}" onclick="return popitup('{% url 'fix-registrant' reg_id form_id %}')"
+        >Fix Registrant</a>
 </p>
 
 <hr />
@@ -285,8 +288,10 @@ Registration No: <b>{{ reg_id }}</b></p>
                         {% else %}
                             {{ c.0 }} {{ c.1 }} {{ c.3 }}
                         {% endif %}
-                    <a href="{% url 'fix-contact' c.4 %} "> fix</a></li>
+                    <a href="{% url 'fix-contact' c.4 %} " onclick="return popitup('{% url 'fix-contact' c.4 %}')"> fix</a></li>
                 {% endfor %}
+        
+
                 </ul>
             </div>
 

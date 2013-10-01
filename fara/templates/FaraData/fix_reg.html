@@ -1,11 +1,14 @@
 {% extends "FaraData/form_base.html" %}
 
+{% block show_doc %}
+{% endblock show_doc %}
+
 {% block formquestions %}
 
 <h3>Fix Registrant</h3>
 
-  <form action="/amend_registrant" id="amend_registrant" method="GET">
-  
+<form action="/amend_registrant" id="amend_registrant" class="fix" method="GET">
+
   <p>Reg id:{{ reg.reg_id }}</p> 
     <input id="reg_id" name="reg_id" type="hidden" value="{{ reg.reg_id }}" />
     <input id="form_id" name="form_id" type="hidden" value="{{ form_id }}" />
@@ -22,7 +25,10 @@
     <p><label for="country">Country:</label> <input id="country" maxlength="100" name="country" type="text" /></p>
   {% endif %}
 
-  <input type="submit" value="Send" id="sendbutton"/>
-  </form>
+  <input type="submit" value="Send" class="closer" id="sendbutton"/>
+</form>
+<br>
+<span class="help" ><a href="{% url 'instructions' %}#Registrant" target="blank">Help</a></span><br>
+
 
 {% endblock %}

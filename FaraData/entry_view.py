@@ -1289,6 +1289,7 @@ def amend_contact(request):
             return HttpResponse(date, mimetype="application/json")
         
         contact.save()
+        print 1
         # add additional recipients
         try:
             recipients = request.GET['recipient']
@@ -1299,7 +1300,7 @@ def amend_contact(request):
         
         except:
             recipients = None
-        
+        print 2
         if recipients != None and recipients != ['']:
             for r in recipients:
                 recipient = Recipient.objects.get(id=int(r))
@@ -1314,7 +1315,7 @@ def amend_contact(request):
                 lobbyists = request.GET['lobbyist']
             except:
                 lobbyists = None
-        
+        print 3
         if lobbyists != None:
             for l in lobbyists:
                 l = int(l)
@@ -1322,20 +1323,10 @@ def amend_contact(request):
                 if lobbyist in contact.lobbyist.all():
                     pass
                 else:
-                    contact.lobbyist.add(lobbyist)
-                    
+                    contact.lobbyist.add(lobbyist)       
 
-        # finding redirect info
-        url = str(contact.link)
-        doc = Document.objects.get(url=url)
-        form_id = int(doc.id)
-        doc_type = str(doc.doc_type)
-        
-        if doc_type == "Supplemental":
-            return supplemental_contact(request, form_id)
-
-        if doc_type == "Amendment":
-            return return_big_form(request, form_id)
+        sucess = json.dumps({'sucess': contact_id} , separators=(',',':'))
+        return HttpResponse(sucess, mimetype="application/json")
     
     except:
         error = json.dumps({'error': 'failed'} , separators=(',',':'))
@@ -1603,29 +1594,24 @@ def amend_client(request):
 @login_required(login_url='/admin')
 def amend_registrant(request):
     if request.method == 'GET':
-        
-        reg_id = int(request.GET['reg_id'])
-        reg = Registrant.objects.get(reg_id=reg_id)
-        reg.reg_name = request.GET['reg_name']
-        reg.address = request.GET['address']
-        reg.city = request.GET['city']
-        reg.state = request.GET['state']
-        reg.zip_code = request.GET['zip_code']
-        reg.country = request.GET['country']
-        reg.save()
+        try:
+            reg_id = int(request.GET['reg_id'])
+            reg = Registrant.objects.get(reg_id=reg_id)
+            reg.reg_name = request.GET['reg_name']
+            reg.address = request.GET['address']
+            reg.city = request.GET['city']
+            reg.state = request.GET['state']
+            reg.zip_code = request.GET['zip_code']
+            reg.country = request.GET['country']
+            reg.save()
 
-        form_id = int(request.GET['form_id'])
-        doc = Document.objects.get(id=form_id)
-        doc_type = str(doc.doc_type)
+            sucess = json.dumps({'sucess': reg.reg_name} , separators=(',',':'))
+            return HttpResponse(sucess, mimetype="application/json")
 
-        if doc_type == "Supplemental":
-            return supplemental_first(request, form_id)
-        elif doc_type == "Registration":
-            return registration_first(request, form_id)
-        elif doc_type == "Exhibit AB":
-            return enter_AB(request, form_id)
-        else:
-            return return_big_form(request, form_id)
+        except:
+            error = json.dumps({'error': 'failed'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json") 
+
 
 @login_required(login_url='/admin')
 def amend_gift(request):
