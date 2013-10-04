@@ -1,5 +1,8 @@
 {% extends "FaraData/form_base.html" %}
 
+{% block show_doc %}
+{% endblock show_doc %}
+
 {% block formquestions %}
 
 <h3>Fix Disbursement</h3>
@@ -15,7 +18,7 @@ Delete subcontractor:
 </div> 
 {% endif  %}
 
-<form method="GET" id='dis_amend' action="/amend_disbursement">
+<form method="GET" id='dis_amend' class="fix" action="/amend_disbursement">
     <input type="hidden" name="dis_id" value="{{ disbursement.id }}">
     <input type="hidden" name="reg_id" value="{{ reg_object.reg_id }}">
     <input type="hidden" name="link" value="{{ url }}">
@@ -43,11 +46,11 @@ Delete subcontractor:
     <input type="submit" />
 </form>
 
-<p>
- <form method="GET" class= "help" action="/delete_disbursement">  
+<p><span class="help">
+ <form method="GET" class= "fix" action="/delete_disbursement">  
     <input type="hidden" name="disbursement_id" value="{{ disbursement.id }}">
     <input value="Delete this entry" type="submit" />
- </form> 
+ </form> </span>
 </p>
 <br>
 <p>

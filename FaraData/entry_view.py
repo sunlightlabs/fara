@@ -523,7 +523,10 @@ def fix_gift(request, gift_id):
     gift = Gift.objects.get(id=gift_id)
     url = gift.link
     reg_object = reg_info(gift.registrant.reg_id)
-    date = gift.date.strftime('%m/%d/%Y')
+    try:
+        date = gift.date.strftime('%m/%d/%Y')
+    except:
+        date = ''
     for g in gift.client.all():
         client = g
     if len(gift.client.all()) < 1:
@@ -931,7 +934,10 @@ def contact(request):
             contact.date = date
             date = contact.date.strftime("%B %d, %Y")
         else:
-            date = ''
+            if date == '{"error":"No date"}':
+                date = ''
+            else:
+                return HttpResponse(date, mimetype="application/json")
 
         contact.save()
 
@@ -1010,6 +1016,13 @@ def payment(request):
         date = cleandate(request.GET['date'])
         if type(date) == datetime:
             payment.date = date
+        else:
+            if date == '{"error":"No date"}':
+                date = ''
+            else:
+                return HttpResponse(date, mimetype="application/json")
+
+
 
         subcontractor_id = request.GET['subcontractor']
         if subcontractor_id != '' and subcontractor_id != None:
@@ -1050,7 +1063,10 @@ def contribution(request):
     if request.method == 'GET':
         date = cleandate(request.GET['date'])
         if type(date) != datetime:
-            return HttpResponse(date, mimetype="application/json")
+            if date == '{"error":"No date"}':
+                date = ''
+            else:
+                return HttpResponse(date, mimetype="application/json")
 
         registrant = Registrant.objects.get(reg_id=int(request.GET['registrant']))
         recipient = Recipient.objects.get(id=int(request.GET['recipient']))
@@ -1123,7 +1139,7 @@ def disbursement(request):
         if type(date) == datetime:
             disbursement.date = date
             date = date.strftime("%B %d, %Y")
-        # allowes for empty dates that get filled in by stampdate later
+        # allowes for empty dates that get filled in by stamp date later
         elif date == '{"error":"No date"}':
             date = ""
         else:
@@ -1176,12 +1192,15 @@ def gift(request):
             description =  description,
             link = request.GET['link'],
         )
+        
         date = cleandate(request.GET['date'])
         if type(date) == datetime:
             gift.date = date
             date = date.strftime("%B %d, %Y")
-        else:
+        elif date == '{"error":"No date"}':
             date = ""
+        else:
+            return HttpResponse(date, mimetype="application/json")
 
         if request.GET['recipient'] != '':
            recipient = Recipient.objects.get(id=int(request.GET['recipient']))
@@ -1369,10 +1388,8 @@ def delete_contact(request):
         form_id = int(doc.id)
         doc_type = str(doc.doc_type)
         
-        if doc_type == "Supplemental":
-            return supplemental_contact(request, form_id)
-        if doc_type == "Amendment":
-            return return_big_form(request, form_id)
+        info = json.dumps({'contact_id': contact_id}, separators=(',',':'))
+        return HttpResponse(info, mimetype="application/json")
     
     else:
         error = json.dumps({'error': 'failed'} , separators=(',',':'))
@@ -1414,17 +1431,8 @@ def amend_payment(request):
             payment.subcontractor = subcontractor
             payment.save()
         
-        url = str(payment.link)
-        doc = Document.objects.get(url=url)
-        form_id = int(doc.id)
-        doc_type = str(doc.doc_type)
-
-        if doc_type == "Supplemental":
-            return supplemental_payment(request, form_id)
-        if doc_type == "Registration":
-            return registration_payment(request, form_id)
-        if doc_type == "Amendment":
-            return return_big_form(request, form_id)
+        info = json.dumps({'payment_id': payment_id}, separators=(',',':'))
+        return HttpResponse(info, mimetype="application/json")
 
 
 @login_required(login_url='/admin')
@@ -1450,12 +1458,8 @@ def delete_payment(request):
         form_id = int(doc.id)
         doc_type = str(doc.doc_type)
 
-        if doc_type == "Supplemental":
-            return supplemental_payment(request, form_id)
-        if doc_type == "Registration":
-            return registration_payment(request, form_id)
-        if doc_type == "Amendment":
-            return return_big_form(request, form_id)
+        info = json.dumps({'payment_id': payment_id}, separators=(',',':'))
+        return HttpResponse(info, mimetype="application/json")
 
 @login_required(login_url='/admin')
 def amend_disbursement(request):
@@ -1483,17 +1487,8 @@ def amend_disbursement(request):
         
         dis.save()
 
-        url = str(dis.link)
-        doc = Document.objects.get(url=url)
-        form_id = int(doc.id)
-        doc_type = str(doc.doc_type)
-        
-        if doc_type == "Supplemental":
-            return supplemental_disbursement(request, form_id)
-        if doc_type == "Registration":
-            return registration_disbursement(request, form_id)
-        if doc_type == "Amendment":
-            return return_big_form(request, form_id)
+        info = json.dumps({'disbursement_id': dis.id}, separators=(',',':'))
+        return HttpResponse(info, mimetype="application/json")
 
 
 @login_required(login_url='/admin')
@@ -1504,7 +1499,7 @@ def disbursement_remove_sub(request):
         disbursement.subcontractor = None
         disbursement.save()
 
-        info = json.dumps({'disbursement_id': disbursement_id}, separators=(',',':'))
+        info = json.dumps({'disbursement_id': disbursement.id}, separators=(',',':'))
         return HttpResponse(info, mimetype="application/json")
 
 @login_required(login_url='/admin')
@@ -1519,12 +1514,8 @@ def delete_disbursement(request):
         form_id = int(doc.id)
         doc_type = str(doc.doc_type)
         
-        if doc_type == "Supplemental":
-            return supplemental_disbursement(request, form_id)
-        if doc_type == "Registration":
-            return registration_disbursement(request, form_id)
-        if doc_type == "Amendment":
-            return return_big_form(request, form_id)
+        info = json.dumps({'disbursement_id': disbursement_id}, separators=(',',':'))
+        return HttpResponse(info, mimetype="application/json")
 
 @login_required(login_url='/admin')
 def amend_contribution(request):
@@ -1552,19 +1543,8 @@ def amend_contribution(request):
 
         contribution.save()
 
-        url = str(contribution.link)
-        doc = Document.objects.get(url=url)
-        form_id = int(doc.id)
-        doc_type = str(doc.doc_type)
-        
-        if doc_type == "Supplemental":
-            return supplemental_contribution(request, form_id)
-
-        if doc_type == "Registration":
-            return registration_contribution(request, form_id)
-
-        if doc_type == "Amendment":
-            return return_big_form(request, form_id)
+        info = json.dumps({'contribution': contribution.id}, separators=(',',':'))
+        return HttpResponse(info, mimetype="application/json")
 
 @login_required(login_url='/admin')
 def delete_contribution(request):
@@ -1578,12 +1558,8 @@ def delete_contribution(request):
         form_id = int(doc.id)
         doc_type = str(doc.doc_type)
         
-        if doc_type == "Supplemental":
-            return supplemental_contribution(request, form_id)
-        if doc_type == "Registration":
-            return registration_contribution(request, form_id)
-        if doc_type == "Amendment":
-            return return_big_form(request, form_id)
+        info = json.dumps({'contribution': contribution.id}, separators=(',',':'))
+        return HttpResponse(info, mimetype="application/json")
 
 @login_required(login_url='/admin')
 def amend_client(request):
@@ -1617,13 +1593,16 @@ def amend_registrant(request):
 def amend_gift(request):
     g_id = int(request.GET['gift_id'])
     gift= Gift.objects.get(id=g_id)
-    date = cleandate(request.GET['date'])
-    if type(date) == datetime:
-        gift.date =  date
-    elif date == '{"error":"No date"}':
-        gift.date = ""
-    else:
-        return HttpResponse(date, mimetype="application/json") 
+    try:
+        date = cleandate(request.GET['date'])
+        if type(date) == datetime:
+            gift.date =  date
+        elif date == '{"error":"No date"}':
+            pass
+        else:
+            return HttpResponse(date, mimetype="application/json") 
+    except:
+        pass
 
     gift.purpose = request.GET['purpose']
     gift.description = request.GET['description']
@@ -1637,7 +1616,6 @@ def amend_gift(request):
         for c in clients:
             gift.client.remove(c)
 
-
     try:
         recip = request.GET['recipient']
         if recip != '':
@@ -1649,21 +1627,13 @@ def amend_gift(request):
     
     gift.save()
 
-    doc = Document.objects.get(url=gift.link)
-    form_id = int(doc.id)
-    doc_type = str(doc.doc_type)
-    
-    if doc_type == "Supplemental":
-        return supplemental_gift(request, form_id)
-    if doc_type == "Registration":
-        return registration_gift(request, form_id)
-    if doc_type == "Amendment":
-        return return_big_form(request, form_id)
+    info = json.dumps({'gift_id': gift.id}, separators=(',',':'))
+    return HttpResponse(info, mimetype="application/json")
 
 
 @login_required(login_url='/admin')
 def delete_gift(request):   
-    print "Working" 
+    
     gift= Gift.objects.get(id=request.GET['gift_id'])
     url = str(gift.link)
     gift.delete()
@@ -1672,12 +1642,8 @@ def delete_gift(request):
     form_id = int(doc.id)
     doc_type = str(doc.doc_type)
     
-    if doc_type == "Supplemental":
-        return supplemental_gift(request, form_id)
-    if doc_type == "Registration":
-        return registration_gift(request, form_id)
-    if doc_type == "Amendment":
-        return return_big_form(request, form_id)
+    info = json.dumps({'gift_id': gift.id}, separators=(',',':'))
+    return HttpResponse(info, mimetype="application/json")
         
 @login_required(login_url='/admin')
 def gift_remove_recip(request):

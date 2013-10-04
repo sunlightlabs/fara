@@ -290,8 +290,6 @@ Registration No: <b>{{ reg_id }}</b></p>
                         {% endif %}
                     <a href="{% url 'fix-contact' c.4 %} " onclick="return popitup('{% url 'fix-contact' c.4 %}')"> fix</a></li>
                 {% endfor %}
-        
-
                 </ul>
             </div>
 
@@ -405,12 +403,13 @@ Registration No: <b>{{ reg_id }}</b></p>
                 </tr>
                 </thread> 
                 <tbody>   
+
                 {% for pay in pay_list %}
                         <tr>
                         {% if pay.2 == True %}
-                        <td class="pay">${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>fee</td><td><a href="{% url 'fix-payment' pay.4 %}">fix</a></td>
+                        <td class="pay">${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>fee</td><td><a href="{% url 'fix-payment' pay.4 %}" onclick="return popitup('{% url 'fix-payment' pay.4 %}')">fix</a></td>
                         {% else %}
-                        <td class="pay">${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>no</td><td><a href="{% url 'fix-payment' pay.4 %}">fix</a></td>
+                        <td class="pay">${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>no</td><td><a href="{% url 'fix-payment' pay.4 %}" onclick="return popitup('{% url 'fix-payment' pay.4 %}')">fix</a></td>
                         {% endif %}
                         </tr>
                 {% endfor %}
@@ -486,11 +485,11 @@ Registration No: <b>{{ reg_id }}</b></p>
                 <td>Amount</td><td>Date</td><td>Client</td>
                 </tr>
                 </thread> 
-                
+            
                 <tbody>   
                 {% for dis in dis_list %}
                     <tr>
-                    <td class="dis">${{ dis.1 }}</td><td>{{ dis.2 }}</td><td>{{ dis.0 }}</td><td><a href="{% url 'fix-disbursement' dis.3 %}">fix</a></td>
+                    <td class="dis">${{ dis.1 }}</td><td>{{ dis.2 }}</td><td>{{ dis.0 }}</td><td><a href="{% url 'fix-disbursement' dis.3 %}"  onclick="return popitup('{% url 'fix-disbursement' dis.3 %}')">fix</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -560,16 +559,16 @@ Registration No: <b>{{ reg_id }}</b></p>
                 <td>Amount</td><td>From</td><td>To</td><td>Date</td>
                 </tr>
                 </thread> 
-                
+          
                 <tbody>   
                 {% for cont in cont_list %}
                     {% if cont.0 == None %}    
                         <tr>
-                        <td>${{ cont.1 }}</td><td> </td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td><td><a href="{% url 'fix-contribution' cont.4 %}">fix</a></td>
+                        <td>${{ cont.1 }}</td><td> </td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td><td><a href="{% url 'fix-contribution' cont.4 %}" onclick="return popitup('{% url 'fix-contribution' cont.4 %}')">fix</a></td>
                         </tr>
                     {% else %}
                         <tr>
-                        <td>${{ cont.1 }}</td><td>{{ cont.0 }}</td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td><td><a href="{% url 'fix-contribution' cont.4 %}">fix</a></td>
+                        <td>${{ cont.1 }}</td><td>{{ cont.0 }}</td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td><td><a href="{% url 'fix-contribution' cont.4 %}" onclick="return popitup('{% url 'fix-contribution' cont.4 %}')">fix</a></td>
                         </tr>
                     {% endif %}
                 {% endfor %}
@@ -600,10 +599,11 @@ Registration No: <b>{{ reg_id }}</b></p>
                 {% for lobbyist in reg_object.lobbyists.all %}
                     <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
                 {% endfor %}
-                </select></p><a href="#lobbyist">add a new lobbyist or PAC</a>
+                </select></p><p><a href="#lobbyist">add a new lobbyist or PAC</a></p>
 
-                
-                <input type="submit" />
+                <p>
+                    <input type="submit" />
+                </p>
             </form>
 
             <span class="help" ><a href="{% url 'instructions' %}#Contribution" target="blank">Help</a></span><br>
@@ -624,7 +624,7 @@ Registration No: <b>{{ reg_id }}</b></p>
                 {% if gift_list %}
                     <ul>
                 {% for g in gift_list %}
-                    <li>{{ g.0 }} from {{ g.3 }} on {{ g.1 }}  <a href="{% url 'fix-gift' g.2 %}">fix</a> </li> 
+                    <li>{{ g.0 }} from {{ g.3 }} on {{ g.1 }}  <a href="{% url 'fix-gift' g.2 %}" onclick="return popitup('{% url 'fix-gift' g.2 %}')">fix</a> </li> 
                 {% endfor %} 
                     </ul>
                 {% endif %}
@@ -709,7 +709,7 @@ Upload date: {{ meta_list.2 }}
 
 <span class="help" ><a href="{% url 'instructions' %}#Processing_Info" target="blank">Help</a></span><br>
 <hr />
-</div>
+
 
 
 {% endblock formquestions %}

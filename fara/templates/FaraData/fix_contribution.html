@@ -1,11 +1,14 @@
 {% extends "FaraData/form_base.html" %}
 
+{% block show_doc %}
+{% endblock show_doc %}
+
 {% block formquestions %}
 
 <h3>Fix Contribution</h3>
 
 
-<form method="GET" id='amend_cont' action="/amend_contribution">
+<form method="GET" id='amend_cont' class="fix" action="/amend_contribution">
     <input type="hidden" name="cont_id" value='{{ contribution.id }}'>
     <input type="hidden" name="registrant" value="{{ reg_obj.reg_id }}">
     <input type="hidden" name="link" value="{{ url }}">
@@ -33,11 +36,11 @@
     <input type="submit" />
 </form>
 
-<p>
- <form method="GET" class= "help" action="/delete_contribution">  
+<p><span class="help">
+ <form method="GET" class= "fix" action="/delete_contribution">  
     <input type="hidden" name="contribution_id" value="{{ contribution.id }}">
     <input value="Delete this entry" type="submit" />
- </form> 
+ </form> </span>
 </p>
 <br>
 <p>

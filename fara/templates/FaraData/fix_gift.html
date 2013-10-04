@@ -1,5 +1,8 @@
 {% extends "FaraData/form_base.html" %}
 
+{% block show_doc %}
+{% endblock show_doc %}
+
 {% block formquestions %}
 
 
@@ -16,7 +19,7 @@ Delete recipient:
 {% endif  %}
 
 
-<form method="GET" id="amend_gift" action="/amend_gift">
+<form method="GET" id="amend_gift" class="fix" action="/amend_gift">
     <input type="hidden" name="gift_id" value="{{ gift.id }}" />
     <input type="hidden" name="reg_id" value="{{ reg_object.reg_id }}"/>
     <input type="hidden" name="link" value="{{ url }}"/>
@@ -53,7 +56,7 @@ Delete recipient:
     <span class="help" ><a href="{% url 'instructions' %}#Gift" target="blank">Help</a></span><br>
 
     <span class="help" ><p>
-		 <form method="GET" class= "help" action="/delete_gift">  
+		 <form method="GET" class= "fix" action="/delete_gift">  
 		    <input type="hidden" name="gift_id" value="{{ gift.id }}">
 		    <input value="Delete this entry" type="submit" />
 		 </form> 

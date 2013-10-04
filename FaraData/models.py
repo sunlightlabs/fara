@@ -244,7 +244,7 @@ class Contact(models.Model):
     contact_type = models.CharField(max_length=1, choices=MEETING_TYPES, default='U')
     description = models.TextField(blank=True, null=True) # issues on the old site
     lobbyist = models.ManyToManyField(Lobbyist, null=True, blank=True)
-    date = models.DateField(null=True) 
+    date = models.DateField(null=True, blank=True) 
     link = models.CharField(max_length=100)
 
     def __unicode__(self):

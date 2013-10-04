@@ -98,12 +98,14 @@
     <input type="submit" class="closer" />
 </form>
 
-<p>
- <form method="GET" class= "help" action="/delete_contact">  
+<span class="help">
+    <p>
+ <form method="GET" class="fix"  action="/delete_contact">  
     <input type="hidden" name="contact_id" value="{{ contact.id }}">
     <input value="Delete this entry" class="closer" type="submit" />
  </form> 
 </p>
+</span>
 <br>
 <p>
 

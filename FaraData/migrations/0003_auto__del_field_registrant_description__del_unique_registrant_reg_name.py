@@ -14,8 +14,9 @@ class Migration(SchemaMigration):
         # Removing unique constraint on 'Registrant', fields ['reg_name']
         #db.delete_unique(u'FaraData_registrant', ['reg_name'])
 
+        # I blocked this out to get South to stop yelling at me
         # Deleting field 'Registrant.description'
-        db.delete_column(u'FaraData_registrant', 'description')
+        #db.delete_column(u'FaraData_registrant', 'description')
 
         # Adding field 'Client.description'
         db.add_column(u'FaraData_client', 'description',
