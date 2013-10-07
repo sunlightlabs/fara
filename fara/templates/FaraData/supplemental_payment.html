@@ -16,11 +16,11 @@
     {% for pay in pay_list %}
             <tr>
             {% if pay.2 == True %}
-            <td class="pay">${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>fee</td><td><a href="{% url 'fix-payment' pay.4 %}">fix</a></td>
+            <td class="pay">${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>fee</td><td><a href="{% url 'fix-payment' pay.4 %}" onclick="return popitup('{% url 'fix-payment' pay.4 %}')">fix</a></td>
             {% else %}
-            <td class="pay">${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>no</td><td><a href="{% url 'fix-payment' pay.4 %}">fix</a></td>
+            <td class="pay">${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>no</td><td><a href="{% url 'fix-payment' pay.4 %}" onclick="return popitup('{% url 'fix-payment' pay.4 %}')">fix</a></td>
             {% endif %}
-            <tr>
+            </tr>
     {% endfor %}
     </tbody>
 </table>

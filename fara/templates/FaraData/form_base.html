@@ -315,9 +315,9 @@ jQuery(document).ready(function(){
             var date = response.date;
             var name = response.name;
             var contact_id = response.contact_id;
-            var link_to = link + '/fix_contact/' + contact_id
-            
-            var item = "<li>"+ name + " " + date + ' <a href= "' + link_to +'" onclick="return popitup("' + "'" + link_to + "')" + '"' + '>fix</a>'+ '</li>';
+            var link_to = link + '/fix_contact/' + contact_id;
+            var pop = "<a href= " + '"' + link_to + '"' + 'onclick="return popitup(' + "'" + link_to  + "')"+ '" >';
+            var item = "<li>"+ name + " " + date + pop + ' fix</a>'+ '</li>';
             $("#contact_list ul").append(item);
             var $contact_recip = $('#contact_recip');
             $contact_recip.select2('data', null)
@@ -330,15 +330,17 @@ jQuery(document).ready(function(){
             var fee = response.fee;
             var pay_id = response.pay_id;
             
-            if (fee = "True"){
-              fee = "fee"
+            console.log(fee);
+            
+            if(response.fee == "true"){
+              var fee = "fee";
             }
             else{
-              fee = ""
+              var fee = "no";
             }
             
             var link_to = link + '/fix_payment/' + pay_id
-            var item = '<tr><td class="pay">$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td><td><a href= "' + link_to +'onclick="return popitup("' + "'" + link_to + "')" + '"' + '>fix</a><td></tr>';
+            var item = '<tr><td class="pay">$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td><td><a href= "' + link_to +'" onclick="return popitup(' + "'" + link +"/fix_payment/" + pay_id + "')" + '"' + '>fix</a><td></tr>';
             $('#pay_table').append(item);
             var $payment_subcontractor = $('#payment_subcontractor');
             $payment_subcontractor.select2('data', null);
@@ -353,7 +355,7 @@ jQuery(document).ready(function(){
             var dis_id = response.dis_id;
 
             link_to = link + '/fix_disbursement/' + dis_id
-            item = '<tr><td class="dis">$'+ amount +'</td><td>'+ date + '</td><td>'+ client +'</td><td><a href= "' + link_to +'onclick="return popitup("' + "'" + link_to + "')" + '"' + '>fix</a><td></tr></tr>'
+            item = '<tr><td class="dis">$'+ amount +'</td><td>'+ date + '</td><td>'+ client +'</td><td><a href= "' + link_to + ' " onclick="return popitup(' + "'" + link_to + "')" + '"' + '>fix</a><td></tr></tr>'
             $('#dis_table').append(item);
             var $disbursement_subcontractor = $('#disbursement_subcontractor');
             $disbursement_subcontractor.select2('data', null)
@@ -372,7 +374,7 @@ jQuery(document).ready(function(){
             var cont_id = response.cont_id;
 
             var link_to = link + '/fix_contribution/' + cont_id
-            var item = '<tr><td>$' + amount + '</td><td>' + lobbyist + '</td><td>' + recipient + '</td><td>' + date + '</td><td><a href= "' + link_to +'onclick="return popitup("' + "'" + link_to + "')" + '"' + '>fix</a><td></tr></tr>';
+            var item = '<tr><td>$' + amount + '</td><td>' + lobbyist + '</td><td>' + recipient + '</td><td>' + date + '</td><td><a href= "' + link_to + ' " onclick="return popitup(' + "'" + link_to + "')" + '"' + '> fix</a><td></tr></tr>';
             $('#cont_table').append(item);
             var $cont_recip = $('#cont_recip');
             $cont_recip.select2('data', null);
@@ -383,8 +385,9 @@ jQuery(document).ready(function(){
             var client = response.client;
             var description = response.description;
             var gift_id = response.gift_id
+            var link_to = link + '/fix_gift/' + gift_id
 
-            var item = '<li>' + description + " from " + client + " on " + date + ' <a href="' + link + '/fix_gift/' + gift_id + '">fix</a></li>'
+            var item = '<li>' + description + " from " + client + " on " + date + ' <a href= "' + link_to + ' " onclick="return popitup(' + "'" + link_to + "')" + '"' + '>fix</a></li>'
             $('#gift_basket ul').append(item);
             var $gift_recip = $('#gift_recip');
             $gift_recip.select2('data', null) 

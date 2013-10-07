@@ -56,7 +56,8 @@
 {% endif %}
 <div id="reg_list"></div>
 <p>
-    <a href="{% url 'fix-registrant' reg_id form_id %}">Fix Registrant </a>
+    <a href="{% url 'fix-registrant' reg_id form_id %}" onclick="return popitup('{% url 'fix-registrant' reg_id form_id %}')"
+        >Fix Registrant </a>
 </p>
 <hr />
 

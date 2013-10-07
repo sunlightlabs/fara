@@ -996,7 +996,7 @@ def payment(request):
         client = Client.objects.get(id=int(client))
         
         reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']) )
-        
+            
         if request.method == 'GET' and 'fee' in request.GET:
             fee = True
         else:
@@ -1004,6 +1004,9 @@ def payment(request):
 
         purpose = cleantext(request.GET['purpose'])
         amount = cleanmoney(request.GET['amount'])
+        if amount == "None" or amount == '':
+            error = json.dumps({'error': 'Amount required'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
         
         payment = Payment(client = client,
                             registrant = reg_id,
@@ -1049,6 +1052,7 @@ def payment(request):
                     "pay_id": payment.id,
                     "do_not_clear": clear,
         }
+
         payinfo = json.dumps(payinfo , separators=(',',':'))
         return HttpResponse(payinfo, mimetype="application/json")
         

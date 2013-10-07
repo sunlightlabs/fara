@@ -7,7 +7,7 @@
 <div id="gift_basket">
     <ul>
         {% for g in gift_list %}
-            <li>{{ g.0 }} from {{ g.3 }} on {{ g.1 }}  <a href="{% url 'fix-gift' g.2 %}">fix</a> </li>
+            <li>{{ g.0 }} from {{ g.3 }} on {{ g.1 }}  <a href="{% url 'fix-gift' g.2 %}" onclick="return popitup('{% url 'fix-gift' g.2 %}')">fix</a> </li>
         {% endfor %} 
     </ul>
 </div>

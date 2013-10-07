@@ -621,13 +621,11 @@ Registration No: <b>{{ reg_id }}</b></p>
             Gifts associated with this form:
 
             <div id="gift_basket">
-                {% if gift_list %}
                     <ul>
                 {% for g in gift_list %}
                     <li>{{ g.0 }} from {{ g.3 }} on {{ g.1 }}  <a href="{% url 'fix-gift' g.2 %}" onclick="return popitup('{% url 'fix-gift' g.2 %}')">fix</a> </li> 
                 {% endfor %} 
                     </ul>
-                {% endif %}
             </div>
 
 
