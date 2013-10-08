@@ -107,6 +107,7 @@ createMSelect("#lobbyist_lobbyist", "/formchoices/lobbyist");
 createSelect("#cont_recip", "/formchoices/recip");
 createSelect("#client_location", "/formchoices/location");
 createSelect("#disbursement_subcontractor", "/formchoices/reg");
+createSelect("#primary_contractor", "/formchoices/reg")
 createSelect("#payment_subcontractor", "/formchoices/reg");
 createSelect("#gift_recip", "/formchoices/recip");
 
@@ -417,8 +418,9 @@ jQuery(document).ready(function(){
           if (tag == '#client_infoform'){
             var client_type = response.client_type;
             var description = response.description;
-            var item = '<p>Client type: '+ client_type + "</p><p>Description: " + description + '</p>';
-            $('#ab_client_info').replaceWith(item);
+            var client_name = response.client_name;
+            var item = '<p>Client name</p>'+ client_name +'<p>Client type: '+ client_type + "</p><p>Description: " + description + '</p>';
+            $('#ab_client_info').append(item);
           }
 
           if (tag == '.deleteable'){

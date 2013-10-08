@@ -153,16 +153,36 @@
 <h3>Client info:</h3>
 
 <div id="ab_client_info">
+Active clients:
+{% for c in client_reg %}
+    <p>
+      Client name: {{ c.0 }} <br>
+      {% if c.1 %}
+        Client type: {{ c.1 }}<br>
+      {% endif %}
+      {% if c.2 %}
+        Description: {{ c.2 }}<br>
+      {% endif %}
+      {% if c.3 %}
+        Primary contractor:{{ c.3 }}<br>
+      {% endif %}
+    </p>
+{% endfor %}
 </div>
 
 <form method="GET" id="client_infoform" action="/client_info">
-
-    <p><label for="client">Clients:</label><select name="client" id="ab_client">
+    <input id="id_reg_id" name="reg_id" type="hidden" value="{{ reg_id }}" />
+    <input type="hidden" name="link" value="{{ url }}">
+    <p><label for="client">Client:</label><select name="client" id="ab_client">
         <option value="None">Please Select Client</option>
     {% for client in reg_object.clients.all %}
         <option value="{{ client.id }}">{{ client.client_name }}</option>
     {% endfor %}
     </select></p>
+
+  <p>Does this client come through another contractor? Does it say "through" or "via" another entity? If so, find the name mentioned with the client below:</p>
+
+  <p><label or="primary_contractor">Primary Contractor:  </label><input type="hidden" id="primary_contractor" name="primary_contractor" style="width: 300px"/></p></p>
   
   <p><i>Exhibit A question 5</i></p>
   <p><label for="client_type">Client type: </label> <input id="client_type" maxlength="25" name="client_type" type="text" /></p>
@@ -170,6 +190,7 @@
   <p><i>Exhibit B Question 8</i></p>
   <p><label for="description">Description:</label><br \>
     <textarea name="description" cols="25" rows="5"></textarea></p>
+
 
  <input type="submit" />
 </form>

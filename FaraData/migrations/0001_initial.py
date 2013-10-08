@@ -4,6 +4,7 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+# I made some changes hopefully South will not be so angry with me
 
 class Migration(SchemaMigration):
 
@@ -42,7 +43,9 @@ class Migration(SchemaMigration):
         db.create_table(u'FaraData_client', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('location', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['FaraData.Location'])),
-            ('client_name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=200)),
+            ### changing this to reflect earlier changes
+            #('client_name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=200)),
+            ('client_name', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('address1', self.gf('django.db.models.fields.CharField')(max_length=300, null=True, blank=True)),
             ('city', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
             ('state', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
@@ -54,7 +57,9 @@ class Migration(SchemaMigration):
         # Adding model 'Registrant'
         db.create_table(u'FaraData_registrant', (
             ('reg_id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
-            ('reg_name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=200)),
+            ### changing this to reflect earlier changes
+            #('reg_name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=200)),
+            ('reg_name', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('address', self.gf('django.db.models.fields.CharField')(max_length=300, null=True, blank=True)),
             ('city', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
             ('state', self.gf('django.db.models.fields.CharField')(max_length=2, null=True, blank=True)),
@@ -253,7 +258,8 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Client'},
             'address1': ('django.db.models.fields.CharField', [], {'max_length': '300', 'null': 'True', 'blank': 'True'}),
             'city': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
-            'client_name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'}),
+            #'client_name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'}),
+            'client_name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'client_type': ('django.db.models.fields.CharField', [], {'max_length': '25', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'location': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['FaraData.Location']"}),

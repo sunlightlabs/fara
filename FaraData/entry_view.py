@@ -80,6 +80,28 @@ def gift_info(url):
         
     return (gift_list)
 
+def client_reg_info(reg):
+    client_list = []
+    print reg
+    clients = reg.clients.all()
+    for c in clients:
+        print c
+        c_name = c.client_name
+        c_type = c.client_type
+       
+        try:
+            d = ClientReg.object.get(reg_id=reg.reg_id, client_id=c.id)
+            c_dis = d.discription
+            p_con = d.primary_contractor_id
+        except:
+            c_dis = ''
+            p_con = ''
+        
+        client = [c_name, c_type, c_dis, p_con]
+        client_list.append(client)
+    return client_list
+
+
 #finds meta data attached to form 
 def meta_info(url):
     try:
@@ -130,7 +152,7 @@ def return_big_form(request, form_id):
         cont_list = cont_info(url)
         gift_list = gift_info(url)
         meta_list = meta_info(url)
-
+        client_reg = client_reg_info(reg_object)
 
         return render(request, 'FaraData/entry_form.html',{
             'recipient_form': recipient_form,
@@ -153,6 +175,7 @@ def return_big_form(request, form_id):
             'form_id' : form_id,
             's_date' : s_date,
             'one_client' : one_client,
+            'client_reg' : client_reg,
         })
 
 @login_required(login_url='/admin')
@@ -415,6 +438,7 @@ def enter_AB(request, form_id):
     client_form = ClientForm()
     meta_list = meta_info(url)
     one_client = oneclient(reg_object)
+    client_reg = client_reg_info(reg_object)
 
     return render(request, 'FaraData/enter_AB.html',{
         'reg_id' : reg_id,
@@ -425,7 +449,8 @@ def enter_AB(request, form_id):
         'form_id': form_id,
         'meta_list': meta_list,
         's_date': s_date,
-        'one_client' : one_client,
+        'one_client': one_client,
+        'client_reg': client_reg,
     })
 
 # easy fix forms
@@ -706,7 +731,7 @@ def reg_lobbyist(request):
         error = json.dumps({'error': "failed"}, separators=(',',':')) 
         return HttpResponse(error, mimetype="application/json")
 
-#creates a new client and adds it to the registrant 
+#creates a new and adds it to the registrant 
 @login_required(login_url='/admin')
 def client(request):
     if request.method == 'GET': 
@@ -751,31 +776,52 @@ def client(request):
 @login_required(login_url='/admin')
 def client_info(request):
     if request.method == 'GET': 
+        client_id = int(request.GET['client'])
+        reg_id = int(request.GET['reg_id'])
+        primary_contractor = int(request.GET['primary_contractor'])
+        link = request.GET['link']
+        
         try:
-            client_id = int(request.GET['client'])
             client = Client.objects.get(id = client_id)
-            
-            # these are on 2 different form that usually come in together but I don't want them to overwrite the older entry when they come in separately 
-            client_type = request.GET['client_type']
-            if client_type != None and client_type != '' and client_type != "None":
-                client.client_type = client_type
-            
-            description = request.GET['description']
-            if description != None and description != '' and description != "None":
-                client.description = description
-            
-            client.save()
-            
-            client_info = json.dumps({'client_id': client_id, 'client_type': request.GET['client_type'], 'description': request.GET['description']}, separators=(',',':'))
-            return HttpResponse(client_info, mimetype="application/json")
-   
         except:
-            if request.GET['client'] == None or request.GET['client'] == '' or request.GET['client'] == "None":
-                error = json.dumps({'error': 'Please select a client.'} , separators=(',',':'))
-                return HttpResponse(error, mimetype="application/json")
-            else:
-                error = json.dumps({'error': 'failed'} , separators=(',',':'))
-                return HttpResponse(error, mimetype="application/json")
+            error = json.dumps({'error': 'Please select a client.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
+        
+        # the registrant that is described by this model
+        reg = Registrant.objects.get(reg_id=reg_id)
+        
+        try:
+            record = ClientReg.objects.get(reg_id=reg, client_id=client)
+        
+        except:
+            record = ClientReg(
+                            reg_id=reg, 
+                            client_id=client,
+                )
+        
+        record.link = link
+
+        # if this registrant is hired by another registrant  
+        try:
+            primary = Registrant.objects.get(reg_id=primary_contractor)
+            record.primary_contractor_id = primary
+        except:
+            pass
+        
+        # these are on 2 different form that usually come in together but I don't want them to overwrite the older entry when they come in separately 
+        client_type = request.GET['client_type']
+        if client_type != None and client_type != '' and client_type != "None":
+            client.client_type = client_type
+        
+        description = request.GET['description']
+        if description != None and description != '' and description != "None":
+            record.description = description
+        
+        client.save()
+        record.save()
+        
+        clientinfo = json.dumps({'client_name': client.client_name, 'client_id': client_id, 'client_type': request.GET['client_type'], 'description': request.GET['description']}, separators=(',',':'))
+        return HttpResponse(clientinfo, mimetype="application/json")
 
 @login_required(login_url='/admin')
 def location(request):

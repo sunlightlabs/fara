@@ -69,6 +69,7 @@ class Client(models.Model):
     zip_code = models.CharField(max_length=50, null=True, blank=True) 
     #These are for AB forms
     client_type = models.CharField(max_length=25, null=True, blank=True)
+    # this will move to client reg
     description = models.TextField(null=True, blank=True)
     
     def __unicode__(self):
@@ -314,13 +315,19 @@ class MetaData(models.Model):
             return "%s (%s)" %(self.link, self.notes)
 
 #Thinking if this would simplify things for data entry, to keep track of subcontracting and find clients and registrants for particular forms.
-# class ClientReg(models.Model):
-#     client_id = models.ForeignKey(Client)
-#     reg_id = models.ManyToManyField(Registrant)
-#     subcontractor_id = models.ManyToManyField(Registrant, related_name='payment_subcontractor', null=True, blank=True)
-#     description = models.TextField(null=True, blank=True)
-#     files = models.ManyToManyField(MetaData)
-#     
+#This will help create client based alerts on new clients
+class ClientReg(models.Model):
+    # one model for each client to registrant relationship
+    client_id = models.ForeignKey(Client)
+    reg_id = models.ForeignKey(Registrant)
+    # if this client is coming from another contractor or contractors
+    primary_contractor_id = models.ManyToManyField(Registrant, related_name='primary_contractor', null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    # this is the form where the information was last modified
+    link = models.CharField(max_length=255)
+    
+    def __unicode__(self):
+        return "%s - %s" % (self.client_id, self.reg_id)
     
 #models for the data entry form.
 class RegForm(ModelForm):

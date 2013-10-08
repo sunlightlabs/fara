@@ -3,7 +3,7 @@ import reversion
 
 from django.contrib import admin
 
-from FaraData.models import Registrant, Client, Recipient, Lobbyist, Gift, Contact, Payment, Disbursement, Contribution, MetaData, Location
+from FaraData.models import *
 
 class reg_admin(admin.ModelAdmin):
     search_fields=['reg_name']
@@ -35,6 +35,8 @@ class location_admin(admin.ModelAdmin):
     search_fields=['location', 'country_grouping']
 admin.site.register(Location, location_admin)
 
+
+
 #class contact_admin(admin.ModelAdmin):
 	#search_fields=['description']
 admin.site.register(Contact) #, contact_admin)
@@ -44,6 +46,9 @@ admin.site.register(Payment)
 admin.site.register(Disbursement)
 
 admin.site.register(Contribution)
+
+admin.site.register(ClientReg)
+
 
 
 
