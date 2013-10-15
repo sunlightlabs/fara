@@ -93,7 +93,7 @@ urlpatterns = patterns('',
     #Document managers
     url(r'^full_list', 'fara_feed.document_select_view.full_list', name='full-list'),
     url(r'^entry_list', 'fara_feed.document_select_view.entry_list', name='entry-list'),
-    url(r'^supplemental_list', 'fara_feed.document_select_view.fast_supplemental', name='supplemental_list'),
+    url(r'^supplemental_list', 'fara_feed.document_select_view.fast_supplemental', name='supplemental-list'),
     #Temp landing page
     url(r'^$', 'FaraData.views.temp_home', name='temp-home'),
     #Instructions for data entry 
