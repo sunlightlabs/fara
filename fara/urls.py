@@ -1,6 +1,8 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
+from FaraData.Feeds import latest_entries_feed, region_feed, data_entry_feed
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -91,9 +93,15 @@ urlpatterns = patterns('',
     #Document managers
     url(r'^full_list', 'fara_feed.document_select_view.full_list', name='full-list'),
     url(r'^entry_list', 'fara_feed.document_select_view.entry_list', name='entry-list'),
-    url(r'^supplemental_list', 'fara_feed.document_select_view.fast_supplemental', name='supplemental-list'),
+    url(r'^supplemental_list', 'fara_feed.document_select_view.fast_supplemental', name='supplemental_list'),
     #Temp landing page
     url(r'^$', 'FaraData.views.temp_home', name='temp-home'),
     #Instructions for data entry 
     url(r'^instructions', 'FaraData.views.instructions', name='instructions'),
+    ### End of forms
+    # RSS feeds
+    #url(r'^rss/beats/(?P<region_id>\d+)/rss/$', 'views.region_feed'),
+    (r'^latest/rss/$', latest_entries_feed()),
+    (r'^region/(?P<region>\w+)/rss', region_feed()),
+    (r'^entry/rss/$', data_entry_feed()), 
     )

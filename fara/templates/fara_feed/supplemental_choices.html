@@ -1,5 +1,6 @@
 {% load dictionary_extras %}
 {% load staticfiles %}
+
 <!doctype html>
 <html lang="en">
 <meta charset="utf-8" />
@@ -9,27 +10,26 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/sunlight.css' %}" />
 <link rel="stylesheet" type="text/css" href="{% static 'css/document_select.css' %}" />
 </head>
+
 <body>
 <h1>Supplemental Choices</h1>
-<div class="explainer"><p>Supplementals, oldest to newest.</p></div>
+<div class="explainer"><p>Supplementals that have not been entered, newest, to oldest.</p></div>
 <hr>
 
 <h3>Supplementals</h3>
 
 <table>
 	<thead>
-		<tr><td>FARA ID</td><td>Stamp date</td><td>Link</td><td>Processed</td><td>Flagged</td><td>Notes</td></tr>
+		<tr><td>Registrant Name<td><td>FARA ID</td><td>Stamp date</td><td>Enter form</td><td>Flagged</td><td>Notes</td></tr>
 	</thead> 
-{% for d in supplementals %}	
-		<tr><td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td>
-		
-		<td>
-		{% if d.url in processed_true %}	
-			Processed
+{% for d in supplementals %}
+		{% if d.reg_id in names %}	
+			<tr><td>{{ names|access:d.reg_id }}</td>
 		{% else %}
-			<i>NOT processed</i>
+			<td></td>
 		{% endif %}
-		</td>
+
+		<td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td>
 		
 		<td>
 		{% if d.url in reviewed_true %}

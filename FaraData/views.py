@@ -2,6 +2,9 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
+
+from FaraData import *
+
 @login_required(login_url='/admin')
 def temp_home(request):
 	return render(request, 'fara_feed/temp_home.html')

@@ -63,7 +63,7 @@ def fast_pages(form, page):
 
 @login_required(login_url='/admin')
 def fast_supplemental(request):
-    supplementals = Document.objects.filter(doc_type = "Supplemental").order_by('-stamp_date')
+    supplementals = Document.objects.filter(doc_type = "Supplemental", processed=False).order_by('-stamp_date')
     page = request.GET.get('page')
     supplementals = make_pages(supplementals, page)
     
@@ -71,6 +71,7 @@ def fast_supplemental(request):
                                                             'processed_true': processed_true,
                                                             'reviewed_true': reviewed_true,
                                                             'notes': notes,
+                                                            'names': names,
         })
 
 @login_required(login_url='/admin')

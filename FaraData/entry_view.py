@@ -778,7 +778,6 @@ def client_info(request):
     if request.method == 'GET': 
         client_id = int(request.GET['client'])
         reg_id = int(request.GET['reg_id'])
-        primary_contractor = int(request.GET['primary_contractor'])
         link = request.GET['link']
         
         try:
@@ -803,6 +802,7 @@ def client_info(request):
 
         # if this registrant is hired by another registrant  
         try:
+            primary_contractor = int(request.GET['primary_contractor'])
             primary = Registrant.objects.get(reg_id=primary_contractor)
             record.primary_contractor_id = primary
         except:
