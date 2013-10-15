@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-from FaraData.Feeds import latest_entries_feed, region_feed, data_entry_feed
+#from FaraData.Feeds import latest_entries_feed, region_feed, data_entry_feed
 
 admin.autodiscover()
 
@@ -101,7 +101,7 @@ urlpatterns = patterns('',
     ### End of forms
     # RSS feeds
     #url(r'^rss/beats/(?P<region_id>\d+)/rss/$', 'views.region_feed'),
-    (r'^latest/rss/$', latest_entries_feed()),
-    (r'^region/(?P<region>\w+)/rss', region_feed()),
-    (r'^entry/rss/$', data_entry_feed()), 
+    #(r'^latest/rss/$', latest_entries_feed()),
+    #(r'^region/(?P<region>\w+)/rss', region_feed()),
+    #(r'^entry/rss/$', data_entry_feed()), 
     )
