@@ -1,0 +1,10 @@
+#!/Users/Olivia/Projects/fara/FARA/bin/python
+# EASY-INSTALL-ENTRY-SCRIPT: 'virtualenv==1.7.1.2','console_scripts','virtualenv'
+__requires__ = 'virtualenv==1.7.1.2'
+import sys
+from pkg_resources import load_entry_point
+
+if __name__ == '__main__':
+    sys.exit(
+        load_entry_point('virtualenv==1.7.1.2', 'console_scripts', 'virtualenv')()
+    )
