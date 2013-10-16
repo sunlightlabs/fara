@@ -1,21 +1,26 @@
 {% load dictionary_extras %}
 {% load staticfiles %}
+
 <!doctype html>
+
 <html lang="en">
-<meta charset="utf-8" />
-<title>FARA docs</title>
+
 <head>
-<link rel="stylesheet" type="text/css" href="{% static 'css/sunlight.css' %}" />
-<link rel="stylesheet" type="text/css" href="{% static 'css/document_select.css' %}" />
-<!-- <link rel="stylesheet" type="text/css" href="http://127.0.0.1:8000/static/css/bootstrap.min.css" /> -->
+    <title>FARA docs</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/sunlight.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/document_select.css' %}" />
 </head>    
+
 <body>
 
-<h1>FARA Document Choices</h1>
-<div class="explainer">
-<p>All documents in the system, by form type, newest to oldest. View <a href="{% url 'instructions' %}">instructions.</a></p>
-</div>
-<hr>
+<header>
+    <h1>FARA Document Choices</h1>
+    <div class="explainer">
+        <p>All documents in the system, by form type, newest to oldest. View <a href="{% url 'instructions' %}">instructions.</a></p>
+    </div>
+</header>
+
 <h2>Supplementals</h2>
 <br>
 
@@ -328,8 +333,9 @@
     </span>
 </div>
 
-<hr>
-<p><a href="{% url 'instructions' %}">Instructions</a></p>
+<footer>
+    <p><a href="{% url 'instructions' %}">Instructions</a></p>
+</footer>
 
 </body>
 

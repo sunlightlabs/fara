@@ -2,19 +2,24 @@
 {% load staticfiles %}
 
 <!doctype html>
+
 <html lang="en">
-<meta charset="utf-8" />
-<title>FARA Supplementals</title>
+
 <head>
-{% load dictionary_extras %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/sunlight.css' %}" />
-<link rel="stylesheet" type="text/css" href="{% static 'css/document_select.css' %}" />
+	<title>FARA Supplementals</title>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" type="text/css" href="{% static 'css/sunlight.css' %}" />
+	<link rel="stylesheet" type="text/css" href="{% static 'css/document_select.css' %}" />
 </head>
 
 <body>
-<h1>Supplemental Choices</h1>
-<div class="explainer"><p>Supplementals that have not been entered, newest, to oldest.</p></div>
-<hr>
+
+<header>	
+	<h1>Supplemental Choices</h1>
+	<div class="explainer">
+		<p>Supplementals that have not been entered, newest, to oldest. View <a href="{% url 'instructions' %}">instructions.</a></p>
+	</div>
+</header>
 
 <h3>Supplementals</h3>
 
@@ -63,6 +68,9 @@
         {% endif %}
     </span>
 </div>
-<hr>
-<p><a href="{% url 'instructions' %}">Instructions</a></p>
+
+<footer>
+    <p><a href="{% url 'full-list' %}">View all Forms</a> | <a href="{% url 'instructions' %}">Instructions</a></p>
+</footer>
+
 </body>

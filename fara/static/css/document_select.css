@@ -1,4 +1,18 @@
-/*Extra Styling */
+header {
+	margin: -40px -40px 0 -40px;
+	padding: 20px 40px; 
+	border-bottom: 4px solid #78bcbf;
+	background: #d7e5e6;
+	color: #444;
+}
+
+footer {
+	margin: 0px -40px -40px -40px;
+	padding: 10px 40px; 
+	background: #d7e5e6;
+	color: #fff;	
+}
+
 .heading1{
 	background: #78bcbf;
 	opacity:0.5;
@@ -16,21 +30,15 @@
 }
 
 .explainer{
-	margin-left: 40px;
+	/*margin-left: 40px;*/
 }	
 
 .link_box{
-	margin-left: 30px;
+	margin: 50px 30px 0 0;
 	padding: 20px;
-	border: 4px #C0C0C0 double;
-    border-spacing: 20;
-    -moz-border-radius: 12px;
-    -moz-box-shadow: #94aaa1 4px 4px 5px;
-    -webkit-border-radius: 12px;
-    -webkit-box-shadow: #94aaa1 4px 4px 5px;
-    border-radius: 12px;
-    box-shadow: #94aaa1 4px 4px 5px;
-    width: 75%;
+	background: #f5f5f5;
+    width: 300px;
+    float: left;
 }
 
 .pagination{

@@ -1,17 +1,25 @@
 {% load dictionary_extras %}
 {% load staticfiles %}
+
 <!doctype html>
+
 <html lang="en">
-<meta charset="utf-8" />
-<title>FARA entry</title>
+
 <head>
-<link rel="stylesheet" type="text/css" href="{% static 'css/sunlight.css' %}" />
-<link rel="stylesheet" type="text/css" href="{% static 'css/document_select.css' %}" />
+	<title>FARA entry</title>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" type="text/css" href="{% static 'css/sunlight.css' %}" />
+	<link rel="stylesheet" type="text/css" href="{% static 'css/document_select.css' %}" />
+</head>
+
 <body>
 
-<h1>FARA Data Entry</h1>
-<div class="explainer"><p>All forms to be entered, form oldest to newest.</p></div>
-<hr>
+<header>
+	<h1>FARA Data Entry</h1>
+	<div class="explainer">
+		<p>All forms to be entered, form oldest to newest. View <a href="{% url 'instructions' %}">instructions.</a></p>
+	</div>
+</header>
 
 <h3>Enter Forms</h2>
 <br>
@@ -77,7 +85,9 @@
         {% endif %}
     </span>
 </div>
-<hr>
-<p><a href="{% url 'instructions' %}">Instructions</a></p>
-<p><a href="{% url 'full-list' %}">View all Forms</a></p>
+
+<footer>
+    <p><a href="{% url 'full-list' %}">View all Forms</a> | <a href="{% url 'instructions' %}">Instructions</a></p>
+</footer>
+
 </body>
