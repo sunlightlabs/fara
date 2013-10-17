@@ -9,12 +9,10 @@ from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
-from FaraData.models import * #LobbyistForm, ClientForm, RegForm, RecipientForm, ContactForm, PaymentForm, ContributionForm, Disbursement, DisbursementForm
+from FaraData.models import * 
 from fara_feed.models import Document
 
-#change GET to POST, but GET is better for debugging
-
-# Section for functions that create variables for the templates 
+## Section for functions that create variables for the templates 
 
 # this gets the info about the form
 def doc_id(form_id):
@@ -130,7 +128,7 @@ def oneclient(reg_object):
         one_client = False
     return one_client
 
-# Section for rendering pages
+## Section for rendering pages
 
 #all in one supplemental data entry form- good for amendments
 def return_big_form(request, form_id):
@@ -571,9 +569,8 @@ def fix_gift(request, gift_id):
 def fix_client(request, client_id):
     print "placeholder"
 
-
     
-# Section for functions that process forms
+## Section for functions that process forms
 
 #data cleaning
 def cleantext(text):
@@ -1146,11 +1143,17 @@ def contribution(request):
             contribution.save()
             lobbyist = str(contribution.lobbyist.lobbyist_name)
 
+        try:
+            clear = request.GET['do_not_clear']
+        except:
+            clear = "off"
+
         continfo = {'amount': contribution.amount, 
                     'date': contribution.date.strftime("%B %d, %Y"), 
                     'recipient': contribution.recipient.name,
                     'lobbyist': lobbyist,
                     'cont_id': contribution.id,
+                    'do_not_clear': clear,
         }
         continfo = json.dumps(continfo , separators=(',',':'))
         return HttpResponse(continfo, mimetype="application/json")  

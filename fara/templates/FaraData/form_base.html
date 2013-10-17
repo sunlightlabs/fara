@@ -367,9 +367,9 @@ jQuery(document).ready(function(){
             
             var amount = response.amount;
             var lobbyist = response.lobbyist;
-            // if(lobbyist = "null"){
-            //   var lobbyist = ''
-            // }
+            if(lobbyist = "null"){
+              var lobbyist = ''
+            }
             var recipient = response.recipient;
             var date =  response.date;
             var cont_id = response.cont_id;
@@ -538,7 +538,7 @@ $('.fix').ajaxForm(direct);
 <br>
 {% block quicklinks %}{% endblock quicklinks %}<br>
 <br>
-<a class="help" href="{{ url }}">view form source</a>
+<a class="help" href="{{ url }}" target="_blank">view form source</a>
 <br>
 
 

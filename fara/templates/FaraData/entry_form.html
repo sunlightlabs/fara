@@ -585,7 +585,7 @@ Registration No: <b>{{ reg_id }}</b></p>
 
             <p><b>Enter Contribution</b></p>
             <form method="GET" id='contform' action="/contribution/create">
-                {% csrf_token %}
+                <p><label for ="do_not_clear">Do not clear </label><input name="do_not_clear" type="checkbox"></p>
                 <input type="hidden" name="registrant" value="{{ reg_id }}">
                 <input type="hidden" name="link" value="{{ url }}">
                 

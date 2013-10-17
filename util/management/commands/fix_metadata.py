@@ -1,3 +1,5 @@
+# It passed the test, the extra meta data records were not being used!
+
 from django.core.management.base import BaseCommand, CommandError
 
 from FaraData.models import *
