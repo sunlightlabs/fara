@@ -1,0 +1,194 @@
+from django.contrib.syndication.views import Feed
+from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
+
+from FaraData.models import *
+from fara_feed.models import *
+
+doc_type = ''
+link = ''
+upload_date = ''
+
+def find_reg(item):
+    reg_id = re.sub('-','', item.url[25:29])
+    reg_id = re.sub('S','', reg_id)
+    reg_id = re.sub('L','', reg_id)
+    reg = Registrant.objects.get(reg_id=reg_id)
+    return reg
+
+def find_regMD(item):
+    if item.link[:4] == "http":
+        reg_id = re.sub('-','', item.link[25:29])
+        reg_id = re.sub('S','', reg_id)
+        reg_id = re.sub('L','', reg_id)
+        reg = Registrant.objects.get(reg_id=reg_id)
+        return reg
+    else:
+        print item.link 
+        reg_id = re.sub('-','', item.link[15:19])
+        reg_id = re.sub('S','', reg_id)
+        reg_id = re.sub('L','', reg_id)
+        reg = Registrant.objects.get(reg_id=reg_id)
+        return reg        
+
+class latest_entries_feed(Feed):
+    title = "Latest entries in the Foreign lobbying database"
+    link = "/latest/rss/"
+    description = "Updates"
+
+    def items(self):
+        return Document.objects.filter(processed=True).order_by('-stamp_date')[:25]
+
+    def item_link(self, item):
+        return item.url
+
+    def item_description(self, item):
+        info = "Date received: %s " %(item.stamp_date)
+        link = item.url
+        reg = find_reg(item)
+
+        client = ' '
+        clients = reg.clients.all()
+        for c in clients:
+            client + c.client_name
+        if len(client) > 17:
+            info = info + "(Active clients: %s)"%(client)
+        
+        terminated = ' '
+        terminated_clients = reg.terminated_clients.all()
+        for c in terminated_clients:
+            terminated = c.client_name
+        if len(terminated) > 20:
+            info = info + "(Terminated clients: %s)"%(terminated)
+
+        if doc_type == "Exhibit AB":
+            try:
+                new_client = ClientReg.objects.get(link=link)
+                info = info + "New client: " + new_cient
+            except:
+                pass
+
+        if doc_type == "Supplemental":
+            payments = Payment.objects.filter(link=link).count()
+            contacts = Contact.objects.filter(link=link).count()
+            if payments > 0:
+                info = info + " Number of payments: %i" %(payments)
+            if contacts > 0:
+                info = info + " Number of contacts: %i" %(contacts)
+
+        if doc_type == "Registration":
+            payments = Payment.objects.filter(link=link).count()
+            contacts = Contact.objects.filter(link=link).count()
+            if payments > 0:
+                info = info + " Number of payments: %i" %(payments)
+            if contacts > 0:
+                info = info + " Number of contacts: %i" %(contacts)
+
+        return info
+
+    def item_title(self, item):
+        reg = find_reg(item)
+        doc_type = item.doc_type
+        name = reg.reg_name
+        title = "%s-- %s %s" %(name, doc_type, upload_date)
+        return title
+
+    def item_guid(self, item):
+        client = ClientReg.objects.filter(link=self.link)
+        return [client] 
+
+
+class data_entry_feed(Feed):
+    title = "Latest entered documents in the Foreign lobbying database"
+    link = "/entry/rss/"
+    description = "recently added"
+
+    def items(self):
+        return MetaData.objects.filter(processed=True).order_by('-upload_date')[:25]
+
+    def item_link(self, item):
+        return item.link
+
+    def item_description(self, item):
+        doc = Document.objects.get(url=item.link)
+        info = "Date received: %s " %(doc.stamp_date)
+        link = item.link
+        reg = find_regMD(item)
+
+        client = ' '
+        clients = reg.clients.all()
+        for c in clients:
+            client + c.client_name
+        if len(client) > 17:
+            info = info + "(Active clients: %s)"%(client)
+        
+        terminated = ' '
+        terminated_clients = reg.terminated_clients.all()
+        for c in terminated_clients:
+            terminated = c.client_name
+        if len(terminated) > 20:
+            info = info + "(Terminated clients: %s)"%(terminated)
+
+        if doc_type == "Exhibit AB":
+            try:
+                new_client = ClientReg.objects.get(link=link)
+                info = info + "New client: " + new_cient
+            except:
+                pass
+
+        if doc_type == "Supplemental":
+            payments = Payment.objects.filter(link=link).count()
+            contacts = Contact.objects.filter(link=link).count()
+            if payments > 0:
+                info = info + " Number of payments: %i" %(payments)
+            if contacts > 0:
+                info = info + " Number of contacts: %i" %(contacts)
+
+        if doc_type == "Registration":
+            payments = Payment.objects.filter(link=link).count()
+            contacts = Contact.objects.filter(link=link).count()
+            if payments > 0:
+                info = info + " Number of payments: %i" %(payments)
+            if contacts > 0:
+                info = info + " Number of contacts: %i" %(contacts)
+
+        return info
+
+    def item_title(self, item):
+        reg = find_regMD(item)
+        doc = Document.objects.get(url=item.link)
+        doc_type = doc.doc_type
+        name = reg.reg_name
+        title = "%s-- %s %s" %(name, doc_type, upload_date)
+        return title
+
+    def item_guid(self, item):
+        client = ClientReg.objects.filter(link=self.link)
+        return [client] 
+
+
+class region_feed(Feed):
+    title = "Latest entries in the Foreign lobbying database"
+    link = "region/rss"
+    description = "Updates"
+
+    def items(self, region):
+        print region
+        docs = Document.objects.filter(processed=True).order_by('-stamp_date')[:500]
+        hits = []
+        for d in docs:
+            reg = find_reg(d)
+            clients = reg.clients.all()
+            if len(clients) > 0:
+                for l in clients:
+                    if len(l.location.region) > 1:
+                        l_region = str(l.location.region).replace(" ", "_")
+                        if l_region == region:
+                            print "hit"
+                            print docs
+        return hits
+    
+    def item_link(self, item):
+        return "www.test.com"
+
+

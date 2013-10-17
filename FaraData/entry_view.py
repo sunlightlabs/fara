@@ -191,6 +191,7 @@ def supplemental_first(request, form_id):
     reg_object = reg_info(reg_id)
     all_clients = Client.objects.all()
     client_form = ClientForm()
+    meta_list = meta_info(url)
 
     return render(request, 'FaraData/supplemental_first.html',{
         'reg_id' : reg_id,
@@ -200,6 +201,7 @@ def supplemental_first(request, form_id):
         'client_form': client_form,
         'form_id': form_id,
         's_date': s_date,
+        'meta_list': meta_list,
     })
 
 @login_required(login_url='/admin')
@@ -1299,7 +1301,11 @@ def metadata(request):
         link = request.GET['link']
         date_obj = date.today()
 
-        registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
+        try:
+            registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
+        except:
+            error = json.dumps({'error': 'Please fill out Registrant form below before submitting notes.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json") 
 
         metadata= MetaData(link = link,
             upload_date = date_obj,
@@ -1320,6 +1326,8 @@ def metadata(request):
                     return HttpResponse(end_date, mimetype="application/json")
                 elif end_date != '{"error":"No date"}':
                     return HttpResponse(end_date, mimetype="application/json")
+                else:
+                    return HttpResponse(date, mimetype="application/json")
             else:
                 metadata.end_date = end_date
         except:
@@ -1332,7 +1340,7 @@ def metadata(request):
             document.processed = False
         document.save()
         
-        metadata_info = json.dumps({'processed': processed, 'reviewed': reviewed} , separators=(',',':'))
+        metadata_info = json.dumps({'note': metadata.notes, 'do_not_clear': 'on'} , separators=(',',':'))
         return HttpResponse(metadata_info, mimetype="application/json")
         
     else:

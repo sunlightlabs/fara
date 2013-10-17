@@ -45,8 +45,6 @@ $("#metaform").ajaxForm(direct);
 
 });  
 
-
-
 // Date picker 
 $(function() {
   $("#contact_date").datepicker();
@@ -426,6 +424,12 @@ jQuery(document).ready(function(){
           if (tag == '.deleteable'){
             h.parent('div').remove();
           }
+
+          if (tag == '#noteform'){
+            var note = response.note
+            var item = "<p> Note replaced with: " + note + "</p>"
+            $('#note').replaceWith(item);
+          }
         }
         
         // creates error messages generated in views
@@ -463,6 +467,7 @@ jQuery(document).ready(function(){
   update('#contact_remove_recip');
   update('#contact_remove_lobby');
   update('.deleteable');
+  update('#noteform');
   
 });
 </script>
