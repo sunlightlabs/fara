@@ -1017,7 +1017,7 @@ def contact(request):
             clear = "off"
 
         contactinfo = {'date': date, 
-                        'name': str(names), 
+                        'name': names, 
                         'do_not_clear': clear,
                         'contact_id': contact.id,
         }
