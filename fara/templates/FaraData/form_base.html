@@ -4,7 +4,7 @@
 
 <head>
 <meta charset="utf-8">
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/sunlight.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/screen.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/entry_form.css" />
 
 <!-- jQuery UI Datepicker -->
@@ -528,7 +528,7 @@ $('.fix').ajaxForm(direct);
 
 <div id="right">
 
-<div align="right"><p><a href="{% url 'full-list' %}">select a different form</a></p></div>
+<div class=""><a href="{% url 'full-list' %}">select a different form</a></div>
 {% endblock show_doc %}
 
 </head>
