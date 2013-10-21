@@ -205,12 +205,12 @@ footer .container {
 .table td.paginate span{
 	display: inline-block;
 	padding: 5px 10px;
-	border-left: 1px solid #ccc;
-	border-bottom: 1px solid #ccc;
+	border-left: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
 }
 
 .table td.paginate span:last-of-type{
-	border-right: 1px solid #ccc;
+	border-right: 1px solid #ddd;
 }
 
 .table td.paginate span:not(.current):hover{

@@ -6,87 +6,100 @@
 <html lang="en">
 
 <head>
-	<title>FARA entry</title>
-	<meta charset="utf-8" />
-	<link rel="stylesheet" type="text/css" href="{% static 'css/sunlight.css' %}" />
-	<link rel="stylesheet" type="text/css" href="{% static 'css/document_select.css' %}" />
+    <title>FARA docs</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/screen.css' %}" />
+	<script src="{% static 'javascript/jquery-1.9.1.js' %}"></script>
+	<script src="{% static 'javascript/jquery.cookie.js' %}"></script>
+	<script src="{% static 'javascript/application.js' %}"></script>
 </head>
 
 <body>
 
+<div id="wrap">
+
 <header>
-	<h1>FARA Data Entry</h1>
-	<div class="explainer">
-		<p>All forms to be entered, form oldest to newest. View <a href="{% url 'instructions' %}">instructions.</a></p>
+	<div id="logo">
+		<a href="/"><h1>FARA</h1></a>
 	</div>
+    <div class="container">
+    	<a class="btn btn-info pull-right help" href="{% url 'instructions' %}">Instructions</a>
+    	<h2>FARA Data Entry</h2>
+        <span>All forms to be entered, form oldest to newest.</span>
+    </div>
 </header>
 
-<h3>Enter Forms</h2>
-<table>
-	<thead>
-		<tr><td>FARA ID</td><td>Registrant name</td> <td>Stamp date</td><td>Enter form</td><td>Flagged</td><td>Doc type</td><td>Notes</td></tr> 
-	</thead>
-	<tbody>
-	{% for d in entry_docs %}	
-		<tr>
-			<td>{{ d.reg_id }}</td>
+<div class="container">
 
-		{% if d.reg_id in names %}
-			<td>{{ names|access:d.reg_id }}</td>
-		{% else %}
-			<td></td>
-		{% endif %}
-			
-			<td>{{ d.stamp_date }}</td>
-			
-		{% if d.doc_type == "Supplemental" %}
-			<td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td>
-		{% elif d.doc_type == "Amendment" %}
-			<td><a href="{% url 'enter-amendment' d.id %}"> Enter form </a></td>
-		{% elif d.doc_type == "Registration" %}
-			<td><a href="{% url 'registration-first' d.id %}"> Enter form </a></td>
-		{% elif d.doc_type == "Exhibit AB" %}
-			<td><a href="{% url 'enter-AB' d.id %}"> Enter form </a></td>
-		{% endif %}
-		
-		{% if d.url in reviewed_true %}
-			<td><i>Flagged<i></td>
-		{% else %}
-			<td></td>
-		{% endif %}
-		
-			<td>{{ d.doc_type }}</td>
-		
-		{% if d.url in notes %}
-			<td>{{ notes|access:d.url }}</td>
-		{% else %}
-			<td></td>
-		{% endif %}
+	<section class="doclist">
+		<h3 class="table_title" id="all_forms">All Forms</h3>
+		<table class="table">
+		    <thead>
+		        <tr>
+		            <th class="fara-id">FARA ID</th>
+		            <th class="registrant-name">Registrant Name</th>
+		            <th class="stamp-date">Stamp Date</th>
+		            <th class="status">Doc Type</th>
+		            <th class="flagged">Flagged</th>
+		            <th class="notes">Notes</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		    {% for d in entry_docs %}
+		        <tr class="not-entered">
+		            <td>{{ d.reg_id }}</td>
 
-		</tr>
+<!-- 		            <td><a class="doclink" href="{% url 'supplemental-first' d.id %}">{% if d.reg_id in names %} {{names|access:d.reg_id}} {% endif %}</a></td> -->
+				{% if d.doc_type == "Supplemental" %}
+					<td><a class="doclink" href="{% url 'supplemental-first' d.id %}">{% if d.reg_id in names %}{{ names|access:d.reg_id }}{% endif %}</a></td>
+				{% elif d.doc_type == "Amendment" %}
+					<td><a class="doclink" href="{% url 'enter-amendment' d.id %}">{% if d.reg_id in names %}{{ names|access:d.reg_id }}{% endif %}</a></td>
+				{% elif d.doc_type == "Registration" %}
+					<td><a class="doclink" href="{% url 'registration-first' d.id %}">{% if d.reg_id in names %}{{ names|access:d.reg_id }}{% endif %}</a></td>
+				{% elif d.doc_type == "Exhibit AB" %}
+					<td><a class="doclink" href="{% url 'enter-AB' d.id %}">{% if d.reg_id in names %}{{ names|access:d.reg_id }}{% endif %}</a></td>
+				{% endif %}
+		            
+		            <td>{{ d.stamp_date }}</td>
+		            
+		            <td class="status">{{ d.doc_type }}</td>
 
-	{% endfor %}
-	</tbody>
-</table>
+		            <td class="flag">{% if d.url in reviewed_true %}<span class="glyphicon glyphicon-flag warn"></span>{% endif %}</td>
+		        
+		            <td class="note">
+		            	{% if d.url in notes %}
+		            		{% if notes|access:d.url %}
+		            			<a href="#">{{notes|access:d.url}}</a>
+	            			{% endif %}
+	            		{% endif %}
+	            	</td>
 
-<div class="pagination">
-    <span class="step-links">
-        {% if entry_docs.has_previous %}
-            <a href="?page={{ entry_docs.previous_page_number }}">previous</a>
-        {% endif %}
+		        </tr>
+		    {% endfor %}
+		    </tbody>
+		    <tfoot>
+				<tr>
+					<td class="paginate" colspan="6">
+				        {% if entry_docs.has_previous %}<span><a href="?page={{ entry_docs.previous_page_number }}">prev</a>
+				    	</span>{% endif %}<span class="current">{{ entry_docs.number }} of {{ entry_docs.paginator.num_pages }}
+				    	</span>{% if entry_docs.has_next %}<span><a href="?page={{ entry_docs.next_page_number }}">next</a></span>{% endif %}
+				    </td>
+				</tr>
+		    </tfoot>
+		</table>
+	</section>
 
-        <span class="current">
-            Page {{ entry_docs.number }} of {{ entry_docs.paginator.num_pages }}.
-        </span>
-
-        {% if entry_docs.has_next %}
-            <a href="?page={{ entry_docs.next_page_number }}">next</a>
-        {% endif %}
-    </span>
 </div>
 
+	<span class="push"></span>
+</div> <!-- end #wrap -->
+
 <footer>
-    <p><a href="{% url 'full-list' %}">View all Forms</a> | <a href="{% url 'instructions' %}">Instructions</a></p>
+	<div class="container">
+    	<a class="btn btn-info pull-right" href="{% url 'instructions' %}">Instructions</a>
+    	<a class="btn btn-info pull-right" href="{% url 'full-list' %}">View All Docs</a>
+	</div>
 </footer>
 
 </body>
+</html>
