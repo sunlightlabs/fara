@@ -2,19 +2,38 @@
 /*@import url('bootstrap.min.css');*/
 @import url("//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css");
 
+/* Bootstrap Overrides*/
+
 html, body {
 	height: 100%;
 	color: #666;
 	font-family: "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 	font-weight: 400;
-
 }
 
-a { color: #78bcbf; text-decoration: none; }
+/* Links */
 
+a { color: #78bcbf; text-decoration: none; }
 a:hover { color: #78bcbf; text-decoration: none; border-bottom: 1px dotted #78bcbf; }
 
-/* Sticky Footer */
+/* Buttons */
+
+.btn { border-radius: 3px; }
+
+/* Info button used for header and footer */
+
+.btn-info {
+	border: 1px solid #aed9db;
+	background: transparent;
+}
+
+.btn-info:hover, .btn-info:active , .btn-info:focus {
+	border: 1px solid #aed9db;
+	background: #74b3b6;
+	outline: none;
+}
+
+/* Sticky Footer Setup*/
 
 #wrap {
 	min-height: 100%;
@@ -29,54 +48,51 @@ a:hover { color: #78bcbf; text-decoration: none; border-bottom: 1px dotted #78bc
 }
 
 footer {
-	background: #78bcbf;
-	color: #fff;
 	height: 60px;
 }
 
-/* End Sticky Footer */
+/* Header */
 
 header {
-	border-bottom: 4px solid #78bcbf;
 	background: #78bcbf;
 	color: #fff;
+	height: 100px;
 }
-
-header a,
-footer a {
-	color:#fff;
+header .btn {
+	margin-top: 30px;
 }
 
 #logo {
 	float: left;
 	margin: 0;
-	padding: 10px;
+	height: 100px;
+	padding: 0 15px;
+	margin-right: 15px;
 	background: #444;
+}
+
+#logo h1 {
+	margin: 0;
+	padding: 0;
+	line-height: 100px;
 }
 
 header .explainer {
 	display: inline-block;
 }
 
-.heading1 {
+/* Footer */
+
+footer {
 	background: #78bcbf;
-	opacity:0.5;
-	width: 80%;
-	margin: 30px;
-	font-weight: bold;
-	height: 20px;
-	border-radius: 6px;
+	color: #fff;
 }
 
-.headingtext {
-	margin: 40px;
-	font-size: 45px;
-	font-weight: bold;
+footer .container {
+	padding-top: 12px;
 }
 
-.explainer {
-	/*margin-left: 40px;*/
-}	 
+/* Homepage */
 
 .link_box {
 	margin: 50px 30px 0 0;
@@ -86,17 +102,18 @@ header .explainer {
     float: left;
 }
 
-/* ------------------
- styling for the tables
-   ------------------   */
+/* Doc List page */
 
 .doclist {
-	margin-bottom: 25px;
+	margin: 40px 0;
 }
 .doclist h3 {
 	padding: 10px 7px;
 	background: #eee;
 }
+
+/* Doc List table formatting */
+
 .table{
 	width: 100%;
 	border-collapse: collapse;
@@ -146,7 +163,6 @@ header .explainer {
 .table thead > tr > th.notes { width: 150px; }
 
 .table tfoot {
-	/*background: #eee;*/
 	text-align: right;
 }
 .table td.status {
@@ -166,7 +182,7 @@ header .explainer {
 	font-size: 85%;
 }
 
-/* Table Pagination */
+/* Doc list Table Pagination */
 
 .table td.paginate {
 	padding: 0;
@@ -185,11 +201,8 @@ header .explainer {
 }
 
 .table td.paginate span:not(.current):hover{
-	background: #78bcbf;
+	background: #f2f9fa;
 	cursor: pointer;
-}
-.table td.paginate span:not(.current):hover a{
-	color: #fff;
 }
 
 /* JS classes*/

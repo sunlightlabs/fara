@@ -22,9 +22,10 @@
 	<div id="logo">
 		<h1>FARA</h1>
 	</div>
-    <div class="explainer">
+    <div class="container">
+    	<a class="btn btn-info pull-right help" href="{% url 'instructions' %}">Instructions</a>
     	<h2>Document Overview</h2>
-        <p>All documents in the system, by form type, newest to oldest. View <a href="{% url 'instructions' %}">instructions.</a></p>
+        <span>All documents in the system, by form type, newest to oldest.</span>
     </div>
 </header>
 
@@ -318,7 +319,9 @@
 </div> <!-- end #wrap -->
 
 <footer>
-    <p><a href="{% url 'instructions' %}">Instructions</a></p>
+	<div class="container">
+    	<a class="btn btn-info pull-right" href="{% url 'instructions' %}">Instructions</a>
+	</div>
 </footer>
 
 </body>
