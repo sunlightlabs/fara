@@ -6,76 +6,96 @@
 <html lang="en">
 
 <head>
-	<title>FARA Supplementals</title>
-	<meta charset="utf-8" />
-	<link rel="stylesheet" type="text/css" href="{% static 'css/sunlight.css' %}" />
-	<link rel="stylesheet" type="text/css" href="{% static 'css/document_select.css' %}" />
+    <title>FARA docs</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/screen.css' %}" />
+	<script src="{% static 'javascript/jquery-1.9.1.js' %}"></script>
+	<script src="{% static 'javascript/jquery.cookie.js' %}"></script>
+	<script src="{% static 'javascript/application.js' %}"></script>
 </head>
 
 <body>
 
-<header>	
-	<h1>Supplemental Choices</h1>
-	<div class="explainer">
-		<p>Supplementals that have not been entered, newest, to oldest. View <a href="{% url 'instructions' %}">instructions.</a></p>
+<div id="wrap">
+
+<header>
+	<div id="logo">
+		<h1>FARA</h1>
 	</div>
+    <div class="container">
+    	<a class="btn btn-info pull-right help" href="{% url 'instructions' %}">Instructions</a>
+    	<h2>Supplementals</h2>
+        <span>Supplementals that have not been entered, from newest to oldest.</span>
+    </div>
 </header>
 
-<h3>Supplementals</h3>
+<div class="container">
 
-<table>
-	<thead>
-		<tr><td>Registrant Name</td><td>FARA ID</td><td>Stamp date</td><td>Enter form</td><td>Flagged</td><td>Notes</td></tr>
-	</thead> 
-{% for d in supplementals %}
-		{% if d.reg_id in names %}	
-			<tr><td>{{ names|access:d.reg_id }}</td>
-		{% else %}
-			<td></td>
-		{% endif %}
+	<section class="doclist">
+		<h3 class="table_title" id="supplementals">Supplementals</h3>
+		<table class="table">
+		    <thead>
+		        <tr>
+		            <th class="fara-id">FARA ID</th>
+		            <th class="registrant-name">Registrant Name</th>
+		            <th class="stamp-date">Stamp Date</th>
+		            <th class="status">Status</th>
+		            <th class="flagged">Flagged</th>
+		            <th class="notes">Notes</th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		    {% for d in supplementals %}
+		        <tr {% if d.url in processed_true %}{% else %}class="not-entered"{% endif %}>
+		            <td>{{ d.reg_id }}</td>
 
-		<td>{{ d.reg_id }}</td><td>{{ d.stamp_date }}</td><td><a href="{% url 'supplemental-first' d.id %}"> Enter form </a></td>
-		
-		<td>
-		{% if d.url in reviewed_true %}
-			Flaged
-		{% else %}
-		{% endif %}
-		</td>
+		            <td><a class="doclink" href="{% url 'supplemental-first' d.id %}">{% if d.reg_id in names %} {{names|access:d.reg_id}} {% endif %}</a></td>
+		            
+		            <td>{{ d.stamp_date }}</td>
+		            
+		            <td class="status">
+		            	{% if d.url in processed_true %}
+		            		<span class="glyphicon glyphicon-ok text-muted"></span>
+		            	{% else %}
+		            		<span>Not Entered</span>
+		            	{% endif %}
+		            </td>
 
+		            <td class="flag">{% if d.url in reviewed_true %}<span class="glyphicon glyphicon-flag warn"></span>{% endif %}</td>
+		        
+		            <td class="note">
+		            	{% if d.url in notes %}
+		            		{% if notes|access:d.url %}
+		            			<a href="{% url 'supplemental-last' d.id %}">{{notes|access:d.url}}</a>
+	            			{% endif %}
+	            		{% endif %}
+	            	</td>
 
-		{% if d.url in notes %}
-		 {% if notes|access:d.url != None %}
-			<td>{{ notes|access:d.url }}</td></tr>
-		 {% else %}
-		 	<td></td></tr>
-		 {% endif %}
-		
-		{% else %}
-		<td></td></tr>
-		{% endif %}
-		
-{% endfor %}
-</table>
+		        </tr>
+		    {% endfor %}
+		    </tbody>
+		    <tfoot>
+				<tr>
+					<td class="paginate" colspan="6">
+				        {% if supplementals.has_previous %}<span><a href="?page={{ supplementals.previous_page_number }}">prev</a>
+				    	</span>{% endif %}<span class="current">{{ supplementals.number }} of {{ supplementals.paginator.num_pages }}
+				    	</span>{% if supplementals.has_next %}<span><a href="?page={{ supplementals.next_page_number }}">next</a></span>{% endif %}
+				    </td>
+				</tr>
+		    </tfoot>
+		</table>
+	</section>
 
-<div class="pagination">
-    <span class="step-links">
-        {% if supplementals.has_previous %}
-            <a href="?page={{ supplementals.previous_page_number }}">previous</a>
-        {% endif %}
-
-        <span class="current">
-            Page {{ supplementals.number }} of {{ supplementals.paginator.num_pages }}.
-        </span>
-
-        {% if supplementals.has_next %}
-            <a href="?page={{ supplementals.next_page_number }}">next</a>
-        {% endif %}
-    </span>
 </div>
 
+	<span class="push"></span>
+</div> <!-- end #wrap -->
+
 <footer>
-    <p><a href="{% url 'full-list' %}">View all Forms</a> | <a href="{% url 'instructions' %}">Instructions</a></p>
+	<div class="container">
+    	<a class="btn btn-info pull-right" href="{% url 'instructions' %}">Instructions</a>
+	</div>
 </footer>
 
 </body>
+</html>
