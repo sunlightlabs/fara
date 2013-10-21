@@ -519,8 +519,11 @@ def fix_contribution(request, cont_id):
     contribution = Contribution.objects.get(id=cont_id)
     reg_object = reg_info(contribution.registrant.reg_id)
     url = contribution.link
+    
     try:
-        date = payment.date.strftime('%m/%d/%Y')
+        date = contribution.date
+        date = date.strftime('%m/%d/%Y')
+        print date
     except:
         date = ''
 
@@ -1144,7 +1147,7 @@ def contribution(request):
             ) 
             contribution.save()
             lobbyist = str(contribution.lobbyist.lobbyist_name)
-
+            
         try:
             clear = request.GET['do_not_clear']
         except:
