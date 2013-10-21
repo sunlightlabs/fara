@@ -54,8 +54,14 @@
         
         {% if d.url in notes %}
             <td><a href="{% url 'supplemental-last' d.id %}">{{ notes|access:d.url }}</a></td>
+         {% if notes|access:d.url != None %}
+            <td>{{ notes|access:d.url }}</td></tr>
+         {% else %}
+            <td></td></tr>
+         {% endif %}
+        
         {% else %}
-            <td></td>
+            <td></td></tr>
         {% endif %}
         </tr>
 

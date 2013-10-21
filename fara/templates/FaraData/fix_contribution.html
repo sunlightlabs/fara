@@ -7,6 +7,7 @@
 
 <h3>Fix Contribution</h3>
 
+{{ date }}
 
 <form method="GET" id='amend_cont' class="fix" action="/amend_contribution">
     <input type="hidden" name="cont_id" value='{{ contribution.id }}'>
@@ -36,14 +37,14 @@
     <input type="submit" />
 </form>
 
-<p><span class="help">
+<span class="help">
  <form method="GET" class= "fix" action="/delete_contribution">  
     <input type="hidden" name="contribution_id" value="{{ contribution.id }}">
     <input value="Delete this entry" type="submit" />
- </form> </span>
-</p>
+ </form></span>
+
 <br>
 <p>
-<div class="help" ><a href="{% url 'instructions' %}#Contribution" target="blank">Help</a></div><br>
+<span class="help" ><a href="{% url 'instructions' %}#Contribution" target="blank">Help</a></span><br>
 </p>
 {% endblock formquestions %}

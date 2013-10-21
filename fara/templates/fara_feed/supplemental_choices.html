@@ -25,7 +25,7 @@
 
 <table>
 	<thead>
-		<tr><td>Registrant Name<td><td>FARA ID</td><td>Stamp date</td><td>Enter form</td><td>Flagged</td><td>Notes</td></tr>
+		<tr><td>Registrant Name</td><td>FARA ID</td><td>Stamp date</td><td>Enter form</td><td>Flagged</td><td>Notes</td></tr>
 	</thead> 
 {% for d in supplementals %}
 		{% if d.reg_id in names %}	
@@ -45,7 +45,12 @@
 
 
 		{% if d.url in notes %}
+		 {% if notes|access:d.url != None %}
 			<td>{{ notes|access:d.url }}</td></tr>
+		 {% else %}
+		 	<td></td></tr>
+		 {% endif %}
+		
 		{% else %}
 		<td></td></tr>
 		{% endif %}

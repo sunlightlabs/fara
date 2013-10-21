@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-#from FaraData.Feeds import latest_entries_feed, region_feed, data_entry_feed
+from FaraData.Feeds import latest_entries_feed, region_feed, data_entry_feed
 
 admin.autodiscover()
 
@@ -10,7 +10,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     #login view
     url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
-    #views for viewing
+    #views for viewing #### GET RID OF THESE
     url(r'^regview/', 'FaraData.reg_view.index', name='reg-view'),
     url(r'^entersupplemental/(\d+)', 'FaraData.entry_view.index', name='enter-supplemental'),
     # functions for forms
@@ -101,8 +101,9 @@ urlpatterns = patterns('',
     url(r'^instructions', 'FaraData.views.instructions', name='instructions'),
     ### End of forms
     # RSS feeds
-    #url(r'^rss/beats/(?P<region_id>\d+)/rss/$', 'views.region_feed'),
-    #(r'^latest/rss/$', latest_entries_feed()),
-    #(r'^region/(?P<region>\w+)/rss', region_feed()),
-    #(r'^entry/rss/$', data_entry_feed()), 
+    # url(r'^latest/rss/$', latest_entries_feed()),
+    # url(r'^region/(?P<region>\w+)/rss', region_feed()),
+    # url(r'^entry/rss/$', data_entry_feed()), 
+    # CSV creators
+    url(r'^contact_csv/(\d+)', 'FaraData.views.contact_csv', name='contact-csv'),
     )

@@ -24,12 +24,14 @@ def find_member(request):
 
 	query_params = { 'query': q,
 					'apikey': 'aaf0ab990fc4443ab8d9a7d899686694',
+					'per_page': 50,
 	               }
 
 	# it defaults to currently in office, so need this one too
 	old_query_params = { 'query': q,
 					'apikey': 'aaf0ab990fc4443ab8d9a7d899686694',
 					'in_office': 'false',
+					'per_page': 50,
 	               }
 
 	endpoint = 'http://congress.api.sunlightfoundation.com/legislators'

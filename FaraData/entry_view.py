@@ -9,12 +9,10 @@ from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
-from FaraData.models import * #LobbyistForm, ClientForm, RegForm, RecipientForm, ContactForm, PaymentForm, ContributionForm, Disbursement, DisbursementForm
+from FaraData.models import * 
 from fara_feed.models import Document
 
-#change GET to POST, but GET is better for debugging
-
-# Section for functions that create variables for the templates 
+## Section for functions that create variables for the templates 
 
 # this gets the info about the form
 def doc_id(form_id):
@@ -130,7 +128,7 @@ def oneclient(reg_object):
         one_client = False
     return one_client
 
-# Section for rendering pages
+## Section for rendering pages
 
 #all in one supplemental data entry form- good for amendments
 def return_big_form(request, form_id):
@@ -193,6 +191,7 @@ def supplemental_first(request, form_id):
     reg_object = reg_info(reg_id)
     all_clients = Client.objects.all()
     client_form = ClientForm()
+    meta_list = meta_info(url)
 
     return render(request, 'FaraData/supplemental_first.html',{
         'reg_id' : reg_id,
@@ -202,6 +201,7 @@ def supplemental_first(request, form_id):
         'client_form': client_form,
         'form_id': form_id,
         's_date': s_date,
+        'meta_list': meta_list,
     })
 
 @login_required(login_url='/admin')
@@ -519,8 +519,11 @@ def fix_contribution(request, cont_id):
     contribution = Contribution.objects.get(id=cont_id)
     reg_object = reg_info(contribution.registrant.reg_id)
     url = contribution.link
+    
     try:
-        date = payment.date.strftime('%m/%d/%Y')
+        date = contribution.date
+        date = date.strftime('%m/%d/%Y')
+        print date
     except:
         date = ''
 
@@ -571,9 +574,8 @@ def fix_gift(request, gift_id):
 def fix_client(request, client_id):
     print "placeholder"
 
-
     
-# Section for functions that process forms
+## Section for functions that process forms
 
 #data cleaning
 def cleantext(text):
@@ -1018,7 +1020,7 @@ def contact(request):
             clear = "off"
 
         contactinfo = {'date': date, 
-                        'name': str(names), 
+                        'name': names, 
                         'do_not_clear': clear,
                         'contact_id': contact.id,
         }
@@ -1145,12 +1147,18 @@ def contribution(request):
             ) 
             contribution.save()
             lobbyist = str(contribution.lobbyist.lobbyist_name)
+            
+        try:
+            clear = request.GET['do_not_clear']
+        except:
+            clear = "off"
 
         continfo = {'amount': contribution.amount, 
                     'date': contribution.date.strftime("%B %d, %Y"), 
                     'recipient': contribution.recipient.name,
                     'lobbyist': lobbyist,
                     'cont_id': contribution.id,
+                    'do_not_clear': clear,
         }
         continfo = json.dumps(continfo , separators=(',',':'))
         return HttpResponse(continfo, mimetype="application/json")  
@@ -1279,7 +1287,6 @@ def gift(request):
 @login_required(login_url='/admin')
 def metadata(request):      
     if request.method == 'GET':
-
         if request.method == 'GET' and 'reviewed' in request.GET:
             reviewed = True
         else:
@@ -1296,7 +1303,11 @@ def metadata(request):
         link = request.GET['link']
         date_obj = date.today()
 
-        registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
+        try:
+            registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
+        except:
+            error = json.dumps({'error': 'Please fill out Registrant form below before submitting notes.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json") 
 
         metadata= MetaData(link = link,
             upload_date = date_obj,
@@ -1306,7 +1317,7 @@ def metadata(request):
             form = form,
             notes = request.GET['notes'],
         )
-
+        
         document = Document.objects.get(url=link)
         
         #supplemental end date- needed for supplementals, and some amendments
@@ -1317,19 +1328,21 @@ def metadata(request):
                     return HttpResponse(end_date, mimetype="application/json")
                 elif end_date != '{"error":"No date"}':
                     return HttpResponse(end_date, mimetype="application/json")
+                else:
+                    return HttpResponse(date, mimetype="application/json")
             else:
                 metadata.end_date = end_date
         except:
             end_date = None
         metadata.save()
-        
+        print metadata.notes, 1
         if processed == True:
             document.processed = True
         else:
             document.processed = False
         document.save()
-        
-        metadata_info = json.dumps({'processed': processed, 'reviewed': reviewed} , separators=(',',':'))
+        print metadata.notes, 2
+        metadata_info = json.dumps({'note': metadata.notes, 'do_not_clear': 'on'} , separators=(',',':'))
         return HttpResponse(metadata_info, mimetype="application/json")
         
     else:

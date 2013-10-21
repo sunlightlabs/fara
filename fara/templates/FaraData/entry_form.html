@@ -170,7 +170,8 @@ Registration No: <b>{{ reg_id }}</b></p>
             <form method="GET" id="locationform" action="/location/create">
                 <p><label for="location">Location as appears on the form: </label> <input id="location" maxlength="300" name="location" type="text" /></p>
                 <p><label for="country">Country grouping: </label> <input id="country" maxlength="300" name="country" type="text" /></p>
-                <p>Refer to UN regions- <a href="http://unstats.un.org/unsd/methods/m49/m49regin.htm">here</a>.</p>
+                <p>(Where we would find the location on a map)</p>
+                <p>Refer to UN regions- <a href="http://unstats.un.org/unsd/methods/m49/m49regin.htm" target="blank">here</a>.</p>
                 <p><label for="region">Region:</label> <select id="region" maxlength="300" name="region" type="text">
                     <option value="Eastern Africa">Eastern Africa</option>
                     <option value="Western Africa">Western Africa</option>
@@ -585,7 +586,7 @@ Registration No: <b>{{ reg_id }}</b></p>
 
             <p><b>Enter Contribution</b></p>
             <form method="GET" id='contform' action="/contribution/create">
-                {% csrf_token %}
+                <p><label for ="do_not_clear">Do not clear </label><input name="do_not_clear" type="checkbox"></p>
                 <input type="hidden" name="registrant" value="{{ reg_id }}">
                 <input type="hidden" name="link" value="{{ url }}">
                 
