@@ -57,7 +57,9 @@ def contact_csv(request, form_id):
 			date = dumb_date.strftime('%x') + "*"
 		else:
 			date = c.date
-		writer.writerow([date, contact_name, c.client, c.registrant, c.description, c.contact_type, lobbyists])
+		c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "Email"}
+		
+		writer.writerow([date, contact_name, c.client, c.registrant, c.description, c_type[c.contact_type], lobbyists])
 
 	return response
 
