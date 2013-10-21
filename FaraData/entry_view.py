@@ -1287,7 +1287,6 @@ def gift(request):
 @login_required(login_url='/admin')
 def metadata(request):      
     if request.method == 'GET':
-
         if request.method == 'GET' and 'reviewed' in request.GET:
             reviewed = True
         else:
@@ -1318,7 +1317,7 @@ def metadata(request):
             form = form,
             notes = request.GET['notes'],
         )
-
+        
         document = Document.objects.get(url=link)
         
         #supplemental end date- needed for supplementals, and some amendments
@@ -1336,13 +1335,13 @@ def metadata(request):
         except:
             end_date = None
         metadata.save()
-        
+        print metadata.notes, 1
         if processed == True:
             document.processed = True
         else:
             document.processed = False
         document.save()
-        
+        print metadata.notes, 2
         metadata_info = json.dumps({'note': metadata.notes, 'do_not_clear': 'on'} , separators=(',',':'))
         return HttpResponse(metadata_info, mimetype="application/json")
         

@@ -1,6 +1,8 @@
 from django.contrib.syndication.views import Feed
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 from FaraData.models import *
 from fara_feed.models import *
@@ -31,6 +33,7 @@ def find_regMD(item):
         reg = Registrant.objects.get(reg_id=reg_id)
         return reg        
 
+@login_required(login_url='/admin')
 class latest_entries_feed(Feed):
     title = "Latest entries in the Foreign lobbying database"
     link = "/latest/rss/"
@@ -96,7 +99,6 @@ class latest_entries_feed(Feed):
     def item_guid(self, item):
         client = ClientReg.objects.filter(link=self.link)
         return [client] 
-
 
 class data_entry_feed(Feed):
     title = "Latest entered documents in the Foreign lobbying database"
@@ -166,7 +168,8 @@ class data_entry_feed(Feed):
         client = ClientReg.objects.filter(link=self.link)
         return [client] 
 
-
+@login_required(login_url='/admin')
+# Not working yet
 class region_feed(Feed):
     title = "Latest entries in the Foreign lobbying database"
     link = "region/rss"
