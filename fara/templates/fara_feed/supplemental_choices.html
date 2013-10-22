@@ -1,33 +1,12 @@
+{% extends "fara_feed/base.html" %}
 {% load dictionary_extras %}
 {% load staticfiles %}
 
-<!doctype html>
 
-<html lang="en">
+{% block page_heading %}Supplementals{% endblock page_heading %}
+{% block page_description %}Supplementals that have not been entered, from newest to oldest.{% endblock page_description %}
 
-<head>
-    <title>FARA docs</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/screen.css' %}" />
-	<script src="{% static 'javascript/jquery-1.9.1.js' %}"></script>
-	<script src="{% static 'javascript/jquery.cookie.js' %}"></script>
-	<script src="{% static 'javascript/application.js' %}"></script>
-</head>
-
-<body>
-
-<div id="wrap">
-
-<header>
-	<div id="logo">
-		<a href="/"><h1>FARA</h1></a>
-	</div>
-    <div class="container">
-    	<a class="btn btn-info pull-right help" href="{% url 'instructions' %}">Instructions</a>
-    	<h2>Supplementals</h2>
-        <span>Supplementals that have not been entered, from newest to oldest.</span>
-    </div>
-</header>
+{% block content %}
 
 <main class="container">
 
@@ -87,16 +66,4 @@
 	</section>
 
 </main>
-
-	<span class="push"></span>
-</div> <!-- end #wrap -->
-
-<footer>
-	<div class="container">
-    	<a class="btn btn-info pull-right" href="{% url 'instructions' %}">Instructions</a>
-    	<a class="btn btn-info pull-right" href="{% url 'full-list' %}">View All Docs</a>
-	</div>
-</footer>
-
-</body>
-</html>
+{% endblock content %}
