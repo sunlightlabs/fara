@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-from FaraData.Feeds import latest_entries_feed, region_feed, data_entry_feed
+from FaraData.feeds import LatestEntriesFeed, RegionFeed, DataEntryFeed
 
 admin.autodiscover()
 
@@ -101,9 +101,9 @@ urlpatterns = patterns('',
     url(r'^instructions', 'FaraData.views.instructions', name='instructions'),
     ### End of forms
     # RSS feeds
-    url(r'^latest/rss/$', latest_entries_feed()),
-    url(r'^region/(?P<region>\w+)/rss', region_feed()),
-    url(r'^entry/rss/$', data_entry_feed()), 
+    url(r'^latest/rss/$', LatestEntriesFeed()),
+    url(r'^region/(?P<region>\w+)/rss', RegionFeed()),
+    url(r'^entry/rss/$', DataEntryFeed()), 
     # CSV creators
     url(r'^contact_csv/(\d+)', 'FaraData.views.contact_csv', name='contact-csv'),
     )

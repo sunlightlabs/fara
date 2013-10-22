@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from FaraData.models import *
 from fara_feed.models import *
 
+base_url = "http://54.234.244.182"
+
 doc_type = ''
 link = ''
 upload_date = ''
@@ -34,7 +36,7 @@ def find_regMD(item):
         return reg        
 
 #@login_required(login_url='/admin')
-class latest_entries_feed(Feed):
+class LatestEntriesFeed(Feed):
     title = "Latest entries in the Foreign lobbying database"
     link = "/latest/rss/"
     description = "Updates"
@@ -48,20 +50,22 @@ class latest_entries_feed(Feed):
     def item_description(self, item):
         info = "Date received: %s " %(item.stamp_date)
         link = item.url
+        doc_type = item.doc_type
         reg = find_reg(item)
 
         client = ' '
         clients = reg.clients.all()
         for c in clients:
-            client + c.client_name
-        if len(client) > 17:
+            client = client + c.client_name + "; "
+        
+        if len(client) > 1:
             info = info + "(Active clients: %s)"%(client)
         
         terminated = ' '
         terminated_clients = reg.terminated_clients.all()
         for c in terminated_clients:
-            terminated = c.client_name
-        if len(terminated) > 20:
+            terminated = c.client_name + "; "
+        if len(terminated) > 1:
             info = info + "(Terminated clients: %s)"%(terminated)
 
         if doc_type == "Exhibit AB":
@@ -77,7 +81,7 @@ class latest_entries_feed(Feed):
             if payments > 0:
                 info = info + " Number of payments: %i" %(payments)
             if contacts > 0:
-                info = info + " Number of contacts: %i" %(contacts)
+                info = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, item.id)
 
         if doc_type == "Registration":
             payments = Payment.objects.filter(link=link).count()
@@ -85,7 +89,7 @@ class latest_entries_feed(Feed):
             if payments > 0:
                 info = info + " Number of payments: %i" %(payments)
             if contacts > 0:
-                info = info + " Number of contacts: %i" %(contacts)
+                info = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, item.id)
 
         return info
 
@@ -96,11 +100,8 @@ class latest_entries_feed(Feed):
         title = "%s-- %s %s" %(name, doc_type, upload_date)
         return title
 
-    def item_guid(self, item):
-        client = ClientReg.objects.filter(link=self.link)
-        return [client] 
 
-class data_entry_feed(Feed):
+class DataEntryFeed(Feed):
     title = "Latest entered documents in the Foreign lobbying database"
     link = "/entry/rss/"
     description = "recently added"
@@ -113,6 +114,7 @@ class data_entry_feed(Feed):
 
     def item_description(self, item):
         doc = Document.objects.get(url=item.link)
+        doc_type = doc.doc_type
         info = "Date received: %s " %(doc.stamp_date)
         link = item.link
         reg = find_regMD(item)
@@ -144,7 +146,7 @@ class data_entry_feed(Feed):
             if payments > 0:
                 info = info + " Number of payments: %i" %(payments)
             if contacts > 0:
-                info = info + " Number of contacts: %i" %(contacts)
+                info = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, doc.id)
 
         if doc_type == "Registration":
             payments = Payment.objects.filter(link=link).count()
@@ -152,7 +154,7 @@ class data_entry_feed(Feed):
             if payments > 0:
                 info = info + " Number of payments: %i" %(payments)
             if contacts > 0:
-                info = info + " Number of contacts: %i" %(contacts)
+                iinfo = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, doc.id)
 
         return info
 
@@ -168,15 +170,15 @@ class data_entry_feed(Feed):
         client = ClientReg.objects.filter(link=self.link)
         return [client] 
 
-#@login_required(login_url='/admin')
-# Not working yet
-class region_feed(Feed):
+
+class RegionFeed(Feed):
     title = "Latest entries in the Foreign lobbying database"
     link = "region/rss"
     description = "Updates"
 
     def get_object(self, request, region):
-        return Location.objects.filter(region=region.replace("_", " "))[0]
+        region = region.replace("_", " ").title()
+        return Location.objects.filter(region=region)[0]
         #case issue?
 
     def items(self, location):
@@ -189,10 +191,63 @@ class region_feed(Feed):
             if len(clients) > 0:
                 for l in clients:
                     if l.location.region == location.region:    
-                        hits.append(d)
+                        if d not in hits:
+                            hits.append(d)
         return hits #document objects being returned
     
     def item_link(self, item):
-        return "www.test.com"
+        return item.url
+
+    def item_description(self, item):
+        info = "Date received: %s " %(item.stamp_date)
+        link = item.url
+        doc_type = item.doc_type
+        reg = find_reg(item)
+
+        client = ' '
+        clients = reg.clients.all()
+        for c in clients:
+            client = client + c.client_name + "; "
+        
+        if len(client) > 1:
+            info = info + "(Active clients: %s)"%(client)
+        
+        terminated = ' '
+        terminated_clients = reg.terminated_clients.all()
+        for c in terminated_clients:
+            terminated = c.client_name + "; "
+        if len(terminated) > 1:
+            info = info + "(Terminated clients: %s)"%(terminated)
+
+        if doc_type == "Exhibit AB":
+            try:
+                new_client = ClientReg.objects.get(link=link)
+                info = info + "New client: " + new_cient
+            except:
+                pass
+
+        if doc_type == "Supplemental":
+            payments = Payment.objects.filter(link=link).count()
+            contacts = Contact.objects.filter(link=link).count()
+            if payments > 0:
+                info = info + " Number of payments: %i" %(payments)
+            if contacts > 0:
+                info = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, item.id)
+
+        if doc_type == "Registration":
+            payments = Payment.objects.filter(link=link).count()
+            contacts = Contact.objects.filter(link=link).count()
+            if payments > 0:
+                info = info + " Number of payments: %i" %(payments)
+            if contacts > 0:
+                info = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, item.id)
+
+        return info
+
+    def item_title(self, item):
+        reg = find_reg(item)
+        name = reg.reg_name
+        title = "%s-- %s %s" %(name, item.doc_type, item.stamp_date)
+        return title
 
 
