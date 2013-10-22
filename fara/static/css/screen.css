@@ -1,0 +1,225 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600);
+/*@import url('bootstrap.min.css');*/
+@import url("//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css");
+
+/* Bootstrap Overrides*/
+
+html, body {
+	height: 100%;
+	color: #666;
+	font-family: "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+	font-weight: 400;
+}
+
+/* Links */
+
+a { color: #78bcbf; text-decoration: none; }
+a:hover { color: #78bcbf; text-decoration: none; border-bottom: 1px dotted #78bcbf; }
+
+/* Buttons */
+
+.btn { border-radius: 3px; }
+/* Header and footer button layout */
+
+header .btn {
+	margin-top: 30px;
+}
+
+header .btn:not(:first-child), footer .btn:not(:first-child) {
+	margin-right: 10px;
+}
+
+/* Info button used for header and footer */
+
+.btn-info {
+	border: 1px solid #aed9db;
+	background: transparent;
+}
+
+.btn-info:hover, .btn-info:active , .btn-info:focus {
+	border: 1px solid #aed9db;
+	outline: none;
+	background: #74b3b6;
+}
+
+/* Sticky Footer Setup*/
+
+#wrap {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto -60px;
+}
+
+.push {
+	display: block;
+	height: 60px;
+}
+
+footer {
+	height: 60px;
+}
+
+/* Header & Logo */
+
+header {
+	height: 100px;
+	background: #78bcbf;
+	color: #fff;
+}
+
+#logo {
+	float: left;
+	height: 100px;
+	padding: 0 15px;
+	margin: 0;
+	margin-right: 15px;
+	background: #444;
+}
+
+#logo:hover {
+	background: #333;
+}
+
+#logo a h1 {
+	color: #fff;
+}
+
+#logo h1 {
+	margin: 0;
+	padding: 0;
+	line-height: 100px;
+}
+
+header .explainer {
+	display: inline-block;
+}
+
+/* Footer */
+
+footer {
+	background: #78bcbf;
+	color: #fff;
+}
+
+footer .container {
+	padding-top: 12px;
+}
+
+/* Homepage */
+
+.link_box {
+    float: left;
+    width: 300px;
+	margin: 50px 30px 0 0;
+	padding: 20px;
+	background: #f5f5f5;
+}
+
+/* Doc List page */
+
+.doclist {
+	margin: 40px 0;
+}
+.doclist h3 {
+	padding: 10px 7px;
+	background: #eee;
+}
+
+/* Doc List table formatting */
+
+.table{
+	width: 100%;
+	border-collapse: collapse;
+	border-spacing: 2px;
+	border-color: #ddd;
+	text-align: left;
+}
+
+.table thead > tr > th,
+.table tbody > tr > th,
+.table tfoot > tr > th,
+.table thead > tr > td,
+.table tbody > tr > td,
+.table tfoot > tr > td {
+	padding: 8px;
+	border-top: 1px solid #dddddd;
+	line-height: 1.5;
+	vertical-align: top;
+}
+
+.table tbody > tr {
+	background: #f9f9f9;
+}
+
+.table tbody > tr.not-entered {
+	background: #fff;
+}
+
+.table tbody > tr:hover {
+	background: #f2f9fa;
+	cursor: pointer;
+}
+
+.table thead > tr > th {
+	border-top: 0;
+	border-bottom: 2px solid #dddddd;
+	font-weight: 600;
+	vertical-align: bottom;
+}
+
+.table thead > tr > th.fara-id { width: 80px; }
+.table thead > tr > th.registrant-name { width: 640px; }
+.table thead > tr > th.stamp-date { width: 130px; }
+.table thead > tr > th.status { width: 95px; }
+.table thead > tr > th.flagged { width: 70px; }
+.table thead > tr > th.notes { width: 150px; }
+
+.table tfoot {
+	text-align: right;
+}
+.table td.status {
+	font-style: italic;
+}
+.table tbody > tr > td.flag {
+	color: #f0ad4e;
+	text-align: center;
+}
+
+.table tbody > tr > td.flag:hover {
+	color: #ed9c28;
+}
+
+.table tbody > tr > td.note{
+	font-style: italic;
+	font-size: 85%;
+}
+
+/* Doc list Table Pagination */
+
+.table td.paginate {
+	padding: 0;
+	font-size: 90%;
+}
+
+.table td.paginate span{
+	display: inline-block;
+	padding: 5px 10px;
+	border-left: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+}
+
+.table td.paginate span:last-of-type{
+	border-right: 1px solid #ddd;
+}
+
+.table td.paginate span:not(.current):hover{
+	background: #f2f9fa;
+	cursor: pointer;
+}
+
+/* JS classes*/
+
+.js-hidden {
+	display: none;
+}
