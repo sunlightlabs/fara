@@ -519,35 +519,44 @@ $('.fix').ajaxForm(direct);
 
 // -->
 </script>
-
-
-{% block show_doc %}
-<div id="left">
-   <iframe height=100% width="700" scrolling="yes" src="{{ url }}"></iframe>
-</div>
-
-<div id="right">
-
-<div class=""><a href="{% url 'full-list' %}">select a different form</a></div>
-{% endblock show_doc %}
-
 </head>
 
 
 <body>
 
-{% block formheading %}{% endblock formheading %}
-<br>
-{% block formquestions %}{% endblock formquestions %}
-<br>
-<br>
-{% block quicklinks %}{% endblock quicklinks %}<br>
-<br>
-<a class="help" href="{{ url }}" target="_blank">view form source</a>
-<br>
-
-
+{% block show_doc %}
+<div id="left">
+   <iframe height=100% width="700" scrolling="yes" src="{{ url }}"></iframe>
 </div>
+{% endblock show_doc %}
+<div id="wrap" class="form-wrap">
+  <header>
+    <div id="logo">
+      <a href="/"><h1>FARA</h1></a>
+    </div>
+      <div class="container">
+        <a class="btn btn-info pull-right help" href="{% url 'instructions' %}">Instructions</a>
+        <a class="btn btn-info pull-right help" href="{% url 'full-list' %}">View All Docs</a>
+        <h4>{% block page_heading %}{% endblock page_heading %}</h4>
+          <span>{% block page_description %}{% endblock page_description %}</span>
+      </div>
+  </header>
+  <main class="container">
 
+  {% block formheading %}{% endblock formheading %}
+  {% block formquestions %}{% endblock formquestions %}
+  {% block quicklinks %}{% endblock quicklinks %}
+
+  </main>
+  
+  <span class="push"></span>
+</div> <!-- end #wrap -->
+
+<footer class="form-wrap">
+  <div class="container">
+      <a class="btn btn-info pull-right" href="{{ url }}" target="_blank">View Form Source</a>
+  </div>
+</footer>
 
 </body>
+</html>

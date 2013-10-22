@@ -28,7 +28,9 @@ a:hover { color: #78bcbf; text-decoration: none; border-bottom: 1px dotted #78bc
 
 /* Header, Footer button layout */
 
-header .btn { margin-top: 30px; }
+header .btn {
+	margin-top: 30px;
+}
 
 header .btn:not(:first-child),
 footer .btn:not(:first-child) {
@@ -97,8 +99,10 @@ header {
 	line-height: 100px;
 }
 
-header h2 {
+header h2,
+header h4 {
 	margin: 31px 0 0 0;
+	color: #55878a;	
 }
 
 header .explainer {
