@@ -138,9 +138,6 @@ def return_big_form(request, form_id):
         reg_form = RegForm()
         recipient_form = RecipientForm()
         #options for the forms
-        all_clients = Client.objects.all()
-        all_lobbyists = Lobbyist.objects.all()
-        all_recipients = Recipient.objects.all()
         #for displaying information already in the system
         reg_object = reg_info(reg_id)
         one_client = oneclient(reg_object)
@@ -158,9 +155,6 @@ def return_big_form(request, form_id):
             'client_form': client_form,
             'reg_form': reg_form,
             #options for forms
-            'all_clients': all_clients,
-            'all_lobbyists': all_lobbyists,
-            'all_recipients': all_recipients,
             'url': url, 
             'reg_object': reg_object,
             'contact_list': contact_list,
@@ -189,7 +183,6 @@ def supplemental_base(request, form_id):
 def supplemental_first(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    all_clients = Client.objects.all()
     client_form = ClientForm()
     meta_list = meta_info(url)
 
@@ -197,7 +190,6 @@ def supplemental_first(request, form_id):
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
-        'all_clients': all_clients,
         'client_form': client_form,
         'form_id': form_id,
         's_date': s_date,
@@ -211,8 +203,6 @@ def supplemental_contact(request, form_id):
     contact_list = contact_info(url)
     client_form = ClientForm()
     recipient_form = RecipientForm()
-    all_recipients = Recipient.objects.all()
-    all_lobbyists = Lobbyist.objects.all()
     one_client = oneclient(reg_object)
 
     return render(request, 'FaraData/supplemental_contact.html',{
@@ -223,9 +213,7 @@ def supplemental_contact(request, form_id):
         'client_form': client_form,
         'form_id': form_id,
         'recipient_form': recipient_form,
-        'all_recipients': all_recipients,
         'contact_list': contact_list,
-        'all_lobbyists': all_lobbyists,
     })
 
 @login_required(login_url='/admin')
@@ -283,7 +271,6 @@ def supplemental_contribution(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     cont_list = cont_info(url)
-    all_recipients = Recipient.objects.all()
     recipient_form = RecipientForm()
 
     return render(request, 'FaraData/supplemental_contribution.html',{
@@ -292,7 +279,6 @@ def supplemental_contribution(request, form_id):
     'form_id': form_id,
     'reg_object': reg_object,
     'cont_list': cont_list,
-    'all_recipients': all_recipients,
     'recipient_form': recipient_form,
     })
 
@@ -317,14 +303,12 @@ def registration_base(request, form_id):
 def registration_first(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    all_clients = Client.objects.all()
     client_form = ClientForm()
 
     return render(request, 'FaraData/registration_first.html',{
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
-        'all_clients': all_clients,
         'client_form': client_form,
         'form_id': form_id,
         's_date': s_date,
@@ -337,7 +321,6 @@ def registration_contact(request, form_id):
     contact_list = contact_info(url)
     client_form = ClientForm()
     recipient_form = RecipientForm()
-    all_recipients = Recipient.objects.all()
     one_client = oneclient(reg_object)
 
     return render(request, 'FaraData/registration_contact.html',{
@@ -347,7 +330,6 @@ def registration_contact(request, form_id):
         'client_form': client_form,
         'form_id': form_id,
         'recipient_form': recipient_form,
-        'all_recipients': all_recipients,
         'contact_list': contact_list,
         'one_client': one_client,
     })
@@ -405,7 +387,6 @@ def registration_contribution(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     cont_list = cont_info(url)
-    all_recipients = Recipient.objects.all()
     recipient_form = RecipientForm()
 
     return render(request, 'FaraData/registration_contribution.html',{
@@ -414,7 +395,6 @@ def registration_contribution(request, form_id):
     'form_id': form_id,
     'reg_object': reg_object,
     'cont_list': cont_list,
-    'all_recipients': all_recipients,
     'recipient_form': recipient_form,
     })
 
@@ -434,7 +414,6 @@ def registration_last(request, form_id):
 def enter_AB(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    all_clients = Client.objects.all()
     client_form = ClientForm()
     meta_list = meta_info(url)
     one_client = oneclient(reg_object)
@@ -444,7 +423,6 @@ def enter_AB(request, form_id):
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
-        'all_clients': all_clients,
         'client_form': client_form,
         'form_id': form_id,
         'meta_list': meta_list,
@@ -705,7 +683,7 @@ def lobbyist(request):
     else:
         HttpResponse(request, {'error': 'failed'})
 
-# assigns a lobbyist or lobbyists to a reg. all_lobbyists
+# assigns a lobbyist or lobbyists to a reg. 
 @login_required(login_url='/admin')
 def reg_lobbyist(request):
     if request.method == 'GET': 
@@ -1326,13 +1304,10 @@ def metadata(request):
             print end_date
             if type(end_date) != datetime:
                 if document.doc_type == "Supplemental":
-                    print 1
                     return HttpResponse(end_date, mimetype="application/json")
                 elif end_date == '{"error":"No date"}':
-                    print 2
                     end_date = None
                 else:
-                    print 3
                     return HttpResponse(end_date, mimetype="application/json")
             else:
                 metadata.end_date = end_date

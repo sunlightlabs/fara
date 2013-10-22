@@ -33,7 +33,7 @@ def find_regMD(item):
         reg = Registrant.objects.get(reg_id=reg_id)
         return reg        
 
-@login_required(login_url='/admin')
+#@login_required(login_url='/admin')
 class latest_entries_feed(Feed):
     title = "Latest entries in the Foreign lobbying database"
     link = "/latest/rss/"
@@ -168,15 +168,19 @@ class data_entry_feed(Feed):
         client = ClientReg.objects.filter(link=self.link)
         return [client] 
 
-@login_required(login_url='/admin')
+#@login_required(login_url='/admin')
 # Not working yet
 class region_feed(Feed):
     title = "Latest entries in the Foreign lobbying database"
     link = "region/rss"
     description = "Updates"
 
-    def items(self, region):
-        print region
+    def get_object(self, request, region):
+        return Location.objects.filter(region=region.replace("_", " "))[0]
+        #case issue?
+
+    def items(self, location):
+
         docs = Document.objects.filter(processed=True).order_by('-stamp_date')[:500]
         hits = []
         for d in docs:
@@ -184,12 +188,9 @@ class region_feed(Feed):
             clients = reg.clients.all()
             if len(clients) > 0:
                 for l in clients:
-                    if len(l.location.region) > 1:
-                        l_region = str(l.location.region).replace(" ", "_")
-                        if l_region == region:
-                            print "hit"
-                            print docs
-        return hits
+                    if l.location.region == location.region:    
+                        hits.append(d)
+        return hits #document objects being returned
     
     def item_link(self, item):
         return "www.test.com"

@@ -101,9 +101,9 @@ urlpatterns = patterns('',
     url(r'^instructions', 'FaraData.views.instructions', name='instructions'),
     ### End of forms
     # RSS feeds
-    # url(r'^latest/rss/$', latest_entries_feed()),
-    # url(r'^region/(?P<region>\w+)/rss', region_feed()),
-    # url(r'^entry/rss/$', data_entry_feed()), 
+    url(r'^latest/rss/$', latest_entries_feed()),
+    url(r'^region/(?P<region>\w+)/rss', region_feed()),
+    url(r'^entry/rss/$', data_entry_feed()), 
     # CSV creators
     url(r'^contact_csv/(\d+)', 'FaraData.views.contact_csv', name='contact-csv'),
     )
