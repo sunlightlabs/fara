@@ -34,7 +34,7 @@ def contact_csv(request, form_id):
 	dumb_date = md.end_date
 
 	writer = csv.writer(response)
-	writer.writerow(['Date', 'Contact', 'Client', 'Registrant', 'Description', 'type', 'Employees mentioned'])
+	writer.writerow(['Date', 'Contact', 'Client', 'Registrant', 'Description', 'Type', 'Employees mentioned'])
 	for c in contacts:
 		lobbyists = ''
 		for l in c.lobbyist.all():
@@ -57,8 +57,8 @@ def contact_csv(request, form_id):
 			date = dumb_date.strftime('%x') + "*"
 		else:
 			date = c.date
-		c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "Email"}
-		
+		c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "email"}
+
 		writer.writerow([date, contact_name, c.client, c.registrant, c.description, c_type[c.contact_type], lobbyists])
 
 	return response
