@@ -1,35 +1,69 @@
-<!doctype html>
+{% load dictionary_extras %}
 {% load staticfiles %}
+
+<!doctype html>
 
 <html lang="en">
 
 <head>
-	<title>FARA</title>
-	<meta charset="utf-8" />
-	<link rel="stylesheet" type="text/css" href="{% static 'css/screen.css' %}" />
+    <title>FARA docs</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/screen.css' %}" />
+	<script src="{% static 'javascript/jquery-1.9.1.js' %}"></script>
+	<script src="{% static 'javascript/jquery.cookie.js' %}"></script>
+	<script src="{% static 'javascript/application.js' %}"></script>
 </head>
 
 <body>
 
+<div id="wrap">
+
 <header>
-    <h1>FARA</h1>
+	<div id="logo">
+		<a href="/"><h1>FARA</h1></a>
+	</div>
+    <div class="container">
+    	<a class="btn btn-info pull-right help" href="{% url 'instructions' %}">Instructions</a>
+    	<h2>Home</h2>
+        <span>Select a document view.</span>
+    </div>
 </header>
 
+<main class="container">
+	<div class="row">
 
+		<div class="col-md-4">
+			<div class="docselect">
+				<h3><a href="{% url 'supplemental-list' %}">Supplementals</a></h3>
+				<div class="explainer">Supplementals not yet entered, newest to oldest.</div>
+			</div>
+		</div>
 
-<div class="link_box">
-	<h2><a href="{% url 'supplemental-list' %}">Supplemental choices</a></h2>
-	<div class="explainer"><h3>Supplementals not yet entered, newest to oldest.</h3></div>
-</div>
+		<div class="col-md-4">
+			<div class="docselect">
+				<h3><a href="{% url 'entry-list' %}">Data Entry List</a></h3>
+				<div class="explainer">All doc types not yet entered, in one list, oldest to newest.</div>
+			</div>
+		</div>
+			
+		<div class="col-md-4">	
+			<div class="docselect">
+				<h3><a href="{% url 'full-list' %}">Document Overview</a></h3>
+				<div class="explainer">All doc types, newest to oldest.</div>
+			</div>
+		</div>
+	</div>
+</main>
 
-<div class="link_box">	
-	<h2><a href="{% url 'entry-list' %}">Data entry list</a></h2>
-	<div class="explainer"><h3>All doc types not yet entered, in one list, oldest to newest.</h3></div>
-</div>
-	
-<div class="link_box">	
-	<h2><a href="{% url 'full-list' %}">Document choices</a></h2>
-	<div class="explainer"><h3>All doc types, newest to oldest.</h3></div>
-</div>
+	<span class="push"></span>
+</div> <!-- end #wrap -->
+
+<footer>
+	<div class="container">
+    	<a class="btn btn-info pull-right" href="{% url 'instructions' %}">Instructions</a>
+    	<a class="btn btn-info pull-right" href="{% url 'full-list' %}">View All Docs</a>
+	</div>
+</footer>
 
 </body>
+</html>

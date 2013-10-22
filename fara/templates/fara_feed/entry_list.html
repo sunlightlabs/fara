@@ -24,12 +24,12 @@
 	</div>
     <div class="container">
     	<a class="btn btn-info pull-right help" href="{% url 'instructions' %}">Instructions</a>
-    	<h2>FARA Data Entry</h2>
+    	<h2>Data Entry List</h2>
         <span>All forms to be entered, form oldest to newest.</span>
     </div>
 </header>
 
-<div class="container">
+<main class="container">
 
 	<section class="doclist">
 		<h3 class="table_title" id="all_forms">All Forms</h3>
@@ -49,7 +49,6 @@
 		        <tr class="not-entered">
 		            <td>{{ d.reg_id }}</td>
 
-<!-- 		            <td><a class="doclink" href="{% url 'supplemental-first' d.id %}">{% if d.reg_id in names %} {{names|access:d.reg_id}} {% endif %}</a></td> -->
 				{% if d.doc_type == "Supplemental" %}
 					<td><a class="doclink" href="{% url 'supplemental-first' d.id %}">{% if d.reg_id in names %}{{ names|access:d.reg_id }}{% endif %}</a></td>
 				{% elif d.doc_type == "Amendment" %}
@@ -89,7 +88,7 @@
 		</table>
 	</section>
 
-</div>
+</main>
 
 	<span class="push"></span>
 </div> <!-- end #wrap -->
