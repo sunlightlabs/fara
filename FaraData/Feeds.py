@@ -177,13 +177,13 @@ class RegionFeed(Feed):
     description = "Updates"
 
     def get_object(self, request, region):
-        region = region.replace("_", " ").title()
+        region = region.replace("__", "-").replace("_", " ").title()
         return Location.objects.filter(region=region)[0]
         #case issue?
 
     def items(self, location):
 
-        docs = Document.objects.filter(processed=True).order_by('-stamp_date')[:500]
+        docs = Document.objects.filter(processed=True).order_by('-stamp_date')[:250]
         hits = []
         for d in docs:
             reg = find_reg(d)
@@ -193,6 +193,7 @@ class RegionFeed(Feed):
                     if l.location.region == location.region:    
                         if d not in hits:
                             hits.append(d)
+        hits = hits[:20]
         return hits #document objects being returned
     
     def item_link(self, item):
