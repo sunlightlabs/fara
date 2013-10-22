@@ -1323,25 +1323,30 @@ def metadata(request):
         #supplemental end date- needed for supplementals, and some amendments
         try:
             end_date = cleandate(request.GET['end_date'])
+            print end_date
             if type(end_date) != datetime:
                 if document.doc_type == "Supplemental":
+                    print 1
                     return HttpResponse(end_date, mimetype="application/json")
-                elif end_date != '{"error":"No date"}':
-                    return HttpResponse(end_date, mimetype="application/json")
+                elif end_date == '{"error":"No date"}':
+                    print 2
+                    end_date = None
                 else:
-                    return HttpResponse(date, mimetype="application/json")
+                    print 3
+                    return HttpResponse(end_date, mimetype="application/json")
             else:
                 metadata.end_date = end_date
         except:
             end_date = None
         metadata.save()
-        print metadata.notes, 1
+
+        
         if processed == True:
             document.processed = True
         else:
             document.processed = False
         document.save()
-        print metadata.notes, 2
+        
         metadata_info = json.dumps({'note': metadata.notes, 'do_not_clear': 'on'} , separators=(',',':'))
         return HttpResponse(metadata_info, mimetype="application/json")
         
