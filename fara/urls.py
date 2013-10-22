@@ -94,6 +94,7 @@ urlpatterns = patterns('',
     url(r'^full_list', 'fara_feed.document_select_view.full_list', name='full-list'),
     url(r'^entry_list', 'fara_feed.document_select_view.entry_list', name='entry-list'),
     url(r'^supplemental_list', 'fara_feed.document_select_view.fast_supplemental', name='supplemental-list'),
+    url(r'^docs', 'fara_feed.document_select_view.all_docs', name='docs'),
     #Temp landing page
     url(r'^$', 'FaraData.views.temp_home', name='temp-home'),
     #Instructions for data entry 
