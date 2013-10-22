@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-from FaraData.feeds import LatestEntriesFeed, RegionFeed, DataEntryFeed
+from FaraData.Feeds import LatestEntriesFeed, RegionFeed, DataEntryFeed
 
 admin.autodiscover()
 
