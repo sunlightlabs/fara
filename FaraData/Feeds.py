@@ -38,7 +38,7 @@ def find_regMD(item):
 #@login_required(login_url='/admin')
 class LatestEntriesFeed(Feed):
     title = "Latest entries in the Foreign lobbying database"
-    link = "/latest/rss/"
+    link = "http://54.234.244.182/latest/rss/"
     description = "Updates"
 
     def items(self):
@@ -103,7 +103,7 @@ class LatestEntriesFeed(Feed):
 
 class DataEntryFeed(Feed):
     title = "Latest entered documents in the Foreign lobbying database"
-    link = "/entry/rss/"
+    link = "http://54.234.244.182/entry/rss/"
     description = "recently added"
 
     def items(self):
@@ -173,7 +173,7 @@ class DataEntryFeed(Feed):
 
 class RegionFeed(Feed):
     title = "Latest entries in the Foreign lobbying database"
-    link = "region/rss"
+    link = "http://54.234.244.182"
     description = "Updates"
 
     def get_object(self, request, region):
@@ -183,7 +183,7 @@ class RegionFeed(Feed):
 
     def items(self, location):
 
-        docs = Document.objects.filter(processed=True).order_by('-stamp_date')[:250]
+        docs = Document.objects.filter(processed=True).order_by('-stamp_date')[:50]
         hits = []
         for d in docs:
             reg = find_reg(d)
