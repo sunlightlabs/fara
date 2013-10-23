@@ -170,12 +170,11 @@ class DataEntryFeed(Feed):
         client = ClientReg.objects.filter(link=self.link)
         return [client] 
 
-
 class RegionFeed(Feed):
     title = "Latest entries in the Foreign lobbying database"
-    link = "http://54.234.244.182"
     description = "Updates"
-
+    link = "placeholder"
+   
     def get_object(self, request, region):
         region = region.replace("__", "-").replace("_", " ").title()
         return Location.objects.filter(region=region)[0]
