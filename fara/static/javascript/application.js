@@ -9,7 +9,7 @@ $(document).ready(function() {
 	});
 
 
-	// Hide toggleable tables on page load depending on setting in cookies
+	// Hide toggleable tables on page load depending on setting in cookie
 
 	$.cookie.json = true;
 	var cookie = $.cookie();
@@ -23,7 +23,7 @@ $(document).ready(function() {
 	});
 
 
-	// Toggle toggleable tables on/off and save settings
+	// Toggle toggleable tables on/off and save settings to cookie
 
 	$('.table_title').click(function() {
 		var e = $(this);
@@ -33,7 +33,7 @@ $(document).ready(function() {
 
 		var displayed = (section.hasClass('js-hidden')) ? false : true ;
 
-		$.cookie(section_id, displayed, { expires: 7 });
+		$.cookie(id, displayed, { expires: 7 });
 	});
 
 
