@@ -1,8 +1,14 @@
+/* ==========================================================================
+   Imports
+   ========================================================================== */
+
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600);
-/*@import url('bootstrap.min.css');*/
 @import url("//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css");
 
-/* Bootstrap Overrides*/
+
+/* ==========================================================================
+   Default Styles and Bootstrap Overrides
+   ========================================================================== */
 
 html, body {
 	height: 100%;
@@ -11,7 +17,7 @@ html, body {
 	font-weight: 400;
 }
 
-/* Links */
+/* Link Styles */
 
 a { color: #78bcbf; text-decoration: none; }
 a:hover { color: #78bcbf; text-decoration: none; border-bottom: 1px dotted #78bcbf; }
@@ -19,13 +25,15 @@ a:hover { color: #78bcbf; text-decoration: none; border-bottom: 1px dotted #78bc
 /* Buttons */
 
 .btn { border-radius: 3px; }
-/* Header and footer button layout */
+
+/* Header, Footer button layout */
 
 header .btn {
 	margin-top: 30px;
 }
 
-header .btn:not(:first-child), footer .btn:not(:first-child) {
+header .btn:not(:first-child),
+footer .btn:not(:first-child) {
 	margin-right: 10px;
 }
 
@@ -42,7 +50,11 @@ header .btn:not(:first-child), footer .btn:not(:first-child) {
 	background: #74b3b6;
 }
 
-/* Sticky Footer Setup*/
+/* ==========================================================================
+   Basic Layout
+   ========================================================================== */
+
+/* Sticky Footer Setup */
 
 #wrap {
 	min-height: 100%;
@@ -77,18 +89,20 @@ header {
 	background: #444;
 }
 
-#logo:hover {
-	background: #333;
-}
+#logo:hover { background: #333; }
 
-#logo a h1 {
-	color: #fff;
-}
+#logo a h1 { color: #fff; }
 
 #logo h1 {
 	margin: 0;
 	padding: 0;
 	line-height: 100px;
+}
+
+header h2,
+header h4 {
+	margin: 31px 0 0 0;
+	color: #55878a;	
 }
 
 header .explainer {
@@ -102,31 +116,76 @@ footer {
 	color: #fff;
 }
 
-footer .container {
-	padding-top: 12px;
+footer .container { padding-top: 12px; }
+
+/* Main Container Setup */
+
+main.container {
+	padding-top: 50px;
 }
 
-/* Homepage */
+/* ==========================================================================
+   Homepage
+   ========================================================================== */
 
-.link_box {
-    float: left;
-    width: 300px;
-	margin: 50px 30px 0 0;
-	padding: 20px;
+.docselect {
 	background: #f5f5f5;
+	border: 1px solid #eee;
+	padding: 20px;
+	margin-bottom: 20px;
 }
 
-/* Doc List page */
+.docselect h3{
+	padding-bottom: 15px;
+	margin-bottom: 25px;
+	border-bottom: 1px solid #ddd;
+}
+
+.docselect h3 a{
+	border: 0;
+}
+
+.docselect:hover {
+	background: #f2f9fa;
+	cursor: pointer;
+}
+
+.docselect .explainer {
+	font-size: 20px;
+}
+
+/* ==========================================================================
+   Document List Pages
+   ========================================================================== */
+
+/* Sections for Tables */
 
 .doclist {
-	margin: 40px 0;
+	margin-bottom: 40px;
 }
-.doclist h3 {
+
+.doclist .table_title {
 	padding: 10px 7px;
+	margin-bottom: 0;
+	border-radius: 3px;
 	background: #eee;
 }
 
-/* Doc List table formatting */
+.doclist.toggle .table_title .glyphicon {
+	float: right;
+	padding: 0 10px 0;
+	line-height: 25px;
+	color: #ccc;
+}
+
+.doclist.toggle .table_title:hover {
+	background: #e9e9e9;
+	cursor: pointer;
+}
+
+.doclist.toggle .table_title:hover .glyphicon { color: #bbb; }
+
+/* Table Formatting */
 
 .table{
 	width: 100%;
@@ -195,7 +254,7 @@ footer .container {
 	font-size: 85%;
 }
 
-/* Doc list Table Pagination */
+/* Table Pagination */
 
 .table td.paginate {
 	padding: 0;
@@ -218,8 +277,27 @@ footer .container {
 	cursor: pointer;
 }
 
-/* JS classes*/
+/* ==========================================================================
+   Javacript Classes
+   ========================================================================== */
 
-.js-hidden {
+.js-hidden .table {
 	display: none;
+}
+.doclist.toggle.js-hidden .table_title .glyphicon {
+	line-height: 28px;
+	transform:rotate(-90deg);
+	-ms-transform:rotate(-90deg);
+	-webkit-transform:rotate(-90deg);
+	}
+
+/* ==========================================================================
+   Media Queries
+   ========================================================================== */
+
+@media(min-width:992px){
+
+	.docselect {
+		min-height: 225px;
+	}
 }

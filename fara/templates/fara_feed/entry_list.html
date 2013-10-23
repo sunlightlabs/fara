@@ -1,35 +1,13 @@
+{% extends "fara_feed/base.html" %}
 {% load dictionary_extras %}
 {% load staticfiles %}
 
-<!doctype html>
 
-<html lang="en">
+{% block page_heading %}Data Entry List{% endblock page_heading %}
+{% block page_description %}All forms to be entered, form oldest to newest.{% endblock page_description %}
 
-<head>
-    <title>FARA docs</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/screen.css' %}" />
-	<script src="{% static 'javascript/jquery-1.9.1.js' %}"></script>
-	<script src="{% static 'javascript/jquery.cookie.js' %}"></script>
-	<script src="{% static 'javascript/application.js' %}"></script>
-</head>
-
-<body>
-
-<div id="wrap">
-
-<header>
-	<div id="logo">
-		<a href="/"><h1>FARA</h1></a>
-	</div>
-    <div class="container">
-    	<a class="btn btn-info pull-right help" href="{% url 'instructions' %}">Instructions</a>
-    	<h2>FARA Data Entry</h2>
-        <span>All forms to be entered, form oldest to newest.</span>
-    </div>
-</header>
-
-<div class="container">
+{% block content %}
+<main class="container">
 
 	<section class="doclist">
 		<h3 class="table_title" id="all_forms">All Forms</h3>
@@ -49,7 +27,6 @@
 		        <tr class="not-entered">
 		            <td>{{ d.reg_id }}</td>
 
-<!-- 		            <td><a class="doclink" href="{% url 'supplemental-first' d.id %}">{% if d.reg_id in names %} {{names|access:d.reg_id}} {% endif %}</a></td> -->
 				{% if d.doc_type == "Supplemental" %}
 					<td><a class="doclink" href="{% url 'supplemental-first' d.id %}">{% if d.reg_id in names %}{{ names|access:d.reg_id }}{% endif %}</a></td>
 				{% elif d.doc_type == "Amendment" %}
@@ -89,17 +66,5 @@
 		</table>
 	</section>
 
-</div>
-
-	<span class="push"></span>
-</div> <!-- end #wrap -->
-
-<footer>
-	<div class="container">
-    	<a class="btn btn-info pull-right" href="{% url 'instructions' %}">Instructions</a>
-    	<a class="btn btn-info pull-right" href="{% url 'full-list' %}">View All Docs</a>
-	</div>
-</footer>
-
-</body>
-</html>
+</main>
+{% endblock content %}

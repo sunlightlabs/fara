@@ -1,44 +1,42 @@
 /*creates the two scrolling sections  */
-  #left {
-      width: 700px;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      background: #ffa;
-  }
-  
-  #right {
-      margin-left: 705px;
-  }
+#left {
+    width: 700px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background: #ffa;
+}
 
+#wrap.form-wrap { margin-left: 700px; } 
+.form-wrap { margin-left: 700px; } 
 
-  .scrollable{
-      overflow: auto;
-      width: 70px; 
-      height: 100%; 
-      border: 1px silver solid;
-   }
-  
-  .scrollable select{
-      border: none;
-  }
+.scrollable{
+    overflow: auto;
+    width: 70px; 
+    height: 100%; 
+    border: 1px silver solid;
+ }
 
-  #div-1a {
-   float:left;
-   width:200px;
-  }
+.scrollable select{
+    border: none;
+}
 
-  #div-1b {
-   float:left;
-   width:200px;
-  }
+#div-1a {
+ float:left;
+ width:200px;
+}
+
+#div-1b {
+ float:left;
+ width:200px;
+}
 
 /*moves help links to the right */
-  .help {
-    float: right;
-  }
+.help {
+  float: right;
+}
 /*hides forms */
-  .toggle {
-    display: none;
-  }
+.toggle {
+  display: none;
+}

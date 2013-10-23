@@ -1,35 +1,32 @@
-<!doctype html>
-{% load staticfiles %}
+{% extends "fara_feed/base.html" %}
 
-<html lang="en">
+{% block page_heading %}Home{% endblock page_heading %}
+{% block page_description %}Select a document view.{% endblock page_description %}
 
-<head>
-	<title>FARA</title>
-	<meta charset="utf-8" />
-	<link rel="stylesheet" type="text/css" href="{% static 'css/screen.css' %}" />
-</head>
+{% block content %}
+<main class="container">
+	<div class="row">
 
-<body>
+		<div class="col-md-4">
+			<div class="docselect">
+				<h3><a href="{% url 'supplemental-list' %}">Supplementals</a></h3>
+				<div class="explainer">Supplementals not yet entered, newest to oldest.</div>
+			</div>
+		</div>
 
-<header>
-    <h1>FARA</h1>
-</header>
-
-
-
-<div class="link_box">
-	<h2><a href="{% url 'supplemental-list' %}">Supplemental choices</a></h2>
-	<div class="explainer"><h3>Supplementals not yet entered, newest to oldest.</h3></div>
-</div>
-
-<div class="link_box">	
-	<h2><a href="{% url 'entry-list' %}">Data entry list</a></h2>
-	<div class="explainer"><h3>All doc types not yet entered, in one list, oldest to newest.</h3></div>
-</div>
-	
-<div class="link_box">	
-	<h2><a href="{% url 'full-list' %}">Document choices</a></h2>
-	<div class="explainer"><h3>All doc types, newest to oldest.</h3></div>
-</div>
-
-</body>
+		<div class="col-md-4">
+			<div class="docselect">
+				<h3><a href="{% url 'entry-list' %}">Data Entry List</a></h3>
+				<div class="explainer">All doc types not yet entered, in one list, oldest to newest.</div>
+			</div>
+		</div>
+			
+		<div class="col-md-4">	
+			<div class="docselect">
+				<h3><a href="{% url 'full-list' %}">Document Overview</a></h3>
+				<div class="explainer">All doc types, newest to oldest.</div>
+			</div>
+		</div>
+	</div>
+</main>
+{% endblock content %}
