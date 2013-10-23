@@ -528,8 +528,10 @@ $('.fix').ajaxForm(direct);
 <div id="left">
    <iframe height=100% width="700" scrolling="yes" src="{{ url }}"></iframe>
 </div>
-{% endblock show_doc %}
 <div id="wrap" class="form-wrap">
+{% endblock show_doc %}
+
+{% block doc_header %}
   <header>
     <div id="logo">
       <a href="/"><h1>FARA</h1></a>
@@ -541,6 +543,8 @@ $('.fix').ajaxForm(direct);
           <span>{% block page_description %}{% endblock page_description %}</span>
       </div>
   </header>
+{% endblock doc_header %}
+
   <main class="container">
 
   {% block formheading %}{% endblock formheading %}
@@ -548,7 +552,8 @@ $('.fix').ajaxForm(direct);
   {% block quicklinks %}{% endblock quicklinks %}
 
   </main>
-  
+
+{% block doc_footer %}
   <span class="push"></span>
 </div> <!-- end #wrap -->
 
@@ -557,6 +562,6 @@ $('.fix').ajaxForm(direct);
       <a class="btn btn-info pull-right" href="{{ url }}" target="_blank">View Form Source</a>
   </div>
 </footer>
-
+{% endblock doc_footer %}
 </body>
 </html>
