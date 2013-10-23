@@ -9,7 +9,7 @@
 }
 
 #wrap.form-wrap { margin-left: 700px; } 
-.form-wrap { margin-left: 700px; } 
+footer.form-wrap { margin-left: 700px; } 
 
 .scrollable{
     overflow: auto;
@@ -21,6 +21,7 @@
 .scrollable select{
     border: none;
 }
+
 
 #div-1a {
  float:left;
@@ -39,4 +40,12 @@
 /*hides forms */
 .toggle {
   display: none;
+}
+
+form {
+  width: 400px;
+}
+
+form[role="form"] {
+  width: 400px;
 }
