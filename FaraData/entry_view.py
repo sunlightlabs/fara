@@ -932,7 +932,11 @@ def terminated(request):
 @login_required(login_url='/admin')
 def contact(request):
     if request.method == 'GET':
-        
+        r = request.GET.get('recipient')
+        if r == None or r == '':
+            error = json.dumps({'error': 'Please select a recipient.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
+
         lobbyists_ids = request.GET.getlist('lobbyist')
         if not lobbyists_ids:
             lobbyists_ids = [request.GET.get('lobbyists'),]
@@ -1091,6 +1095,11 @@ def payment(request):
 @login_required(login_url='/admin')
 def contribution(request):
     if request.method == 'GET':
+        r = request.GET.get('recipient')
+        if r == None or r == '':
+            error = json.dumps({'error': 'Please select a recipient.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
+
         date = cleandate(request.GET['date'])
         if type(date) != datetime:
             if date == '{"error":"No date"}':
