@@ -79,7 +79,7 @@ class LatestEntriesFeed(Feed):
             payments = Payment.objects.filter(link=link).count()
             contacts = Contact.objects.filter(link=link).count()
             if payments > 0:
-                info = info + " Number of payments: %i" %(payments)
+                info = info + " Number of payments: %i Download payment spreadsheet: %s/payment_csv/%d" %(payments, base_url, item.id)
             if contacts > 0:
                 info = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, item.id)
 
@@ -87,7 +87,7 @@ class LatestEntriesFeed(Feed):
             payments = Payment.objects.filter(link=link).count()
             contacts = Contact.objects.filter(link=link).count()
             if payments > 0:
-                info = info + " Number of payments: %i" %(payments)
+                info = info + " Number of payments: %i Download payment spreadsheet: %s/payment_csv/%d" %(payments, base_url, item.id)
             if contacts > 0:
                 info = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, item.id)
 
@@ -144,7 +144,7 @@ class DataEntryFeed(Feed):
             payments = Payment.objects.filter(link=link).count()
             contacts = Contact.objects.filter(link=link).count()
             if payments > 0:
-                info = info + " Number of payments: %i" %(payments)
+                info = info + " Number of payments: %i Download payment spreadsheet: %s/payment_csv/%d" %(payments, base_url, item.id)
             if contacts > 0:
                 info = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, doc.id)
 
@@ -152,7 +152,7 @@ class DataEntryFeed(Feed):
             payments = Payment.objects.filter(link=link).count()
             contacts = Contact.objects.filter(link=link).count()
             if payments > 0:
-                info = info + " Number of payments: %i" %(payments)
+                info = info + " Number of payments: %i Download payment spreadsheet: %s/payment_csv/%d" %(payments, base_url, item.id)
             if contacts > 0:
                 iinfo = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, doc.id)
 
@@ -230,7 +230,7 @@ class RegionFeed(Feed):
             payments = Payment.objects.filter(link=link).count()
             contacts = Contact.objects.filter(link=link).count()
             if payments > 0:
-                info = info + " Number of payments: %i" %(payments)
+                info = info + " Number of payments: %i Download payment spreadsheet: %s/payment_csv/%d" %(payments, base_url, item.id)
             if contacts > 0:
                 info = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, item.id)
 
@@ -238,7 +238,7 @@ class RegionFeed(Feed):
             payments = Payment.objects.filter(link=link).count()
             contacts = Contact.objects.filter(link=link).count()
             if payments > 0:
-                info = info + " Number of payments: %i" %(payments)
+                info = info + " Number of payments: %i Download payment spreadsheet: %s/payment_csv/%d" %(payments, base_url, item.id)
             if contacts > 0:
                 info = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, item.id)
 
