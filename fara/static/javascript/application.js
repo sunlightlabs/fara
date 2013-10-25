@@ -39,12 +39,12 @@ $(document).ready(function() {
 
 	// Allow user to click on any area in the .table row to access link
 
-	$('tbody tr').click(function() {
+	$('.table tbody tr').click(function() {
 		location.href = $(this).find('td a.doclink').attr('href');
 	});  
 
 
-	// Allow user to click on any area on homepage docselect to access link
+	// Allow user to click inside .docselect on the homepage to access link
 
 	$('.docselect').click(function() {
 		location.href = $(this).find('h3 a').attr('href');

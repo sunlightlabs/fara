@@ -143,7 +143,7 @@ jQuery(document).ready(function() {
       
           // 2) update list
           var item = "<li>" + name + "</li>"
-          $("#client_list ul").append(item);
+          $("#client_list").append(item);
 
           // 3) clear form
           $('#clientform').each(function(){
@@ -206,7 +206,7 @@ jQuery(document).ready(function(){
       
           // 2) update list
           var item = "<li>" + name + "</li>";
-          $("#lobby_list ul").append(item);
+          $("#lobby_list").append(item);
 
           // 3) clear form
           $('#lobbyform').each(function(){
@@ -306,7 +306,7 @@ jQuery(document).ready(function(){
               var name = responses.name;
               var id = responses.id;
               var item = "<li>" + name + "</li>";
-            $("#terminated_client_list ul").append(item)
+            $("#terminated_client_list").append(item)
             }
           }
 
@@ -317,7 +317,7 @@ jQuery(document).ready(function(){
             var link_to = link + '/fix_contact/' + contact_id;
             var pop = "<a href= " + '"' + link_to + '"' + 'onclick="return popitup(' + "'" + link_to  + "')"+ '" >';
             var item = "<li>"+ name + " " + date + pop + ' fix</a>'+ '</li>';
-            $("#contact_list ul").append(item);
+            $("#contact_list").append(item);
             var $contact_recip = $('#contact_recip');
             $contact_recip.select2('data', null)
           }
@@ -400,7 +400,7 @@ jQuery(document).ready(function(){
 
           if (tag == '#locationform'){
             var location = response.location;
-            var item = '<p>' + location + ' added to locations </p>';
+            var item = '<li>' + location + ' added to locations </li>';
             $('#location_list').append(item);
           }
           if (tag == '#recipform'){

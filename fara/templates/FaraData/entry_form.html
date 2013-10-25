@@ -1,401 +1,446 @@
 {% extends "FaraData/form_base.html" %}
 
+{% block page_heading %}Amendments{% endblock page_heading %}
+{% block page_description %}{{ reg_object.reg_name }}{% endblock page_description %}
 
-{% block formheading %}
-<h2>Amendment</h2>
-<h2>{{ reg_object.reg_name }}</h2>
-{% endblock formheading %}
 <div>
 {% block formquestions %}
 
-
-<h3>Registrant</h3>
-<p><i>Section I 1(c)</i><br>
-Registration No: <b>{{ reg_id }}</b></p>
-<hr>
-
-
-<h3>Stamp date:</h3>
-<p>This is the date the Fara office received the form</p>
-
-<div id="stamp_list">
-{% ifnotequal s_date None %}
-    <p>{{ s_date }}</p>
-{% endifnotequal %}
-</div>
-
-<form action="{% url 'stamp-date' %}" method="GET" id="stampform">
-<input id="form_id" name="form_id" type="hidden" value="{{ form_id }}"/>
-<p><label for="stamp_date">Correct date: </label>
-    <input id="stamp_date" type="text" name="stamp_date" /></p>
-    <input type="submit" />
-</form>
-
-<span class="help" ><a href="{% url 'instructions' %}#Stamp_Date" target="blank">Help</a></span><br>
-<hr>
+<section class="form-section">
+    <h3>Registrant</h3>
+    <p><i>Section I 1(c)</i><br>
+    Registration No: <b>{{ reg_id }}</b></p>
+</section>
 
 
-{% if not reg_object %}
-  <h3>Create Registrant:</h3>
-  <p>Section I</p>
+<section class="form-section">
+    <h3>Stamp Date</h3>
+    <p class="help-block">This is the date the Fara office received the form.</p>
 
-  <div id="reg_list"></div>
+    <div id="stamp_list" class="highlight">
+        {% ifnotequal s_date None %}{{ s_date }}{% endifnotequal %}
+    </div>
 
-  <form action="{% url 'new-registrant' %}" id="regform" method="GET" id="regform">
-  <p>Reg id: {{ reg_id }}</p>
-  <label for="id_reg_id">Reg id:</label> <input id="id_reg_id" name="reg_id" type="hidden" value="{{ reg_id }}"/>
-  <p><label for="id_reg_name">Reg name:</label> <input id="id_reg_name" maxlength="200" name="reg_name" type="text" /></p>
-  <p><label for="id_address">Address:</label> <input id="id_address" maxlength="300" name="address" type="text" /></p>
-  <p><label for="id_city">City:</label> <input id="id_city" maxlength="100" name="city" type="text" /></p>
-  <p><label for="id_state">State:</label> <input id="id_state" maxlength="2" name="state" type="text" /></p>
-  <p><label for="id_zip">Zip:</label> <input id="id_zip" maxlength="10" name="zip" type="text" /></p>
-  <p><label for="id_country">Country:</label> <input id="id_country" maxlength="100" name="country" type="text" /></p>
+    <form class="form-inline"  action="{% url 'stamp-date' %}" method="GET" id="stampform">
+            <input id="form_id" name="form_id" type="hidden" value="{{ form_id }}"/>
+        <div class="form-group">
+
+            <label class="sr-only" for="stamp_date">Correct date</label>
+            <input class="form-control" placeholder="Correct date" id="stamp_date" type="text" class="form-control" name="stamp_date" />
+            <button type="submit" class="btn btn-default form-control">Submit</button>
+        </div>
+    </form>
+
+    <span class="help" ><a href="{% url 'instructions' %}#Stamp_Date" target="blank">Help</a></span>
+
+</section>
+
+
+
+<section class="form-section">
+    <h3>Create Registrant</h3>
+    <p>Section I</p>
+
+    <div id="reg_list"></div>
+
+    <form action="{% url 'new-registrant' %}" id="regform" method="GET" id="regform">
+        <p>Reg id: {{ reg_id }}</p>
+        <input id="id_reg_id" name="reg_id" type="hidden" value="{{ reg_id }}"/>
+        <p><label for="id_reg_name">Reg name:</label> <input id="id_reg_name" maxlength="200" name="reg_name" type="text" class="form-control"/></p>
+        <p><label for="id_address">Address:</label> <input id="id_address" maxlength="300" name="address" type="text" class="form-control"/></p>
+        <p><label for="id_city">City:</label> <input id="id_city" maxlength="100" name="city" type="text" class="form-control"/></p>
+        <p><label for="id_state">State:</label> <input id="id_state" maxlength="2" name="state" type="text" class="form-control"/></p>
+        <p><label for="id_zip">Zip:</label> <input id="id_zip" maxlength="10" name="zip" type="text" class="form-control"/></p>
+        <p><label for="id_country">Country:</label> <input id="id_country" maxlength="100" name="country" type="text" class="form-control"/></p>
+        <input type="submit" value="Send" id="sendbutton"/>
+    </form>
+
+    <span class="help" ><a href="{% url 'instructions' %}#Registrant" target="blank">Help</a></span><br>
+
+</section>
+
+<section class="form-section">
+    <h3>Registrant</h3>
+
+    <div class="highlight">
+        <strong>{{ reg_object.reg_name }}</strong>
+        <br>
+        {{ reg_object.address }}
+        <br>
+        {{ reg_object.city }}, {{ reg_object.state }} {{ reg_object.zip }}
+        <br>
+        {% if reg_object.country != None %}{{ reg_object.country }}{% endif %}
+    </div>
+
+
+        <a href="{% url 'fix-registrant' reg_id form_id %}" onclick="return popitup('{% url 'fix-registrant' reg_id form_id %}')">Fix Registrant</a>
+
     
-  <input type="submit" value="Send" id="sendbutton"/>
-  </form>
+</section>
 
-<span class="help" ><a href="{% url 'instructions' %}#Registrant" target="blank">Help</a></span><br>
-
-{% else %}
- <h3>Registrant:</h3>
-
-  <p><b>{{ reg_object.reg_name }}</b><br />
-  {{ reg_object.address }}<br />
-  {{ reg_object.city }}, {{ reg_object.state }} {{ reg_object.zip }}<br />
-  {% if reg_object.country != None %}
-    {{ reg_object.country }}
-  {% endif %}
-  </p>
-{% endif %}
-
-<p>
-    <a href="{% url 'fix-registrant' reg_id form_id %}" onclick="return popitup('{% url 'fix-registrant' reg_id form_id %}')"
-        >Fix Registrant</a>
-</p>
-
-<hr />
-
-<div id="lobby">
-    <div class="item">
-        <h3 class="toggleOpen">Add Lobbyist</h3>
-        <div class="toggle">
-            <p>(No need to enter short form changes)</p>
-            <p>Lobbists already in system:<br>
-            <div id="lobby_list">
-                    <ul>
+<section class="form-section">
+    <div id="lobby">
+        <div class="item">
+            <h3 class="toggleOpen">Add Lobbyist</h3>
+            <div class="toggle">
+                <p class="help-block">No need to enter short form changes</p>
+                {% if lobbyists %}
+                <h4>Lobbyists already in system</h4>
+                {% endif %}
+                <ul id="lobby_list" class="highlight-child">
                 {% for lobbyist in reg_object.lobbyists.all %}
-                    <li>{{ lobbyist }}</li>
+                    <li class="highlight">{{ lobbyist }}</li>
                 {% endfor %}
-                    </ul>
+                </ul>
+                <div id="lobbyist_ajaxwrapper"></div>
+                </p>
+
+                <h4>Select additional lobbyists for registrant</h4>
+
+                <div id="lobbyist_add">
+                    <form method="GET" id='lobbyform' action="/registrant/add_lobbyist">
+                        {% csrf_token %}
+                        <input type="hidden" name="reg_id" value="{{ reg_id }}">
+                        
+                        <label class="sr-only" for="lobbyists">Lobbyists</label>
+                        <input type="hidden" id="lobbyist_lobbyist" name="lobbyists" class="select-control"/>
+
+                        <button type="submit" class="btn btn-default form-control">Submit</button>
+                    </form>
+                </div>
+
+                <div id="lobbyist_create">
+                    <a id="lobbyist"></a>
+                    <h4>Add a new lobbyist</h4>
+                    
+                    <form method="GET" id="add_lobbyform" action="/lobbyist/create">
+                        <input type="hidden" name="reg_id" value="{{ reg_id }}">
+
+                        <label class="sr-only" for="id_lobby_id">Lobby ID</label>
+                        <input id="id_lobby_id" maxlength="150" name="lobby_id" type="text" class="form-control" placeholder="Lobby ID"/>
+
+                        <span class="help-block">Is this a lobbyist or a PAC? Use only the appropriate field.</span>
+                        <label class="sr-only" for="id_lobbyist_name">Lobbyist Name</label>
+                        <input id="id_lobbyist_name" maxlength="150" name="lobbyist_name" type="text" class="form-control" placeholder="Lobbyist Name"/>
+                        <label class="sr-only" for="id_PAC_name">PAC Name</label>
+                        <input id="id_PAC_name" maxlength="150" name="PAC_name" type="text" class="form-control" placeholder="PAC Name"/>
+
+                        <button type="submit" class="btn btn-default form-control">Submit</button>
+                    </form>
+
+                    <span class="help" ><a href="{% url 'instructions' %}#Lobbyist" target="blank">Help</a></span><br>
+                </div>
             </div>
-            <div id="lobbyist_ajaxwrapper"></div>
-            </p>
+        </div>
+    </div>
+    
+</section>
 
-            <h4>Select additional lobbyists for registrant</h4>
+<section class="form-section">
+    <div id="client">
+        <div class="item">
+            <h3 class="toggleOpen">Clients</h3>
+            <div class="toggle">
+                <a id="client"></a>
 
-            <div id="lobbyist_add">
-                <form method="GET" id='lobbyform' action="/registrant/add_lobbyist">
+                <h4>Clients in the system for the registrant</h4>
+                <ul id="client_list" class="highlight-child">
+                {% for client in reg_object.clients.all %}
+                    <li>{{ client }}</li>
+                {% endfor %}
+                </ul>
+
+                <h4>Add a client</h4>
+                <form method="GET" id='clientform' action="/registrant/add_client" id='clientform'>
                     {% csrf_token %}
                     <input type="hidden" name="reg_id" value="{{ reg_id }}">
                     
-                    <p><label for="lobbyists">Lobbyist: </label><input type="hidden" id="lobbyist_lobbyist" name="lobbyists" style="width: 300px"/>
+                    <label class="sr-only">Add a client</label>
+                    <input type="hidden" id="client_client" name="clients" class="select-control"/>
 
-                    <input type="submit" /></p>
+                    <button type="submit" class="btn btn-default form-control">Submit</button>
                 </form>
-            </div>
 
-            <div id="lobbyist_create">
-                <a id="lobbyist"></a><h4>Add a new lobbyist</h4>
-                <form method="GET" id="add_lobbyform" action="/lobbyist/create">
+
+                <h4>Add a brand new client to the database</h4>
+                <p><i>Questions 8 and 9</i></p>
+
+                <form method="GET" id="add_clientform" action="/client/create">
+                    <label class="sr-only" for="location">Location</label>
+                    <input type="hidden" id="client_location" name="location" class="select-control" data-placeholder="Location"/>
+                    <label class="sr-only" for="client_name">Client Name</label>
+                    <input id="id_client_name" maxlength="200" name="client_name" type="text" class="form-control" placeholder="Client Name"/>
+                    <label class="sr-only" for="address1">Address</label>
+                    <input id="id_address1" maxlength="300" name="address1" type="text" class="form-control" placeholder="Address"/>
+                    <label class="sr-only" for="city">City</label>
+                    <input id="id_city" maxlength="100" name="city" type="text" class="form-control" placeholder="City"/>
+                    <label class="sr-only" for="state">State</label>
+                    <input id="id_state" maxlength="100" name="state" type="text" class="form-control" placeholder="State"/>
+                    <label class="sr-only" for="zip_code">Zip Code</label>
+                    <input id="id_zip_code" maxlength="50" name="zip_code" type="text" class="form-control" placeholder="Zip Code"/>
+
                     <input type="hidden" name="reg_id" value="{{ reg_id }}">
-                    <p><label for="id_lobby_id">Lobby id:</label> <input id="id_lobby_id" maxlength="150" name="lobby_id" type="text" /></p>
-                    <p><label for="id_lobbyist_name">Lobbyist name:</label> <input id="id_lobbyist_name" maxlength="150" name="lobbyist_name" type="text" /></p>
-                    <label class="lobbyists_error" for="lobbyist_name" id="name_error">This field is required.</label>
-                    <p><label for="id_PAC_name">PAC name:</label> <input id="id_PAC_name" maxlength="150" name="PAC_name" type="text" /></p>
-                    <input type="submit" />
+                    <button type="submit" class="btn btn-default form-control">Submit</button>
+                </form>
+                 
+                <span class="help" ><a href="{% url 'instructions' %}#Client" target="blank">Help</a></span>
+                
+                <h4>Add new location for client field</h4>
+                <ul id="location_list" class="highlight-child"></ul>
+
+                <form method="GET" id="locationform" action="/location/create">
+                    <label class="sr-only" for="location">Location as appears on the form</label>
+                    <input id="location" maxlength="300" name="location" type="text" class="form-control" placeholder="Location as appears on the form"/>
+                    <label class="sr-only" for="country">Country grouping</label>
+                    <input id="country" maxlength="300" name="country" type="text" class="form-control" placeholder="Country Grouping"/>
+
+                    <label class="sr-only" for="region">Select a Region</label>
+                    <select id="region" maxlength="300" name="region" type="text" class="form-control">
+                        <option value="" disabled selected>Region</option>
+                        <option value="Eastern Africa">Eastern Africa</option>
+                        <option value="Western Africa">Western Africa</option>
+                        <option value="Middle Africa">Middle Africa</option>
+                        <option value="Northern Africa">Northern Africa</option>
+                        <option value="Southern Africa">Southern Africa</option>
+                        <option value="Caribbean">Caribbean</option>
+                        <option value="Central America">Central America</option>
+                        <option value="South America">South America</option>
+                        <option value="North America">North America</option>
+                        <option value="Central Asia">Central Asia</option>
+                        <option value="Eastern Asia">Eastern Asia</option>
+                        <option value="Southern Asia">Southern Asia</option>
+                        <option value="South-Eastern Asia">South-Eastern Asia</option>
+                        <option value="Western Asia">Western Asia</option>
+                        <option value="Eastern Europe">Eastern Europe</option>
+                        <option value="Western Europe">Western Europe</option>
+                        <option value="Northern Europe">Northern Europe</option>
+                        <option value="Southern Europe">Southern Europe</option>
+                        <option value="Australia and New Zealand">Australia and New Zealand</option>
+                        <option value="Melanesia">Melanesia</option>
+                        <option value="Polynesia">Polynesia</option>
+                        <option value="Micronesia"> Micronesia</option>
+                        <option value="Multinational"> Multinational</option>
+                    </select>
+                    <span class="help-block">(Where we would find the location on a map. <a href="http://unstats.un.org/unsd/methods/m49/m49regin.htm" target="blank">Refer to UN regions here.</a>)</span>   
+
+                  <button type="submit" class="btn btn-default form-control">Submit</button>
                 </form>
 
-                <span class="help" ><a href="{% url 'instructions' %}#Lobbyist" target="blank">Help</a></span><br>
-            </div>
-        </div>
-    </div>
-</div>
-<hr />
-
-<div id="client">
-    <div class="item">
-        <h3 class="toggleOpen">Client</h3>
-        <div class="toggle">
-            <a id="client"></a>Clients in the system for the registrant:<br>
-            <div id="client_list">
-                <ul>
-            {% for client in reg_object.clients.all %}
-                <li>{{ client }}</li>
-            {% endfor %}
-                </ul>
-            </div>
-
-            <form method="GET" id='clientform' action="/registrant/add_client" id='clientform'>
-                {% csrf_token %}
-                <input type="hidden" name="reg_id" value="{{ reg_id }}">
+                <span class="help" ><a href="{% url 'instructions' %}#Location" target="blank">Help</a></span><br>
                 
-                <p><label>Add a client:  </label><input type="hidden" id="client_client" name="clients" style="width: 300px"/></p>
 
-                <p><input type="submit" /></p>
-            </form>
-            <hr>
+                <h3>Client Info</h3>
 
-
-            <h4>Add a brand new client to the database:</h4>
-            <p><i>Questions 8 and 9</i></p>
-
-            <form method="GET" id="add_clientform" action="/client/create">
-                
-                <p><label for="location">Location: </label><input type="hidden" id="client_location" name="location" style="width: 300px"/>
-                <p><label for="client_name">Client name:</label> <input id="id_client_name" maxlength="200" name="client_name" type="text" /></p>
-                <p><label for="address1">Address1:</label> <input id="id_address1" maxlength="300" name="address1" type="text" /></p>
-                <p><label for="city">City:</label> <input id="id_city" maxlength="100" name="city" type="text" /></p>
-                <p><label for="state">State:</label> <input id="id_state" maxlength="100" name="state" type="text" /></p>
-                <p><label for="zip_code">Zip code:</label> <input id="id_zip_code" maxlength="50" name="zip_code" type="text" /></p>
-                <input type="hidden" name="reg_id" value="{{ reg_id }}">
-                <input type="submit" />
-            </form>
-             
-            <span class="help" ><a href="{% url 'instructions' %}#Client" target="blank">Help</a></span>
-            <br>
-            <hr>
-
-            <h3>Add new location for client field</h3>
-            <div id="location_list"></div>
-            <form method="GET" id="locationform" action="/location/create">
-                <p><label for="location">Location as appears on the form: </label> <input id="location" maxlength="300" name="location" type="text" /></p>
-                <p><label for="country">Country grouping: </label> <input id="country" maxlength="300" name="country" type="text" /></p>
-                <p>(Where we would find the location on a map)</p>
-                <p>Refer to UN regions- <a href="http://unstats.un.org/unsd/methods/m49/m49regin.htm" target="blank">here</a>.</p>
-                <p><label for="region">Region:</label> <select id="region" maxlength="300" name="region" type="text">
-                    <option value="Eastern Africa">Eastern Africa</option>
-                    <option value="Western Africa">Western Africa</option>
-                    <option value="Middle Africa">Middle Africa</option>
-                    <option value="Northern Africa">Northern Africa</option>
-                    <option value="Southern Africa">Southern Africa</option>
-                    <option value="Caribbean">Caribbean</option>
-                    <option value="Central America">Central America</option>
-                    <option value="South America">South America</option>
-                    <option value="North America">North America</option>
-                    <option value="Central Asia">Central Asia</option>
-                    <option value="Eastern Asia">Eastern Asia</option>
-                    <option value="Southern Asia">Southern Asia</option>
-                    <option value="South-Eastern Asia">South-Eastern Asia</option>
-                    <option value="Western Asia">Western Asia</option>
-                    <option value="Eastern Europe">Eastern Europe</option>
-                    <option value="Western Europe">Western Europe</option>
-                    <option value="Northern Europe">Northern Europe</option>
-                    <option value="Southern Europe">Southern Europe</option>
-                    <option value="Australia and New Zealand">Australia and New Zealand</option>
-                    <option value="Melanesia">Melanesia</option>
-                    <option value="Polynesia">Polynesia</option>
-                    <option value="Micronesia"> Micronesia</option>
-                    <option value="Multinational"> Multinational</option>
-                </select></p>
-
-              <input type="submit" />
-            </form>
-            <span class="help" ><a href="{% url 'instructions' %}#Location" target="blank">Help</a></span><br>
-            <hr>
-
-            <h3>Client info:</h3>
-
-            <div id="ab_client_info">
-                {% for c in client_reg %}
-                    <p>
-                      Client name: {{ c.0 }} <br>
-                      {% if c.1 %}
-                        Client type: {{ c.1 }}<br>
-                      {% endif %}
-                      {% if c.2 %}
-                        Description: {{ c.2 }}<br>
-                      {% endif %}
-                      {% if c.3 %}
-                        Primary contractor:{{ c.3 }}<br>
-                      {% endif %}
-                    </p>
-                {% endfor %}
-            </div>
-
-            <form method="GET" id="client_infoform" action="/client_info">
-                <input id="id_reg_id" name="reg_id" type="hidden" value="{{ reg_id }}" />
-                <input type="hidden" name="link" value="{{ url }}">
-                <p><label for="client">Client:</label><select name="client" id="ab_client">
-                    <option value="None">Please Select Client</option>
-                {% for client in reg_object.clients.all %}
-                    <option value="{{ client.id }}">{{ client.client_name }}</option>
-                {% endfor %}
-                </select></p>
-
-                <p>Does this client come through another contractor? Does it say "through" or "via" another entity? If so, find the name mentioned with the client below:</p>
-
-                <p><label or="primary_contractor">Primary Contractor:  </label><input type="hidden" id="primary_contractor" name="primary_contractor" style="width: 300px"/></p></p>
-                  
-                <p><i>Exhibit A question 5</i></p>
-                <p><label for="client_type">Client type: </label> <input id="client_type" maxlength="25" name="client_type" type="text" /></p>
-
-                <p><i>Exhibit B Question 8</i></p>
-                <p><label for="description">Description:</label><br \>
-                <textarea name="description" cols="25" rows="5"></textarea></p>
-
-                <input type="submit" />
-            </form>
-
-            <div class="help" ><a href="{% url 'instructions' %}#Client" target="blank">Help</a></div>
-            <br>
-            <hr>
-
-            <h4>Terminated Client</h4>
-            <p><i>(question 7)</i></p>
-
-            <p>Terminated clients in the system for the registrant:</p>
-            <div id="terminated_client_list">
-            <ul>
-            {% for clients in reg_object.terminated_clients.all %}
-                <li>{{ clients }}</li>
-            {% endfor %}
-            </ul>
-            </div>
-
-            <form method="GET" id='terminatedclientform' action="/registrant/add_terminated">
-                {% csrf_token %}
-                <input type="hidden" name="reg_id" value="{{ reg_id }}">
-                <label><b>Add termination:</b></label><select multiple="multiple" id="terminated_client" name="clients">
-                {% for client in reg_object.clients.all %}
-                    <option value="{{ client.id }}">{{ client.client_name }}</option>
-                {% endfor %}
-                </select>
-                <input type="submit" />
-            </form>
-
-            <span class="help" ><a href="{% url 'instructions' %}#Terminated_Client" target="blank">Help</a></span><br>
-            
-        </div>
-    </div>
-</div>
-<hr>
-
-<div id="container">
-    <div class="item">
-        <h3 class="toggleOpen">Contact</h3>
-        <div class="toggle">
-            <p><i>Question 12</i></p>
-            Contacts related to this form:<br>
-
-            <div id="contact_list">
-                <ul>
-                {% for c in contact_list %}
-                    <li>
-                        {% if c.2 %}
-                            {{ c.0 }} {{ c.1 }} ({{ c.2 }}) {{ c.3 }}
-                        {% else %}
-                            {{ c.0 }} {{ c.1 }} {{ c.3 }}
+                <ul id="ab_client_info" class="highlight-child">
+                    {% for c in client_reg %}
+                        <li>
+                            Client Name: {{ c.0 }} <br>
+                        {% if c.1 %}
+                            Client Type: {{ c.1 }}<br>
                         {% endif %}
-                    <a href="{% url 'fix-contact' c.4 %} " onclick="return popitup('{% url 'fix-contact' c.4 %}')"> fix</a></li>
+                        {% if c.2 %}
+                            Description: {{ c.2 }}<br>
+                        {% endif %}
+                        {% if c.3 %}
+                            Primary Contractor: {{ c.3 }}<br>
+                        {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <form method="GET" id="client_infoform" action="/client_info">
+                    <input id="id_reg_id" name="reg_id" type="hidden" value="{{ reg_id }}"/>
+                    <input type="hidden" name="link" value="{{ url }}">
+                    <label for="client">Client</label>
+                    <select name="client" id="ab_client" class="form-control">
+                        <option value="" disabled selected>Select a Client</option>
+                    {% for client in reg_object.clients.all %}
+                        <option value="{{ client.id }}">{{ client.client_name }}</option>
+                    {% endfor %}
+                    </select>
+
+                    <p>Does this client come through another contractor? Does it say "through" or "via" another entity? If so, find the name mentioned with the client below:</p>
+
+                    <label for="primary_contractor">Primary Contractor</label>
+                    <input type="hidden" id="primary_contractor" name="primary_contractor" class="select-control" data-placeholder="Select Primary Contractor"/>
+                    
+                      
+                    <p><i>Exhibit A Question 5</i></p>
+                    <label class="sr-only" for="client_type">Client Type</label>
+                    <input id="client_type" maxlength="25" name="client_type" type="text" class="form-control" placeholder="Client Type"/>
+
+
+                    <p><i>Exhibit B Question 8</i></p>
+                    <label class="sr-only" for="description">Description</label>
+                    <textarea class="form-control" name="description" cols="25" rows="5" placeholder="Description"></textarea>
+
+                    <button type="submit" class="btn btn-default form-control">Submit</button>
+                </form>
+
+                <div class="help"><a href="{% url 'instructions' %}#Client" target="blank">Help</a></div>
+                <br>
+                
+
+                <h4>Terminated Client</h4>
+                <p><i>(question 7)</i></p>
+
+                <p>Terminated clients in the system for the registrant</p>
+                <ul id="terminated_client_list" class="highlight-child">
+                {% for clients in reg_object.terminated_clients.all %}
+                    <li>{{ clients }}</li>
                 {% endfor %}
                 </ul>
-            </div>
 
-            <p><b>Enter Contact</b></p>
+                <form method="GET" id='terminatedclientform' action="/registrant/add_terminated">
+                    {% csrf_token %}
+                    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+                    <label>Add Termination</label>
+                    <select multiple="multiple" id="terminated_client" name="clients" class="form-control">
+                    {% for client in reg_object.clients.all %}
+                        <option value="{{ client.id }}">{{ client.client_name }}</option>
+                    {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-default form-control">Submit</button>
+                </form>
 
-            <form method="GET" id="contactform" action="/contact/create"> 
-                <p><label for ="do_not_clear">Do not clear </label><input name="do_not_clear" type="checkbox"></p>
-                {% csrf_token %}
-                <input type="hidden" name="reg_id" value="{{ reg_id }}">
-                <input type="hidden" name="link" value="{{ url }}">
-
-                {% if one_client == True %}
-
-                    <p><label for="client">Clients:</label><select name="client" id="contact_client">
-                        {% for client in reg_object.clients.all %}
-                            <option value="{{ client.id }}">{{ client.client_name }}</option>
-                        {% endfor %}
-                        {% for client in reg_object.terminated_clients.all %}
-                            <option value="{{ client.id }}">{{ client.client_name }}</option>
-                        {% endfor %}
-                    </select></p>
-                    
-                {% else %}     
-
-                    <p><label for="client">Clients:</label><select name="client" id="contact_client">
-                            <option value="None">Please Select Client</option>
-                        {% for client in reg_object.clients.all %}
-                            <option value="{{ client.id }}">{{ client.client_name }}</option>
-                        {% endfor %}
-                        {% for client in reg_object.terminated_clients.all %}
-                            <option value="{{ client.id }}">{{ client.client_name }}</option>
-                        {% endfor %}
-                    </select></p>
-
-                {% endif %}
-
-                (who is being contacted)
-                <p><label for="recipient">Recipient: </label><input type="hidden" id="contact_recip" name="recipient" style="width: 300px"/>
-
-                {% for recipient in all_recipients %}
-                    <option value="{{ recipient.id }}">{{ recipient.title }} {{ recipient.name }}, {{ recipient.agency }}</option>
-                {% endfor %}
-                </select></p><a href="#recip">add a new recipient</a>
+                <span class="help" ><a href="{% url 'instructions' %}#Terminated_Client" target="blank">Help</a></span><br>
                 
-                <p><label for="lobbyist">Lobbyists:</label><select multiple="multiple" id="contact_lobbyist" name="lobbyist">
-                {% for lobbyist in reg_object.lobbyists.all %}
-                    <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
-                {% endfor %}
-                </select></p><a href="#lobbyist">add a new lobbyist</a>
+            </div>
+        </div>
+    </div>
+    
+</section>
 
-                <p><label for="date">Date: </label>
-                <input id="contact_date" type="text" name="date" /></p>
+<section class="form-section">
+    <div id="container">
+        <div class="item">
+            <h3 class="toggleOpen">Contact</h3>
+            <div class="toggle">
+                <p><i>Question 12</i></p>
 
-                <p><label for="type">Type: </label>
-                    <select name="contact_type">
+                <h4>Contacts related to this form</h4>
+
+                <ul id="contact_list" class="highlight-child">
+                    {% for c in contact_list %}
+                        <li>
+                            {% if c.2 %}
+                                {{ c.0 }} {{ c.1 }} ({{ c.2 }}) {{ c.3 }}
+                            {% else %}
+                                {{ c.0 }} {{ c.1 }} {{ c.3 }}
+                            {% endif %}
+                            <a class="pull-right" href="{% url 'fix-contact' c.4 %} " onclick="return popitup('{% url 'fix-contact' c.4 %}')">Fix</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <h4>Enter Contact</h4>
+
+                <form method="GET" id="contactform" action="/contact/create"> 
+                    <label for="do_not_clear">Do Not Clear</label>
+                    <input name="do_not_clear" type="checkbox"></input>
+                    
+                    {% csrf_token %}
+                    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+                    <input type="hidden" name="link" value="{{ url }}">
+
+                    {% if one_client == True %}
+
+                    <label for="client">Clients:</label>
+                    <select name="client" id="contact_client" class="form-control">
+                    {% for client in reg_object.clients.all %}
+                        <option value="{{ client.id }}">{{ client.client_name }}</option>
+                    {% endfor %}
+                    {% for client in reg_object.terminated_clients.all %}
+                        <option value="{{ client.id }}">{{ client.client_name }}</option>
+                    {% endfor %}
+                    </select>
+                        
+                    {% else %}     
+
+                    <label for="client">Clients:</label>
+                    <select name="client" id="contact_client" class="form-control">
+                        <option value="None">Please Select Client</option>
+                        {% for client in reg_object.clients.all %}
+                        <option value="{{ client.id }}">{{ client.client_name }}</option>
+                        {% endfor %}
+                        {% for client in reg_object.terminated_clients.all %}
+                        <option value="{{ client.id }}">{{ client.client_name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    {% endif %}
+
+                    (who is being contacted)
+                    <label for="recipient">Recipient</label>
+                    <input type="hidden" id="contact_recip" name="recipient" class="select-control"/>
+
+                    {% for recipient in all_recipients %}
+                    <option value="{{ recipient.id }}">{{ recipient.title }} {{ recipient.name }}, {{ recipient.agency }}</option>
+                    {% endfor %}
+                    
+                    <span class="help-block"><a href="#recip">Add a New Recipient</a></span>
+                    
+                    <label for="lobbyist">Lobbyists</label>
+                    <select multiple="multiple" id="contact_lobbyist" name="lobbyist" class="form-control">
+                    {% for lobbyist in reg_object.lobbyists.all %}
+                        <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
+                    {% endfor %}
+                    </select>
+
+                    <span class="help-block"><a href="#lobbyist">Add a New Lobbyist</a></span>
+
+                    <label for="date">Date</label>
+                    <input id="contact_date" type="text" class="form-control" name="date"/>
+
+                    <label for="type">Type</label>
+                    <select name="contact_type" class="form-control">
                         <option value="U">unknown</option>
                         <option value="P">phone</option>
                         <option value="E">email</option>
                         <option value="M">meeting</option>
                         <option value="O">other</option>
-                    </select></p>
-                
-                <p><label for="description">Description: </label><br />
-                <textarea cols="40" id="id_description" name="description" rows="10">
-                </textarea></p>
+                    </select>
+                    
+                    <label for="description">Description</label>
+                    <textarea cols="40" id="id_description" name="description" rows="10" class="form-control"></textarea>
 
-                <input type="submit" />
-            </form>
-            
-            <span class="help" ><a href="{% url 'instructions' %}#Contact" target="blank">Help</a></span><br>
+                    <button type="submit" class="btn btn-default form-control">Submit</button>
+                </form>
+                
+                <span class="help" ><a href="{% url 'instructions' %}#Contact" target="blank">Help</a></span>
+            </div>
         </div>
     </div>
-</div>
 
-<hr>
+    
+</section>
 
+<section class="form-section">
+    <div id="container">
+        <div class="item">
+            <h3 class="toggleOpen">
+                <a id="recip"></a>
+                Add a new Recipient (person who is being contacted):
+            </h3>
+            <div class="toggle">
 
-
-<div id="container">
-    <div class="item">
-        <h3 class="toggleOpen"><a id="recip"></a>Add a new Recipient (person who is being contacted):</h3>
-        <div class="toggle">
-            <a href="{% url 'find-form' %}" target="blank"><b>Add a new member of Congress or congressional staffer.</b></a>
-            <p> <i>People being meet, given contributions and gifts</i></p>
-            <form method="GET" id='recipform' action="/recipient/create">
-                {{ recipient_form.as_p }}
+                <a href="{% url 'find-form' %}" target="blank">Add a new member of Congress or congressional staffer.</a>
                 
-                <input type="submit" />
-            </form>    
+                <p> <i>People being meet, given contributions and gifts</i></p>
 
-            <span class="help" ><a href="{% url 'instructions' %}#Recipient" target="blank">Help</a></span><br>
+                <form method="GET" id='recipform' action="/recipient/create">
+                    {{ recipient_form.as_p }}
+                    
+                    <button type="submit" class="btn btn-default form-control">Submit</button>
+                </form>    
+
+                <span class="help" ><a href="{% url 'instructions' %}#Recipient" target="blank">Help</a></span><br>
+            </div>
         </div>
     </div>
-</div>
+</section>
 
-<hr>
-
-
+<section class="form-section">
 <div id="container">
     <div class="item">
         <h3 class="toggleOpen">Payment</h3>
@@ -404,26 +449,40 @@ Registration No: <b>{{ reg_id }}</b></p>
 
             <p><b>Payments associated with this form</b></p>
             <div id="pay_list">
-            <table id = 'pay_table' width="100%">
-                <thread>
-                <tr>
-                <td>Amount</td><td>Client</td><td>Date</td><td>Fee</td>
-                </tr>
-                </thread> 
-                <tbody>   
+            <table id='pay_table' width="100%" class="table">
+                <thead>
+                    <tr>
+                        <th>Amount</th>
+                        <th>Client</th>
+                        <th>Date</th>
+                        <th>Fee</th>
+                        <th></th>
+                    </tr>
+                </thead>
 
+                <tbody>   
                 {% for pay in pay_list %}
-                        <tr>
+                    <tr>
                         {% if pay.2 == True %}
-                        <td class="pay">${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>fee</td><td><a href="{% url 'fix-payment' pay.4 %}" onclick="return popitup('{% url 'fix-payment' pay.4 %}')">fix</a></td>
+                        <td class="pay">${{ pay.1 }}</td>
+                        <td>{{ pay.0 }}</td>
+                        <td>{{ pay.3 }}</td>
+                        <td><span class="glyphicon glyphicon-ok"></span></td>
+                        <td><a class="doclink" href="{% url 'fix-payment' pay.4 %}" onclick="return popitup('{% url 'fix-payment' pay.4 %}')">Fix</a></td>
                         {% else %}
-                        <td class="pay">${{ pay.1 }}</td><td>{{ pay.0 }}</td><td>{{ pay.3 }}</td><td>no</td><td><a href="{% url 'fix-payment' pay.4 %}" onclick="return popitup('{% url 'fix-payment' pay.4 %}')">fix</a></td>
+                        <td class="pay">${{ pay.1 }}</td>
+                        <td>{{ pay.0 }}</td>
+                        <td>{{ pay.3 }}</td>
+                        <td>No</td>
+                        <td><a href="{% url 'fix-payment' pay.4 %}" onclick="return popitup('{% url 'fix-payment' pay.4 %}')">Fix</a></td>
                         {% endif %}
-                        </tr>
+                    </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <p>Total: <div id="pay_total"> </div></p>
+            <p>Total:
+                <span id="pay_total"></span>
+            </p>
             </div>
 
             <form method="GET" id="payform" action="/payment/create">
@@ -458,264 +517,269 @@ Registration No: <b>{{ reg_id }}</b></p>
                 
                 <p><input type="checkbox" name="fee">Fee</p>
                 
-                <p><label for="amount">Amount: $</label><input id="amount" type="text" name="amount" /></p> 
+                <p><label for="amount">Amount: $</label><input id="amount" type="text" class="form-control" name="amount" /></p> 
                 
                 <p><label for="description">description:</label><br \>
                 <textarea name="purpose" cols="25" rows="5"></textarea></p>
                 
                 <p><label for="date">Date: </label>
-                <input id="payment_date" type="text" name="date" /></p>
+                <input id="payment_date" type="text" class="form-control" name="date" /></p>
 
                 (Add this field if the money is coming from to another registrant.)
                 <p><label for="subcontractor">Subcontractor: </label><input type="hidden" id="payment_subcontractor" name="subcontractor" style="width: 300px"/></p>
                 
-                <input type="submit" />
+                <button type="submit" class="btn btn-default form-control">Submit</button>
             </form>
 
             <span class="help" ><a href="{% url 'instructions' %}#Payment" target="blank">Help</a></span><br>
         </div>
     </div>
 </div>
-<hr />
+
+</section>
 
 
-<div id="container">
-    <div class="item">
-        <h3 class="toggleOpen">Disbursement</h3>
-        <div class='toggle'>
-            <p>Question 15(a)</p>
+<section class="form-section">
+    <div id="container">
+        <div class="item">
+            <h3 class="toggleOpen">Disbursement</h3>
+            <div class='toggle'>
+                <p>Question 15(a)</p>
 
-            <p><b>Disbursements associated with this form</b></p>
-            <div id="dis_list">
-            <table id = 'dis_table' width="100%">
-                <thread>
-                <tr>
-                <td>Amount</td><td>Date</td><td>Client</td>
-                </tr>
-                </thread> 
-            
-                <tbody>   
-                {% for dis in dis_list %}
+                <p><b>Disbursements associated with this form</b></p>
+                <div id="dis_list">
+                <table id = 'dis_table' width="100%">
+                    <thread>
                     <tr>
-                    <td class="dis">${{ dis.1 }}</td><td>{{ dis.2 }}</td><td>{{ dis.0 }}</td><td><a href="{% url 'fix-disbursement' dis.3 %}"  onclick="return popitup('{% url 'fix-disbursement' dis.3 %}')">fix</a></td>
+                    <td>Amount</td><td>Date</td><td>Client</td>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            <p>Total: <div id="dis_total"> </div></p>
-            </div>
-
-            <form method="GET" id='disform' action="/disbursement/create">
-                {% csrf_token %}
-                <input type="hidden" name="reg_id" value="{{ reg_id }}">
-                <input type="hidden" name="link" value="{{ url }}">
+                    </thread> 
                 
-                {% if one_client == True %}
+                    <tbody>   
+                    {% for dis in dis_list %}
+                        <tr>
+                        <td class="dis">${{ dis.1 }}</td><td>{{ dis.2 }}</td><td>{{ dis.0 }}</td><td><a href="{% url 'fix-disbursement' dis.3 %}"  onclick="return popitup('{% url 'fix-disbursement' dis.3 %}')">fix</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <p>Total: <div id="dis_total"> </div></p>
+                </div>
 
-                    <p><label for="client">Clients:</label><select name="client" id="dis_client">
-                        {% for client in reg_object.clients.all %}
-                            <option value="{{ client.id }}">{{ client.client_name }}</option>
-                        {% endfor %}
-                        {% for client in reg_object.terminated_clients.all %}
-                            <option value="{{ client.id }}">{{ client.client_name }}</option>
-                        {% endfor %}
-                    </select></p>
+                <form method="GET" id='disform' action="/disbursement/create">
+                    {% csrf_token %}
+                    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+                    <input type="hidden" name="link" value="{{ url }}">
                     
-                {% else %}     
+                    {% if one_client == True %}
 
-                    <p><label for="client">Clients:</label><select name="client" id="dis_client">
-                            <option value="None">Please Select Client</option>
-                        {% for client in reg_object.clients.all %}
-                            <option value="{{ client.id }}">{{ client.client_name }}</option>
-                        {% endfor %}
-                        {% for client in reg_object.terminated_clients.all %}
-                            <option value="{{ client.id }}">{{ client.client_name }}</option>
-                        {% endfor %}
-                    </select></p>
+                        <p><label for="client">Clients:</label><select name="client" id="dis_client">
+                            {% for client in reg_object.clients.all %}
+                                <option value="{{ client.id }}">{{ client.client_name }}</option>
+                            {% endfor %}
+                            {% for client in reg_object.terminated_clients.all %}
+                                <option value="{{ client.id }}">{{ client.client_name }}</option>
+                            {% endfor %}
+                        </select></p>
+                        
+                    {% else %}     
 
-                {% endif %}
-                
-                <p><label for="date">Date: <br /></label>
-                <input id="disbursement_date" "text" name="date" /></p>
-                
-                <p><label for= "amount">Amount: <br />$</label><input id="amount" type="text" name="amount" /></p> 
-                <p><lable for="purpose">Purpose: <br /><textarea name="purpose" cols="25" rows="5"></textarea></p>
-                
-                (Add this field if the money is going to another registrant.)
-                <p><label for="subcontractor">Subcontractor: </label><input type="hidden" id="disbursement_subcontractor" name="subcontractor" style="width: 300px"/></p>
+                        <p><label for="client">Clients:</label><select name="client" id="dis_client">
+                                <option value="None">Please Select Client</option>
+                            {% for client in reg_object.clients.all %}
+                                <option value="{{ client.id }}">{{ client.client_name }}</option>
+                            {% endfor %}
+                            {% for client in reg_object.terminated_clients.all %}
+                                <option value="{{ client.id }}">{{ client.client_name }}</option>
+                            {% endfor %}
+                        </select></p>
 
-                <input type="submit" />
-            </form>
-
-            <span class="help" ><a href="{% url 'instructions' %}#Disbursement" target="blank">Help</a></span><br>
-        </div>
-    </div>
-</div>
-<hr />
-
-
-<div id="container">
-    <div class="item">
-        <h3 class="toggleOpen">Contribution</h3>
-        <div class="toggle">
-            <p><i>Question 15(c)</i></p>
-
-            <div id="cont_list">
-            <table id = 'cont_table' width="100%">
-                <thread>
-                <tr>
-                <td>Amount</td><td>From</td><td>To</td><td>Date</td>
-                </tr>
-                </thread> 
-          
-                <tbody>   
-                {% for cont in cont_list %}
-                    {% if cont.0 == None %}    
-                        <tr>
-                        <td>${{ cont.1 }}</td><td> </td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td><td><a href="{% url 'fix-contribution' cont.4 %}" onclick="return popitup('{% url 'fix-contribution' cont.4 %}')">fix</a></td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                        <td>${{ cont.1 }}</td><td>{{ cont.0 }}</td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td><td><a href="{% url 'fix-contribution' cont.4 %}" onclick="return popitup('{% url 'fix-contribution' cont.4 %}')">fix</a></td>
-                        </tr>
                     {% endif %}
-                {% endfor %}
-                </tbody>
-            </table>
+                    
+                    <p><label for="date">Date: <br /></label>
+                    <input id="disbursement_date" "text" name="date" /></p>
+                    
+                    <p><label for= "amount">Amount: <br />$</label><input id="amount" type="text" class="form-control" name="amount" /></p> 
+                    <p><lable for="purpose">Purpose: <br /><textarea name="purpose" cols="25" rows="5"></textarea></p>
+                    
+                    (Add this field if the money is going to another registrant.)
+                    <p><label for="subcontractor">Subcontractor: </label><input type="hidden" id="disbursement_subcontractor" name="subcontractor" style="width: 300px"/></p>
+
+                    <button type="submit" class="btn btn-default form-control">Submit</button>
+                </form>
+
+                <span class="help" ><a href="{% url 'instructions' %}#Disbursement" target="blank">Help</a></span><br>
             </div>
-
-            <p><b>Enter Contribution</b></p>
-            <form method="GET" id='contform' action="/contribution/create">
-                <p><label for ="do_not_clear">Do not clear </label><input name="do_not_clear" type="checkbox"></p>
-                <input type="hidden" name="registrant" value="{{ reg_id }}">
-                <input type="hidden" name="link" value="{{ url }}">
-                
-                <p><label for="id_amount">Amount: $</label> 
-                <input id="id_amount" name="amount" type="text" /></p>
-                
-                <p><label for="date">Date: </label>
-                <input id="contribution_date" type="text" name="date" /></p>
-
-                (Who gets the contribution)
-                <p><label for="recipient">Recipient :</label><p><input type="hidden" id="cont_recip" name="recipient" style="width: 300px"/></p>
-
-                <a href="#recip">add a new recipient</a>
-                
-                <p>(Who the money is coming from)<p>
-                <p><label for="lobbyist">Lobbyist or PAC:</label><select id="cont_lobbyist" name="lobbyist">
-                    <option value="">Select a lobbyist or PAC</option>
-                {% for lobbyist in reg_object.lobbyists.all %}
-                    <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
-                {% endfor %}
-                </select></p><p><a href="#lobbyist">add a new lobbyist or PAC</a></p>
-
-                <p>
-                    <input type="submit" />
-                </p>
-            </form>
-
-            <span class="help" ><a href="{% url 'instructions' %}#Contribution" target="blank">Help</a></span><br>
         </div>
     </div>
-</div>
-<hr /> 
+    
+</section>
 
+<section class="form-section">
+    <div id="container">
+        <div class="item">
+            <h3 class="toggleOpen">Contribution</h3>
+            <div class="toggle">
+                <p><i>Question 15(c)</i></p>
 
-<div id="container">
-    <div class="item">
-        <h3 class="toggleOpen">Gifts</h3>
-        <div class="toggle">
-            <p><i>Question 14(c)</i></p>
-            Gifts associated with this form:
+                <div id="cont_list">
+                <table id = 'cont_table' width="100%">
+                    <thread>
+                    <tr>
+                    <td>Amount</td><td>From</td><td>To</td><td>Date</td>
+                    </tr>
+                    </thread> 
+              
+                    <tbody>   
+                    {% for cont in cont_list %}
+                        {% if cont.0 == None %}    
+                            <tr>
+                            <td>${{ cont.1 }}</td><td> </td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td><td><a href="{% url 'fix-contribution' cont.4 %}" onclick="return popitup('{% url 'fix-contribution' cont.4 %}')">fix</a></td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                            <td>${{ cont.1 }}</td><td>{{ cont.0 }}</td><td>{{ cont.2 }}</td><td>{{ cont.3 }}</td><td><a href="{% url 'fix-contribution' cont.4 %}" onclick="return popitup('{% url 'fix-contribution' cont.4 %}')">fix</a></td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+                </div>
 
-            <div id="gift_basket">
-                    <ul>
-                {% for g in gift_list %}
-                    <li>{{ g.0 }} from {{ g.3 }} on {{ g.1 }}  <a href="{% url 'fix-gift' g.2 %}" onclick="return popitup('{% url 'fix-gift' g.2 %}')">fix</a> </li> 
-                {% endfor %} 
-                    </ul>
+                <p><b>Enter Contribution</b></p>
+                <form method="GET" id='contform' action="/contribution/create">
+                    <p><label for ="do_not_clear">Do not clear </label><input name="do_not_clear" type="checkbox"></p>
+                    <input type="hidden" name="registrant" value="{{ reg_id }}">
+                    <input type="hidden" name="link" value="{{ url }}">
+                    
+                    <p><label for="id_amount">Amount: $</label> 
+                    <input id="id_amount" name="amount" type="text" class="form-control"/></p>
+                    
+                    <p><label for="date">Date: </label>
+                    <input id="contribution_date" type="text" class="form-control" name="date" /></p>
+
+                    (Who gets the contribution)
+                    <p><label for="recipient">Recipient :</label><p><input type="hidden" id="cont_recip" name="recipient" style="width: 300px"/></p>
+
+                    <a href="#recip">add a new recipient</a>
+                    
+                    <p>(Who the money is coming from)<p>
+                    <p><label for="lobbyist">Lobbyist or PAC:</label><select id="cont_lobbyist" name="lobbyist">
+                        <option value="">Select a lobbyist or PAC</option>
+                    {% for lobbyist in reg_object.lobbyists.all %}
+                        <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
+                    {% endfor %}
+                    </select></p><p><a href="#lobbyist">add a new lobbyist or PAC</a></p>
+
+                    <p>
+                        <button type="submit" class="btn btn-default form-control">Submit</button>
+                    </p>
+                </form>
+
+                <span class="help" ><a href="{% url 'instructions' %}#Contribution" target="blank">Help</a></span><br>
             </div>
-
-
-            <form method="GET" id="giftform" action="/gift/create">
-                {% csrf_token %}
-                <input type="hidden" name="reg_id" value="{{ reg_id }}">
-                <input type="hidden" name="link" value="{{  url }}">
-                <p><label for="client">Clients:</label><select name="client" id="gift_client">
-                    <option value="None">Please Select Client</option>
-                {% for client in reg_object.clients.all %}
-                    <option value="{{ client.id }}">{{ client.client_name }}</option>
-                {% endfor %}
-                {% for client in reg_object.terminated_clients.all %}
-                    <option value="{{ client.id }}">{{ client.client_name }}</option>
-                {% endfor %}
-                </select></p>  <a href="#client">add a new client</a>
-                
-                <p><label for="date">Date: </label>
-                <input id="gift_date" type="text" name= "date" /></p>
-                
-                <label for "purpose">Purpose: </label><br \>
-                <textarea name="purpose" cols="25" rows="5"></textarea></p>
-                
-                <p><label for="description">Thing of Value:</label><br \>
-                <textarea name="description" cols="25" rows="5"></textarea></p>
-
-                <p><label for="recipient">Recipient: </label><input type="hidden" id="gift_recip" name="recipient" style="width: 300px"/></p>
-                
-                <input type="submit" />
-            </form>
-                
-            <span class="help" ><a href="{% url 'instructions' %}#Gift" target="blank">Help</a></span><br>
         </div>
     </div>
-</div>
-<hr />
-
-
-<h3>Processing info:</h3>
-Upload date: {{ meta_list.2 }}
-<form method="GET" id="metaform" action="/metadata/create">
-    {% csrf_token %}
-    <input type="hidden" name="reg_id" value="{{ reg_id }}">
-    <input type="hidden" name="link" value="{{  url }}">
-    <input type="hidden" name="form" value="{{ form_id }}">
-    <input type="hidden" name="upload_date" value="{{ s_date }}">
-
-    <p><label for="end_date">Supplemental end date: </label>
-    <input id="end_date" type="text" name="end_date" /></p>
-  
-    {% if meta_list.0 == True %}   
-        <p><input type="checkbox" name="reviewed" checked>flag</p>
-    {% else %}  
-        <p><input type="checkbox" name="reviewed">flag</p>
-    {% endif %}
     
-    {% if meta_list.1 == True %}
-        <p><input type="checkbox" name="processed" checked>Form is finished and info is displayed on front end</p>
-    {% else %}
-        <p><input type="checkbox" name="processed">Check when form is finished</p>
-    {% endif %}
-    
-    {% if meta_list.3 == True %}
-        <p><input type="checkbox" name="is_amendment" checked>is amended</p>
-    {% else %}
-        <p><input type="checkbox" name="is_amendment">is amended</p>
-    {% endif %}
-    
-    {% if meta_list.4 == None %}
-        <p><label for="notes">Notes:</label><br \>
-        <textarea name="notes" cols="25" rows="5"></textarea></p>
-    {% else %}
-        <p><label for="notes">Notes:</label><br \>
-        <textarea name="notes" cols="25" rows="5">{{ meta_list.4 }}</textarea></p>
-    {% endif %}
-    
- <input type="submit" />
-</form>
+</section> 
 
-<span class="help" ><a href="{% url 'instructions' %}#Processing_Info" target="blank">Help</a></span><br>
-<hr />
+<section class="form-section">
+    <div id="container">
+        <div class="item">
+            <h3 class="toggleOpen">Gifts</h3>
+            <div class="toggle">
+                <p><i>Question 14(c)</i></p>
+                Gifts associated with this form:
 
+                <div id="gift_basket">
+                        <ul>
+                    {% for g in gift_list %}
+                        <li>{{ g.0 }} from {{ g.3 }} on {{ g.1 }}  <a href="{% url 'fix-gift' g.2 %}" onclick="return popitup('{% url 'fix-gift' g.2 %}')">fix</a> </li> 
+                    {% endfor %} 
+                        </ul>
+                </div>
+
+
+                <form method="GET" id="giftform" action="/gift/create">
+                    {% csrf_token %}
+                    <input type="hidden" name="reg_id" value="{{ reg_id }}">
+                    <input type="hidden" name="link" value="{{  url }}">
+                    <p><label for="client">Clients:</label><select name="client" id="gift_client">
+                        <option value="None">Please Select Client</option>
+                    {% for client in reg_object.clients.all %}
+                        <option value="{{ client.id }}">{{ client.client_name }}</option>
+                    {% endfor %}
+                    {% for client in reg_object.terminated_clients.all %}
+                        <option value="{{ client.id }}">{{ client.client_name }}</option>
+                    {% endfor %}
+                    </select></p>  <a href="#client">add a new client</a>
+                    
+                    <p><label for="date">Date: </label>
+                    <input id="gift_date" type="text" class="form-control" name= "date" /></p>
+                    
+                    <label for "purpose">Purpose: </label><br \>
+                    <textarea name="purpose" cols="25" rows="5"></textarea></p>
+                    
+                    <p><label for="description">Thing of Value:</label><br \>
+                    <textarea name="description" cols="25" rows="5"></textarea></p>
+
+                    <p><label for="recipient">Recipient: </label><input type="hidden" id="gift_recip" name="recipient" style="width: 300px"/></p>
+                    
+                    <button type="submit" class="btn btn-default form-control">Submit</button>
+                </form>
+                    
+                <span class="help" ><a href="{% url 'instructions' %}#Gift" target="blank">Help</a></span><br>
+            </div>
+        </div>
+    </div>
+    
+</section>
+
+<section class="form-section">
+    <h3>Processing info:</h3>
+    Upload date: {{ meta_list.2 }}
+    <form method="GET" id="metaform" action="/metadata/create">
+        {% csrf_token %}
+        <input type="hidden" name="reg_id" value="{{ reg_id }}">
+        <input type="hidden" name="link" value="{{  url }}">
+        <input type="hidden" name="form" value="{{ form_id }}">
+        <input type="hidden" name="upload_date" value="{{ s_date }}">
+
+        <p><label for="end_date">Supplemental end date: </label>
+        <input id="end_date" type="text" class="form-control" name="end_date" /></p>
+      
+        {% if meta_list.0 == True %}   
+            <p><input type="checkbox" name="reviewed" checked>flag</p>
+        {% else %}  
+            <p><input type="checkbox" name="reviewed">flag</p>
+        {% endif %}
+        
+        {% if meta_list.1 == True %}
+            <p><input type="checkbox" name="processed" checked>Form is finished and info is displayed on front end</p>
+        {% else %}
+            <p><input type="checkbox" name="processed">Check when form is finished</p>
+        {% endif %}
+        
+        {% if meta_list.3 == True %}
+            <p><input type="checkbox" name="is_amendment" checked>is amended</p>
+        {% else %}
+            <p><input type="checkbox" name="is_amendment">is amended</p>
+        {% endif %}
+        
+        {% if meta_list.4 == None %}
+            <p><label for="notes">Notes:</label><br \>
+            <textarea name="notes" cols="25" rows="5"></textarea></p>
+        {% else %}
+            <p><label for="notes">Notes:</label><br \>
+            <textarea name="notes" cols="25" rows="5">{{ meta_list.4 }}</textarea></p>
+        {% endif %}
+        
+     <button type="submit" class="btn btn-default form-control">Submit</button>
+    </form>
+
+    <span class="help" ><a href="{% url 'instructions' %}#Processing_Info" target="blank">Help</a></span><br>
+    
+</section>
 
 
 {% endblock formquestions %}

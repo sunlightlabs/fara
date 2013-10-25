@@ -50,6 +50,15 @@ footer .btn:not(:first-child) {
 	background: #74b3b6;
 }
 
+.btn-default {
+	background: #e0e0e0;
+}
+
+.btn-default:hover, .btn-info:active , .btn-info:focus {
+	outline: none;
+	background: #d9d9d9;
+}
+
 /* ==========================================================================
    Basic Layout
    ========================================================================== */
