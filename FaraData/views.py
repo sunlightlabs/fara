@@ -42,7 +42,7 @@ def contact_csv(request, form_id):
 			lobbyists = lobbyists + l.lobbyist_name + ", "
 		lobbyists = lobbyists.encode('ascii', errors='ignore')
 		recipients = []
-		contact_name = ''
+		contact_names = []
 		for r in c.recipient.all():
 			contact_name = ''
 			if r.title != None and r.title != '':	
@@ -53,8 +53,7 @@ def contact_csv(request, form_id):
 				contact_name = contact_name + "office: " + r.office_detail.encode('ascii', errors='ignore') + ', '
 			if r. agency != None and r.agency != '':
 				contact_name = contact_name + "agency: " + r.agency.encode('ascii', errors='ignore')
-			contact_name = contact_name + "; "
-			contact_name = contact_name.encode('ascii', errors='ignore')
+			contact_names.append(contact_name)
 		
 		if c.date == None:
 			date = dumb_date.strftime('%x') + "*"
@@ -63,7 +62,7 @@ def contact_csv(request, form_id):
 		
 		c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "email"}
 
-		writer.writerow([date, contact_name, c.client, c.registrant, c.description, c_type[c.contact_type], lobbyists, c.link])
+		writer.writerow([date, contact_names, c.client, c.registrant, c.description, c_type[c.contact_type], lobbyists, c.link])
 
 	return response
 
