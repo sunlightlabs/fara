@@ -223,7 +223,7 @@ class Gift(models.Model):
     date = models.DateField(null=True, blank=True) 
     purpose = models.TextField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    link = models.CharField(max_length=100)
+    link = models.CharField(max_length=100, db_index=True)
     registrant = models.ForeignKey(Registrant)
     recipient = models.ForeignKey(Recipient, null=True, blank=True)
     
@@ -246,7 +246,7 @@ class Contact(models.Model):
     description = models.TextField(blank=True, null=True) # issues on the old site
     lobbyist = models.ManyToManyField(Lobbyist, null=True, blank=True)
     date = models.DateField(null=True, blank=True) 
-    link = models.CharField(max_length=100)
+    link = models.CharField(max_length=100, db_index=True)
 
     def __unicode__(self):
         return "%s - %s - %s" % (self.client, self.registrant, self.date )
@@ -259,7 +259,7 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     purpose = models.TextField(null=True, blank=True)
     date = models.DateField(null=True, blank=True)
-    link = models.CharField(max_length=100)
+    link = models.CharField(max_length=100, db_index=True)
     subcontractor = models.ForeignKey(Registrant, related_name='payment_subcontractor', null=True, blank=True)
     
     def __unicode__(self):
@@ -272,7 +272,7 @@ class Disbursement(models.Model):
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     purpose = models.TextField(null=True, blank=True)
     date = models.DateField(null=True, blank=True)
-    link = models.CharField(max_length=100) 
+    link = models.CharField(max_length=100, db_index=True) 
     #maybe this should only be with payment?
     subcontractor = models.ForeignKey(Registrant, related_name='subcontractor', null=True, blank=True)
     
@@ -284,7 +284,7 @@ class Disbursement(models.Model):
 class Contribution(models.Model):
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     date = models.DateField(null=True, blank=True) 
-    link = models.CharField(max_length=100)
+    link = models.CharField(max_length=100, db_index=True)
     registrant = models.ForeignKey(Registrant)
     recipient = models.ForeignKey(Recipient)
     lobbyist = models.ForeignKey(Lobbyist, null=True, blank=True)# it should not be blank but I want it to be compatible with old data
@@ -296,7 +296,7 @@ class Contribution(models.Model):
         return "%s - %s - $%s".encode('ascii', errors='ignore') % (self.recipient, self.registrant, self.amount)
     
 class MetaData(models.Model):
-    link = models.CharField(primary_key=True, max_length=255)
+    link = models.CharField(primary_key=True, max_length=255, db_index=True)
     # similar to stamp date
     upload_date = models.DateField(null=True)
     reviewed = models.BooleanField(default=False)
@@ -324,7 +324,7 @@ class ClientReg(models.Model):
     primary_contractor_id = models.ManyToManyField(Registrant, related_name='primary_contractor', null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     # this is the form where the information was last modified
-    link = models.CharField(max_length=255)
+    link = models.CharField(max_length=255, db_index=True)
     
     def __unicode__(self):
         return "%s - %s" % (self.client_id, self.reg_id)

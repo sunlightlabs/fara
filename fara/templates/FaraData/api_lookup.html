@@ -39,6 +39,7 @@ Choose result:
 <input type="submit" />
 </form>
 </p>
+
 <div class="explainer">	
 <form method="GET" id='add_member_form' action="{% url 'add-staff' %}">
 <p> Add staff for {{ r.4 }} {{ r.3 }} 
@@ -47,6 +48,17 @@ Choose result:
 <input type="hidden" name="office_detail" value="{{ r.3 }}">
 <b>Staff Title: </b><input name="title" type="text">
 <b>Staff Name: </b><input name="name" type="text">
+<input type="submit" />
+</form>
+</div>
+
+<div class="explainer">	
+<form method="GET" id='add_pac_form' action="{% url 'add-leader-PAC' %}">
+<p> Add Leadership PAC for {{ r.4 }} {{ r.3 }} 
+<input type="hidden" name="crp_id" value="{{ r.0 }}">
+<input type="hidden" name="agency" value="{{ r.2 }}"> 
+<input type="hidden" name="office_detail" value="{{ r.3 }}">
+<b>Leadership PAC committee name: </b><input name="PAC_name" type="text">
 <input type="submit" />
 </form>
 </div>

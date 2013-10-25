@@ -80,25 +80,26 @@ def gift_info(url):
 
 def client_reg_info(reg):
     client_list = []
-    print reg
-    clients = reg.clients.all()
-    for c in clients:
-        print c
-        c_name = c.client_name
-        c_type = c.client_type
-       
-        try:
-            d = ClientReg.object.get(reg_id=reg.reg_id, client_id=c.id)
-            c_dis = d.discription
-            p_con = d.primary_contractor_id
-        except:
-            c_dis = ''
-            p_con = ''
-        
-        client = [c_name, c_type, c_dis, p_con]
-        client_list.append(client)
+    try:
+        clients = reg.clients.all()
+        for c in clients:
+            print c
+            c_name = c.client_name
+            c_type = c.client_type
+           
+            try:
+                d = ClientReg.object.get(reg_id=reg.reg_id, client_id=c.id)
+                c_dis = d.discription
+                p_con = d.primary_contractor_id
+            except:
+                c_dis = ''
+                p_con = ''
+            
+            client = [c_name, c_type, c_dis, p_con]
+            client_list.append(client)
+    except:
+        pass
     return client_list
-
 
 #finds meta data attached to form 
 def meta_info(url):
@@ -138,9 +139,6 @@ def return_big_form(request, form_id):
         reg_form = RegForm()
         recipient_form = RecipientForm()
         #options for the forms
-        all_clients = Client.objects.all()
-        all_lobbyists = Lobbyist.objects.all()
-        all_recipients = Recipient.objects.all()
         #for displaying information already in the system
         reg_object = reg_info(reg_id)
         one_client = oneclient(reg_object)
@@ -158,9 +156,6 @@ def return_big_form(request, form_id):
             'client_form': client_form,
             'reg_form': reg_form,
             #options for forms
-            'all_clients': all_clients,
-            'all_lobbyists': all_lobbyists,
-            'all_recipients': all_recipients,
             'url': url, 
             'reg_object': reg_object,
             'contact_list': contact_list,
@@ -189,7 +184,6 @@ def supplemental_base(request, form_id):
 def supplemental_first(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    all_clients = Client.objects.all()
     client_form = ClientForm()
     meta_list = meta_info(url)
 
@@ -197,7 +191,6 @@ def supplemental_first(request, form_id):
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
-        'all_clients': all_clients,
         'client_form': client_form,
         'form_id': form_id,
         's_date': s_date,
@@ -211,8 +204,6 @@ def supplemental_contact(request, form_id):
     contact_list = contact_info(url)
     client_form = ClientForm()
     recipient_form = RecipientForm()
-    all_recipients = Recipient.objects.all()
-    all_lobbyists = Lobbyist.objects.all()
     one_client = oneclient(reg_object)
 
     return render(request, 'FaraData/supplemental_contact.html',{
@@ -223,9 +214,7 @@ def supplemental_contact(request, form_id):
         'client_form': client_form,
         'form_id': form_id,
         'recipient_form': recipient_form,
-        'all_recipients': all_recipients,
         'contact_list': contact_list,
-        'all_lobbyists': all_lobbyists,
     })
 
 @login_required(login_url='/admin')
@@ -283,7 +272,6 @@ def supplemental_contribution(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     cont_list = cont_info(url)
-    all_recipients = Recipient.objects.all()
     recipient_form = RecipientForm()
 
     return render(request, 'FaraData/supplemental_contribution.html',{
@@ -292,7 +280,6 @@ def supplemental_contribution(request, form_id):
     'form_id': form_id,
     'reg_object': reg_object,
     'cont_list': cont_list,
-    'all_recipients': all_recipients,
     'recipient_form': recipient_form,
     })
 
@@ -317,14 +304,12 @@ def registration_base(request, form_id):
 def registration_first(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    all_clients = Client.objects.all()
     client_form = ClientForm()
 
     return render(request, 'FaraData/registration_first.html',{
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
-        'all_clients': all_clients,
         'client_form': client_form,
         'form_id': form_id,
         's_date': s_date,
@@ -337,7 +322,6 @@ def registration_contact(request, form_id):
     contact_list = contact_info(url)
     client_form = ClientForm()
     recipient_form = RecipientForm()
-    all_recipients = Recipient.objects.all()
     one_client = oneclient(reg_object)
 
     return render(request, 'FaraData/registration_contact.html',{
@@ -347,7 +331,6 @@ def registration_contact(request, form_id):
         'client_form': client_form,
         'form_id': form_id,
         'recipient_form': recipient_form,
-        'all_recipients': all_recipients,
         'contact_list': contact_list,
         'one_client': one_client,
     })
@@ -405,7 +388,6 @@ def registration_contribution(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     cont_list = cont_info(url)
-    all_recipients = Recipient.objects.all()
     recipient_form = RecipientForm()
 
     return render(request, 'FaraData/registration_contribution.html',{
@@ -414,7 +396,6 @@ def registration_contribution(request, form_id):
     'form_id': form_id,
     'reg_object': reg_object,
     'cont_list': cont_list,
-    'all_recipients': all_recipients,
     'recipient_form': recipient_form,
     })
 
@@ -434,7 +415,6 @@ def registration_last(request, form_id):
 def enter_AB(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    all_clients = Client.objects.all()
     client_form = ClientForm()
     meta_list = meta_info(url)
     one_client = oneclient(reg_object)
@@ -444,7 +424,6 @@ def enter_AB(request, form_id):
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
-        'all_clients': all_clients,
         'client_form': client_form,
         'form_id': form_id,
         'meta_list': meta_list,
@@ -645,31 +624,44 @@ def stamp_date(request):
 @login_required(login_url='/admin')
 def recipient(request):
     if request.method == 'GET':
-        form = RecipientForm(request.GET)
-        if form.is_valid():
-            recipient = Recipient(crp_id = form.cleaned_data['crp_id'],
-                                agency = form.cleaned_data['agency'],
-                                office_detail = form.cleaned_data['office_detail'],
-                                name  = form.cleaned_data['name'],
-                                title = form.cleaned_data['title'], 
-            )
-            if form.cleaned_data['state_local'] == True:
-                recipient.state_local = True
+        crp_id = request.GET['crp_id']
+        agency = request.GET['agency']
+        office_detail = request.GET['office_detail']
+        name  = request.GET['name']
+        title = request.GET['title']
 
-            recipient.save()
-            recip_choice = json.dumps({'name': recipient.name}, separators=(',',':'))        
-            return HttpResponse(recip_choice, mimetype="application/json")
+        if crp_id == '' and agency == '' and office_detail == '' and name == '':
+            print "working"
+            error = json.dumps({'error': 'Please fill out form before submitting'}, separators=(',',':'))        
+            return HttpResponse(error, mimetype="application/json")
+
+        recipient = Recipient(crp_id = crp_id,
+                            agency = agency,
+                            office_detail = office_detail,
+                            name  = name,
+                            title = title, 
+        )
+        
+        try:
+            if request.GET['state_local'] == "on":
+                recipient.state_local = True
+        except:
+            pass
+
+        recipient.save()
+        recip_choice = json.dumps({'name': recipient.name}, separators=(',',':'))        
+        return HttpResponse(recip_choice, mimetype="application/json")
             
-        else:
-            return HttpResponse(request, {'error': 'failed'})
+        # except:
+        #     return HttpResponse(request, {'error': 'failed'})
 
             
 # creates a new lobbyist and adds it to Registrant  
 @login_required(login_url='/admin')       
 def lobbyist(request):
     if request.method == 'GET':
-        lobbyist_name = request.GET['lobbyist_name'], 
-        PAC_name = request.GET['PAC_name'], 
+        lobbyist_name = request.GET['lobbyist_name'] 
+        PAC_name = request.GET['PAC_name']
 
         for p in PAC_name:
             pac_size = len(p)
@@ -705,7 +697,7 @@ def lobbyist(request):
     else:
         HttpResponse(request, {'error': 'failed'})
 
-# assigns a lobbyist or lobbyists to a reg. all_lobbyists
+# assigns a lobbyist or lobbyists to a reg. 
 @login_required(login_url='/admin')
 def reg_lobbyist(request):
     if request.method == 'GET': 
@@ -954,7 +946,11 @@ def terminated(request):
 @login_required(login_url='/admin')
 def contact(request):
     if request.method == 'GET':
-        
+        r = request.GET.get('recipient')
+        if r == None or r == '':
+            error = json.dumps({'error': 'Please select a recipient.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
+
         lobbyists_ids = request.GET.getlist('lobbyist')
         if not lobbyists_ids:
             lobbyists_ids = [request.GET.get('lobbyists'),]
@@ -1113,6 +1109,11 @@ def payment(request):
 @login_required(login_url='/admin')
 def contribution(request):
     if request.method == 'GET':
+        r = request.GET.get('recipient')
+        if r == None or r == '':
+            error = json.dumps({'error': 'Please select a recipient.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
+
         date = cleandate(request.GET['date'])
         if type(date) != datetime:
             if date == '{"error":"No date"}':
@@ -1323,25 +1324,27 @@ def metadata(request):
         #supplemental end date- needed for supplementals, and some amendments
         try:
             end_date = cleandate(request.GET['end_date'])
+            print end_date
             if type(end_date) != datetime:
                 if document.doc_type == "Supplemental":
                     return HttpResponse(end_date, mimetype="application/json")
-                elif end_date != '{"error":"No date"}':
-                    return HttpResponse(end_date, mimetype="application/json")
+                elif end_date == '{"error":"No date"}':
+                    end_date = None
                 else:
-                    return HttpResponse(date, mimetype="application/json")
+                    return HttpResponse(end_date, mimetype="application/json")
             else:
                 metadata.end_date = end_date
         except:
             end_date = None
         metadata.save()
-        print metadata.notes, 1
+
+        
         if processed == True:
             document.processed = True
         else:
             document.processed = False
         document.save()
-        print metadata.notes, 2
+        
         metadata_info = json.dumps({'note': metadata.notes, 'do_not_clear': 'on'} , separators=(',',':'))
         return HttpResponse(metadata_info, mimetype="application/json")
         

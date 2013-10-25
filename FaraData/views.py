@@ -1,4 +1,5 @@
 import csv
+from datetime import datetime
 
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
@@ -24,7 +25,6 @@ def instructions(request):
 def contact_csv(request, form_id):
 	doc = Document.objects.get(id=form_id)
 	url = doc.url
-	print url
 	contacts = Contact.objects.filter(link=url)
 	response = HttpResponse(content_type='text/csv')
 	filename = "contacts" + form_id + ".csv"
@@ -34,7 +34,7 @@ def contact_csv(request, form_id):
 	dumb_date = md.end_date
 
 	writer = csv.writer(response)
-	writer.writerow(['Date', 'Contact', 'Client', 'Registrant', 'Description', 'type', 'Employees mentioned'])
+	writer.writerow(['Date', 'Contact', 'Client', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Source'])
 	for c in contacts:
 		lobbyists = ''
 		for l in c.lobbyist.all():
@@ -57,7 +57,46 @@ def contact_csv(request, form_id):
 			date = dumb_date.strftime('%x') + "*"
 		else:
 			date = c.date
-		writer.writerow([date, contact_name, c.client, c.registrant, c.description, c.contact_type, lobbyists])
+		c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "email"}
+
+		writer.writerow([date, contact_name, c.client, c.registrant, c.description, c_type[c.contact_type], lobbyists, c.link])
 
 	return response
 
+
+@login_required(login_url='/admin')
+def payment_csv(request, form_id):
+	doc = Document.objects.get(id=form_id)
+	url = doc.url
+	payments = Payment.objects.filter(link=url)
+	response = HttpResponse(content_type='text/csv')
+	filename = "payments" + form_id + ".csv"
+	response['Content-Disposition'] = 'attachment; filename='+ filename
+
+	md = MetaData.objects.get(link=url)
+	dumb_date = md.end_date
+
+	writer = csv.writer(response)
+	writer.writerow(['Client', 'Amount', 'Date', 'Registrant', 'Purpose', 'Source'])
+
+	for p in payments:
+		if p.date == None:
+			date = dumb_date.strftime('%x') + "*"
+		else:
+			date = p.date
+		writer.writerow([p.client, p.amount, date, p.registrant, p.purpose, p.link])
+
+	return response
+
+@login_required(login_url='/admin')
+def clients_csv(request):
+	response = HttpResponse(content_type='text/csv')
+	filename = "clients" + datetime.now().strftime('%x') + ".csv"
+	response['Content-Disposition'] = 'attachment; filename='+ filename
+	clients = Client.objects.all()
+
+	writer = csv.writer(response)
+
+	for c in clients:
+		writer.writerow([c.id, c.client_name]) 
+	return response

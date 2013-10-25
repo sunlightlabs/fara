@@ -125,4 +125,30 @@ def add_staff(request):
 		message = staff.name + " of " + staff.office_detail + "'s office"
 		return render(request, 'FaraData/api_lookup.html', {'member': message})
 
+@login_required(login_url='/admin')
+def add_leader_PAC(request):
+	member_name = request.GET['office_detail']
+	agency = request.GET['agency']
+	if agency == "House":
+		member_name = "Rep. " + member_name
+	elif agency == "Senate":
+		member_name = "Sen. " + member_name
+
+	name = cleantext(request.GET['PAC_name'])
+
+	staff = Recipient(crp_id = request.GET['crp_id'],
+					    agency = "Leadership PAC",
+					    office_detail = member_name,
+					    name = name,
+	)
+	
+	if Recipient.objects.filter(crp_id=staff.crp_id, name=staff.name).exists():
+		message = staff.name + " of " + staff.office_detail + " CRP id : " + staff.crp_id 
+		return render(request, 'FaraData/api_lookup.html', {'insystem': message})
+	else:
+		staff.save()
+		message = staff.name + " of " + staff.office_detail + "'s office"
+		return render(request, 'FaraData/api_lookup.html', {'member': message})
+
+
 

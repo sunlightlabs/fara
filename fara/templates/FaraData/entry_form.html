@@ -429,8 +429,12 @@
                 <p> <i>People being meet, given contributions and gifts</i></p>
 
                 <form method="GET" id='recipform' action="/recipient/create">
-                    {{ recipient_form.as_p }}
-                    
+                    <p><label for="crp_id">CRP ID: </label><input id="crp_id" type="text" name="crp_id" /></p> 
+                    <p><label for="agency">Agency: </label><input id="agency" type="text" name="agency" /></p>
+                    <p><label for="office_detail">Office detail: </label><input type="text" name="office_detail" /></p>
+                    <p><label for="name">Name: </label><input type="text" name="name" /></p>
+                    <p><label for="title">Title: </label><input type="text" name="title" /></p>
+                    <p><input type="checkbox" name="state_local"/>State or local:</p>
                     <button type="submit" class="btn btn-default form-control">Submit</button>
                 </form>    
 

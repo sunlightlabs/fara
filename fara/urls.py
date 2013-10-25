@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-from FaraData.Feeds import latest_entries_feed, region_feed, data_entry_feed
+from FaraData.Feeds import LatestEntriesFeed, RegionFeed, DataEntryFeed
 
 admin.autodiscover()
 
@@ -90,6 +90,7 @@ urlpatterns = patterns('',
     url(r'^find_member/', 'FaraData.find_api_view.find_member', name='find-member'),
     url(r'^add_member/', 'FaraData.find_api_view.add_member', name='add-member'),
     url(r'^add_staff/', 'FaraData.find_api_view.add_staff', name='add-staff'),
+    url(r'^add_leader_PAC/', 'FaraData.find_api_view.add_leader_PAC', name='add-leader-PAC'),
     #Document managers
     url(r'^full_list', 'fara_feed.document_select_view.full_list', name='full-list'),
     url(r'^entry_list', 'fara_feed.document_select_view.entry_list', name='entry-list'),
@@ -100,9 +101,11 @@ urlpatterns = patterns('',
     url(r'^instructions', 'FaraData.views.instructions', name='instructions'),
     ### End of forms
     # RSS feeds
-    # url(r'^latest/rss/$', latest_entries_feed()),
-    # url(r'^region/(?P<region>\w+)/rss', region_feed()),
-    # url(r'^entry/rss/$', data_entry_feed()), 
+    url(r'^latest/rss/$', LatestEntriesFeed()),
+    url(r'^region/(?P<region>\w+)/rss', RegionFeed()),
+    url(r'^entry/rss/$', DataEntryFeed()), 
     # CSV creators
     url(r'^contact_csv/(\d+)', 'FaraData.views.contact_csv', name='contact-csv'),
+    url(r'^payment_csv/(\d+)', 'FaraData.views.payment_csv', name='payment-csv'),
+    url(r'^clients_csv', 'FaraData.views.clients_csv', name='clients_csv'),
     )
