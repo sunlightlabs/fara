@@ -61,8 +61,8 @@ def contact_csv(request, form_id):
 			date = c.date
 		
 		c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "email"}
-		print c.id
-		writer.writerow([date, contact_names, c.client, c.registrant, c.description, c_type[c.contact_type], lobbyists, c.link])
+		
+		writer.writerow([date, contact_names, c.client, c.registrant, c.description, c_type[c.contact_type], lobbyists, c.link, c.id])
 
 	return response
 
