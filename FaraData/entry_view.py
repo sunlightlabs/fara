@@ -80,25 +80,26 @@ def gift_info(url):
 
 def client_reg_info(reg):
     client_list = []
-    print reg
-    clients = reg.clients.all()
-    for c in clients:
-        print c
-        c_name = c.client_name
-        c_type = c.client_type
-       
-        try:
-            d = ClientReg.object.get(reg_id=reg.reg_id, client_id=c.id)
-            c_dis = d.discription
-            p_con = d.primary_contractor_id
-        except:
-            c_dis = ''
-            p_con = ''
-        
-        client = [c_name, c_type, c_dis, p_con]
-        client_list.append(client)
+    try:
+        clients = reg.clients.all()
+        for c in clients:
+            print c
+            c_name = c.client_name
+            c_type = c.client_type
+           
+            try:
+                d = ClientReg.object.get(reg_id=reg.reg_id, client_id=c.id)
+                c_dis = d.discription
+                p_con = d.primary_contractor_id
+            except:
+                c_dis = ''
+                p_con = ''
+            
+            client = [c_name, c_type, c_dis, p_con]
+            client_list.append(client)
+    except:
+        pass
     return client_list
-
 
 #finds meta data attached to form 
 def meta_info(url):
@@ -623,31 +624,44 @@ def stamp_date(request):
 @login_required(login_url='/admin')
 def recipient(request):
     if request.method == 'GET':
-        form = RecipientForm(request.GET)
-        if form.is_valid():
-            recipient = Recipient(crp_id = form.cleaned_data['crp_id'],
-                                agency = form.cleaned_data['agency'],
-                                office_detail = form.cleaned_data['office_detail'],
-                                name  = form.cleaned_data['name'],
-                                title = form.cleaned_data['title'], 
-            )
-            if form.cleaned_data['state_local'] == True:
-                recipient.state_local = True
+        crp_id = request.GET['crp_id']
+        agency = request.GET['agency']
+        office_detail = request.GET['office_detail']
+        name  = request.GET['name']
+        title = request.GET['title']
 
-            recipient.save()
-            recip_choice = json.dumps({'name': recipient.name}, separators=(',',':'))        
-            return HttpResponse(recip_choice, mimetype="application/json")
+        if crp_id == '' and agency == '' and office_detail == '' and name == '':
+            print "working"
+            error = json.dumps({'error': 'Please fill out form before submitting'}, separators=(',',':'))        
+            return HttpResponse(error, mimetype="application/json")
+
+        recipient = Recipient(crp_id = crp_id,
+                            agency = agency,
+                            office_detail = office_detail,
+                            name  = name,
+                            title = title, 
+        )
+        
+        try:
+            if request.GET['state_local'] == "on":
+                recipient.state_local = True
+        except:
+            pass
+
+        recipient.save()
+        recip_choice = json.dumps({'name': recipient.name}, separators=(',',':'))        
+        return HttpResponse(recip_choice, mimetype="application/json")
             
-        else:
-            return HttpResponse(request, {'error': 'failed'})
+        # except:
+        #     return HttpResponse(request, {'error': 'failed'})
 
             
 # creates a new lobbyist and adds it to Registrant  
 @login_required(login_url='/admin')       
 def lobbyist(request):
     if request.method == 'GET':
-        lobbyist_name = request.GET['lobbyist_name'], 
-        PAC_name = request.GET['PAC_name'], 
+        lobbyist_name = request.GET['lobbyist_name'] 
+        PAC_name = request.GET['PAC_name']
 
         for p in PAC_name:
             pac_size = len(p)

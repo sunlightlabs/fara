@@ -406,7 +406,8 @@ jQuery(document).ready(function(){
           if (tag == '#recipform'){
             var name = response.name;
             var item = '<p>Added: ' + name + '</p>';
-            $('#reg_list').append(item);
+            // I changed the name and moved it:
+            $('#recip_list').append(item);
           }
           if (tag == '#regform'){
             var name = response.name;
@@ -468,6 +469,7 @@ jQuery(document).ready(function(){
   update('#contact_remove_lobby');
   update('.deleteable');
   update('#noteform');
+  update('#recipform');
   
 });
 </script>
