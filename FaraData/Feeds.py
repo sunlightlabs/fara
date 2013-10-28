@@ -1,3 +1,5 @@
+from datetime import datetime, date
+
 from django.contrib.syndication.views import Feed
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
@@ -46,6 +48,13 @@ class LatestEntriesFeed(Feed):
 
     def item_link(self, item):
         return item.url
+    
+    def item_guid(self, item):
+        return item.url
+
+    def item_pubdate(self, item):
+        return datetime.combine(item.stamp_date, datetime.min.time())
+
 
     def item_description(self, item):
         info = "Date received: %s " %(item.stamp_date)
@@ -112,6 +121,17 @@ class DataEntryFeed(Feed):
     def item_link(self, item):
         return item.link
 
+    def item_guid(self, item):
+         return item.link
+
+    def item_pubdate(self, item):
+        if item.notes == "Legacy data":
+            legacy_date = date(2013, 6, 1)
+            return datetime.combine(legacy_date, datetime.min.time())
+        else:
+            print item.link
+            return datetime.combine(datetime.now(), datetime.min.time())
+
     def item_description(self, item):
         doc = Document.objects.get(url=item.link)
         doc_type = doc.doc_type
@@ -166,9 +186,6 @@ class DataEntryFeed(Feed):
         title = "%s-- %s %s" %(name, doc_type, upload_date)
         return title
 
-    def item_guid(self, item):
-        client = ClientReg.objects.filter(link=self.link)
-        return [client] 
 
 class RegionFeed(Feed):
     title = "Latest entries in the Foreign lobbying database"
@@ -195,8 +212,14 @@ class RegionFeed(Feed):
         hits = hits[:20]
         return hits #document objects being returned
     
+    def item_pubdate(self, item):
+        return datetime.combine(item.stamp_date, datetime.min.time())
+        
     def item_link(self, item):
         return item.url
+
+    def item_guid(self, item):
+         return item.url
 
     def item_description(self, item):
         info = "Date received: %s " %(item.stamp_date)
