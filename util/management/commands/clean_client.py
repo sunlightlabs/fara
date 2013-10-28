@@ -46,7 +46,7 @@ class Command(BaseCommand):
 				#r.clients.add(new_client)
 				print "adding new_client: ", new_client
 				#r.clients.remove(old_client)
-				print "removing: ", old_client, r.id
+				print "removing: ", old_client, r.reg_id
 
 			#Registrant.terminated_clients m2m
 			regs2 = Registrant.objects.filter(terminated_clients__id__exact= cleared_id)
@@ -55,7 +55,7 @@ class Command(BaseCommand):
 				#r.terminated_clients.add(new_client)
 				print "terminated adding new_client", new_client
 				#r.terminated_clients.remove(old_client)
-				print "terminated removing: ", old_client, r.id
+				print "terminated removing: ", old_client, r.reg_id
 
 			#Gift.client m2m
 			gifts = Gift.objects.filter(client__id= cleared_id)
