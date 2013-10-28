@@ -43,18 +43,18 @@ class Command(BaseCommand):
 			
 			for r in regs:
 				print new_client, old_client
-				r.clients.add(new_client)
+				#r.clients.add(new_client)
 				print "adding new_client: ", new_client
-				r.clients.remove(old_client)
+				#r.clients.remove(old_client)
 				print "removing: ", old_client
 
 			#Registrant.terminated_clients m2m
 			regs2 = Registrant.objects.filter(terminated_clients__id__exact= cleared_id)
 			for r in regs2:
 				print r.reg_name
-				r.terminated_clients.add(new_client)
+				#r.terminated_clients.add(new_client)
 				print "terminated adding new_client", new_client
-				r.terminated_clients.remove(old_client)
+				#r.terminated_clients.remove(old_client)
 				print "terminated removing: ", old_client
 
 			#Gift.client m2m
@@ -62,32 +62,32 @@ class Command(BaseCommand):
 			for g in gifts:
 				#g.client.add(new_client)
 				print "gift adding new_client", new_client
-				g.client.remove(old_client)
+				#g.client.remove(old_client)
 				print "gift removing: ", old_client
 
 			#Contact.client fk
 			contacts = Contact.objects.filter(client__id= cleared_id)
 			for c in contacts:
 				c.client = new_client
-				c.save()
+				#c.save()
 				print "saving ", new_client, "replacing ", old_client
 			#Payment.client fk
 			payments = Payment.objects.filter(client__id= cleared_id)
 			for p in payments:
 				p.client = new_client
-				p.save()
+				#p.save()
 				print "payemnt -saving ", new_client, "replacing ", old_client
 			#Disbursement.client fk
 			dis = Disbursement.objects.filter(client__id= cleared_id)
 			for d in dis:
 				d.client = new_client
-				d.save()
+				#d.save()
 				print "dis -saving ", new_client, "replacing ", old_client
 			#ClientReg.client_id fk
 			client_reg = ClientReg.objects.filter(client_id__id= cleared_id)
 			for cr in client_reg:
 				cr.client = new_client
-				cr.save()
+				#cr.save()
 				print "client reg, replacing ", old_client, " with ", new_client
 
 
