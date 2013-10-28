@@ -26,7 +26,6 @@ class Command(BaseCommand):
 			if client != None:
 				if client.client_name == name:
 					cleared[original_id] = new_id
-					print "working"
 				else:
 					print "Name error", 1
 			else:
@@ -36,31 +35,60 @@ class Command(BaseCommand):
 		#go through records  to replace where they are pointing
 		for cleared_id in cleared.keys():
 			#Registrant.clients m2m
-			
+			old_client = Client.objects.get(id=cleared_id)
+			new_id = cleared[cleared_id]
+			#print cleared_id, new_id
+			new_client = Client.objects.get(id=new_id)
 			regs = Registrant.objects.filter(clients__id__exact= cleared_id)
-			print regs
+			
 			for r in regs:
-				print "hello"
+				print new_client, old_client
+				r.clients.add(new_client)
+				print "adding new_client: ", new_client
+				r.clients.remove(old_client)
+				print "removing: ", old_client
+
+			#Registrant.terminated_clients m2m
 			regs2 = Registrant.objects.filter(terminated_clients__id__exact= cleared_id)
 			for r in regs2:
-				print r
-				print "good bye"
+				print r.reg_name
+				r.terminated_clients.add(new_client)
+				print "terminated adding new_client", new_client
+				r.terminated_clients.remove(old_client)
+				print "terminated removing: ", old_client
 
-			#print registrations
-			#Registrant.terminated_clients m2m
-			#registrationsT = Registrant.terminated_clients.filter(id=cleared_id)
-			
 			#Gift.client m2m
-			
+			gifts = Gift.objects.filter(client__id= cleared_id)
+			for g in gifts:
+				#g.client.add(new_client)
+				print "gift adding new_client", new_client
+				g.client.remove(old_client)
+				print "gift removing: ", old_client
+
 			#Contact.client fk
-			
+			contacts = Contact.objects.filter(client__id= cleared_id)
+			for c in contacts:
+				c.client = new_client
+				c.save()
+				print "saving ", new_client, "replacing ", old_client
 			#Payment.client fk
-			
+			payments = Payment.objects.filter(client__id= cleared_id)
+			for p in payments:
+				p.client = new_client
+				p.save()
+				print "payemnt -saving ", new_client, "replacing ", old_client
 			#Disbursement.client fk
-			
+			dis = Disbursement.objects.filter(client__id= cleared_id)
+			for d in dis:
+				d.client = new_client
+				d.save()
+				print "dis -saving ", new_client, "replacing ", old_client
 			#ClientReg.client_id fk
-
-
+			client_reg = ClientReg.objects.filter(client_id__id= cleared_id)
+			for cr in client_reg:
+				cr.client = new_client
+				cr.save()
+				print "client reg, replacing ", old_client, " with ", new_client
 
 
 
