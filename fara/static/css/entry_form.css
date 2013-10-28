@@ -12,8 +12,9 @@
 footer.form-wrap { margin-left: 700px; } 
 
 .form-wrap main.container {
-  padding-left: 30px;
-  padding-right: 30px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background: #f2f2f2;  
 }
 .scrollable{
     overflow: auto;
@@ -26,29 +27,53 @@ footer.form-wrap { margin-left: 700px; }
     border: none;
 }
 
-section.form-section {
-  overflow: auto;
-  border-bottom: 2px solid #ccc;
-  padding: 10px 0 20px;
-}
-
-#div-1a {
- float:left;
- width:200px;
-}
-
-#div-1b {
- float:left;
- width:200px;
-}
-
 /*moves help links to the right */
+
 .help {
-  float: right;
+  display: block;
+  text-align: right;
 }
+
+.question-helper {
+  font-style: italic;
+  color: #999;
+}
+
+.form-section {
+  overflow: auto;
+  padding: 0 20px 20px;
+  margin-bottom: 20px;
+  background: #fff;
+}
+.form-section h4 {
+  margin-top: 50px;
+}
+
+.form-section h3 {
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px dashed #ccc;
+}
+
+.form-section h3.toggleOpen {
+  background: #fff;
+  margin: 0 -20px -20px;
+  padding: 20px;
+  cursor: pointer;  
+  border-bottom: 0;
+}
+
+.form-section h3.toggleOpen:hover {
+  color: #78bcbf;
+}
+
 /*hides forms */
+
 .toggle {
   display: none;
+  border-top: 1px dashed #ccc;
+  margin-top: 10px;
+  padding-top: 10px;
 }
 
 form {

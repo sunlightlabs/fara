@@ -13,6 +13,8 @@
 <script src="{{ STATIC_URL }}javascript/jquery-ui.js"></script>
 <script src="{{ STATIC_URL }}javascript/jquery.form.js"></script>
 
+<script src="{{ STATIC_URL }}javascript/jquery.cookie.js"></script>
+<script src="{{ STATIC_URL }}javascript/application.js"></script>
 <!-- token search -->
 <script src="{{ STATIC_URL }}javascript/select2.min.js"></script>
 <link rel="stylesheet" href="{{ STATIC_URL }}css/select2.css"/>  
@@ -250,8 +252,8 @@ var total_pay = function pay_totaler(){
     var p = parseFloat(pay[i].innerHTML.slice(1))
     pay_total += p;
   }
-  var pay_total_txt = '<div id="pay_total"> $ '+ (pay_total).toFixed(2) +'</div>'
-  $('#pay_total').replaceWith(pay_total_txt); 
+  var pay_total_txt = "$" + (pay_total).toFixed(2);
+  $('#pay_total').html(pay_total_txt); 
 };
 
 var total_dis = function dis_totaler(){
@@ -261,8 +263,8 @@ var total_dis = function dis_totaler(){
     var d = parseFloat(dis[i].innerHTML.slice(1))
     dis_total += d;
   }
-  var dis_total_txt = '<div id="dis_total"> $ '+ (dis_total).toFixed(2) +'</div>'
-  $('#dis_total').replaceWith(dis_total_txt); 
+  var dis_total_txt = "$" + (dis_total).toFixed(2);
+  $('#dis_total').html(dis_total_txt); 
 };
 
 
@@ -315,8 +317,8 @@ jQuery(document).ready(function(){
             var name = response.name;
             var contact_id = response.contact_id;
             var link_to = link + '/fix_contact/' + contact_id;
-            var pop = "<a href= " + '"' + link_to + '"' + 'onclick="return popitup(' + "'" + link_to  + "')"+ '" >';
-            var item = "<li>"+ name + " " + date + pop + ' fix</a>'+ '</li>';
+            var pop = "<a class='js-popup pull-right' href= " + '"' + link_to + '">';
+            var item = "<li>"+ name + " " + date + pop + ' Fix</a>'+ '</li>';
             $("#contact_list").append(item);
             var $contact_recip = $('#contact_recip');
             $contact_recip.select2('data', null)
@@ -329,17 +331,14 @@ jQuery(document).ready(function(){
             var fee = response.fee;
             var pay_id = response.pay_id;
             
-            console.log(fee);
-            
-            if(response.fee == "true"){
-              var fee = "fee";
+            if(response.fee == true) {
+              var fee = '<span class="glyphicon glyphicon-ok"></span>';
+            } else {
+              var fee = "No";
             }
-            else{
-              var fee = "no";
-            }
-            
+
             var link_to = link + '/fix_payment/' + pay_id
-            var item = '<tr><td class="pay">$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td><td><a href= "' + link_to +'" onclick="return popitup(' + "'" + link +"/fix_payment/" + pay_id + "')" + '"' + '>fix</a><td></tr>';
+            var item = '<tr><td class="pay">$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td><td><a class="js-popup" href="' + link_to + '">Fix</a></td></tr>';
             $('#pay_table').append(item);
             var $payment_subcontractor = $('#payment_subcontractor');
             $payment_subcontractor.select2('data', null);
@@ -354,7 +353,7 @@ jQuery(document).ready(function(){
             var dis_id = response.dis_id;
 
             link_to = link + '/fix_disbursement/' + dis_id
-            item = '<tr><td class="dis">$'+ amount +'</td><td>'+ date + '</td><td>'+ client +'</td><td><a href= "' + link_to + ' " onclick="return popitup(' + "'" + link_to + "')" + '"' + '>fix</a><td></tr></tr>'
+            item = '<tr><td class="dis">$'+ amount +'</td><td>'+ date + '</td><td>'+ client +'</td><td><a class="js-popup" href= "' + link_to + '">Fix</a></td></tr>';
             $('#dis_table').append(item);
             var $disbursement_subcontractor = $('#disbursement_subcontractor');
             $disbursement_subcontractor.select2('data', null)
@@ -373,7 +372,7 @@ jQuery(document).ready(function(){
             var cont_id = response.cont_id;
 
             var link_to = link + '/fix_contribution/' + cont_id
-            var item = '<tr><td>$' + amount + '</td><td>' + lobbyist + '</td><td>' + recipient + '</td><td>' + date + '</td><td><a href= "' + link_to + ' " onclick="return popitup(' + "'" + link_to + "')" + '"' + '> fix</a><td></tr></tr>';
+            var item = '<tr><td>$' + amount + '</td><td>' + lobbyist + '</td><td>' + recipient + '</td><td>' + date + '</td><td><a class="js-popup" href= "' + link_to + '">Fix</a></td></tr>';
             $('#cont_table').append(item);
             var $cont_recip = $('#cont_recip');
             $cont_recip.select2('data', null);
@@ -386,8 +385,8 @@ jQuery(document).ready(function(){
             var gift_id = response.gift_id
             var link_to = link + '/fix_gift/' + gift_id
 
-            var item = '<li>' + description + " from " + client + " on " + date + ' <a href= "' + link_to + ' " onclick="return popitup(' + "'" + link_to + "')" + '"' + '>fix</a></li>'
-            $('#gift_basket ul').append(item);
+            var item = '<li>' + description + " from " + client + " on " + date + ' <a class="js-popup pull-right" href= "' + link_to + '">Fix</a></li>'
+            $('#gift_basket').append(item);
             var $gift_recip = $('#gift_recip');
             $gift_recip.select2('data', null) 
           }
@@ -476,10 +475,11 @@ jQuery(document).ready(function(){
 
 <script type="text/javascript">
 // expandable forms
+
 jQuery(document).ready(function(){
   $(function() {
     $('h3.toggleOpen').click(function() {
-        $(this).next('.toggle').slideDown("fast");
+        $(this).next('.toggle').slideToggle("fast");
     });
     $('span.toggleClose').click(function() {
         $(this).parents('.toggle').slideUp("fast");

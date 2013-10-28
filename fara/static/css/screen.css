@@ -243,9 +243,6 @@ main.container {
 .table thead > tr > th.flagged { width: 70px; }
 .table thead > tr > th.notes { width: 150px; }
 
-.table tfoot {
-	text-align: right;
-}
 .table td.status {
 	font-style: italic;
 }
@@ -268,6 +265,7 @@ main.container {
 .table td.paginate {
 	padding: 0;
 	font-size: 90%;
+	text-align: right;
 }
 
 .table td.paginate span{
