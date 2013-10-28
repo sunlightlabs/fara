@@ -46,7 +46,7 @@ class Command(BaseCommand):
 				#r.clients.add(new_client)
 				print "adding new_client: ", new_client
 				#r.clients.remove(old_client)
-				print "removing: ", old_client
+				print "removing: ", old_client, r.id
 
 			#Registrant.terminated_clients m2m
 			regs2 = Registrant.objects.filter(terminated_clients__id__exact= cleared_id)
@@ -55,7 +55,7 @@ class Command(BaseCommand):
 				#r.terminated_clients.add(new_client)
 				print "terminated adding new_client", new_client
 				#r.terminated_clients.remove(old_client)
-				print "terminated removing: ", old_client
+				print "terminated removing: ", old_client, r.id
 
 			#Gift.client m2m
 			gifts = Gift.objects.filter(client__id= cleared_id)
@@ -63,32 +63,32 @@ class Command(BaseCommand):
 				#g.client.add(new_client)
 				print "gift adding new_client", new_client
 				#g.client.remove(old_client)
-				print "gift removing: ", old_client
+				print "gift removing: ", old_client, g.id
 
 			#Contact.client fk
 			contacts = Contact.objects.filter(client__id= cleared_id)
 			for c in contacts:
 				c.client = new_client
 				#c.save()
-				print "saving ", new_client, "replacing ", old_client
+				print "saving ", new_client, "replacing ", old_client, c.id
 			#Payment.client fk
 			payments = Payment.objects.filter(client__id= cleared_id)
 			for p in payments:
 				p.client = new_client
 				#p.save()
-				print "payemnt -saving ", new_client, "replacing ", old_client
+				print "payemnt -saving ", new_client, "replacing ", old_client, p.id
 			#Disbursement.client fk
 			dis = Disbursement.objects.filter(client__id= cleared_id)
 			for d in dis:
 				d.client = new_client
 				#d.save()
-				print "dis -saving ", new_client, "replacing ", old_client
+				print "dis -saving ", new_client, "replacing ", old_client, d.id
 			#ClientReg.client_id fk
 			client_reg = ClientReg.objects.filter(client_id__id= cleared_id)
 			for cr in client_reg:
 				cr.client = new_client
 				#cr.save()
-				print "client reg, replacing ", old_client, " with ", new_client
+				print "client reg, replacing ", old_client, " with ", new_client, cr.id
 
 
 
