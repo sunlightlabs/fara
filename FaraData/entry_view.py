@@ -662,6 +662,8 @@ def lobbyist(request):
     if request.method == 'GET':
         lobbyist_name = request.GET['lobbyist_name'] 
         PAC_name = request.GET['PAC_name']
+        pac_size = 0
+        lobby_size = 0
 
         for p in PAC_name:
             pac_size = len(p)
