@@ -288,9 +288,6 @@ main.container {
    Javacript Classes
    ========================================================================== */
 
-.js-hidden .table {
-	display: none;
-}
 .doclist.toggle.js-hidden .table_title .glyphicon {
 	line-height: 28px;
 	transform:rotate(-90deg);
