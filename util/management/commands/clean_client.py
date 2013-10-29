@@ -90,5 +90,14 @@ class Command(BaseCommand):
 				print "client reg, replacing ", old_client, " with ", new_client, cr.id
 
 
+		#looking for dupes that were in active and terminated categories 
+		for r in Registrant.objects.all():
+			for c in r.clients.all():
+				print c
+				if c in r.terminated_clients.all():
+					#r.terminated_clients.remove(c)
+					print r, "Has dupe - ", c
+
+
 
 #get rid of bad clients
