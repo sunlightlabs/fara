@@ -93,7 +93,6 @@ class Command(BaseCommand):
 		#looking for dupes that were in active and terminated categories 
 		for r in Registrant.objects.all():
 			for c in r.clients.all():
-				print c
 				if c in r.terminated_clients.all():
 					#r.terminated_clients.remove(c)
 					print r, "Has dupe - ", c
