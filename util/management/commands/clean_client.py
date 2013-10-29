@@ -94,8 +94,8 @@ class Command(BaseCommand):
 		for r in Registrant.objects.all():
 			for c in r.clients.all():
 				if c in r.terminated_clients.all():
-					#r.terminated_clients.remove(c)
-					print r, "Has dupe - ", c
+					r.terminated_clients.remove(c)
+					print r, r.reg_id, "Has dupe - ", c
 
 
 
