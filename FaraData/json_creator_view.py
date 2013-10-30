@@ -1,9 +1,16 @@
 import json
+import re
 
 from django.http import HttpResponse
 from django.shortcuts import render
 
 from FaraData.models import Recipient, Lobbyist, Client, Location, Registrant
+
+def cleantext(text):
+    text = re.sub(' +',' ', text)
+    text = re.sub('\\r|\\n','', text)
+    text = text.strip()
+    return text
 
 def makeJson(data, name):
     choice_list = []
@@ -25,6 +32,8 @@ def makeJson(data, name):
 
 def recip_choice(request):
     q =  request.GET.get('q', None)
+    if q != None:
+        q = cleantext(q)
     if q:
         recip_choices = Recipient.objects.filter(name__iregex=q)
     else:
@@ -33,24 +42,25 @@ def recip_choice(request):
     choice_list = []
     for r in recip_choices:
         name = r.name
-        office = r.office_detail
-        title = r.title
+        if name != None:
+            office = r.office_detail
+            title = r.title
 
-        if title == None or title == '':
-            if office == None or office == '':
-                final_name = name
+            if title == None or title == '':
+                if office == None or office == '':
+                    final_name = name
+                else:
+                    final_name = name + " (" + office + ")"
             else:
-                final_name = name + " (" + office + ")"
-        else:
-            if office == None or office == '':
-                final_name = title +  " " + name
-            else:
-                final_name = title + " " + name + " (" + office + ")"
+                if office == None or office == '':
+                    final_name = title +  " " + name
+                else:
+                    final_name = title + " " + name + " (" + office + ")"
 
 
 
-        item = {"id": r.id, "text": final_name}
-        choice_list.append(item)
+            item = {"id": r.id, "text": final_name}
+            choice_list.append(item)
     recip_choices = json.dumps(choice_list, separators=(',',':'))
 
     return HttpResponse(recip_choices, mimetype="application/json")
@@ -58,6 +68,8 @@ def recip_choice(request):
 
 def lobby_choice(request):
     q = request.GET.get('q', None)
+    if q != None:
+        q = cleantext(q)
     if q:
         lobby_choices = Lobbyist.objects.filter(lobbyist_name__iregex=q)
     else:
@@ -70,6 +82,8 @@ def lobby_choice(request):
 
 def client_choice(request):
     q = request.GET.get('q', None)
+    if q != None:
+        q = cleantext(q)
     if q:
         client_choices = Client.objects.filter(client_name__iregex=q)
     else:
@@ -81,6 +95,8 @@ def client_choice(request):
 
 def location_choice(request):
     q = request.GET.get('q', None)
+    if q != None:
+        q = cleantext(q)
     if q:
         location_choices = Location.objects.filter(location__iregex=q)
     else:
@@ -91,6 +107,8 @@ def location_choice(request):
 
 def reg_choice(request):
     q = request.GET.get('q', None)
+    if q != None:
+        q = cleantext(q)
     if q:
         reg_choices = Registrant.objects.filter(reg_name__iregex=q)
     else:

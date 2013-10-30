@@ -97,6 +97,8 @@ class Command(BaseCommand):
 					r.terminated_clients.remove(c)
 					print r, r.reg_id, "Has dupe - ", c
 
-
-
-#get rid of bad clients
+		#get rid of bad clients
+		for cleared_id in cleared.keys():
+			try: 
+				bad_client = Client.objects.get(id=cleared_id) 
+				bad_client.delete()
