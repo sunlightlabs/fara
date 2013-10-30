@@ -20,7 +20,6 @@ def cleantext(text):
 def find_form(request):
  	return render(request, 'FaraData/api_lookup.html') 
 
-         
 @login_required(login_url='/admin')        
 def find_member(request):
 	q = request.GET['member'],
@@ -41,9 +40,6 @@ def find_member(request):
 	response = requests.get(endpoint, params=query_params)
 	response_old = requests.get(endpoint, params=old_query_params)
 	response_url = response.url
-
-
-
 
 	results = []
 
@@ -74,14 +70,12 @@ def find_member(request):
 				result = [crp_id, "Congress", chamber,  full_name, title, text]
 				results.append(result)
 
-
 	data = response.json()
 	old_data = response_old.json()
 	
 	# if accent_response or accent_response_old in locals:
 	# 	read_response(data, "new")
 	# 	read_response(old_data, "old")
-
 
 	read_response(data, "new")
 	read_response(old_data, "old")

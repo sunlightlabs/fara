@@ -193,12 +193,11 @@ class RegionFeed(Feed):
     link = "placeholder"
    
     def get_object(self, request, region):
+        self.link = region + "/rss"
         region = region.replace("__", "-").replace("_", " ").title()
         return Location.objects.filter(region=region)[0]
-        #case issue?
 
     def items(self, location):
-
         docs = Document.objects.filter(processed=True).order_by('-stamp_date')[:50]
         hits = []
         for d in docs:
