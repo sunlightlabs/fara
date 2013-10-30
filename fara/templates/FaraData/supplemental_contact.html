@@ -10,8 +10,6 @@
 
 {% else %}
     <p><i>Questions 11 and 12</i></p>
-    Last 50 contacts related to this form:<br>
-    download all contacts <a href="{% url 'contact-csv' form_id %}">here</a>
     <div id="contact_list">
     <ul>
 {% endif %}
@@ -23,6 +21,12 @@
         <li>{{ c.0 }} {{ c.1 }} {{ c.3 }} <a href="{% url 'fix-contact' c.4 %} " onclick="return popitup('{% url 'fix-contact' c.4 %}')">fix</a></li>
     {% endif %}
 {% endfor %}
+
+        {% if data.has_previous %}<span><a href="?page={{ data.previous_page_number }}">prev</a>
+        </span>{% endif %}
+        <span class="current">{{ data.number }} of {{ data.paginator.num_pages }}
+        </span>{% if data.has_next %}<span><a href="?page={{ data.next_page_number }}">next</a></span>{% endif %}
+ 
 </ul>
 </div>
 

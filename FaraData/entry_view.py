@@ -8,12 +8,13 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from FaraData.models import * 
 from fara_feed.models import Document
 
 ## Section for functions that create variables for the templates 
-
+    
 # this gets the info about the form
 def doc_id(form_id):
     doc = Document.objects.get(id = form_id)
@@ -49,14 +50,23 @@ def pay_info(url):
     return pay_list
 
 #finds contacts attached to this form 
-def contact_info(url):
-    contact_objects = Contact.objects.filter(link = url)[:50]
+def contact_info(url, page):
+    contact_objects = Contact.objects.filter(link = url)
+    
+    paginator = Paginator(contact_objects, 20)
+    try:
+        data = paginator.page(page)
+    except PageNotAnInteger:
+        data = paginator.page(1)
+    except EmptyPage:
+        data = paginator.page(paginator.num_pages)
+
     contact_list = []
-    for con in contact_objects:
+    for con in data:
         con_id = int(con.id)
         for recipient in con.recipient.all():
             contact_list.append([recipient.title, recipient.name, recipient.agency, con.date, con_id ])
-    return (contact_list)
+    return (contact_list, data)
 
 #finds contributions attached to this form        
 def cont_info(url):
@@ -142,7 +152,7 @@ def return_big_form(request, form_id):
         #for displaying information already in the system
         reg_object = reg_info(reg_id)
         one_client = oneclient(reg_object)
-        contact_list = contact_info(url)
+        contact_list = contact_info(url, page)
         dis_list = dis_info(url)
         pay_list = pay_info(url)
         cont_list = cont_info(url)
@@ -201,7 +211,10 @@ def supplemental_first(request, form_id):
 def supplemental_contact(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    contact_list = contact_info(url)
+    page = request.GET.get('page')
+    contact_list = contact_info(url, page)[0]
+    data = contact_info(url, page)[1]
+    print data
     client_form = ClientForm()
     recipient_form = RecipientForm()
     one_client = oneclient(reg_object)
@@ -215,6 +228,7 @@ def supplemental_contact(request, form_id):
         'form_id': form_id,
         'recipient_form': recipient_form,
         'contact_list': contact_list,
+        'data': data,
     })
 
 @login_required(login_url='/admin')
@@ -319,7 +333,7 @@ def registration_first(request, form_id):
 def registration_contact(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    contact_list = contact_info(url)
+    contact_list = contact_info(url, 1)
     client_form = ClientForm()
     recipient_form = RecipientForm()
     one_client = oneclient(reg_object)
@@ -333,6 +347,7 @@ def registration_contact(request, form_id):
         'recipient_form': recipient_form,
         'contact_list': contact_list,
         'one_client': one_client,
+        'page': 1,
     })
 
 @login_required(login_url='/admin')
