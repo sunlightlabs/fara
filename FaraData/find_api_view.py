@@ -8,10 +8,13 @@ from django.contrib.auth.decorators import login_required
 from FaraData.models import Recipient
 
 def cleantext(text):
-    text = re.sub(' +',' ', text)
-    text = re.sub('\\r|\\n','', text)
-    text = text.strip()
-    return text
+	if text!= None:
+	    text = re.sub(' +',' ', text)
+	    text = re.sub('\\r|\\n','', text)
+	    text = text.strip()
+	    return text
+	else:
+		return None
 
 @login_required(login_url='/admin')
 def find_form(request):
@@ -109,13 +112,11 @@ def add_staff(request):
 	elif agency == "Senate":
 		member_name = "Sen. " + member_name
 
-	name = cleantext(request.GET['name'])
-
 	staff = Recipient(crp_id = request.GET['crp_id'],
 					    agency = request.GET['agency'],
 					    office_detail = member_name,
-					    name = name,
-					    title = request.GET['title'],
+					    name = cleantext(request.GET['name']),
+					    title = cleantext(request.GET['title']),
 	)
 	if Recipient.objects.filter(crp_id=staff.crp_id, name=staff.name).exists():
 		message = staff.name + " of " + staff.office_detail + " CRP id : " + staff.crp_id 
@@ -134,12 +135,10 @@ def add_leader_PAC(request):
 	elif agency == "Senate":
 		member_name = "Sen. " + member_name
 
-	name = cleantext(request.GET['PAC_name'])
-
 	staff = Recipient(crp_id = request.GET['crp_id'],
 					    agency = "Leadership PAC",
 					    office_detail = member_name,
-					    name = name,
+					    name = cleantext(request.GET['PAC_name']),
 	)
 	
 	if Recipient.objects.filter(crp_id=staff.crp_id, name=staff.name).exists():
