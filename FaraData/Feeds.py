@@ -193,7 +193,7 @@ class RegionFeed(Feed):
     link = "placeholder"
    
     def get_object(self, request, region):
-        self.link = region + "/rss"
+        self.link = "/" + region + "/rss"
         region = region.replace("__", "-").replace("_", " ").title()
         return Location.objects.filter(region=region)[0]
 
