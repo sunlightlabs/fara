@@ -10,7 +10,8 @@
 
 {% else %}
     <p><i>Questions 11 and 12</i></p>
-    Contacts related to this form:<br>
+    Last 50 contacts related to this form:<br>
+    download all contacts <a href="{% url 'contact-csv' form_id %}">here</a>
     <div id="contact_list">
     <ul>
 {% endif %}

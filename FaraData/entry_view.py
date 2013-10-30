@@ -50,7 +50,7 @@ def pay_info(url):
 
 #finds contacts attached to this form 
 def contact_info(url):
-    contact_objects = Contact.objects.filter(link = url)
+    contact_objects = Contact.objects.filter(link = url)[:50]
     contact_list = []
     for con in contact_objects:
         con_id = int(con.id)
