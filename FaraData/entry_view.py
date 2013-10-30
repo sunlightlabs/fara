@@ -558,10 +558,13 @@ def fix_client(request, client_id):
 
 #data cleaning
 def cleantext(text):
-    text = re.sub(' +',' ', text)
-    text = re.sub('\\r|\\n','', text)
-    text = text.strip()
-    return text
+    if text != None:
+        text = re.sub(' +',' ', text)
+        text = re.sub('\\r|\\n','', text)
+        text = text.strip()
+        return text
+    else:
+        return None
 
 def cleanmoney(money):
     money = money.strip()
@@ -624,14 +627,18 @@ def stamp_date(request):
 @login_required(login_url='/admin')
 def recipient(request):
     if request.method == 'GET':
-        crp_id = request.GET['crp_id']
-        agency = request.GET['agency']
-        office_detail = request.GET['office_detail']
-        name  = request.GET['name']
-        title = request.GET['title']
+        crp_id = cleantext(request.GET['crp_id'])
+        
+        agency = cleantext(request.GET['agency'])
+        if agency == "Congress":
+            error = json.dumps({'error': '"Congress" is only allowed for members of Congress, please use "Congressional" for all other contacts.'}, separators=(',',':'))        
+            return HttpResponse(error, mimetype="application/json")
+        
+        office_detail = cleantext(request.GET['office_detail'])
+        name  = cleantext(request.GET['name'])
+        title = cleantext(request.GET['title'])
 
         if crp_id == '' and agency == '' and office_detail == '' and name == '':
-            print "working"
             error = json.dumps({'error': 'Please fill out form before submitting'}, separators=(',',':'))        
             return HttpResponse(error, mimetype="application/json")
 
@@ -660,28 +667,28 @@ def recipient(request):
 @login_required(login_url='/admin')       
 def lobbyist(request):
     if request.method == 'GET':
-        lobbyist_name = request.GET['lobbyist_name'] 
-        PAC_name = request.GET['PAC_name']
+        lobbyist_name = cleantext(request.GET['lobbyist_name'])
+        PAC_name = cleantext(request.GET['PAC_name'])
+
         pac_size = 0
         lobby_size = 0
-
         for p in PAC_name:
-            pac_size = len(p)
-            
+            pac_size = len(p)   
         for l in lobbyist_name:
             lobby_size = len (l)
+
         # wrapped error messages in list so they work the same as a successful variable in the JS
         if pac_size == 0 and lobby_size == 0:
             error = json.dumps([{'error': "must have lobbyist name or PAC name"}], separators=(',',':')) 
             return HttpResponse(error, mimetype="application/json")
         
-        if pac_size > 1 and lobby_size > 1:
+        if pac_size >= 1 and lobby_size >= 1:
             error = json.dumps([{'error': "Is this a lobbyist or a PAC? Only fill out the name in the appropriate field"}], separators=(',',':')) 
             return HttpResponse(error, mimetype="application/json")
         
         reg_id = request.GET['reg_id']
-        lobby = Lobbyist(lobbyist_name = request.GET['lobbyist_name'], 
-                        PAC_name = request.GET['PAC_name'], 
+        lobby = Lobbyist(lobbyist_name = lobbyist_name, 
+                        PAC_name = PAC_name, 
                         lobby_id = request.GET['lobby_id'],
         )
         lobby.save()
@@ -743,7 +750,7 @@ def client(request):
             error = json.dumps({'error': "Please add Client Name"}, separators=(',',':')) 
             return HttpResponse(error, mimetype="application/json")
 
-        client = Client(client_name = request.GET['client_name'], 
+        client = Client(client_name = cleantext(request.GET['client_name']), 
                         location = location,
                         address1 = request.GET['address1'],
                         city = request.GET['city'],
@@ -822,9 +829,9 @@ def client_info(request):
 @login_required(login_url='/admin')
 def location(request):
     if request.method == 'GET': 
-        location = Location(location = request.GET['location'],
-                            country_grouping = request.GET['country'],
-                            region = request.GET['region'],
+        location = Location(location = cleantext(request.GET['location']),
+                            country_grouping = cleantext(request.GET['country']),
+                            region = cleantext(request.GET['region']),
         )
         location.save()
         location_info = json.dumps({'location': location.location, 'country': location.country_grouping, 'region': location.region} , separators=(',',':'))
@@ -836,6 +843,7 @@ def location(request):
 
 
 #creates a new registrant
+# phasing this one out
 @login_required(login_url='/admin') 
 def registrant(request):
     if request.method == 'GET': # If the form has been submitted...
@@ -862,12 +870,12 @@ def registrant(request):
 def new_registrant(request):
     if request.method == 'GET':
         registrant = Registrant(reg_id = request.GET['reg_id'],
-                            reg_name = request.GET['reg_name'],
-                            address = request.GET['address'],
-                            city = request.GET['city'],
-                            state = request.GET['state'],
-                            zip_code = request.GET['zip'],
-                            country = request.GET['country'],
+                            reg_name = cleantext(request.GET['reg_name']),
+                            address = cleantext(request.GET['address']),
+                            city = cleantext(request.GET['city']),
+                            state = cleantext(request.GET['state']),
+                            zip_code = cleantext(request.GET['zip']),
+                            country = cleantext(request.GET['country']),
         )
         registrant.save()
         reginfo = {'id': registrant.reg_id, 'name': registrant.reg_name}
@@ -1326,7 +1334,6 @@ def metadata(request):
         #supplemental end date- needed for supplementals, and some amendments
         try:
             end_date = cleandate(request.GET['end_date'])
-            print end_date
             if type(end_date) != datetime:
                 if document.doc_type == "Supplemental":
                     return HttpResponse(end_date, mimetype="application/json")
