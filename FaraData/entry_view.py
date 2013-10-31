@@ -181,7 +181,7 @@ def return_big_form(request, form_id):
             's_date' : s_date,
             'one_client' : one_client,
             'client_reg' : client_reg,
-            'c_page_data': c_page_data,
+            'data': c_page_data,
         })
 
 @login_required(login_url='/admin')

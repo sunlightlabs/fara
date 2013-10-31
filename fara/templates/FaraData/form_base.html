@@ -427,7 +427,7 @@ jQuery(document).ready(function(){
 
           if (tag == '#noteform'){
             var note = response.note
-            var item = "<p> Note replaced with: " + note + "</p>"
+            var item = '<div id="note"><p> Note replaced with: ' + note + "</p></div>"
             $('#note').replaceWith(item);
           }
         }
