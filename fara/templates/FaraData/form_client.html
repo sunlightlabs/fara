@@ -1,0 +1,109 @@
+<section class="form-section" id="client">
+    {% if toggle %}
+    <h3 class="toggleOpen">Clients</h3>
+    <div class="toggle">
+    {% else %}
+    <h3>Clients</h3>
+    {% endif %}
+        <span class="question-helper">{{ question }}</span>
+        {% if reg_object.clients.all %}
+        <h4>Clients in the system for the registrant</h4>
+        {% endif %}
+        <ul id="client_list" class="highlight-child">
+        {% for client in reg_object.clients.all %}
+            <li>{{ client }}</li>
+        {% endfor %}
+        </ul>
+
+        <h4>Add a client</h4>
+        <form method="GET" id='clientform' action="/registrant/add_client" id='clientform'>
+            {% csrf_token %}
+            <input type="hidden" name="reg_id" value="{{ reg_id }}">
+            
+            <label class="sr-only">Add a client</label>
+            <input type="hidden" id="client_client" name="clients" class="select-control"/>
+
+            <button type="submit" class="btn btn-default form-control">Submit</button>
+        </form>
+
+        {% if toggle2 %}
+            <h3 class="toggleOpen">Add a new client to the database</h3>
+            <div class="toggle">
+        {% else %}
+            <h4>Add a new client to the database</h4>
+        {% endif %}
+
+        <form method="GET" id="add_clientform" action="/client/create">
+            <label class="sr-only" for="location">Location</label>
+            <input type="hidden" id="client_location" name="location" class="select-control" data-placeholder="Location"/>
+            <label class="sr-only" for="client_name">Client Name</label>
+            <input id="id_client_name" maxlength="200" name="client_name" type="text" class="form-control" placeholder="Client Name"/>
+            <label class="sr-only" for="address1">Address</label>
+            <input id="id_address1" maxlength="300" name="address1" type="text" class="form-control" placeholder="Address"/>
+            <label class="sr-only" for="city">City</label>
+            <input id="id_city" maxlength="100" name="city" type="text" class="form-control" placeholder="City"/>
+            <label class="sr-only" for="state">State</label>
+            <input id="id_state" maxlength="100" name="state" type="text" class="form-control" placeholder="State"/>
+            <label class="sr-only" for="zip_code">Zip Code</label>
+            <input id="id_zip_code" maxlength="50" name="zip_code" type="text" class="form-control" placeholder="Zip Code"/>
+
+            <input type="hidden" name="reg_id" value="{{ reg_id }}">
+            <button type="submit" class="btn btn-default form-control">Submit</button>
+        </form>
+         
+        <span class="help" ><a href="{% url 'instructions' %}#Client" target="blank">Help</a></span>
+
+        {% if toggle2 %}</div>{% endif %}
+
+        {% if toggle2 %}
+        <h3 class="toggleOpen">Add a new location for client field</h3>
+            <div class="toggle">
+        {% else %}
+        <h4>Add a new location for client field</h4>
+        {% endif %}
+        <ul id="location_list" class="highlight-child"></ul>
+
+        <form method="GET" id="locationform" action="/location/create">
+            <label class="sr-only" for="location">Location as appears on the form</label>
+            <input id="location" maxlength="300" name="location" type="text" class="form-control" placeholder="Location as appears on the form"/>
+            <span class="help-block">Where we would find the location on a map.</span>
+            <label class="sr-only" for="country">Country grouping</label>
+            <input id="country" maxlength="300" name="country" type="text" class="form-control" placeholder="Country Grouping"/>
+            <span class="help-block">
+                <a href="http://unstats.un.org/unsd/methods/m49/m49regin.htm" target="blank">Refer to UN regions here.</a>
+            </span>
+            <label class="sr-only" for="region">Select a Region</label>
+            <select id="region" maxlength="300" name="region" type="text" class="form-control">
+                <option value="" disabled selected>Region</option>
+                <option value="Eastern Africa">Eastern Africa</option>
+                <option value="Western Africa">Western Africa</option>
+                <option value="Middle Africa">Middle Africa</option>
+                <option value="Northern Africa">Northern Africa</option>
+                <option value="Southern Africa">Southern Africa</option>
+                <option value="Caribbean">Caribbean</option>
+                <option value="Central America">Central America</option>
+                <option value="South America">South America</option>
+                <option value="North America">North America</option>
+                <option value="Central Asia">Central Asia</option>
+                <option value="Eastern Asia">Eastern Asia</option>
+                <option value="Southern Asia">Southern Asia</option>
+                <option value="South-Eastern Asia">South-Eastern Asia</option>
+                <option value="Western Asia">Western Asia</option>
+                <option value="Eastern Europe">Eastern Europe</option>
+                <option value="Western Europe">Western Europe</option>
+                <option value="Northern Europe">Northern Europe</option>
+                <option value="Southern Europe">Southern Europe</option>
+                <option value="Australia and New Zealand">Australia and New Zealand</option>
+                <option value="Melanesia">Melanesia</option>
+                <option value="Polynesia">Polynesia</option>
+                <option value="Micronesia"> Micronesia</option>
+                <option value="Multinational"> Multinational</option>
+            </select>   
+
+          <button type="submit" class="btn btn-default form-control">Submit</button>
+        </form>
+
+        <span class="help"><a href="{% url 'instructions' %}#Location" target="blank">Help</a></span><br>
+    {% if toggle2 %}<div>{% endif %}
+    {% if toggle %}<div>{% endif %}
+</section>

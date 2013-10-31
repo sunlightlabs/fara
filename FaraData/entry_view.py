@@ -145,14 +145,16 @@ def oneclient(reg_object):
 def return_big_form(request, form_id):
         url, reg_id, s_date = doc_id(form_id)
         #forms
+        ### don't think I am using any of these
         client_form = ClientForm()
         reg_form = RegForm()
         recipient_form = RecipientForm()
-        #options for the forms
         #for displaying information already in the system
         reg_object = reg_info(reg_id)
         one_client = oneclient(reg_object)
-        contact_list = contact_info(url, page)
+        page = request.GET.get('page')
+        contact_list = contact_info(url, page)[0]
+        c_page_data = contact_info(url, page)[1]
         dis_list = dis_info(url)
         pay_list = pay_info(url)
         cont_list = cont_info(url)
@@ -179,6 +181,7 @@ def return_big_form(request, form_id):
             's_date' : s_date,
             'one_client' : one_client,
             'client_reg' : client_reg,
+            'c_page_data': c_page_data,
         })
 
 @login_required(login_url='/admin')
@@ -214,7 +217,6 @@ def supplemental_contact(request, form_id):
     page = request.GET.get('page')
     contact_list = contact_info(url, page)[0]
     data = contact_info(url, page)[1]
-    print data
     client_form = ClientForm()
     recipient_form = RecipientForm()
     one_client = oneclient(reg_object)
@@ -704,7 +706,8 @@ def lobbyist(request):
         reg_id = request.GET['reg_id']
         lobby = Lobbyist(lobbyist_name = lobbyist_name, 
                         PAC_name = PAC_name, 
-                        lobby_id = request.GET['lobby_id'],
+                        # I would love to add but we don't have data entry time now
+                        #lobby_id = request.GET['lobby_id'],
         )
         lobby.save()
         # adds to registrant 

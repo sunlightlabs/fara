@@ -1,0 +1,100 @@
+<section class="form-section">
+    {% if toggle %}
+    <h3 class="toggleOpen">Contact</h3>
+
+    <div class="toggle">
+    {% else %}
+    <h3>Contact</h3>
+    {% endif %}
+        <span class="question-helper">{{ question }}</span>
+
+        {% if contact_list %}
+        <h4>Contacts related to this form</h4>
+        {% endif %}
+        <ul id="contact_list" class="highlight-child">
+            {% for c in contact_list %}
+                <li>
+                    {% if c.2 %}
+                        {{ c.0 }} {{ c.1 }} ({{ c.2 }}) {{ c.3 }}
+                    {% else %}
+                        {{ c.0 }} {{ c.1 }} {{ c.3 }}
+                    {% endif %}
+                    <a class="js-popup pull-right" href="{% url 'fix-contact' c.4 %}">Fix</a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% if data.has_previous %}<span><a href="?page={{ data.previous_page_number }}">prev</a>
+        </span>{% endif %}
+        <span class="current">Page {{ data.number }} of {{ data.paginator.num_pages }}
+        </span>{% if data.has_next %}<span><a href="?page={{ data.next_page_number }}">next</a></span>{% endif %}
+
+        <h4>Enter Contact</h4>
+
+        <form method="GET" id="contactform" action="/contact/create">
+
+            <div class="checkbox">
+                <label>
+                    <input name="do_not_clear" type="checkbox">
+                    Do Not Clear
+                </label>
+            </div>
+            
+            {% csrf_token %}
+            <input type="hidden" name="reg_id" value="{{ reg_id }}">
+            <input type="hidden" name="link" value="{{ url }}">
+
+            
+            <label for="client">Client</label>
+            <select name="client" id="contact_client" class="form-control">
+                {% if one_client == False %}
+                <option value="" selected disabled>Please Select Client</option>
+                {% endif %}
+                {% for client in reg_object.clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+                {% endfor %}
+                {% for client in reg_object.terminated_clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+                {% endfor %}
+            </select>
+
+            
+            <span class="help-block pull-right"><a href="#recip">Add a New Recipient </a></span>
+
+            <label for="recipient">
+                Recipient
+            </label>
+            <input type="hidden" id="contact_recip" name="recipient" class="select-control" placeholder="(Who is being contacted)"/>
+
+
+            <span class="help-block pull-right"><a href="#lobbyist">Add a New Lobbyist </a></span>
+
+            <label for="lobbyist">Lobbyists</label>
+            <select multiple="multiple" id="contact_lobbyist" name="lobbyist" class="form-control">
+            {% for lobbyist in reg_object.lobbyists.all %}
+                <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
+            {% endfor %}
+            </select>
+
+
+            <label for="date">Date</label>
+            <input id="contact_date" type="text" class="form-control" name="date"/>
+
+            <label for="type">Type</label>
+            <select name="contact_type" class="form-control">
+                <option value="U">unknown</option>
+                <option value="P">phone</option>
+                <option value="E">email</option>
+                <option value="M">meeting</option>
+                <option value="O">other</option>
+            </select>
+            
+            <label for="description">Description</label>
+            <textarea cols="40" id="id_description" name="description" rows="10" class="form-control"></textarea>
+
+            <button type="submit" class="btn btn-default form-control">Submit</button>
+        </form>
+        
+        <span class="help" ><a href="{% url 'instructions' %}#Contact" target="blank">Help</a></span>
+    {% if toggle %}</div>{% endif %}
+    
+</section>

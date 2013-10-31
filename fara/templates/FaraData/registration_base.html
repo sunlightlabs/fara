@@ -1,9 +1,8 @@
 {% extends "FaraData/form_base.html" %}
 
-{% block formheading %}
-<h2>Registration</h2>
-<h2>{{ reg_object.reg_name }}</h2>
-{% endblock formheading %}
+{% block page_heading %}Registration{% endblock page_heading %}
+{% block page_description %}{{ reg_object.reg_name }}{% endblock page_description %}
+
 
 {% block quicklinks %}
 <hr>

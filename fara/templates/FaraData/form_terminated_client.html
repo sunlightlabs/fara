@@ -1,0 +1,36 @@
+<section class="form-section" id="client">
+    {% if toggle %}
+    <h3 class="toggleOpen">Terminated Clients</h3>
+        <div class="toggle">
+    {% else %}
+    <h3>Terminated Clients</h3>
+    {% endif %}
+
+
+        <span class="question-helper">{{ question }}</span>
+
+        <h4>Terminated clients in the system for the registrant</h4>
+
+        <ul id="terminated_client_list" class="highlight-child">
+        {% for clients in reg_object.terminated_clients.all %}
+            <li>{{ clients }}</li>
+        {% endfor %}
+        </ul>
+
+        <h4>Add Termination</h4>
+
+        <form method="GET" id='terminatedclientform' action="/registrant/add_terminated">
+            {% csrf_token %}
+            <input type="hidden" name="reg_id" value="{{ reg_id }}">
+            <label class="sr-only">Add Termination</label>
+            <select multiple="multiple" id="terminated_client" name="clients" class="form-control">
+            {% for client in reg_object.clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-default form-control">Submit</button>
+        </form>
+
+        <span class="help" ><a href="{% url 'instructions' %}#Terminated_Client" target="blank">Help</a></span>
+    {% if toggle %}</div>{% endif %}
+</section>

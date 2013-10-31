@@ -1,0 +1,22 @@
+{% block form_stamp %}
+<section class="form-section">
+    <h3>Stamp Date</h3>
+    <p class="help-block">This is the date the Fara office received the form.</p>
+
+    <div id="stamp_list" class="highlight">
+        {% ifnotequal s_date None %}{{ s_date }}{% endifnotequal %}
+    </div>
+
+    <form class="form-inline"  action="{% url 'stamp-date' %}" method="GET" id="stampform">
+            <input id="form_id" name="form_id" type="hidden" value="{{ form_id }}"/>
+
+            <label class="sr-only" for="stamp_date">Correct date</label>
+            <input class="form-control" placeholder="Correct date" id="stamp_date" type="text" name="stamp_date" />
+            
+            <button type="submit" class="btn btn-default form-control">Submit</button>
+    </form>
+
+    <span class="help" ><a href="{% url 'instructions' %}#Stamp_Date" target="blank">Help</a></span>
+
+</section>
+{% endblock %}
