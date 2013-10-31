@@ -5,25 +5,29 @@
 
 {% block formquestions %}
 
-<h3>Fix Payment</h3>
+<section class="form-section">
 
-{% if payment.subcontractor %}
-Delete subcontractor:
-<div id="sub{{ payment.subcontractor.reg_id }}">
-    <form method="GET" class="deleteable" action="/payment_remove_sub">  
+    <h3>Fix Payment</h3>
+
+    {% if payment.subcontractor %}
+    <h4>Delete subcontractor</h4>
+    <div id="sub{{ payment.subcontractor.reg_id }}">
+        <form class="form-inline" method="GET" class="deleteable" action="/payment_remove_sub">  
             <input type="hidden" name="payment_id" value="{{ payment.id }}">
-            <b>{{ payment.subcontractor.reg_name }}</b>
-            <input value="Delete" type="submit" />
-    </form> 
-</div> 
-{% endif  %}
+            <input disabled value="{{ payment.subcontractor.reg_name }}" class="form-control">
+            <button type="submit" class="btn btn-danger form-control">Delete</button>
+        </form> 
+    </div>
+    {% endif %}
 
-<form method="GET" id="amend_pay" class="fix" action="/amend_payment">
-    <input type="hidden" name="pay_id" value="{{ payment.id }}" />
-    <input type="hidden" name="reg_id" value="{{ reg_object.reg_id }}"/>
-    <input type="hidden" name="link" value="{{ url }}"/>
-    
-   <p><label for="client">Clients:</label><select name="client" id="pay_client">
+    <h4>Edit Payment</h4>
+    <form method="GET" id="amend_pay" class="fix" action="/amend_payment">
+        <input type="hidden" name="pay_id" value="{{ payment.id }}" />
+        <input type="hidden" name="reg_id" value="{{ reg_object.reg_id }}"/>
+        <input type="hidden" name="link" value="{{ url }}"/>
+        
+       <label for="client">Clients</label>
+       <select name="client" id="pay_client" class="form-control">
             <option value="{{ payment.client.id }}">{{ payment.client.client_name }}</option>
         {% for client in reg_object.clients.all %}
             <option value="{{ client.id }}">{{ client.client_name }}</option>
@@ -31,50 +35,40 @@ Delete subcontractor:
         {% for client in reg_object.terminated_clients.all %}
             <option value="{{ client.id }}">{{ client.client_name }}</option>
         {% endfor %}
-    </select></p>
+        </select>
 
-    <p>
-    {% if payment.fee == True %}   
-        <input type="checkbox" name="fee" checked>Fee
-    {% else %}  
-        <input type="checkbox" name="fee">Fee
-    {% endif %}
-    </p>
-    
-    <p><label for="amount">Amount: $</label><input id="amount" type="text" name="amount" value="{{ payment.amount }}"/></p> 
-    
-    {% if payment.purpose %}
-        <p><label for="description">description:</label><br \>
-        <textarea name="purpose" cols="25" rows="5">{{ payment.purpose }}</textarea></p>
-    {% else %}
-        <p><label for="description">description:</label><br \>
-        <textarea name="purpose" cols="25" rows="5"></textarea></p>
-    {% endif %}
-    
-    <p><label for="date">Date: </label>
-    <input id="payment_date" type="text" name="date" value="{{ date }}"/></p>
+        
+        <div class="checkbox">
+            <label>
+                <input name="fee" type="checkbox" {% if payment.fee == True %} checked {% endif %}>
+                Fee
+            </label>
+        </div>
+        
+        <label for="amount">Amount</label>
+        <input id="amount" type="text" name="amount" value="{{ payment.amount }}" class="form-control" placeholder="$"/>
+        
+        
+        <label for="description">Description</label>
+        <textarea name="purpose" class="form-control">{% if payment.purpose %}{{ payment.purpose }}{% endif %}</textarea>
+        
+        <label for="date">Date</label>
+        <input id="payment_date" type="text" name="date" value="{{ date }}" class="form-control"/>
 
-    (Add this field if the money is coming from to another registrant.)
-    <p><label for="subcontractor">Subcontractor: </label><input type="hidden" id="payment_subcontractor" name="subcontractor" style="width: 300px" /></p>
-    
-    <input type="submit" />
-</form>
+        <label for="subcontractor">Subcontractor</label>
+        <span class="help-block">(Add this field if the money is coming from to another registrant.)</span>
+        <input type="hidden" id="payment_subcontractor" name="subcontractor" class="select-control"/>
+        
+        <button type="submit" class="btn btn-default form-control">Submit</button>
+    </form>
 
-<p><span class="help">
- <form method="GET" class= "fix" action="/delete_payment">  
-    <input type="hidden" name="payment_id" value="{{ payment.id }}">
-    <input value="Delete this entry" type="submit" />
- </form> 
-</span>
-</p>
-<br>
+     <form method="GET" class= "fix" action="/delete_payment">  
+        <input type="hidden" name="payment_id" value="{{ payment.id }}">
+        <button type="submit" class="btn btn-danger form-control">Delete this entry</button>
+     </form>
 
-<p>
-<div class="help" ><a href="{% url 'instructions' %}#Payment" target="blank">Help</a></div><br>
-</p>
-<hr />
-
-
+    <span class="help" ><a href="{% url 'instructions' %}#Payment" target="blank">Help</a></span>
+</section>
 
 {% endblock formquestions %}
 

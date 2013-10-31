@@ -51,12 +51,12 @@ footer .btn:not(:first-child) {
 }
 
 .btn-default {
-	background: #e0e0e0;
+	background: #daf1f2;
 }
 
-.btn-default:hover, .btn-info:active , .btn-info:focus {
+.btn-default:hover, .btn-default:active , .btn-default:focus {
 	outline: none;
-	background: #d9d9d9;
+	background: #c3e4e5;
 }
 
 /* ==========================================================================

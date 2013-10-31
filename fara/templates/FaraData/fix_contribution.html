@@ -5,48 +5,49 @@
 
 {% block formquestions %}
 
-<h3>Fix Contribution</h3>
+<section class="form-section">
 
-{{ date }}
+    <h3>Fix Contribution</h3>
 
-<form method="GET" id='amend_cont' class="fix" action="/amend_contribution">
-    <input type="hidden" name="cont_id" value='{{ contribution.id }}'>
-    <input type="hidden" name="registrant" value="{{ reg_obj.reg_id }}">
-    <input type="hidden" name="link" value="{{ url }}">
-    
-    <p><label for="id_amount">Amount: $</label> 
-    <input id="id_amount" name="amount" type="text" value="{{ contribution.amount }}" /></p>
-    
-    <p><label for="date">Date: </label>
-    <input id="contribution_date" type="text" name="date" value="{{ date }}"/></p>
+    <form method="GET" id='amend_cont' class="fix" action="/amend_contribution">
+        <input type="hidden" name="cont_id" value='{{ contribution.id }}'>
+        <input type="hidden" name="registrant" value="{{ reg_obj.reg_id }}">
+        <input type="hidden" name="link" value="{{ url }}">
+        
+        <label for="id_amount">Amount</label> 
+        <input id="id_amount" name="amount" type="text" value="{{ contribution.amount }}" class="form-control" placeholder="$"/>
 
-    <p>(Who gets the contribution)</p>
-    Current Recipient: <b>{{ contribution.recipient }}</b></p>
+        <label for="date">Date</label>
+        <input id="contribution_date" type="text" name="date" value="{{ date }}" class="form-control"/>
 
-    <p><label for="recipient">Change Recipient :</label><p><input type="hidden" id="cont_recip" name="recipient" style="width: 300px"/></p>
+        <label for="recipient">Current Recipient</label>
+        <span class="help-block">(Who gets the contribution)</span>
+        <input type="text" value="{{ contribution.recipient }}" disabled class="form-control"/>
 
-    <p>(Who the money is coming from)</p>
-    <p><label for="lobbyist">Add Lobbyist or PAC:</label><select id="cont_lobbyist" name="lobbyist">
-        <option value="{{ contrbution.lobbyist.id }}">{{ contribution.lobbyist }}</option>
-        <option value="">None</option>
-    {% for lobbyist in reg_object.lobbyists.all %}
-        <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
-    {% endfor %}
-	</select></p>
-    
-    <input type="submit" />
-</form>
+        <label for="recipient">Change Recipient</label>
+        <input type="hidden" id="cont_recip" name="recipient" class="select-control"/>
 
-<span class="help">
- <form method="GET" class= "fix" action="/delete_contribution">  
-    <input type="hidden" name="contribution_id" value="{{ contribution.id }}">
-    <input value="Delete this entry" type="submit" />
- </form></span>
+        <label for="lobbyist">Add Lobbyist or PAC</label>
+        <span class="help-block">(Who the money is coming from)</span>
+        <select id="cont_lobbyist" name="lobbyist" class="form-control">
+            <option value="{{ contrbution.lobbyist.id }}">{{ contribution.lobbyist }}</option>
+            <option value="">None</option>
+        {% for lobbyist in reg_object.lobbyists.all %}
+            <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
+        {% endfor %}
+    	</select>
+        
+        <button type="submit" class="btn btn-default form-control">Submit</button>
+    </form>
 
-<br>
-<p>
-<span class="help" ><a href="{% url 'instructions' %}#Contribution" target="blank">Help</a></span><br>
-</p>
+     <form method="GET" class= "fix" action="/delete_contribution">  
+        <input type="hidden" name="contribution_id" value="{{ contribution.id }}">
+        <button type="submit" class="btn btn-danger form-control">Delete this entry</button>
+     </form>
+
+    <span class="help"><a href="{% url 'instructions' %}#Contribution" target="blank">Help</a></span>
+
+</section>
 {% endblock formquestions %}
 
 {% block doc_footer %}

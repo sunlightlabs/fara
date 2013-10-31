@@ -25,14 +25,12 @@
     </div>
 
     <form class="form-inline"  action="{% url 'stamp-date' %}" method="GET" id="stampform">
-        <div class="form-group">
             <input id="form_id" name="form_id" type="hidden" value="{{ form_id }}"/>
 
             <label class="sr-only" for="stamp_date">Correct date</label>
-            <input class="form-control" placeholder="Correct date" id="stamp_date" type="text" class="form-control" name="stamp_date" />
+            <input class="form-control" placeholder="Correct date" id="stamp_date" type="text" name="stamp_date" />
             
             <button type="submit" class="btn btn-default form-control">Submit</button>
-        </div>
     </form>
 
     <span class="help" ><a href="{% url 'instructions' %}#Stamp_Date" target="blank">Help</a></span>
@@ -48,7 +46,7 @@
     <div id="reg_list"></div>
 
     <form action="{% url 'new-registrant' %}" id="regform" method="GET" id="regform">
-        <label class="sr-only" >Reg ID</label>
+        <label class="sr-only">Reg ID</label>
         <input id="id_reg_id" name="reg_id" type="text" readonly value="{{ reg_id }}" class="form-control"/>
 
         <label class="sr-only" for="id_reg_name">Registrant Name</label>
@@ -368,7 +366,7 @@
             <input type="hidden" name="link" value="{{ url }}">
 
             
-            <label for="client">Clients</label>
+            <label for="client">Client</label>
             <select name="client" id="contact_client" class="form-control">
                 {% if one_client == False %}
                 <option value="" selected disabled>Please Select Client</option>
@@ -549,7 +547,7 @@
             <button type="submit" class="btn btn-default form-control">Submit</button>
         </form>
 
-        <span class="help" ><a href="{% url 'instructions' %}#Payment" target="blank">Help</a></span><br>
+        <span class="help" ><a href="{% url 'instructions' %}#Payment" target="blank">Help</a></span>
     </div>
 </section>
 
@@ -666,7 +664,7 @@
             </tbody>
         </table>
 
-        <h4>Enter Contribution</h4>
+        <h4>Enter Contributions</h4>
         <form method="GET" id='contform' action="/contribution/create">
 
             <div class="checkbox">

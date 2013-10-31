@@ -140,7 +140,13 @@ form {
   background: url('/static/images/select2.png') no-repeat 3px 4px;
 }
 
-.form-inline input.form-control {
+/* Inline Form overrides */
+
+.form-inline .form-control {
+  display: inline-block;
+}
+
+.form-inline .form-control {
   width: 250px;
 }
 
