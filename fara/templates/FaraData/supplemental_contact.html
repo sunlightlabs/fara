@@ -24,7 +24,7 @@
 
         {% if data.has_previous %}<span><a href="?page={{ data.previous_page_number }}">prev</a>
         </span>{% endif %}
-        <span class="current">{{ data.number }} of {{ data.paginator.num_pages }}
+        <span class="current">Page {{ data.number }} of {{ data.paginator.num_pages }}
         </span>{% if data.has_next %}<span><a href="?page={{ data.next_page_number }}">next</a></span>{% endif %}
  
 </ul>
