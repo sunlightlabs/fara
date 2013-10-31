@@ -11,7 +11,7 @@
 
 {% if disbursement.subcontractor %}
     <h4>Delete subcontractor</h4>
-    <form class="form-inline" method="GET" class="deleteable" action="/disbursement_remove_sub">  
+    <form class="form-inline deleteable" method="GET" action="/disbursement_remove_sub">  
         <input type="hidden" name="disbursement_id" value="{{ disbursement.id }}">
         
         <input disabled value="{{ disbursement.subcontractor.reg_name }}" class="form-control">    
@@ -19,6 +19,7 @@
     </form> 
 {% endif  %}
 
+    <h4>Edit Disbursement</h4>
     <form method="GET" id='dis_amend' class="fix" action="/amend_disbursement">
         <input type="hidden" name="dis_id" value="{{ disbursement.id }}">
         <input type="hidden" name="reg_id" value="{{ reg_object.reg_id }}">

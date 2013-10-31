@@ -14,13 +14,10 @@ $(document).ready(function() {
 
 	$.cookie.json = true;
 	var cookie = $.cookie();
-			console.log(cookie);
 
 	$('.doclist.toggle').each(function() {
 		var e = $('.table_title', this);
 		var e_id = e.attr('id');
-		
-		console.log(e_id);
 
 		if ($.cookie(e_id) == false) {
 			e.next('.toggle').hide();
@@ -40,7 +37,6 @@ $(document).ready(function() {
 
 		var displayed = (section.hasClass('js-hidden')) ? false : true ;
 
-		console.log(id + displayed);
 		$.cookie(id, displayed, { expires: 7 });
 
 

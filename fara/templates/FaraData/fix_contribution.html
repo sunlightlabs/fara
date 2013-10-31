@@ -30,7 +30,7 @@
         <label for="lobbyist">Add Lobbyist or PAC</label>
         <span class="help-block">(Who the money is coming from)</span>
         <select id="cont_lobbyist" name="lobbyist" class="form-control">
-            <option value="{{ contrbution.lobbyist.id }}">{{ contribution.lobbyist }}</option>
+            <option value="{{ contrbution.lobbyist.id }}" selected disabled>{{ contribution.lobbyist }}</option>
             <option value="">None</option>
         {% for lobbyist in reg_object.lobbyists.all %}
             <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
@@ -48,6 +48,7 @@
     <span class="help"><a href="{% url 'instructions' %}#Contribution" target="blank">Help</a></span>
 
 </section>
+
 {% endblock formquestions %}
 
 {% block doc_footer %}

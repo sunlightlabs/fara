@@ -6,10 +6,10 @@
 {% block formquestions %}
 
 <section class="form-section">
+    
     <h3>Fix Registrant</h3>
 
     <form action="/amend_registrant" id="amend_registrant" class="fix" method="GET">
-
         <input id="form_id" name="form_id" type="hidden" value="{{ form_id }}" />
 
         <label>Reg ID</label>
@@ -37,6 +37,7 @@
     </form>
 
     <span class="help"><a href="{% url 'instructions' %}#Registrant" target="blank">Help</a></span>
+
 </section>
 
 {% endblock %}

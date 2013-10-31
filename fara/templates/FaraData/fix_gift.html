@@ -5,64 +5,67 @@
 
 {% block formquestions %}
 
+<section class="form-section">
 
-<h3>Fix Gift</h3>
+    <h3>Fix Gift</h3>
+
 {% if gift.recipient %}
-Delete recipient:
-<div id="sub{{ gift.recipient.reg_id }}">
-    <form method="GET" class="deleteable" action="/gift_remove_recip">  
-            <input type="hidden" name="gift_id" value="{{ gift.id }}">
-            <b>{{gift.recipient.title}} {{ gift.recipient.name }}</b>
-            <input value="Delete" type="submit" />
+    <h4>Delete recipient</h4>
+
+    <form class="form-inline deleteable" method="GET" action="/gift_remove_recip">  
+        <input type="hidden" name="gift_id" value="{{ gift.id }}">
+
+        <input disabled value="{{gift.recipient.title}} {{ gift.recipient.name }}" class="form-control">    
+        <button type="submit" class="btn btn-danger form-control">Delete</button>                
     </form> 
-</div> 
-{% endif  %}
+{% endif %}
 
+    <h4>Edit Gift</h4>
 
-<form method="GET" id="amend_gift" class="fix" action="/amend_gift">
-    <input type="hidden" name="gift_id" value="{{ gift.id }}" />
-    <input type="hidden" name="reg_id" value="{{ reg_object.reg_id }}"/>
-    <input type="hidden" name="link" value="{{ url }}"/>
+    <form method="GET" id="amend_gift" class="fix" action="/amend_gift">
+        <input type="hidden" name="gift_id" value="{{ gift.id }}" />
+        <input type="hidden" name="reg_id" value="{{ reg_object.reg_id }}"/>
+        <input type="hidden" name="link" value="{{ url }}"/>
 
-     <p><label for="client">Clients:</label><select name="client" id="pay_client">
+        <span class="help-block pull-right"><a href="#client">Add a New Client</a></span>
+        <label for="client">Client</label>
+        <select name="client" id="pay_client" class="form-control">
         {% if client %}
-    		<option value={{ client.id }}>{{ client.client_name }}</option>
+            <option value={{ client.id }} selected disabled>{{ client.client_name }}</option>
         {% endif %}
-        	<option value="">No Client</option>
+            <option value="">No Client</option>
         {% for client in reg_object.clients.all %}
             <option value="{{ client.id }}">{{ client.client_name }}</option>
         {% endfor %}
         {% for client in reg_object.terminated_clients.all %}
             <option value="{{ client.id }}">{{ client.client_name }}</option>
         {% endfor %}
-    </select></p>
+        </select>
 
-    <p><label for="date">Date: </label>
-                <input id="gift_date" type="text" name= "date" value="{{ date }}" /></p>
+        <label for="date">Date</label>
+        <input id="gift_date" type="text" name= "date" value="{{ date }}" class="form-control"/>
 
-    <p><a href="#client">add a new client</a></p>
+        <label for "purpose">Purpose</label>
+        <textarea name="purpose" class="form-control">{% if gift.purpose %}{{ gift.purpose }}{% endif %}</textarea>
+        
+        <label for="description">Thing of Value</label>
+        <textarea name="description" class="form-control">{% if gift.description %}{{ gift.description }}{% endif %}</textarea>
 
-    <label for "purpose">Purpose: </label><br \>
-    <textarea name="purpose" cols="25" rows="5">{% if gift.purpose %}{{ gift.purpose }}{% endif %}</textarea></p>
-    
-    <p><label for="description">Thing of Value:</label><br \>
-    <textarea name="description" cols="25" rows="5">{% if gift.description %}{{ gift.description }}{% endif %}</textarea></p>
+        <label for="recipient">Recipient</label>
+        <span class="help-block">(If the gift is to someone other than the registrant)</span>
+        <input type="hidden" id="gift_recip" name="recipient" class="select-control"/>
+        
+        <button type="submit" class="btn btn-default form-control">Submit</button>
+    </form>
 
-    (If the gift is to someone other than the registrant)
-    <p><label for="recipient">Recipient: </label><input type="hidden" id="gift_recip" name="recipient" style="width: 300px"/></p>
-    
-    <input type="submit" /></form>
+    <form method="GET" class= "fix" action="/delete_gift">  
+        <input type="hidden" name="gift_id" value="{{ gift.id }}">
+        <button type="submit" class="btn btn-danger form-control">Delete this entry</button>
+    </form> 
 
-    <span class="help" ><a href="{% url 'instructions' %}#Gift" target="blank">Help</a></span><br>
+    <span class="help"><a href="{% url 'instructions' %}#Gift" target="blank">Help</a></span>
 
-    <span class="help" ><p>
-		 <form method="GET" class= "fix" action="/delete_gift">  
-		    <input type="hidden" name="gift_id" value="{{ gift.id }}">
-		    <input value="Delete this entry" type="submit" />
-		 </form> 
-	</p></span>
-<br>
-
+</section>
 
 {% endblock formquestions %}
 

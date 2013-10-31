@@ -381,18 +381,13 @@
 
             
             <span class="help-block pull-right"><a href="#recip">Add a New Recipient</a></span>
-
-            <label for="recipient">
-                Recipient
-            </label>
+            <label for="recipient">Recipient</label>
             <input type="hidden" id="contact_recip" name="recipient" class="select-control" placeholder="(Who is being contacted)"/>
-
-
             {% for recipient in all_recipients %}
             <option value="{{ recipient.id }}">{{ recipient.title }} {{ recipient.name }}, {{ recipient.agency }}</option>
             {% endfor %}
             
-            
+
             <span class="help-block pull-right"><a href="#lobbyist">Add a New Lobbyist</a></span>
 
             <label for="lobbyist">Lobbyists</label>
