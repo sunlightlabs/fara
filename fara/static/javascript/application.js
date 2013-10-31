@@ -1,5 +1,6 @@
 $(document).ready(function() {
 	
+
 	// Insert chevron icon if toggleable
 
 	var chevron = '<span class="glyphicon glyphicon-chevron-down"></span>';
@@ -9,45 +10,95 @@ $(document).ready(function() {
 	});
 
 
-	// Hide toggleable tables on page load depending on setting in cookies
+	// Hide toggleable tables on page load depending on settings in cookie
 
 	$.cookie.json = true;
 	var cookie = $.cookie();
+			console.log(cookie);
 
-	$('.table_title').each(function() {
-		var e = $(this);
+	$('.doclist.toggle').each(function() {
+		var e = $('.table_title', this);
+		var e_id = e.attr('id');
 		
-		if ($.cookie(e.attr('id')) == false) {
-			e.closest('.doclist.toggle').addClass('js-hidden');
+		console.log(e_id);
+
+		if ($.cookie(e_id) == false) {
+			e.next('.toggle').hide();
+			$(this).addClass('js-hidden');
 		}
 	});
 
+	// Toggle toggleable tables on/off and save settings to cookie
 
-	// Toggle toggleable tables on/off and save settings
-
-	$('.table_title').click(function() {
+	$('.table_title').on('click', function() {
 		var e = $(this);
 		var id = e.attr('id')
 
-		var section = e.closest('.doclist.toggle').toggleClass('js-hidden');	
+		e.next('.toggle').slideToggle('fast');
+
+		var section = e.closest('.doclist.toggle').toggleClass('js-hidden');
 
 		var displayed = (section.hasClass('js-hidden')) ? false : true ;
 
-		$.cookie(section_id, displayed, { expires: 7 });
+		console.log(id + displayed);
+		$.cookie(id, displayed, { expires: 7 });
+
+
 	});
 
+	// Custom popup function for links
 
-	// Allow user to click on any area in the .table row to access link
+	var popup = function(linkClass) {
+		$(document).on('click', linkClass, function(e){
+			e.preventDefault();
 
-	$('tbody tr').click(function() {
-		location.href = $(this).find('td a.doclink').attr('href');
+			var url = $(this).attr('href');
+			newPopup = window.open(url, 'name', 'width=550, height=750');
+			
+			if (window.focus) {
+				newPopup.focus();
+			}
+			return false;			
+		});
+	}
+
+	var popupClass = 'js-popup'; // Define the popup class
+	var popupSelector = '.' + popupClass; // Define the popup selector
+
+	popup(popupSelector); // Trigger popup on this selector
+
+
+
+	// Allow user to click on any area in the .table row to access a link 
+
+	$(document).on('click', '.table tbody tr', function() {
+
+		if ($('td a', this).hasClass(popupClass)) { // If the link is a popup, create a popup window for it
+
+			var url = $(popupSelector, this).attr('href');
+			newPopup = window.open(url, 'name', 'width=550, height=750');
+			
+			if (window.focus) {
+				newPopup.focus();
+			}
+			return false;	
+
+		} else { // Otherwise redirect normally
+			location.href = $('td .doclink', this).attr('href');
+		}
+
 	});  
 
 
-	// Allow user to click on any area on homepage docselect to access link
+	// Allow user to click inside .docselect on the homepage to access link
 
-	$('.docselect').click(function() {
+	$('.docselect').on('click', function() {
 		location.href = $(this).find('h3 a').attr('href');
 	});  	        
 
 });
+
+
+
+
+
