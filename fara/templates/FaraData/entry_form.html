@@ -1,4 +1,4 @@
-{% extends "FaraData/form_base.html" %}
+{% extends "FaraData/form_base_flat.html" %}
 
 {% block page_heading %}Amendments{% endblock page_heading %}
 {% block page_description %}{{ reg_object.reg_name }}{% endblock page_description %}
@@ -27,7 +27,7 @@
 
     {% include "FaraData/form_contribution.html" with question="Supplemental Question 15(c)" toggle="toggle" %}
 
-    {% include "FaraData/form_gift.html" with question="Supplemental Question 14(c)" toggle="toggle" %}
+    {% include "FaraData/form_gift.html" with question="Registration Question 14(c)" toggle="toggle" %}
 
     {% include "FaraData/form_processing.html" %}
 

@@ -194,6 +194,23 @@ def supplemental_base(request, form_id):
     return render(request, 'FaraData/supplemental_base.html', {'form_id': form_id})   
 
 @login_required(login_url='/admin')
+def wrapper(request, form_id):
+    url, reg_id, s_date = doc_id(form_id)
+    reg_object = reg_info(reg_id)
+    client_form = ClientForm()
+    meta_list = meta_info(url)
+
+    return render(request, 'FaraData/dynamic_form.html',{
+        'reg_id' : reg_id,
+        'reg_object': reg_object,
+        'url': url,
+        'client_form': client_form,
+        'form_id': form_id,
+        's_date': s_date,
+        'meta_list': meta_list,
+    })
+
+@login_required(login_url='/admin')
 def supplemental_first(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
@@ -315,6 +332,22 @@ def supplemental_last(request, form_id):
 @login_required(login_url='/admin')
 def registration_base(request, form_id):
     return render(request, 'FaraData/registration_base.html', {'form_id': form_id})   
+
+@login_required(login_url='/admin')
+def reg_wrapper(request, form_id):
+    url, reg_id, s_date = doc_id(form_id)
+    reg_object = reg_info(reg_id)
+    # think this is obsolete
+    client_form = ClientForm()
+
+    return render(request, 'FaraData/dynamic_reg_form.html',{
+        'reg_id' : reg_id,
+        'reg_object': reg_object,
+        'url': url,
+        'client_form': client_form,
+        'form_id': form_id,
+        's_date': s_date,
+    })
 
 @login_required(login_url='/admin')
 def registration_first(request, form_id):
@@ -1145,9 +1178,12 @@ def contribution(request):
         date = cleandate(request.GET['date'])
         if type(date) != datetime:
             if date == '{"error":"No date"}':
-                date = ''
+                date = None
+                date_string = ''
             else:
                 return HttpResponse(date, mimetype="application/json")
+        else:
+            date_string = date.strftime("%B %d, %Y")
 
         registrant = Registrant.objects.get(reg_id=int(request.GET['registrant']))
         recipient = Recipient.objects.get(id=int(request.GET['recipient']))
@@ -1183,7 +1219,7 @@ def contribution(request):
             clear = "off"
 
         continfo = {'amount': contribution.amount, 
-                    'date': contribution.date.strftime("%B %d, %Y"), 
+                    'date': date_string, 
                     'recipient': contribution.recipient.name,
                     'lobbyist': lobbyist,
                     'cont_id': contribution.id,

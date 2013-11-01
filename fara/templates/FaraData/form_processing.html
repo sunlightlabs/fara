@@ -40,9 +40,7 @@
         </div>
 
         <label for="notes">Notes</label>
-        <textarea name="notes" class="form-control">
-            {% if meta_list.4 == None %}{% else %}{{ meta_list.4 }}{% endif %}
-        </textarea>
+        <textarea name="notes" class="form-control">{% if meta_list.4 == None %}{% else %}{{ meta_list.4 }}{% endif %}</textarea>
         
         <button type="submit" class="btn btn-default form-control">Submit</button>
     </form>

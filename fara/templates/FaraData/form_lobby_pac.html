@@ -45,7 +45,7 @@
                 <!-- <label class="sr-only" for="id_lobby_id">Lobby ID</label>
                 <input id="id_lobby_id" maxlength="150" name="lobby_id" type="text" class="form-control" placeholder="Lobby ID"/> -->
 
-                {% if noPAC %}<span class="help-block">Is this a lobbyist or a PAC? Use only the appropriate field.</span>{% endif %}
+                {% if not noPAC %}<span class="help-block">Is this a lobbyist or a PAC? Use only the appropriate field.</span>{% endif %}
                 <label class="sr-only" for="id_lobbyist_name">Lobbyist Name</label>
                 <input id="id_lobbyist_name" maxlength="150" name="lobbyist_name" type="text" class="form-control" placeholder="Lobbyist Name"/>
                 {% if noPAC %}
