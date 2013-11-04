@@ -57,7 +57,7 @@ class LatestEntriesFeed(Feed):
 
 
     def item_description(self, item):
-        info = "Date received: %s " %(item.stamp_date)
+        info = "<p>Date received: %s </p>" %(item.stamp_date)
         link = item.url
         doc_type = item.doc_type
         reg = find_reg(item)
@@ -67,15 +67,15 @@ class LatestEntriesFeed(Feed):
         for c in clients:
             client = client + c.client_name + "; "
         
-        if len(client) > 1:
-            info = info + "(Active clients: %s)"%(client)
+        if len(client) >= 1:
+            info = info + "<p>Active clients: %s</p>"%(client)
         
         terminated = ' '
         terminated_clients = reg.terminated_clients.all()
         for c in terminated_clients:
             terminated = c.client_name + "; "
-        if len(terminated) > 1:
-            info = info + "(Terminated clients: %s)"%(terminated)
+        if len(terminated) >= 1:
+            info = info + "<p>Terminated clients: %s</p>"%(terminated)
 
         if doc_type == "Exhibit AB":
             try:
@@ -144,14 +144,14 @@ class DataEntryFeed(Feed):
         for c in clients:
             client + c.client_name
         if len(client) > 17:
-            info = info + "(Active clients: %s)"%(client)
+            info = info + "<p>Active clients: %s</p>"%(client)
         
         terminated = ' '
         terminated_clients = reg.terminated_clients.all()
         for c in terminated_clients:
             terminated = c.client_name
         if len(terminated) > 20:
-            info = info + "(Terminated clients: %s)"%(terminated)
+            info = info + "<p>Terminated clients: %s</p>"%(terminated)
 
         if doc_type == "Exhibit AB":
             try:
