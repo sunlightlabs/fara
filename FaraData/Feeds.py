@@ -5,7 +5,8 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-
+# from django.utils.safestring import SafeData, mark_safe
+from django.utils.html import format_html
 from FaraData.models import *
 from fara_feed.models import *
 
@@ -37,6 +38,22 @@ def find_regMD(item):
         reg = Registrant.objects.get(reg_id=reg_id)
         return reg        
 
+def compute_pay(url):
+    payments = Payment.objects.filter(link=url).count()
+    if payments > 0:
+        pay_objects = Payment.objects.filter(link=url)
+        doc = Document.objects.get(url=url)
+        total = 0
+        for pay in pay_objects:
+            amount = pay.amount
+            if amount != '':
+                total = total + amount
+        payment = ' Total payments this report: $ %.2f Download detailed payment spreadsheet: %s/payment_csv/%d ' %(total, base_url, doc.id)
+        return payment
+    else:
+        payment = None
+        return payment
+
 #@login_required(login_url='/admin')
 class LatestEntriesFeed(Feed):
     title = "Latest entries in the Foreign lobbying database"
@@ -57,7 +74,7 @@ class LatestEntriesFeed(Feed):
 
 
     def item_description(self, item):
-        info = "<p>Date received: %s </p>" %(item.stamp_date)
+        info = "Date received: %s " %(item.stamp_date)
         link = item.url
         doc_type = item.doc_type
         reg = find_reg(item)
@@ -68,14 +85,14 @@ class LatestEntriesFeed(Feed):
             client = client + c.client_name + "; "
         
         if len(client) >= 1:
-            info = info + "<p>Active clients: %s</p>"%(client)
+            info = info + "Active clients: %s"%(client)
         
         terminated = ' '
         terminated_clients = reg.terminated_clients.all()
         for c in terminated_clients:
             terminated = c.client_name + "; "
         if len(terminated) >= 1:
-            info = info + "<p>Terminated clients: %s</p>"%(terminated)
+            info = info + "Terminated clients: %s"%(terminated)
 
         if doc_type == "Exhibit AB":
             try:
@@ -85,20 +102,22 @@ class LatestEntriesFeed(Feed):
                 pass
 
         if doc_type == "Supplemental":
-            payments = Payment.objects.filter(link=link).count()
+            pay_info = compute_pay(link)
+            if pay_info != None:
+                info = info + pay_info
+
             contacts = Contact.objects.filter(link=link).count()
-            if payments > 0:
-                info = info + ' <p>Number of payments: %i Download detailed payment spreadsheet <a href="%s/payment_csv/%d">here</a>.</p> ' %(payments, base_url, item.id)
             if contacts > 0:
-                info = info + ' <p>Number of contacts: %i Download detailed contact spreadsheet <a href="%s/contact_csv/%d">here</a>.</p> ' %(contacts, base_url, item.id)
+                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
 
         if doc_type == "Registration":
-            payments = Payment.objects.filter(link=link).count()
+            pay_info = compute_pay(link)
+            if pay_info != None:
+                info = info + pay_info
+
             contacts = Contact.objects.filter(link=link).count()
-            if payments > 0:
-                info = info + ' <p>Number of payments: %i Download detailed payment spreadsheet <a href="%s/payment_csv/%d">here</a>.</p> ' %(payments, base_url, item.id)
             if contacts > 0:
-                info = info + ' <p>Number of contacts: %i Download detailed contact spreadsheet <a href="%s/contact_csv/%d">here</a>.</p> ' %(contacts, base_url, item.id)
+                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
 
         return info
 
@@ -144,14 +163,14 @@ class DataEntryFeed(Feed):
         for c in clients:
             client + c.client_name
         if len(client) > 17:
-            info = info + "<p>Active clients: %s</p>"%(client)
+            info = info + "Active clients: %s"%(client)
         
         terminated = ' '
         terminated_clients = reg.terminated_clients.all()
         for c in terminated_clients:
             terminated = c.client_name
         if len(terminated) > 20:
-            info = info + "<p>Terminated clients: %s</p>"%(terminated)
+            info = info + "Terminated clients: %s"%(terminated)
 
         if doc_type == "Exhibit AB":
             try:
@@ -161,20 +180,22 @@ class DataEntryFeed(Feed):
                 pass
 
         if doc_type == "Supplemental":
-            payments = Payment.objects.filter(link=link).count()
+            pay_info = compute_pay(link)
+            if pay_info != None:
+                info = info + pay_info
+            
             contacts = Contact.objects.filter(link=link).count()
-            if payments > 0:
-                info = info + ' <p>Number of payments: %i Download detailed payment spreadsheet <a href="%s/payment_csv/%d">here</a>.</p> ' %(payments, base_url, item.id)
             if contacts > 0:
-                info = info + ' <p>Number of contacts: %i Download detailed contact spreadsheet <a href="%s/contact_csv/%d">here</a>.</p> ' %(contacts, base_url, item.id)
+                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
 
         if doc_type == "Registration":
-            payments = Payment.objects.filter(link=link).count()
+            pay_info = compute_pay(link)
+            if pay_info != None:
+                info = info + pay_info
+            
             contacts = Contact.objects.filter(link=link).count()
-            if payments > 0:
-                info = info + ' <p>Number of payments: %i Download detailed payment spreadsheet <a href="%s/payment_csv/%d">here</a>.</p> ' %(payments, base_url, item.id)
             if contacts > 0:
-                info = info + ' <p>Number of contacts: %i Download detailed contact spreadsheet <a href="%s/contact_csv/%d">here</a>.</p> ' %(contacts, base_url, item.id)
+                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
 
         return info
 
@@ -221,7 +242,7 @@ class RegionFeed(Feed):
          return item.url
 
     def item_description(self, item):
-        info = "<p>Date received: %s </p>" %(item.stamp_date)
+        info = "Date received: %s " %(item.stamp_date)
         link = item.url
         doc_type = item.doc_type
         reg = find_reg(item)
@@ -232,15 +253,16 @@ class RegionFeed(Feed):
             client = client + c.client_name + "; "
         
         if len(client) > 1:
-            info = info + "<p>Active clients: %s</p>"%(client)
+            info = info + "Active clients: %s"%(client)
         
         terminated = ' '
         terminated_clients = reg.terminated_clients.all()
         for c in terminated_clients:
             terminated = c.client_name + "; "
+        
         if len(terminated) > 1:
-            info = info + "<p>Terminated clients: %s</p>"%(terminated)
-
+            info = info + "Terminated clients: %s"%(terminated) 
+        
         if doc_type == "Exhibit AB":
             try:
                 new_client = ClientReg.objects.get(link=link)
@@ -249,20 +271,22 @@ class RegionFeed(Feed):
                 pass
 
         if doc_type == "Supplemental":
-            payments = Payment.objects.filter(link=link).count()
+            pay_info = compute_pay(link)
+            if pay_info != None:
+                info = info + pay_info
+            
             contacts = Contact.objects.filter(link=link).count()
-            if payments > 0:
-                info = info + ' <p>Number of payments: %i Download detailed payment spreadsheet <a href="%s/payment_csv/%d">here</a>.</p> ' %(payments, base_url, item.id)
             if contacts > 0:
-                info = info + ' <p>Number of contacts: %i Download detailed contact spreadsheet <a href="%s/contact_csv/%d">here</a>.</p> ' %(contacts, base_url, item.id)
+                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
 
         if doc_type == "Registration":
-            payments = Payment.objects.filter(link=link).count()
+            pay_info = compute_pay(link)
+            if pay_info != None:
+                info = info + pay_info 
+
             contacts = Contact.objects.filter(link=link).count()
-            if payments > 0:
-                info = info + ' <p>Number of payments: %i Download detailed payment spreadsheet <a href="%s/payment_csv/%d">here</a>.</p> ' %(payments, base_url, item.id)
             if contacts > 0:
-                info = info + ' <p>Number of contacts: %i Download detailed contact spreadsheet <a href="%s/contact_csv/%d">here</a>.</p> ' %(contacts, base_url, item.id)
+                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
 
         return info
 
@@ -272,4 +296,80 @@ class RegionFeed(Feed):
         title = "%s-- %s %s" %(name, item.doc_type, item.stamp_date)
         return title
 
+class BigSpenderFeed(Feed):
+    title = "Registrants that report over $1,000,000 in a reporting period."
+    link = "http://54.234.244.182/latest/rss/"
+    description = "Updates"
+
+    def items(self):
+        spenders = []
+        docs = Document.objects.filter(processed=True,doc_type="Supplemental").order_by('-stamp_date')[:50]
+        for d in docs:
+            payment_count = Payment.objects.filter(link=d.url).count()
+            if payment_count > 0:
+                total = 0
+                payments = Payment.objects.filter(link=d.url)
+                for item in payments:
+                    total += item.amount
+                if total > 1000000:
+                    spenders.append(d)
+
+        return spenders
+
+    def item_pubdate(self, item):
+        return datetime.combine(item.stamp_date, datetime.min.time())
+        
+    def item_link(self, item):
+        return item.url
+
+    def item_guid(self, item):
+         return item.url
+
+    def item_description(self, item):
+        info = "Date received: %s " %(item.stamp_date)
+        link = item.url
+        doc_type = item.doc_type
+        reg = find_reg(item)
+
+        client = ' '
+        clients = reg.clients.all()
+        for c in clients:
+            client = client + c.client_name + "; "
+        
+        if len(client) > 1:
+            info = info + "Active clients: %s"%(client)
+        
+        terminated = ' '
+        terminated_clients = reg.terminated_clients.all()
+        for c in terminated_clients:
+            terminated = c.client_name + "; "
+        if len(terminated) > 1:
+            info = info + "Terminated clients: %s"%(terminated)
+
+        if doc_type == "Exhibit AB":
+            try:
+                new_client = ClientReg.objects.get(link=link)
+                info = info + "New client: " + new_cient
+            except:
+                pass
+
+        if doc_type == "Supplemental":
+            pay_info = compute_pay(link)
+            if pay_info != None:
+                info = info + pay_info
+            
+            contacts = Contact.objects.filter(link=link).count()
+            if contacts > 0:
+                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
+
+        if doc_type == "Registration":
+            pay_info = compute_pay(link)
+            if pay_info != None:
+                info = info + pay_info 
+
+            contacts = Contact.objects.filter(link=link).count()
+            if contacts > 0:
+                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
+
+        return format_html(info)    
 
