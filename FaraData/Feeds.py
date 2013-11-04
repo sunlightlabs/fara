@@ -88,17 +88,17 @@ class LatestEntriesFeed(Feed):
             payments = Payment.objects.filter(link=link).count()
             contacts = Contact.objects.filter(link=link).count()
             if payments > 0:
-                info = info + " Number of payments: %i Download payment spreadsheet: %s/payment_csv/%d" %(payments, base_url, item.id)
+                info = info + ' <p>Number of payments: %i Download detailed payment spreadsheet <a href="%s/payment_csv/%d">here</a>.</p> ' %(payments, base_url, item.id)
             if contacts > 0:
-                info = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, item.id)
+                info = info + ' <p>Number of contacts: %i Download detailed contact spreadsheet <a href="%s/contact_csv/%d">here</a>.</p> ' %(contacts, base_url, item.id)
 
         if doc_type == "Registration":
             payments = Payment.objects.filter(link=link).count()
             contacts = Contact.objects.filter(link=link).count()
             if payments > 0:
-                info = info + " Number of payments: %i Download payment spreadsheet: %s/payment_csv/%d" %(payments, base_url, item.id)
+                info = info + ' <p>Number of payments: %i Download detailed payment spreadsheet <a href="%s/payment_csv/%d">here</a>.</p> ' %(payments, base_url, item.id)
             if contacts > 0:
-                info = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, item.id)
+                info = info + ' <p>Number of contacts: %i Download detailed contact spreadsheet <a href="%s/contact_csv/%d">here</a>.</p> ' %(contacts, base_url, item.id)
 
         return info
 
@@ -164,17 +164,17 @@ class DataEntryFeed(Feed):
             payments = Payment.objects.filter(link=link).count()
             contacts = Contact.objects.filter(link=link).count()
             if payments > 0:
-                info = info + " Number of payments: %i Download payment spreadsheet: %s/payment_csv/%d" %(payments, base_url, doc.id)
+                info = info + ' <p>Number of payments: %i Download detailed payment spreadsheet <a href="%s/payment_csv/%d">here</a>.</p> ' %(payments, base_url, item.id)
             if contacts > 0:
-                info = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, doc.id)
+                info = info + ' <p>Number of contacts: %i Download detailed contact spreadsheet <a href="%s/contact_csv/%d">here</a>.</p> ' %(contacts, base_url, item.id)
 
         if doc_type == "Registration":
             payments = Payment.objects.filter(link=link).count()
             contacts = Contact.objects.filter(link=link).count()
             if payments > 0:
-                info = info + " Number of payments: %i Download payment spreadsheet: %s/payment_csv/%d" %(payments, base_url, doc.id)
+                info = info + ' <p>Number of payments: %i Download detailed payment spreadsheet <a href="%s/payment_csv/%d">here</a>.</p> ' %(payments, base_url, item.id)
             if contacts > 0:
-                iinfo = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, doc.id)
+                info = info + ' <p>Number of contacts: %i Download detailed contact spreadsheet <a href="%s/contact_csv/%d">here</a>.</p> ' %(contacts, base_url, item.id)
 
         return info
 
@@ -221,7 +221,7 @@ class RegionFeed(Feed):
          return item.url
 
     def item_description(self, item):
-        info = "Date received: %s " %(item.stamp_date)
+        info = "<p>Date received: %s </p>" %(item.stamp_date)
         link = item.url
         doc_type = item.doc_type
         reg = find_reg(item)
@@ -232,14 +232,14 @@ class RegionFeed(Feed):
             client = client + c.client_name + "; "
         
         if len(client) > 1:
-            info = info + "(Active clients: %s)"%(client)
+            info = info + "<p>Active clients: %s</p>"%(client)
         
         terminated = ' '
         terminated_clients = reg.terminated_clients.all()
         for c in terminated_clients:
             terminated = c.client_name + "; "
         if len(terminated) > 1:
-            info = info + "(Terminated clients: %s)"%(terminated)
+            info = info + "<p>Terminated clients: %s</p>"%(terminated)
 
         if doc_type == "Exhibit AB":
             try:
@@ -252,17 +252,17 @@ class RegionFeed(Feed):
             payments = Payment.objects.filter(link=link).count()
             contacts = Contact.objects.filter(link=link).count()
             if payments > 0:
-                info = info + " Number of payments: %i Download payment spreadsheet: %s/payment_csv/%d" %(payments, base_url, item.id)
+                info = info + ' <p>Number of payments: %i Download detailed payment spreadsheet <a href="%s/payment_csv/%d">here</a>.</p> ' %(payments, base_url, item.id)
             if contacts > 0:
-                info = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, item.id)
+                info = info + ' <p>Number of contacts: %i Download detailed contact spreadsheet <a href="%s/contact_csv/%d">here</a>.</p> ' %(contacts, base_url, item.id)
 
         if doc_type == "Registration":
             payments = Payment.objects.filter(link=link).count()
             contacts = Contact.objects.filter(link=link).count()
             if payments > 0:
-                info = info + " Number of payments: %i Download payment spreadsheet: %s/payment_csv/%d" %(payments, base_url, item.id)
+                info = info + ' <p>Number of payments: %i Download detailed payment spreadsheet <a href="%s/payment_csv/%d">here</a>.</p> ' %(payments, base_url, item.id)
             if contacts > 0:
-                info = info + " Number of contacts: %i Download contact spreadsheet: %s/contact_csv/%d" %(contacts, base_url, item.id)
+                info = info + ' <p>Number of contacts: %i Download detailed contact spreadsheet <a href="%s/contact_csv/%d">here</a>.</p> ' %(contacts, base_url, item.id)
 
         return info
 

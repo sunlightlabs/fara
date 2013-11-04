@@ -178,7 +178,3 @@ form {
   list-style-type: none;
   padding: 0;
  }
-/*adding this so there are not 2 scroll bars*/
- body {
-  margin: none;
- }

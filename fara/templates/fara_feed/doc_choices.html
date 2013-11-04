@@ -27,7 +27,7 @@
                     <tr {% if d.url in processed_true %}{% else %}class="not-entered"{% endif %}>
                         <td>{{ d.reg_id }}</td>
 
-                        <td><a class="doclink" href="{% url 'supplemental-first' d.id %}">{% if d.reg_id in names %} {{names|access:d.reg_id}} {% endif %}</a></td>
+                        <td><a class="doclink" href="{% url 'enter-supplemental' d.id %}">{% if d.reg_id in names %} {{names|access:d.reg_id}} {% endif %}</a></td>
                         
                         <td>{{ d.stamp_date }}</td>
                         
@@ -44,7 +44,7 @@
                         <td class="note">
                             {% if d.url in notes %}
                                 {% if notes|access:d.url %}
-                                    <a href="{% url 'supplemental-last' d.id %}">{{notes|access:d.url}}</a>
+                                    {{notes|access:d.url}}
                                 {% endif %}
                             {% endif %}
                         </td>
@@ -85,7 +85,7 @@
                     <tr {% if d.url in processed_true %}{% else %}class="not-entered"{% endif %}>
                         <td>{{ d.reg_id }}</td>
 
-                        <td><a class="doclink" href="{% url 'registration-first' d.id %}">{% if d.reg_id in names %} {{names|access:d.reg_id}} {% endif %}</a></td>
+                        <td><a class="doclink" href="{% url 'reg-entryform' d.id %}">{% if d.reg_id in names %} {{names|access:d.reg_id}} {% endif %}</a></td>
                         
                         <td>{{ d.stamp_date }}</td>
                         
@@ -102,7 +102,7 @@
                         <td class="note">
                             {% if d.url in notes %}
                                 {% if notes|access:d.url %}
-                                    <a href="{% url 'registration-last' d.id %}">{{notes|access:d.url}}</a>
+                                    <a href="{% url 'reg-entryform' d.id %}">{{notes|access:d.url}}</a>
                                 {% endif %}
                             {% endif %}
                         </td>
