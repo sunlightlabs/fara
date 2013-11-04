@@ -1,10 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <title>FARA entry</title>
 
 <head>
-{% block head %}
 <meta charset="utf-8">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/screen.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/entry_form.css" />
@@ -424,7 +422,7 @@ jQuery(document).ready(function(){
           }
 
           if (tag == '.deleteable'){
-            h.remove();
+            h.parent('div').remove();
           }
 
           if (tag == '#noteform'){
@@ -523,9 +521,19 @@ $('.fix').ajaxForm(direct);
 
 // -->
 </script>
-{% endblock head %}
+</head>
 
 
+<body>
+
+{% block show_doc %}
+<div id="left">
+   <iframe height=100% width=100% scrolling="yes" src="{{ url }}"></iframe>
+</div>
+<div id="wrap" class="form-wrap">
+{% endblock show_doc %}
+
+{% block doc_header %}
   <header>
     <div id="logo">
       <a href="/"><h1>FARA</h1></a>
@@ -537,25 +545,25 @@ $('.fix').ajaxForm(direct);
           <span>{% block page_description %}{% endblock page_description %}</span>
       </div>
   </header>
-
+{% endblock doc_header %}
 
   <main class="container">
-  
+
   {% block formheading %}{% endblock formheading %}
   {% block formquestions %}{% endblock formquestions %}
   {% block quicklinks %}{% endblock quicklinks %}
 
   </main>
 
-
+{% block doc_footer %}
   <span class="push"></span>
+</div> <!-- end #wrap -->
 
 <footer class="form-wrap">
   <div class="container">
       <a class="btn btn-info pull-right" href="{{ url }}" target="_blank">View Form Source</a>
   </div>
 </footer>
-
+{% endblock doc_footer %}
 </body>
 </html>
-

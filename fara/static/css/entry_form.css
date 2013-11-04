@@ -1,6 +1,6 @@
 /*creates the two scrolling sections  */
 #left {
-    width: 700px;
+    width: 60%;
     position: fixed;
     top: 0;
     bottom: 0;
@@ -8,16 +8,15 @@
     background: #ffa;
 }
 
-#wrap.form-wrap { margin-left: 700px; } 
-footer.form-wrap { margin-left: 700px; } 
+#wrap.form-wrap { margin-left: 60%; } 
 
 .form-wrap main.container {
+  height: 100%;
   padding-left: 20px;
   padding-right: 20px;
   background: #f2f2f2;  
 }
 .scrollable{
-    overflow: auto;
     width: 70px; 
     height: 100%; 
     border: 1px silver solid;
@@ -214,7 +213,13 @@ form {
   padding: 0;
  }
 
+
 .help-block {
   color: #bbb;
   font-size: 85%;
 }
+
+/*adding this so there are not 2 scroll bars*/
+ body {
+  margin: none;
+ }

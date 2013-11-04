@@ -1,0 +1,62 @@
+<section class="form-section" id="client">
+    {% if toggle %}
+    <h3 class="toggleOpen">Client Info</h3>
+        <div class="toggle">
+    {% else %}
+    <h3>Client Info</h3>
+    {% endif %}
+    
+        <h4>Client info in the system</h4>
+
+        <ul id="ab_client_info" class="highlight-child">
+            {% for c in client_reg %}
+                <li>
+                    Client Name: {{ c.0 }} <br>
+                {% if c.1 %}
+                    Client Type: {{ c.1 }}<br>
+                {% endif %}
+                {% if c.2 %}
+                    Description: {{ c.2 }}<br>
+                {% endif %}
+                {% if c.3 %}
+                    Primary Contractor: {{ c.3 }}<br>
+                {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+
+        <h4>Add client info</h4>
+
+        <form method="GET" id="client_infoform" action="/client_info">
+            <input id="id_reg_id" name="reg_id" type="hidden" value="{{ reg_id }}"/>
+            <input type="hidden" name="link" value="{{ url }}">
+            <label class="sr-only" for="client">Client</label>
+            <select name="client" id="ab_client" class="form-control">
+                <option value="" disabled selected>Select a Client</option>
+            {% for client in reg_object.clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+            </select>
+
+            <label for="primary_contractor">Primary Contractor</label>
+            <span class="help-block">Does this client come through another contractor? Does it say "through" or "via" another entity? If so, find the name mentioned with the client below:</span>
+            <input type="hidden" id="primary_contractor" name="primary_contractor" class="select-control" data-placeholder="Select Primary Contractor"/>
+            
+              
+            <span class="question-helper">Exhibit A, Question 5</span>
+            <label class="sr-only" for="client_type">Client Type</label>
+            <input id="client_type" maxlength="25" name="client_type" type="text" class="form-control" placeholder="Client Type"/>
+
+
+            <span class="question-helper">Exhibit B, Question 8</span>
+            <label class="sr-only" for="description">Description</label>
+            <textarea class="form-control" name="description" cols="25" rows="5" placeholder="Description"></textarea>
+
+            <button type="submit" class="btn btn-default form-control">Submit</button>
+        </form>
+
+        <span class="help"><a href="{% url 'instructions' %}#Client" target="blank">Help</a></span>
+    {% if toggle %}
+</div>
+{% endif %}
+</section>

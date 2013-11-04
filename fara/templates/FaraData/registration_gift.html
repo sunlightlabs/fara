@@ -1,71 +1,10 @@
 {% extends "FaraData/registration_base.html" %}
 {% block formquestions %}
 
-<h3>Gift</h3>
-<p><i>Question 9(b), Question 10(b)</i></p>
+    {% include "FaraData/form_gift.html" with question="Question 9(b), Question 10(b)" %}
 
-<div id="gift_basket">
-    <ul>
-        {% for g in gift_list %}
-            <li>{{ g.0 }} from {{ g.3 }} on {{ g.1 }}  <a href="{% url 'fix-gift' g.2 %}" onclick="return popitup('{% url 'fix-gift' g.2 %}')">fix</a> </li>
-        {% endfor %} 
-    </ul>
-</div>
-
-
-<form method="GET" id="giftform" action="/gift/create">
-    {% csrf_token %}
-    <input type="hidden" name="reg_id" value="{{ reg_id }}">
-    <input type="hidden" name="link" value="{{  url }}">
-    <p><label for="client">Clients:</label><select name="client" id="gift_client">
-    {% if one_client == False %}    
-        <option value="None">Please Select Client</option>
-    {% endif %}
-    {% for client in reg_object.clients.all %}
-        <option value="{{ client.id }}">{{ client.client_name }}</option>
-    {% endfor %}
-    {% for client in reg_object.terminated_clients.all %}
-        <option value="{{ client.id }}">{{ client.client_name }}</option>
-    {% endfor %}
-    
-    </select></p>  <a href="#client">add a new client</a>
-    
-    <p><label for="date">Date: </label>
-    <input id="gift_date" type="text" name= "date" /></p>
-    
-    <label for "purpose">Purpose: </label><br \>
-    <textarea name="purpose" cols="25" rows="5"></textarea></p>
-    
-    <p><label for="description">Thing of Value:</label><br \>
-    <textarea name="description" cols="25" rows="5"></textarea></p>
-
-    (If the gift is to someone other than the registrant)
-    <p><label for="recipient">Recipient: </label><input type="hidden" id="gift_recip" name="recipient" style="width: 300px"/></p>
-    
-    <input type="submit" />
-</form>
-    
-<span class="help" ><a href="{% url 'instructions' %}#Gift" target="blank">Help</a></span><br>
-<hr />
-
-
-
-<a id="recip"></a><h3> Add a new Recipient:</h3>
-<p>(person who receives the gift other than the registrant or client)</p>
-<a href="{% url 'find-form' %}" target="blank"><b>Add a new member of Congress</b></a>
-<p> <i>People being meet, given contributions and gifts</i></p>
-<form method="GET" id='recipform' action="/recipient/create">
-    {{ recipient_form.as_p }}
-    
-    <input type="submit" />
-</form>    
-
-<span class="help" ><a href="{% url 'instructions' %}#Recipient" target="blank">Help</a></span><br>
-<hr>
-
-
+    {% include "FaraData/form_recipient.html" %}
 
 <div allign="center"><h3><a href="{% url 'registration-disbursement' form_id %}">  Continue to Disbirsement</a></h3></div>
-
 
 {% endblock formquestions %}

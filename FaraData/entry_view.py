@@ -8,12 +8,13 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from FaraData.models import * 
 from fara_feed.models import Document
 
 ## Section for functions that create variables for the templates 
-
+    
 # this gets the info about the form
 def doc_id(form_id):
     doc = Document.objects.get(id = form_id)
@@ -49,14 +50,23 @@ def pay_info(url):
     return pay_list
 
 #finds contacts attached to this form 
-def contact_info(url):
+def contact_info(url, page):
     contact_objects = Contact.objects.filter(link = url)
+    
+    paginator = Paginator(contact_objects, 20)
+    try:
+        data = paginator.page(page)
+    except PageNotAnInteger:
+        data = paginator.page(1)
+    except EmptyPage:
+        data = paginator.page(paginator.num_pages)
+
     contact_list = []
-    for con in contact_objects:
+    for con in data:
         con_id = int(con.id)
         for recipient in con.recipient.all():
             contact_list.append([recipient.title, recipient.name, recipient.agency, con.date, con_id ])
-    return (contact_list)
+    return (contact_list, data)
 
 #finds contributions attached to this form        
 def cont_info(url):
@@ -135,14 +145,16 @@ def oneclient(reg_object):
 def return_big_form(request, form_id):
         url, reg_id, s_date = doc_id(form_id)
         #forms
+        ### don't think I am using any of these
         client_form = ClientForm()
         reg_form = RegForm()
         recipient_form = RecipientForm()
-        #options for the forms
         #for displaying information already in the system
         reg_object = reg_info(reg_id)
         one_client = oneclient(reg_object)
-        contact_list = contact_info(url)
+        page = request.GET.get('page')
+        contact_list = contact_info(url, page)[0]
+        c_page_data = contact_info(url, page)[1]
         dis_list = dis_info(url)
         pay_list = pay_info(url)
         cont_list = cont_info(url)
@@ -169,6 +181,7 @@ def return_big_form(request, form_id):
             's_date' : s_date,
             'one_client' : one_client,
             'client_reg' : client_reg,
+            'data': c_page_data,
         })
 
 @login_required(login_url='/admin')
@@ -179,6 +192,23 @@ def index(request, form_id):
 @login_required(login_url='/admin')
 def supplemental_base(request, form_id):
     return render(request, 'FaraData/supplemental_base.html', {'form_id': form_id})   
+
+@login_required(login_url='/admin')
+def wrapper(request, form_id):
+    url, reg_id, s_date = doc_id(form_id)
+    reg_object = reg_info(reg_id)
+    client_form = ClientForm()
+    meta_list = meta_info(url)
+
+    return render(request, 'FaraData/dynamic_form.html',{
+        'reg_id' : reg_id,
+        'reg_object': reg_object,
+        'url': url,
+        'client_form': client_form,
+        'form_id': form_id,
+        's_date': s_date,
+        'meta_list': meta_list,
+    })
 
 @login_required(login_url='/admin')
 def supplemental_first(request, form_id):
@@ -201,7 +231,9 @@ def supplemental_first(request, form_id):
 def supplemental_contact(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    contact_list = contact_info(url)
+    page = request.GET.get('page')
+    contact_list = contact_info(url, page)[0]
+    data = contact_info(url, page)[1]
     client_form = ClientForm()
     recipient_form = RecipientForm()
     one_client = oneclient(reg_object)
@@ -215,6 +247,7 @@ def supplemental_contact(request, form_id):
         'form_id': form_id,
         'recipient_form': recipient_form,
         'contact_list': contact_list,
+        'data': data,
     })
 
 @login_required(login_url='/admin')
@@ -301,6 +334,22 @@ def registration_base(request, form_id):
     return render(request, 'FaraData/registration_base.html', {'form_id': form_id})   
 
 @login_required(login_url='/admin')
+def reg_wrapper(request, form_id):
+    url, reg_id, s_date = doc_id(form_id)
+    reg_object = reg_info(reg_id)
+    # think this is obsolete
+    client_form = ClientForm()
+
+    return render(request, 'FaraData/dynamic_reg_form.html',{
+        'reg_id' : reg_id,
+        'reg_object': reg_object,
+        'url': url,
+        'client_form': client_form,
+        'form_id': form_id,
+        's_date': s_date,
+    })
+
+@login_required(login_url='/admin')
 def registration_first(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
@@ -319,7 +368,7 @@ def registration_first(request, form_id):
 def registration_contact(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    contact_list = contact_info(url)
+    contact_list = contact_info(url, 1)
     client_form = ClientForm()
     recipient_form = RecipientForm()
     one_client = oneclient(reg_object)
@@ -333,6 +382,7 @@ def registration_contact(request, form_id):
         'recipient_form': recipient_form,
         'contact_list': contact_list,
         'one_client': one_client,
+        'page': 1,
     })
 
 @login_required(login_url='/admin')
@@ -558,10 +608,13 @@ def fix_client(request, client_id):
 
 #data cleaning
 def cleantext(text):
-    text = re.sub(' +',' ', text)
-    text = re.sub('\\r|\\n','', text)
-    text = text.strip()
-    return text
+    if text != None:
+        text = re.sub(' +',' ', text)
+        text = re.sub('\\r|\\n','', text)
+        text = text.strip()
+        return text
+    else:
+        return None
 
 def cleanmoney(money):
     money = money.strip()
@@ -624,14 +677,18 @@ def stamp_date(request):
 @login_required(login_url='/admin')
 def recipient(request):
     if request.method == 'GET':
-        crp_id = request.GET['crp_id']
-        agency = request.GET['agency']
-        office_detail = request.GET['office_detail']
-        name  = request.GET['name']
-        title = request.GET['title']
+        crp_id = cleantext(request.GET['crp_id'])
+        
+        agency = cleantext(request.GET['agency'])
+        if agency == "Congress":
+            error = json.dumps({'error': '"Congress" is only allowed for members of Congress, please use "Congressional" for all other contacts.'}, separators=(',',':'))        
+            return HttpResponse(error, mimetype="application/json")
+        
+        office_detail = cleantext(request.GET['office_detail'])
+        name  = cleantext(request.GET['name'])
+        title = cleantext(request.GET['title'])
 
         if crp_id == '' and agency == '' and office_detail == '' and name == '':
-            print "working"
             error = json.dumps({'error': 'Please fill out form before submitting'}, separators=(',',':'))        
             return HttpResponse(error, mimetype="application/json")
 
@@ -660,29 +717,30 @@ def recipient(request):
 @login_required(login_url='/admin')       
 def lobbyist(request):
     if request.method == 'GET':
-        lobbyist_name = request.GET['lobbyist_name'] 
-        PAC_name = request.GET['PAC_name']
+        lobbyist_name = cleantext(request.GET['lobbyist_name'])
+        PAC_name = cleantext(request.GET['PAC_name'])
+
         pac_size = 0
         lobby_size = 0
-
         for p in PAC_name:
-            pac_size = len(p)
-            
+            pac_size = len(p)   
         for l in lobbyist_name:
             lobby_size = len (l)
+
         # wrapped error messages in list so they work the same as a successful variable in the JS
         if pac_size == 0 and lobby_size == 0:
             error = json.dumps([{'error': "must have lobbyist name or PAC name"}], separators=(',',':')) 
             return HttpResponse(error, mimetype="application/json")
         
-        if pac_size > 1 and lobby_size > 1:
+        if pac_size >= 1 and lobby_size >= 1:
             error = json.dumps([{'error': "Is this a lobbyist or a PAC? Only fill out the name in the appropriate field"}], separators=(',',':')) 
             return HttpResponse(error, mimetype="application/json")
         
         reg_id = request.GET['reg_id']
-        lobby = Lobbyist(lobbyist_name = request.GET['lobbyist_name'], 
-                        PAC_name = request.GET['PAC_name'], 
-                        lobby_id = request.GET['lobby_id'],
+        lobby = Lobbyist(lobbyist_name = lobbyist_name, 
+                        PAC_name = PAC_name, 
+                        # I would love to add but we don't have data entry time now
+                        #lobby_id = request.GET['lobby_id'],
         )
         lobby.save()
         # adds to registrant 
@@ -743,7 +801,7 @@ def client(request):
             error = json.dumps({'error': "Please add Client Name"}, separators=(',',':')) 
             return HttpResponse(error, mimetype="application/json")
 
-        client = Client(client_name = request.GET['client_name'], 
+        client = Client(client_name = cleantext(request.GET['client_name']), 
                         location = location,
                         address1 = request.GET['address1'],
                         city = request.GET['city'],
@@ -822,9 +880,9 @@ def client_info(request):
 @login_required(login_url='/admin')
 def location(request):
     if request.method == 'GET': 
-        location = Location(location = request.GET['location'],
-                            country_grouping = request.GET['country'],
-                            region = request.GET['region'],
+        location = Location(location = cleantext(request.GET['location']),
+                            country_grouping = cleantext(request.GET['country']),
+                            region = cleantext(request.GET['region']),
         )
         location.save()
         location_info = json.dumps({'location': location.location, 'country': location.country_grouping, 'region': location.region} , separators=(',',':'))
@@ -836,6 +894,7 @@ def location(request):
 
 
 #creates a new registrant
+# phasing this one out
 @login_required(login_url='/admin') 
 def registrant(request):
     if request.method == 'GET': # If the form has been submitted...
@@ -862,12 +921,12 @@ def registrant(request):
 def new_registrant(request):
     if request.method == 'GET':
         registrant = Registrant(reg_id = request.GET['reg_id'],
-                            reg_name = request.GET['reg_name'],
-                            address = request.GET['address'],
-                            city = request.GET['city'],
-                            state = request.GET['state'],
-                            zip_code = request.GET['zip'],
-                            country = request.GET['country'],
+                            reg_name = cleantext(request.GET['reg_name']),
+                            address = cleantext(request.GET['address']),
+                            city = cleantext(request.GET['city']),
+                            state = cleantext(request.GET['state']),
+                            zip_code = cleantext(request.GET['zip']),
+                            country = cleantext(request.GET['country']),
         )
         registrant.save()
         reginfo = {'id': registrant.reg_id, 'name': registrant.reg_name}
@@ -1119,9 +1178,12 @@ def contribution(request):
         date = cleandate(request.GET['date'])
         if type(date) != datetime:
             if date == '{"error":"No date"}':
-                date = ''
+                date = None
+                date_string = ''
             else:
                 return HttpResponse(date, mimetype="application/json")
+        else:
+            date_string = date.strftime("%B %d, %Y")
 
         registrant = Registrant.objects.get(reg_id=int(request.GET['registrant']))
         recipient = Recipient.objects.get(id=int(request.GET['recipient']))
@@ -1157,7 +1219,7 @@ def contribution(request):
             clear = "off"
 
         continfo = {'amount': contribution.amount, 
-                    'date': contribution.date.strftime("%B %d, %Y"), 
+                    'date': date_string, 
                     'recipient': contribution.recipient.name,
                     'lobbyist': lobbyist,
                     'cont_id': contribution.id,
@@ -1326,7 +1388,6 @@ def metadata(request):
         #supplemental end date- needed for supplementals, and some amendments
         try:
             end_date = cleandate(request.GET['end_date'])
-            print end_date
             if type(end_date) != datetime:
                 if document.doc_type == "Supplemental":
                     return HttpResponse(end_date, mimetype="application/json")

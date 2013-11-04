@@ -1,74 +1,8 @@
 {% extends "FaraData/registration_base.html" %}
+
 {% block formquestions %}
-<h3>Disbursement</h3>
-<p>Question 10(a)</p>
 
-<p><b>Disbursements associated with this form</b></p>
-<div id="dis_list">
-<table id = 'dis_table' width="100%">
-    <thread>
-    <tr>
-    <td>Amount</td><td>Date</td><td>Client</td>
-    </tr>
-    </thread> 
-    
-    <tbody>   
-    {% for dis in dis_list %}
-        <tr>
-        <td class="dis">${{ dis.1 }}</td><td>{{ dis.2 }}</td><td>{{ dis.0 }}</td><td><a href="{% url 'fix-disbursement' dis.3 %}"  onclick="return popitup('{% url 'fix-disbursement' dis.3 %}')">fix</a></td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
-<p>Total: <div id="dis_total"> </div></p>
-</div>
-
-<form method="GET" id='disform' action="/disbursement/create">
-    {% csrf_token %}
-    <p><label for ="do_not_clear">Do not clear </label><input name="do_not_clear" type="checkbox"></p>
-    <input type="hidden" name="reg_id" value="{{ reg_id }}">
-    <input type="hidden" name="link" value="{{ url }}">
-    
-    {% if one_client == True %}
-
-        <p><label for="client">Clients:</label><select name="client" id="dis_client">
-            {% for client in reg_object.clients.all %}
-                <option value="{{ client.id }}">{{ client.client_name }}</option>
-            {% endfor %}
-            {% for client in reg_object.terminated_clients.all %}
-                <option value="{{ client.id }}">{{ client.client_name }}</option>
-            {% endfor %}
-        </select></p>
-        
-    {% else %}     
-
-        <p><label for="client">Clients:</label><select name="client" id="dis_client">
-                <option value="None">Please Select Client</option>
-            {% for client in reg_object.clients.all %}
-                <option value="{{ client.id }}">{{ client.client_name }}</option>
-            {% endfor %}
-            {% for client in reg_object.terminated_clients.all %}
-                <option value="{{ client.id }}">{{ client.client_name }}</option>
-            {% endfor %}
-        </select></p>
-
-    {% endif %}
-    <a href="{% url 'registration-first' form_id %}">Add a new client</a>
-    
-    <p><label for="date">Date: <br /></label>
-    <input id="disbursement_date" "text" name="date" /></p>
-    
-    <p><label for= "amount">Amount: <br />$</label><input id="amount" type="text" name="amount" /></p> 
-    <p><lable for="purpose">Purpose: <br /><textarea name="purpose" cols="25" rows="5"></textarea></p>
-    
-    (Add this field if the money is going to another registrant.)
-    <p><label for="subcontractor">Subcontractor: </label><input type="hidden" id="disbursement_subcontractor" name="subcontractor" style="width: 300px"/></p>
-
-    <p><input type="submit" /></p>
-</form>
-
-<span class="help" ><a href="{% url 'instructions' %}#Disbursement" target="blank">Help</a></span><br>
-<hr />
+  {% include "FaraData/form_disbursement.html" with question="Question 10(a)" %}
 
 <div allign="center"><h3><a href="{% url 'registration-contribution' form_id %}">  Continue to Contributions</a></h3></div>
 
