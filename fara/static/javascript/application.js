@@ -49,7 +49,7 @@ $(document).ready(function() {
 			e.preventDefault();
 
 			var url = $(this).attr('href');
-			newPopup = window.open(url, 'name', 'width=550, height=750');
+			newPopup = window.open(url, 'name', 'width=475, height=750');
 			
 			if (window.focus) {
 				newPopup.focus();

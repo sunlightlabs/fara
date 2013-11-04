@@ -39,12 +39,26 @@ footer.form-wrap { margin-left: 700px; }
   color: #999;
 }
 
+form {
+  width: 400px;
+  margin: 20px 0;
+}
+
+.form-control {
+  margin-bottom: 15px;
+}
+
 .form-section {
   overflow: auto;
   padding: 0 20px 20px;
   margin-bottom: 20px;
   background: #fff;
 }
+
+.form-section.api .form-control {
+  margin-bottom: 0px;
+}
+
 .form-section h4 {
   margin-top: 50px;
 }
@@ -74,15 +88,6 @@ footer.form-wrap { margin-left: 700px; }
   border-top: 1px dashed #ccc;
   margin-top: 10px;
   padding-top: 10px;
-}
-
-form {
-  width: 400px;
-  margin: 20px 0;
-}
-
-.form-control {
-  margin-bottom: 15px;
 }
 
 /* Select2 overrides and styling */
@@ -154,6 +159,40 @@ form {
   width: 145px;
 }
 
+.api-result {
+  padding-bottom: 25px;
+  margin: 50px 0;
+}
+
+.api-result:hover {
+  background: #f1f2f2;
+}
+
+.form-inline-api {
+  margin: 5px;
+}
+
+.form-inline-api .form-control {
+  display: inline-block;
+}
+
+.form-inline-api .form-control {
+  width: 345px;
+}
+
+.form-inline-api .form-control.short {
+  width: 171px;
+}
+
+.form-inline-api button[type="submit"].form-control {
+  width: 50px;
+}
+
+.form-inline-api .api-result-name {
+  display: inline-block;
+  width: 345px;
+}
+
 .highlight {
   background: #fafad2;
   padding: 8px 10px;
@@ -170,12 +209,12 @@ form {
   margin: 5px 0; 
 }
 
-.help-block {
-  color: #bbb;
-  font-size: 85%;
-}
-
  ul.highlight-child {
   list-style-type: none;
   padding: 0;
  }
+
+.help-block {
+  color: #bbb;
+  font-size: 85%;
+}
