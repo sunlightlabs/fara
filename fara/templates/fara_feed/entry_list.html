@@ -28,11 +28,11 @@
 		            <td>{{ d.reg_id }}</td>
 
 				{% if d.doc_type == "Supplemental" %}
-					<td><a class="doclink" href="{% url 'supplemental-first' d.id %}">{% if d.reg_id in names %}{{ names|access:d.reg_id }}{% endif %}</a></td>
+					<td><a class="doclink" href="{% url 'entryforms' d.id %}">{% if d.reg_id in names %}{{ names|access:d.reg_id }}{% endif %}</a></td>
 				{% elif d.doc_type == "Amendment" %}
 					<td><a class="doclink" href="{% url 'enter-amendment' d.id %}">{% if d.reg_id in names %}{{ names|access:d.reg_id }}{% endif %}</a></td>
 				{% elif d.doc_type == "Registration" %}
-					<td><a class="doclink" href="{% url 'registration-first' d.id %}">{% if d.reg_id in names %}{{ names|access:d.reg_id }}{% endif %}</a></td>
+					<td><a class="doclink" href="{% url 'reg-entryform' d.id %}">{% if d.reg_id in names %}{{ names|access:d.reg_id }}{% endif %}</a></td>
 				{% elif d.doc_type == "Exhibit AB" %}
 					<td><a class="doclink" href="{% url 'enter-AB' d.id %}">{% if d.reg_id in names %}{{ names|access:d.reg_id }}{% endif %}</a></td>
 				{% endif %}
