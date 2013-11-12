@@ -4,7 +4,7 @@
 {% endblock show_doc %}
 
 {% block formquestions %}
-<section class="form-section api">
+<section class="form-section">
 	<h3>Member Lookup</h3>
 
 	<form class="form-inline" method="GET" id='memberform' action="{% url 'find-member' %}">
@@ -12,18 +12,22 @@
 	    <input type="text" name="member" class="form-control" placeholder="Last Name of the Member">
         <button type="submit" class="btn btn-primary form-control">Lookup</button>
 	</form>
+</section>
 
-	{% if member %}
-	<p>Added {{ member }} to recipients.</p> 
-	{% endif %}
+{% if member %}
+<section class="form-section flash-ok">
+	<h4>Added {{ member }} to recipients.</h4> 
+</section>
+{% endif %}
 
-	{% if insystem %}
-	<p>{{ insystem }} is already in system.</p> 
-	{% endif %}
-
-	{% if results %}
-
-	<h3>Choose Result</h3>
+{% if insystem %}
+<section class="form-section flash-ok">
+	<h4>{{ insystem }} is already in the system.</h4>
+</section>
+{% endif %}
+	
+{% if results %}
+<section class="form-section api">
 	
 	{% for r in results %}
 	<div class="api-result">
@@ -51,7 +55,7 @@
 			<label class="sr-only">Staff Name</label>
 			<input name="name" type="text" class="form-control short" placeholder="Staff Name">
 
-			<button type="submit" class="btn btn-default form-control">Add</button>
+			<button type="submit" class="btn btn-default alt form-control">Add</button>
 		</form>
 
 		<form class="form-inline-api" method="GET" id='add_pac_form' action="{% url 'add-leader-PAC' %}">
@@ -61,7 +65,7 @@
 			
 			<label class="sr-only">Leadership PAC Committee Name</label>
 			<input name="PAC_name" type="text" class="form-control" placeholder="Leadership PAC Committee Name">
-			<button type="submit" class="btn btn-default form-control">Add</button>
+			<button type="submit" class="btn btn-default alt form-control">Add</button>
 		</form>
 	</div>
 

@@ -4,6 +4,8 @@
 
     {% include "FaraData/form_recipient.html" %}
 
-<div allign="center"><h3><a href="{% url 'supplemental-contribution' form_id %}">  Continue to Contribution</a></h3></div>
+	<div class="next-link">
+		<a class="btn btn-primary" href="{% url 'supplemental-contribution' form_id %}">Continue to Contribution</a>
+	</div>
 
 {% endblock formquestions %}

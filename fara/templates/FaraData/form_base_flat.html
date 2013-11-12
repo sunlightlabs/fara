@@ -473,22 +473,6 @@ jQuery(document).ready(function(){
 });
 </script>
 
-<script type="text/javascript">
-// expandable forms
-
-jQuery(document).ready(function(){
-  $(function() {
-    $('h3.toggleOpen').click(function() {
-        $(this).next('.toggle').slideToggle("fast");
-    });
-    $('span.toggleClose').click(function() {
-        $(this).parents('.toggle').slideUp("fast");
-    });
-});
-
-});
-</script>
-
 
 <!-- pop ups for fix forms -->
 <script language="javascript" type="text/javascript">
@@ -528,9 +512,9 @@ $('.fix').ajaxForm(direct);
 
 {% block show_doc %}
 <div id="left">
-   <iframe height=100% width=100% scrolling="yes" src="{{ url }}"></iframe>
+   <iframe height=100% width=100% scrolling="yes" style="border: none;" src="{{ url }}"></iframe>
 </div>
-<div id="wrap" class="form-wrap">
+<div id="right">
 {% endblock show_doc %}
 
 {% block doc_header %}
@@ -542,12 +526,12 @@ $('.fix').ajaxForm(direct);
         <a class="btn btn-info pull-right help" href="{% url 'instructions' %}">Instructions</a>
         <a class="btn btn-info pull-right help" href="{% url 'full-list' %}">View All Docs</a>
         <h4>{% block page_heading %}{% endblock page_heading %}</h4>
-          <span>{% block page_description %}{% endblock page_description %}</span>
+        <span>{% block page_description %}{% endblock page_description %}</span>
       </div>
   </header>
 {% endblock doc_header %}
 
-  <main class="container">
+  <main class="container form-wrap">
 
   {% block formheading %}{% endblock formheading %}
   {% block formquestions %}{% endblock formquestions %}
@@ -556,14 +540,14 @@ $('.fix').ajaxForm(direct);
   </main>
 
 {% block doc_footer %}
-  <span class="push"></span>
-</div> <!-- end #wrap -->
 
 <footer class="form-wrap">
   <div class="container">
       <a class="btn btn-info pull-right" href="{{ url }}" target="_blank">View Form Source</a>
   </div>
 </footer>
+
+</div> <!-- end #wrap -->
 {% endblock doc_footer %}
 </body>
 </html>

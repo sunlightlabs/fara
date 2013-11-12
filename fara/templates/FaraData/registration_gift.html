@@ -5,6 +5,8 @@
 
     {% include "FaraData/form_recipient.html" %}
 
-<div allign="center"><h3><a href="{% url 'registration-disbursement' form_id %}">  Continue to Disbirsement</a></h3></div>
+    <div class="next-link">
+    	<a class="btn btn-primary" href="{% url 'registration-disbursement' form_id %}">  Continue to Disbursements</a>
+    </div>
 
 {% endblock formquestions %}

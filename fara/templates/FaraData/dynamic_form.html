@@ -14,14 +14,14 @@
 
 {% block show_doc %}
 <div id="left">
-   <iframe height=100% width=100% scrolling="yes" src="{{ url }}"></iframe>
+   <iframe height=100% width=100% style="border: none;" scrolling="yes" src="{{ url }}"></iframe>
 </div>
 
 {% endblock show_doc %}
 
-<div id="wrap" class="form-wrap">
-   <iframe height=100% width=100% style="min-height:100%; border=none" src="/supplemental_first/{{form_id}}"></iframe>
-</div> <!-- end #wrap -->
+<div id="right-iframe">
+   <iframe height=100% width=100% style="min-height:100%; border: none;" src="/supplemental_first/{{form_id}}"></iframe>
+</div>
 
 </body>
 </html>

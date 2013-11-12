@@ -1,11 +1,12 @@
 <section class="form-section">
     {% if toggle %}
-    <h3 class="toggleOpen">Contribution</h3>
+    <h3 class="toggleOpen">Contributions</h3>
     <div class="toggle">
     {% else %}
-    <h3>Contribution</h3>
+    <h3>Contributions</h3>
     {% endif %}
         <span class="question-helper">{{ question }}</span>
+
         <h4>Contributions associated with this form</h4>
         <table id="cont_table" class="table">
             <thead>
@@ -18,7 +19,7 @@
                 </tr>
             </thead> 
       
-            <tbody>   
+            <tbody class="highlight-child">   
             {% for cont in cont_list %}
                 <tr>
                     <td>${{ cont.1 }}</td>

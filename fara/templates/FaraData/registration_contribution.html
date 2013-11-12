@@ -8,6 +8,8 @@
 
     {% include "FaraData/form_lobby_pac.html" with title="Add a donating lobbyist or PAC"  toggle="toggle" %}
 
-    <h3><a href="{% url 'registration-last' form_id %}">Finish form</a></h3>
+    <div class="next-link">
+    	<a class="btn btn-primary" href="{% url 'registration-last' form_id %}">Finish form</a>
+    </div>
 
 {% endblock formquestions %}

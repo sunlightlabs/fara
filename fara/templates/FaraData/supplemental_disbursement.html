@@ -3,6 +3,8 @@
 
     {% include "FaraData/form_disbursement.html" with question="Question 15(a)" %}
 
-<div allign="center"><h3><a href="{% url 'supplemental-gift' form_id %}">  Continue to Gifts</a></h3></div>
+	<div class="next-link">
+		<a class="btn btn-primary" href="{% url 'supplemental-gift' form_id %}">Continue to Gifts</a>
+	</div>
 
 {% endblock formquestions %}

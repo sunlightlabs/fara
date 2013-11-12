@@ -1,7 +1,7 @@
 $(document).ready(function() {
 	
 
-	// Insert chevron icon if toggleable
+	// Insert chevron icon in doclist if toggleable
 
 	var chevron = '<span class="glyphicon glyphicon-chevron-down"></span>';
  
@@ -91,6 +91,13 @@ $(document).ready(function() {
 	$('.docselect').on('click', function() {
 		location.href = $(this).find('h3 a').attr('href');
 	});  	        
+
+
+	// Toggling for revealing/hiding forms
+
+	$('.toggleOpen').on('click', function() {
+	    $(this).next('.toggle').slideToggle("fast");
+	});
 
 });
 

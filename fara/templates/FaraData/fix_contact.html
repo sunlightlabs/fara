@@ -101,14 +101,14 @@
         <button type="submit" class="btn btn-default form-control">Submit</button>
     </form>
 
-    <form method="GET" class="fix" action="/delete_contact">  
-        <input type="hidden" name="contact_id" value="{{ contact.id }}">
-        <button type="submit" class="btn btn-danger form-control">Delete this entry</button>
-    </form>
-
     <span class="help"><a href="{% url 'instructions' %}#Contact" target="blank">Help</a></span>
 
 </section>
+
+<form method="GET" class="wide fix" action="/delete_contact">  
+    <input type="hidden" name="contact_id" value="{{ contact.id }}">
+    <button type="submit" class="btn btn-danger form-control">Delete this entry</button>
+</form>
 
 {% endblock formquestions %}
 
