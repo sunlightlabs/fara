@@ -1017,7 +1017,7 @@ def contact(request):
             lobbyists_ids = [request.GET.get('lobbyists'),]
 
         client = request.GET['client']
-        if client == None:
+        if client == '':
             error = json.dumps({'error': 'Please select a client.'} , separators=(',',':'))
             return HttpResponse(error, mimetype="application/json")
         client = Client.objects.get(id=int(request.GET['client']))
@@ -1095,7 +1095,7 @@ def contact(request):
 def payment(request):
     if request.method == 'GET':
         client = request.GET['client']
-        if client == "None":
+        if client == "":
             error = json.dumps({'error': 'Please select a client.'} , separators=(',',':'))
             return HttpResponse(error, mimetype="application/json")
         client = Client.objects.get(id=int(client))
@@ -1240,7 +1240,7 @@ def disbursement(request):
         registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         
         client = request.GET['client']
-        if client == "None":
+        if client == "":
             error = json.dumps({'error': 'Please select a client.'} , separators=(',',':'))
             return HttpResponse(error, mimetype="application/json")
         client = Client.objects.get(id=int(request.GET['client']))

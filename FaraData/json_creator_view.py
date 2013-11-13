@@ -44,6 +44,9 @@ def recip_choice(request):
         name = r.name
         if name != None:
             office = r.office_detail
+            if office == None or office == '':
+                if r.agency != None and r.agency != '':
+                    office = r.agency
             title = r.title
 
             if title == None or title == '':

@@ -44,7 +44,7 @@
                         <td class="note">
                             {% if d.url in notes %}
                                 {% if notes|access:d.url %}
-                                    <a href="{% url 'supplemental-last' d.id %}">{{notes|access:d.url}}</a>
+                                    {{notes|access:d.url}}
                                 {% endif %}
                             {% endif %}
                         </td>
@@ -102,7 +102,7 @@
                         <td class="note">
                             {% if d.url in notes %}
                                 {% if notes|access:d.url %}
-                                    <a href="{% url 'registration-last' d.id %}">{{notes|access:d.url}}</a>
+                                    <a href="{% url 'reg-entryform' d.id %}">{{notes|access:d.url}}</a>
                                 {% endif %}
                             {% endif %}
                         </td>
