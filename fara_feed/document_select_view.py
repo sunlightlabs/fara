@@ -38,6 +38,7 @@ def make_pages(form, page):
                 processed_true.append(str(docdata.link))
 
             notes[d.url] = docdata.notes
+            
         except MetaData.DoesNotExist:
             continue
     
