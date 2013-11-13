@@ -512,8 +512,9 @@ $('.fix').ajaxForm(direct);
 
 {% block show_doc %}
 <div id="left">
-   <iframe height=100% width=100% scrolling="yes" style="border: none;" src="{{ url }}"></iframe>
+   <iframe height=100% width=100% src="{{ url }}" seamless></iframe>
 </div>
+
 <div id="right">
 {% endblock show_doc %}
 
