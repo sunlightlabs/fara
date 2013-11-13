@@ -293,6 +293,40 @@ main.container {
 	cursor: pointer;
 }
 
+/* Instructions/Help Page */
+
+main.container.instructions {
+	font-size: 110%;
+}
+
+main.container.instructions h2 {
+	margin: 75px 0 50px;
+}
+
+main.container.instructions h4 {
+	margin-top: 50px;
+	text-transform: uppercase;
+}
+
+section.help {
+	padding-bottom: 25px;
+	margin-bottom: 25px;
+	border-bottom: 1px dashed #ccc;
+}
+
+section.help:last-of-type {
+	border-bottom: 0;
+}
+
+dt {
+	margin-left: 50px;
+	border-bottom: 1px dotted #ddd;
+}
+dd {
+	margin: 5px 0 15px 50px;
+	color: #999;
+}
+
 /* ==========================================================================
    Javacript Classes
    ========================================================================== */
