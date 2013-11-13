@@ -38,8 +38,8 @@ main.container {
   min-height: 100%;
   padding-left: 20px;
   padding-right: 20px;
-  background: #f2f2f2;  
 }
+
 .scrollable{
     width: 70px; 
     height: 100%; 

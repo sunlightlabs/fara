@@ -8,6 +8,7 @@
 	<meta charset="utf-8"/>
 	<title>FARA Entry Intructions</title>
 	<link rel="stylesheet" type="text/css" href="{% static 'css/screen.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/entry_form.css' %}"/>
 </head>
 
 <body>
@@ -22,15 +23,37 @@
         <a class="btn btn-info pull-right help" href="{% url 'instructions' %}">Instructions</a>
         <a class="btn btn-info pull-right" href="{% url 'full-list' %}">View All Docs</a>        
     	<h2>Instructions</h2>
-        <span>Ask FARA</span>
     </div>
 </header>
 
-<main class="container instructions">
-	<img class="img-responsive" src="{% static 'images/AskFara.jpg' %}"/>
+<div class="jumbotron instructions">
+	<div class="container">
+		<h1>ask farrah</h1>
+		<div class="quicklinks">
+			<a href="#Tips">Tips</a>
+			<a href="#Registrant">Registrants</a>
+			<a href="#Lobbyist">Lobbyists</a>
+			<a href="#Client">Clients</a>
+			<a href="#Terminated_Client">Terminated Clients</a>
+			<a href="#Activity_Services">Activity and Services</a>
+			<a href="#Contact">Contacts</a>
+			<a href="#Recipient">Recipients</a>
+			<a href="#Payment">Payments</a>
+			<a href="#Disbursement">Disbursements</a>
+			<a href="#Contribution">Contributions</a>
+			<a href="#Processing_Info">Processing Info</a>
+			<a href="#Location">Location</a>
+			<a href="#Stamp_Date">Stamp Date</a>
+			<a href="#Explanation_of_Forms">Explanation of Forms</a>
+			<a href="#Troubleshooting">Troubleshooting</a>
+		</div>
+	</div>
+</div>
 
-	<h2>Data Entry Tips</h2>
-	<section class="help">
+<main class="container instructions">
+
+	<a id="Tips"></a><h2>Data Entry Tips</h2>
+	<section class="info">
 		<ul>
 			<li>
 				You can copy and paste into all text fields. Don't worry if it looks ugly, extra spaces and line breaks will be removed. For currency fields commas and dollar signs, leading and trailing whitespace will be removed.
@@ -47,7 +70,7 @@
 	<h2>Instructions on Data Fields</h2>
 	
 	<a id="Registrant"></a><h3>Registrant</h3>
-	<section class="help">
+	<section class="info">
 		<p>
 			A registraint is the entity filling out the form. Usually it is a lobbying firm, PR firm or individual. If a registraint is representing itself, fill out the information in the registrant section and the client section.
 		</p>
@@ -57,7 +80,7 @@
 	</section>
 
 	<a id="Lobbyist"></a><h3>Lobbyists</h3>
-	<section class="help">
+	<section class="info">
 		<p>
 			This is someone working for the registrant. We identify lobbyists when they make contacts or contributions, you don't have to enter everyone who appears in questions 5(a) and 5(b) of the supplemental.
 		</p>
@@ -67,7 +90,7 @@
 	</section>
 
 	<a id="Client"></a><h3>Clients</h3>
-	<section class="help">
+	<section class="info">
 		<p>
 			This is who the registrant is lobbying on behalf of. 
 		</p>
@@ -89,7 +112,7 @@
 	</section>
 
 	<a id="Terminated_Client"></a><h3>Terminated Clients</h3>
-	<section class="help">
+	<section class="info">
 		<p>
 			When a client is no longer being represented by a firm, mark them as a terminated client. This will happen when a client appears in question 7 of the supplemental or if a client that has been represented by the registrant and is longer reported in questions 8 and 9 of the supplemental.
 		</p>
@@ -102,14 +125,14 @@
 	</section>
 
 	<a id="Activity_Services"></a><h3>Activity and Services</h3>
-	<section class="help">
+	<section class="info">
 		<p>
 			This appears on question 11 of the supplemental. Usually it is a paragraph explaining services. Copy and paste the response. If it refers to contacts, you do not need to double enter the data.
 		</p>
 	</section>
 
 	<a id="Contact"></a><h3>Contacts</h3>
-	<section class="help">
+	<section class="info">
 		<p>
 			These are meetings, phone calls, emails, letters or other forms of contact that appear on question 12 of the supplemental. Contacts are often include press, Congress or a governmental departments. 
 		</p>
@@ -125,7 +148,7 @@
 	</section>
 
 	<a id="Recipient"></a><h3>Recipients</h3>
-	<section class="help">
+	<section class="info">
 		<p> 
 			This is the target of the communication, gift or political donation. Watch 
 		</p>
@@ -259,7 +282,7 @@
 	</section>
 
 	<a id="Payment"></a><h3>Payments</h3>
-	<section class="help">
+	<section class="info">
 		<p>
 			Money from the Client to the Registrant. This appears on question 14(a) of the supplemental. It is often added as an addendum so look at the bottom of the form if it is left blank.
 		</p>
@@ -274,7 +297,7 @@
 	</section>
 
 	<a id="Disbursement"></a><h3>Disbursements</h3>
-	<section class="help">
+	<section class="info">
 		<p>
 		This is money that the registrant spends in service of the client. This can include subcontracts to other lobbying firms etc. This appears in 15(a) in the supplemental. 
 		</p>
@@ -287,20 +310,20 @@
 	</section>
 
 	<a id="Contribution"></a><h3>Contributions</h3>
-	<section class="help">
+	<section class="info">
 		<p>
 			This covers political contributions from PACs and employees of the firm. It can be found on question 15(c) of the supplemental.
 		</p>
 	</section>
 
 	<a id="Gifts"></a><h3>Gifts</h3>
-	<section class="help">
+	<section class="info">
 		<p>
 			This covers "things of value" in question 14(c) of the Supplemental. There are not going to be too many of these. 
 		</p>
 	</section>
 	<a id="Processing_Info"></a><h3>Processing Info</h3>
-	<section class="help">
+	<section class="info">
 		<p>
 			This tracks the form during the data entry process. When you are done with the form, check "Check when form is finished." This will make the data live on the front end.
 		</p>
@@ -311,7 +334,7 @@
 
 	<a id="Location"></a>
 	<h3>Location</h3>
-	<section class="help">
+	<section class="info">
 		<p>
 			This section applies to the location of the clients. 
 		</p>
@@ -330,7 +353,7 @@
 	</section>
 
 	<a id="Stamp_Date"></a><h3>Stamp Date</h3>
-	<section class="help">
+	<section class="info">
 		<p>
 			This is the day the DOJ Fara office received the form. This is not the start date or end date for the form.
 		</p>
@@ -338,8 +361,8 @@
 
 	
 
-	<h2>Explanation of Forms</h2>
-	<section class="help">
+	<a id="Explanation_of_Forms"></a><h2>Explanation of Forms</h2>
+	<section class="info">
 			<dt> Registration Statement
 			<dd> The first filing for the person or organization who lobbies on behalf of a foreign entity.
 			
@@ -369,8 +392,8 @@
 	</section>
 	
 
-	<h2>Troubleshooting</h2>
-	<section class="help">
+	<a id="Troubleshooting"></a><h2>Troubleshooting</h2>
+	<section class="info">
 		<ul>
 			<li>
 				Use the Chrome or Safari.
@@ -378,7 +401,7 @@
 				Enable pop-ups to see error messages
 		</ul>
 		
-		<h2>Band-aid Fixes</h2>
+		<h4>Band-aid Fixes</h4>
 		
 		<ul>
 			<li>
