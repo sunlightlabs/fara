@@ -516,8 +516,6 @@ $('.fix').ajaxForm(direct);
       <a href="/" target="_parent"><h1>FARA</h1></a>
     </div>
       <div class="container">
-        <a class="btn btn-info pull-right help" href="{% url 'instructions' %}" target="_parent">Instructions</a>
-        <a class="btn btn-info pull-right help" href="{% url 'full-list' %}" target="_parent">View All Docs</a>
         <h4>{% block page_heading %}{% endblock page_heading %}</h4>
         <span>{% block page_description %}{% endblock page_description %}</span>
       </div>
@@ -536,7 +534,9 @@ $('.fix').ajaxForm(direct);
 
   <footer class="form-wrap">
     <div class="container">
-        <a class="btn btn-info pull-right" href="{{ url }}" target="_blank">View Form Source</a>
+      <a class="btn btn-info pull-right" href="{% url 'instructions' %}" target="_parent">Instructions</a>
+      <a class="btn btn-info pull-right" href="{% url 'full-list' %}" target="_parent">View All Docs</a>      
+      <a class="btn btn-info pull-right" href="{{ url }}" target="_blank">View Form Source</a>
     </div>
   </footer>
 

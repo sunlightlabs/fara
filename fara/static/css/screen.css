@@ -295,8 +295,9 @@ main.container {
 
 /* Instructions/Help Page */
 
-.instructions {
+main.container.instructions {
 	font-size: 110%;
+	background: #fff;
 }
 
 .jumbotron.instructions {
@@ -314,7 +315,7 @@ main.container {
 
 .jumbotron .quicklinks {
 	border: 0;
-	font-size: 70%;
+	font-size: 55%;
 	width: 70%;
 }
 
@@ -364,12 +365,6 @@ dd {
 /* ==========================================================================
    Media Queries
    ========================================================================== */
-
-@media(max-width:600px){
-	header .container .btn-info {
-		display: none;
-	}
-}
 
 @media(min-width:992px){
 
