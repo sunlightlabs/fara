@@ -8,10 +8,26 @@
     background: #ffa;
 }
 
+#right {
+  width: 40%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+}
+
+#right-iframe {
+  width: 40%;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+}
+
 #wrap.form-wrap { margin-left: 60%; } 
 
-.form-wrap main.container {
-  height: 100%;
+main.container {
+  min-height: 100%;
   padding-left: 20px;
   padding-right: 20px;
   background: #f2f2f2;  
@@ -38,14 +54,28 @@
   color: #999;
 }
 
+form {
+  width: 400px;
+  margin: 20px 0;
+}
+
+form.wide {
+  width: 100%;
+}
+
+.form-control {
+  margin-bottom: 15px;
+}
+
 .form-section {
   overflow: auto;
   padding: 0 20px 20px;
   margin-bottom: 20px;
   background: #fff;
 }
-.form-section h4 {
-  margin-top: 50px;
+
+.form-section.api .form-control {
+  margin-bottom: 0px;
 }
 
 .form-section h3 {
@@ -54,7 +84,55 @@
   border-bottom: 1px dashed #ccc;
 }
 
-.form-section h3.toggleOpen {
+.form-section h4 {
+  margin-top: 50px;
+}
+
+/* Flash background for success message */
+
+.form-section.flash-ok h4 {
+  margin-top: 30px;
+}
+
+.form-section.flash-ok {
+  background: #fff;
+  -moz-animation-name: backgroundFade;
+  -moz-animation-iteration-count: once;
+  -moz-animation-timing-function: ease-in;
+  -moz-animation-duration: .5s;
+
+  -webkit-animation-name: backgroundFade;
+  -webkit-animation-iteration-count: once;
+  -webkit-animation-timing-function: ease-in;
+  -webkit-animation-duration: .5s; 
+}
+
+@-moz-keyframes backgroundFade {
+    0% {
+        background: #77c777;
+    }
+    50% {
+        background: #77c777;
+    }
+    100% {
+        background: #fff;
+    }
+}
+@-webkit-keyframes backgroundFade {
+    0% {
+        background: #77c777;
+    }
+    50% {
+        background: #77c777;
+    }
+    100% {
+        background: #fff;
+    }
+}
+
+/* Styles for toggleable form sections */
+
+.form-section .toggleOpen {
   background: #fff;
   margin: 0 -20px -20px;
   padding: 20px;
@@ -62,26 +140,17 @@
   border-bottom: 0;
 }
 
-.form-section h3.toggleOpen:hover {
+.form-section .toggleOpen:hover {
   color: #78bcbf;
 }
 
-/*hides forms */
+/* hides forms */
 
 .toggle {
   display: none;
   border-top: 1px dashed #ccc;
   margin-top: 10px;
   padding-top: 10px;
-}
-
-form {
-  width: 400px;
-  margin: 20px 0;
-}
-
-.form-control {
-  margin-bottom: 15px;
 }
 
 /* Select2 overrides and styling */
@@ -153,12 +222,56 @@ form {
   width: 145px;
 }
 
+.api-result {
+  padding: 20px 0;
+}
+
+.api-result:hover {
+  background: #f2f9fa;
+  border-radius: 4px;
+  padding: 20px 25px;
+  margin-left: -25px;
+  margin-right: -25px;
+}
+
+.form-inline-api {
+  margin: 5px 0;
+}
+
+.form-inline-api .form-control {
+  display: inline-block;
+}
+
+.form-inline-api .form-control {
+  width: 345px;
+}
+
+.form-inline-api .form-control.short {
+  width: 171px;
+}
+
+.form-inline-api button[type="submit"].form-control {
+  width: 50px;
+}
+
+.form-inline-api .api-result-name {
+  display: inline-block;
+  width: 345px;
+}
+
+/* Form style helpers */
+
 .highlight {
   background: #fafad2;
   padding: 8px 10px;
   border-left: 2px solid #fff000; 
   font-family: monospace;
   margin: 5px 0; 
+}
+
+.table tbody.highlight-child tr {
+  background: #fafad2;
+  border-left: 2px solid #fff000;   
 }
 
 .highlight-child li{
@@ -169,12 +282,47 @@ form {
   margin: 5px 0; 
 }
 
+ ul.highlight-child {
+  list-style-type: none;
+  padding: 0;
+ }
+
 .help-block {
   color: #bbb;
   font-size: 85%;
 }
 
- ul.highlight-child {
-  list-style-type: none;
-  padding: 0;
- }
+
+/* Navigation links on multi-page forms */
+
+.quicklinks {
+  padding: 20px 0;
+  border-top: 1px solid #ccc;
+}
+
+.quicklinks a{
+  display: inline-block;
+  padding: 2px 5px;
+  margin: 5px;
+  margin-left: 0;
+  background: #fff;
+  border-bottom: 2px solid #fff;
+}
+
+.quicklinks a:last-of-type {
+  margin-right: 0;
+}
+
+.quicklinks a:hover {
+  border-bottom: 2px solid #c3e4e5;
+}
+
+.next-link {
+  overflow: auto;
+  margin-bottom: 20px;
+}
+
+.next-link a.btn-primary {
+  float: right;
+}
+

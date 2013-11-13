@@ -27,7 +27,7 @@
                     <tr {% if d.url in processed_true %}{% else %}class="not-entered"{% endif %}>
                         <td>{{ d.reg_id }}</td>
 
-                        <td><a class="doclink" href="{% url 'enter-supplemental' d.id %}">{% if d.reg_id in names %} {{names|access:d.reg_id}} {% endif %}</a></td>
+                        <td><a class="doclink" href="{% url 'entryforms' d.id %}">{% if d.reg_id in names %} {{names|access:d.reg_id}} {% endif %}</a></td>
                         
                         <td>{{ d.stamp_date }}</td>
                         

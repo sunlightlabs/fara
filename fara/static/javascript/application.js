@@ -1,7 +1,7 @@
 $(document).ready(function() {
 	
 
-	// Insert chevron icon if toggleable
+	// Insert chevron icon in doclist if toggleable
 
 	var chevron = '<span class="glyphicon glyphicon-chevron-down"></span>';
  
@@ -14,13 +14,10 @@ $(document).ready(function() {
 
 	$.cookie.json = true;
 	var cookie = $.cookie();
-			console.log(cookie);
 
 	$('.doclist.toggle').each(function() {
 		var e = $('.table_title', this);
 		var e_id = e.attr('id');
-		
-		console.log(e_id);
 
 		if ($.cookie(e_id) == false) {
 			e.next('.toggle').hide();
@@ -40,7 +37,6 @@ $(document).ready(function() {
 
 		var displayed = (section.hasClass('js-hidden')) ? false : true ;
 
-		console.log(id + displayed);
 		$.cookie(id, displayed, { expires: 7 });
 
 
@@ -53,7 +49,7 @@ $(document).ready(function() {
 			e.preventDefault();
 
 			var url = $(this).attr('href');
-			newPopup = window.open(url, 'name', 'width=550, height=750');
+			newPopup = window.open(url, 'name', 'width=475, height=750');
 			
 			if (window.focus) {
 				newPopup.focus();
@@ -95,6 +91,13 @@ $(document).ready(function() {
 	$('.docselect').on('click', function() {
 		location.href = $(this).find('h3 a').attr('href');
 	});  	        
+
+
+	// Toggling for revealing/hiding forms
+
+	$('.toggleOpen').on('click', function() {
+	    $(this).next('.toggle').slideToggle("fast");
+	});
 
 });
 

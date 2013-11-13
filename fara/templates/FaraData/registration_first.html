@@ -8,9 +8,8 @@
 
   {% include "FaraData/form_client.html" with question="Question 7" toggle2="toggle2" %}
 
-<div align="center">
-<h3><a href="{% url 'registration-payment' form_id %}">  Continue to Payments</a></h3></div>
-<br />
-<br />
+    <div class="next-link">
+    	<a class="btn btn-primary" href="{% url 'registration-payment' form_id %}">  Continue to Payments</a>
+    </div>
 {% endblock formquestions %}
 

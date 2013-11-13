@@ -1,32 +1,39 @@
 <section class="form-section">
     {% if toggle %}
-    <h3 class="toggleOpen">Contact</h3>
+    <h3 class="toggleOpen">Contacts</h3>
 
     <div class="toggle">
     {% else %}
-    <h3>Contact</h3>
+    <h3>Contacts</h3>
     {% endif %}
         <span class="question-helper">{{ question }}</span>
 
-        {% if contact_list %}
+    {% if contact_list %}
         <h4>Contacts related to this form</h4>
-        {% endif %}
+    {% endif %}
+        
         <ul id="contact_list" class="highlight-child">
-            {% for c in contact_list %}
-                <li>
-                    {% if c.2 %}
-                        {{ c.0 }} {{ c.1 }} ({{ c.2 }}) {{ c.3 }}
-                    {% else %}
-                        {{ c.0 }} {{ c.1 }} {{ c.3 }}
-                    {% endif %}
-                    <a class="js-popup pull-right" href="{% url 'fix-contact' c.4 %}">Fix</a>
-                </li>
-            {% endfor %}
+        {% for c in contact_list %}
+            <li>
+                {% if c.2 %}
+                    {{ c.0 }} {{ c.1 }} ({{ c.2 }}) {{ c.3 }}
+                {% else %}
+                    {{ c.1 }} {{ c.3 }}
+                {% endif %}
+                <a class="js-popup pull-right" href="{% url 'fix-contact' c.4 %}">Fix</a>
+            </li>
+        {% endfor %}
         </ul>
-        {% if data.has_previous %}<span><a href="?page={{ data.previous_page_number }}">prev</a>
-        </span>{% endif %}
-        <span class="current">Page {{ data.number }} of {{ data.paginator.num_pages }}
-        </span>{% if data.has_next %}<span><a href="?page={{ data.next_page_number }}">next</a></span>{% endif %}
+        
+    {% if contact_list %}
+        <div class="paginate">
+        {% if data.has_previous %}
+            <span><a href="?page={{ data.previous_page_number }}">prev</a>
+            </span>{% endif %}<span class="current">Page {{ data.number }} of {{ data.paginator.num_pages }}
+            </span>{% if data.has_next %}<span><a href="?page={{ data.next_page_number }}">next</a></span>
+        {% endif %}
+        </div>
+    {% endif %}
 
         <h4>Enter Contact</h4>
 

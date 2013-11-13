@@ -8,10 +8,8 @@
 
     {% include "FaraData/form_lobby_pac.html" with noPAC="noPAC" title="Add Lobbyist" toggle="toggle" %}
 
-<div allign="center"><h3><a href="{% url 'supplemental-payment' form_id %}">  Continue to Payments</a></h3></div>
-
-<br />
-<br />
-
+	<div class="next-link">
+		<a class="btn btn-primary" href="{% url 'supplemental-payment' form_id %}">Continue to Payments</a>
+	</div>
 
 {% endblock formquestions %}

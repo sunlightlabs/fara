@@ -5,11 +5,12 @@
 
 
 {% block quicklinks %}
-<hr>
-<a href="{% url 'registration-first' form_id %}">Client and Registrant</a>  
-<a href="{% url 'registration-payment' form_id %}">Payments</a>  
-<a href="{% url 'registration-gift' form_id %}">Gifts</a>  
-<a href="{% url 'registration-disbursement' form_id %}">Disbursements</a>  
-<a href="{% url 'registration-contribution' form_id %}">Contributions</a>  
-<a href="{% url 'registration-last' form_id %}">Processing</a>  
+<div class="quicklinks">
+	<a href="{% url 'registration-first' form_id %}">Client and Registrant</a>
+	<a href="{% url 'registration-payment' form_id %}">Payments</a>
+	<a href="{% url 'registration-gift' form_id %}">Gifts</a>
+	<a href="{% url 'registration-disbursement' form_id %}">Disbursements</a>
+	<a href="{% url 'registration-contribution' form_id %}">Contributions</a>
+	<a href="{% url 'registration-last' form_id %}">Processing</a>
+</div>
 {% endblock quicklinks %}

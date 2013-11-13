@@ -6,6 +6,7 @@
 {% block formquestions %}
 
 <section class="form-section">
+    
     <h3>Fix Contact</h3>
 
     {% if recipients %}
@@ -13,16 +14,14 @@
     {% endif %}
 
     {% for r in recipients %}
-    <div id="recip{{ r.id }}">
-        <form class="form-inline" method="GET" class="deleteable" action="/contact_remove_recip">
-                <input type="hidden" name="contact_id" value="{{ contact.id }}">
-                <input type="hidden" name="recip" value="{{ r.id }}">
-                
-                <input disabled class="form-control" value="{{ r.name }}">
+    <form class="form-inline deleteable" method="GET" action="/contact_remove_recip">
+        <input type="hidden" name="contact_id" value="{{ contact.id }}">
+        <input type="hidden" name="recip" value="{{ r.id }}">
+        
+        <input disabled class="form-control" value="{{ r.name }}">
 
-                <button type="submit" class="btn btn-danger form-control">Delete</button>
-        </form> 
-    </div> 
+        <button type="submit" class="btn btn-danger form-control">Delete</button>
+    </form>
     {% endfor %}
 
     {% if current_lobby %}
@@ -30,16 +29,14 @@
     {% endif %}
 
     {% for l in current_lobby %}
-    <div id="lobby{{ l.id }}">
-        <form class="form-inline" method="GET" class="deleteable" action="/contact_remove_lobby">
-                <input type="hidden" name="contact_id" value="{{ contact.id }}">
-                <input type="hidden" name="lobbyist" value="{{ l.id }}">
+    <form class="form-inline deleteable" method="GET" action="/contact_remove_lobby">
+        <input type="hidden" name="contact_id" value="{{ contact.id }}">
+        <input type="hidden" name="lobbyist" value="{{ l.id }}">
 
-                <input disabled class="form-control" value="{{ l }}">
-                
-                <button type="submit" class="btn btn-danger form-control">Delete</button>
-        </form>  
-    </div>
+        <input disabled class="form-control" value="{{ l }}">
+        
+        <button type="submit" class="btn btn-danger form-control">Delete</button>
+    </form>  
     {% endfor %}
 
     <h4>Edit Contact</h4>
@@ -60,23 +57,19 @@
         {% endfor %}
         </select>
 
-
         <label for="recipient">Add additional recipients</label>
         <input type="hidden" id="contact_recip" name="recipient" class="select-control" placeholder="(Who is being contacted)"/>
 
         {% for recipient in all_recipients %}
             <option value="{{ recipient.id }}">{{ recipient.title }} {{ recipient.name }}, {{ recipient.agency }}</option>
         {% endfor %}
-        </select>
        
-     
         <label for="lobbyist">Add additional lobbyists</label>
         <select multiple="multiple" id="contact_lobbyist" name="lobbyist" class="form-control">
         {% for lobbyist in lobbyists %}
             <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
         {% endfor %}
         </select>
-
         
         <label for="date">Date</label>
         <input id="contact_date" type="text" name="date" value="{{ date }}" class="form-control"/>
@@ -103,20 +96,20 @@
         </select>
         
         <label for="description">Description</label>
-        <textarea id="id_description" name="description" class="form-control">{{ contact.description }}
-        </textarea>
+        <textarea id="id_description" name="description" class="form-control">{{ contact.description }}</textarea>
 
         <button type="submit" class="btn btn-default form-control">Submit</button>
     </form>
 
+    <span class="help"><a href="{% url 'instructions' %}#Contact" target="blank">Help</a></span>
 
-     <form method="GET" class="fix" action="/delete_contact">  
-        <input type="hidden" name="contact_id" value="{{ contact.id }}">
-        <button type="submit" class="btn btn-danger form-control">Delete this entry</button>
-     </form>
-
-    <span class="help" ><a href="{% url 'instructions' %}#Contact" target="blank">Help</a></span>
 </section>
+
+<form method="GET" class="wide fix" action="/delete_contact">  
+    <input type="hidden" name="contact_id" value="{{ contact.id }}">
+    <button type="submit" class="btn btn-danger form-control">Delete this entry</button>
+</form>
+
 {% endblock formquestions %}
 
 {% block doc_footer %}

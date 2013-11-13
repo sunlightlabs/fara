@@ -1,9 +1,9 @@
 <section class="form-section">
     {% if toggle %}
-    <h3 class="toggleOpen">Disbursement</h3>
+    <h3 class="toggleOpen">Disbursements</h3>
     <div class='toggle'>
     {% else %}
-    <h3>Disbursement</h3>
+    <h3>Disbursements</h3>
     {% endif %}
         <span class="question-helper">{{ question }}</span>
 
@@ -19,7 +19,7 @@
             </tr>
             </thead> 
         
-            <tbody>   
+            <tbody class="highlight-child">   
             {% for dis in dis_list %}
                 <tr>
                 <td class="dis">${{ dis.1 }}</td>
