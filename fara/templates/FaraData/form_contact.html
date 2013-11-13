@@ -29,7 +29,7 @@
         <div class="paginate">
         {% if data.has_previous %}
             <span><a href="?page={{ data.previous_page_number }}">prev</a>
-            </span>{% endif %}<span class="current">Page {{ data.number }} of {{ data.paginator.num_pages }}
+            </span>{% endif %}<span class="current">Page {{ data.number }} of <a href="?page={{ data.paginator.num_pages }}">{{ data.paginator.num_pages }}</a>
             </span>{% if data.has_next %}<span><a href="?page={{ data.next_page_number }}">next</a></span>
         {% endif %}
         </div>
