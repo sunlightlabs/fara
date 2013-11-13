@@ -301,7 +301,7 @@ main.container {
 
 .jumbotron.instructions {
 	height: 275px;
-	background: #f5f5f5 url('../images/AskFara.png') 70% bottom no-repeat;
+	background: #f5f5f5 url('../images/AskFara.png') 85% bottom no-repeat;
 }
 
 .jumbotron.instructions h1 {
@@ -314,7 +314,7 @@ main.container {
 
 .jumbotron .quicklinks {
 	border: 0;
-	font-size: 80%;
+	font-size: 70%;
 	width: 70%;
 }
 
