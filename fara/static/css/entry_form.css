@@ -292,7 +292,10 @@ form.wide {
   font-size: 85%;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e17d45dd11e6e61106e1267aafe0534f20ae7212
 /* Navigation links on multi-page forms */
 
 .quicklinks {
@@ -324,5 +327,6 @@ form.wide {
 
 .next-link a.btn-primary {
   float: right;
+
 }
 

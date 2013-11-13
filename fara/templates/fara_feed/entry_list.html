@@ -31,6 +31,7 @@
 
 					<td><a class="doclink" href="{% url 'entryforms' d.id %}">{% if d.reg_id in names %}{{ names|access:d.reg_id }}{% endif %}</a></td>
 
+
 				{% elif d.doc_type == "Amendment" %}
 					<td><a class="doclink" href="{% url 'enter-amendment' d.id %}">{% if d.reg_id in names %}{{ names|access:d.reg_id }}{% endif %}</a></td>
 				{% elif d.doc_type == "Registration" %}
