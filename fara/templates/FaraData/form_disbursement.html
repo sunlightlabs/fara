@@ -50,7 +50,7 @@
 
             <label for="client">Client</label>
             <select name="client" id="dis_client" class="form-control">
-            {% if one_client == True %}
+            {% if one_client != True %}
                 <option value="" selected disabled>Please Select Client</option>
             {% endif %}                        
             {% for client in reg_object.clients.all %}

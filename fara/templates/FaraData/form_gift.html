@@ -31,7 +31,9 @@
             <span class="help-block pull-right"><a href="#client">Add a New Client</a></span>
             <label for="client">Client</label>
             <select name="client" id="gift_client" class="form-control">
-                <option value="None">Please Select Client</option>
+            {% if one_client != True %}
+                <option value="" selected disabled>Please Select Client</option>
+            {% endif %}
             {% for client in reg_object.clients.all %}
                 <option value="{{ client.id }}">{{ client.client_name }}</option>
             {% endfor %}
