@@ -1,69 +1,80 @@
-{% load staticfiles %}
-<!doctype html>
-<html lang="en">
-<meta charset="utf-8" />
-<title>Member lookup</title>
-<head>
-<link rel="stylesheet" type="text/css" href="{% static 'css/sunlight.css' %}" />
-<link rel="stylesheet" type="text/css" href="{% static 'css/document_select.css' %}" />
-</head>
-<body>
-<div class="explainer">	
-<h1>Member lookup:</h1>
-<p> Type the last name of the Member.</p>
+{% extends "FaraData/form_base.html" %}
 
-<form method="GET" id='memberform' action="{% url 'find-member' %}">
-<p><label for="member">Member name: </label><br />
-    <input type="text" name="member">
-    </p>
-    <input type="submit" />
-</form>
+{% block show_doc %}
+{% endblock show_doc %}
+
+{% block formquestions %}
+<section class="form-section">
+	<h3>Member Lookup</h3>
+
+	<form class="form-inline" method="GET" id='memberform' action="{% url 'find-member' %}">
+		<label class="sr-only" for="member">Member name</label>
+	    <input type="text" name="member" class="form-control" placeholder="Last Name of the Member">
+        <button type="submit" class="btn btn-primary form-control">Lookup</button>
+	</form>
+</section>
+
 {% if member %}
-<p>Added {{ member }} to recipients.</p> 
+<section class="form-section flash-ok">
+	<h4>Added {{ member }} to recipients.</h4> 
+</section>
 {% endif %}
 
 {% if insystem %}
-<p>{{ insystem }} is already in system.</p> 
+<section class="form-section flash-ok">
+	<h4>{{ insystem }} is already in the system.</h4>
+</section>
 {% endif %}
-
+	
 {% if results %}
-Choose result:
-{% for r in results %}
-<form method="GET" id='add_member_form' action="{% url 'add-member' %}">
-<p>{{ r.5 }}
-<input type="hidden" name="crp_id" value="{{ r.0 }}">
-<input type="hidden" name="agency" value="{{ r.1 }}"> 
-<input type="hidden" name="office_detail" value="{{ r.2 }}">
-<input type="hidden" name="name"  value="{{ r.3 }}">
-<input type="hidden" name="title" value="{{ r.4 }}">
-<input type="submit" />
-</form>
-</p>
+<section class="form-section api">
+	
+	{% for r in results %}
+	<div class="api-result">
+		<form class="form-inline-api" method="GET" id='add_member_form' action="{% url 'add-member' %}">
+			<input type="hidden" name="crp_id" value="{{ r.0 }}">
+			<input type="hidden" name="agency" value="{{ r.1 }}"> 
+			<input type="hidden" name="office_detail" value="{{ r.2 }}">
+			<input type="hidden" name="name"  value="{{ r.3 }}">
+			<input type="hidden" name="title" value="{{ r.4 }}">
 
-<div class="explainer">	
-<form method="GET" id='add_member_form' action="{% url 'add-staff' %}">
-<p> Add staff for {{ r.4 }} {{ r.3 }} 
-<input type="hidden" name="crp_id" value="{{ r.0 }}">
-<input type="hidden" name="agency" value="{{ r.2 }}"> 
-<input type="hidden" name="office_detail" value="{{ r.3 }}">
-<b>Staff Title: </b><input name="title" type="text">
-<b>Staff Name: </b><input name="name" type="text">
-<input type="submit" />
-</form>
-</div>
+			<h5 class="api-result-name">{{ r.5 }}</h5>
+			<button type="submit" class="btn btn-default form-control">Add</button>
+		</form>
 
-<div class="explainer">	
-<form method="GET" id='add_pac_form' action="{% url 'add-leader-PAC' %}">
-<p> Add Leadership PAC for {{ r.4 }} {{ r.3 }} 
-<input type="hidden" name="crp_id" value="{{ r.0 }}">
-<input type="hidden" name="agency" value="{{ r.2 }}"> 
-<input type="hidden" name="office_detail" value="{{ r.3 }}">
-<b>Leadership PAC committee name: </b><input name="PAC_name" type="text">
-<input type="submit" />
-</form>
-</div>
+		<span class="help-block">Add Staff or Leadership PAC for {{ r.4 }} {{ r.3 }}</span>
+
+		<form class="form-inline-api" method="GET" id='add_member_form' action="{% url 'add-staff' %}">
+			<input type="hidden" name="crp_id" value="{{ r.0 }}">
+			<input type="hidden" name="agency" value="{{ r.2 }}"> 
+			<input type="hidden" name="office_detail" value="{{ r.3 }}">
+
+			<label class="sr-only">Staff Title</label>
+			<input name="title" type="text" class="form-control short" placeholder="Staff Title">
+			
+			<label class="sr-only">Staff Name</label>
+			<input name="name" type="text" class="form-control short" placeholder="Staff Name">
+
+			<button type="submit" class="btn btn-default alt form-control">Add</button>
+		</form>
+
+		<form class="form-inline-api" method="GET" id='add_pac_form' action="{% url 'add-leader-PAC' %}">
+			<input type="hidden" name="crp_id" value="{{ r.0 }}">
+			<input type="hidden" name="agency" value="{{ r.2 }}"> 
+			<input type="hidden" name="office_detail" value="{{ r.3 }}">
+			
+			<label class="sr-only">Leadership PAC Committee Name</label>
+			<input name="PAC_name" type="text" class="form-control" placeholder="Leadership PAC Committee Name">
+			<button type="submit" class="btn btn-default alt form-control">Add</button>
+		</form>
+	</div>
 
 {% endfor %}
 {% endif %}
-</div>
-</body>
+
+</section>
+
+{% endblock %}
+
+{% block doc_footer %}
+{% endblock doc_footer %}

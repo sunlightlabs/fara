@@ -1,0 +1,36 @@
+<section class="form-section" id="recip">
+    {% if toggle %}
+    <h3 class="toggleOpen">Recipients</h3>
+    <div class="toggle">
+    {% else %}
+    <h3>Recipients</h3>
+    {% endif %}
+
+        <a class="js-popup" href="{% url 'find-form' %}">Add a new member of Congress or congressional staffer.</a>
+        <h4>Add a new recipient</h4>
+        <p><i>People who are being met, given contributions and gifts</i></p>
+
+        <form method="GET" id='recipform' action="/recipient/create">
+            <label class="sr-only" for="crp_id">CRP ID</label>
+            <input id="crp_id" type="text" name="crp_id" class="form-control" placeholder="CRP ID"/>
+            <label class="sr-only" for="agency">Agency</label>
+            <input id="agency" type="text" name="agency" class="form-control" placeholder="Agency"/>
+            <label class="sr-only" for="office_detail">Office detail</label>
+            <input type="text" name="office_detail" class="form-control" placeholder="Office Details"/>
+            <label class="sr-only" for="name">Name</label>
+            <input type="text" name="name" class="form-control" placeholder="Name"/>
+            <label class="sr-only" for="title">Title</label>
+            <input type="text" name="title" class="form-control" placeholder="Title"/>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="state_local">
+                    State or Local
+                </label>
+            </div>
+            <button type="submit" class="btn btn-default form-control">Submit</button>
+        </form>    
+
+        <span class="help" ><a href="{% url 'instructions' %}#Recipient" target="blank">Help</a></span>
+    {% if toggle %}</div>{% endif %}
+
+</section>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>FARA entry</title>
+
+<head>
+{% block head %}
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/entry_form.css"/>
+{% endblock head %}
+</head>
+
+<body>
+
+{% block show_doc %}
+<div id="left">
+   <iframe height=100% width=100% style="border: none;" scrolling="yes" src="{{ url }}"></iframe>
+</div>
+
+{% endblock show_doc %}
+
+<div id="right-iframe">
+   <iframe height=100% width=100% style="min-height: 100%; border: none;" src="/registration_first/{{form_id}}"></iframe>
+</div> 
+
+</body>
+</html>

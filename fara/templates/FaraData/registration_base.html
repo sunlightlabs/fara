@@ -1,16 +1,16 @@
 {% extends "FaraData/form_base.html" %}
 
-{% block formheading %}
-<h2>Registration</h2>
-<h2>{{ reg_object.reg_name }}</h2>
-{% endblock formheading %}
+{% block page_heading %}Registration{% endblock page_heading %}
+{% block page_description %}{{ reg_object.reg_name }}{% endblock page_description %}
+
 
 {% block quicklinks %}
-<hr>
-<a href="{% url 'registration-first' form_id %}">Client and Registrant</a>  
-<a href="{% url 'registration-payment' form_id %}">Payments</a>  
-<a href="{% url 'registration-gift' form_id %}">Gifts</a>  
-<a href="{% url 'registration-disbursement' form_id %}">Disbursements</a>  
-<a href="{% url 'registration-contribution' form_id %}">Contributions</a>  
-<a href="{% url 'registration-last' form_id %}">Processing</a>  
+<div class="quicklinks">
+	<a href="{% url 'registration-first' form_id %}">Client and Registrant</a>
+	<a href="{% url 'registration-payment' form_id %}">Payments</a>
+	<a href="{% url 'registration-gift' form_id %}">Gifts</a>
+	<a href="{% url 'registration-disbursement' form_id %}">Disbursements</a>
+	<a href="{% url 'registration-contribution' form_id %}">Contributions</a>
+	<a href="{% url 'registration-last' form_id %}">Processing</a>
+</div>
 {% endblock quicklinks %}

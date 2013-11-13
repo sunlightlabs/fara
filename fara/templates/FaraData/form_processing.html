@@ -1,0 +1,49 @@
+<section class="form-section">
+    <h3>Processing Info</h3>
+
+    <h4>Upload date: {{ meta_list.2 }}</h4>
+
+    <form method="GET" id={% if note %}"noteform"{% else %}"metaform"{% endif %} action="/metadata/create">
+        {% csrf_token %}
+        <input type="hidden" name="reg_id" value="{{ reg_id }}">
+        <input type="hidden" name="link" value="{{  url }}">
+        <input type="hidden" name="form" value="{{ form_id }}">
+        <input type="hidden" name="upload_date" value="{{ s_date }}">
+
+        <label for="end_date">Supplemental End Date</label>
+        <input id="end_date" type="text" class="form-control" name="end_date" value="{{ meta_list.5 }}" />
+         
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" name="reviewed" {% if meta_list.0 == True %}checked{% endif %}>
+                Flag
+            </label>
+        </div>
+
+        <div class="checkbox">
+            <label>
+            {% if meta_list.1 == True %}
+                <input type="checkbox" name="processed" checked>
+                Form is finished and info is displayed on front end
+            {% else %}     
+                <input type="checkbox" name="processed">
+                Check when form is finished
+            {% endif %}                                            
+            </label>
+        </div>
+
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" name="is_amendment" {% if meta_list.3 == True %}checked{% endif %}>
+                Is amended                
+            </label>
+        </div>
+
+        <label for="notes">Notes</label>
+        <textarea name="notes" class="form-control">{% if meta_list.4 == None %}{% else %}{{ meta_list.4 }}{% endif %}</textarea>
+        
+        <button type="submit" class="btn btn-default form-control">Submit</button>
+    </form>
+    <div id="note"></div>
+    <span class="help" ><a href="{% url 'instructions' %}#Processing_Info" target="blank">Help</a></span>
+</section>

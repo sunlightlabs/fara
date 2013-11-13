@@ -1,0 +1,83 @@
+<section class="form-section">
+    {% if toggle %}
+    <h3 class="toggleOpen">Disbursements</h3>
+    <div class='toggle'>
+    {% else %}
+    <h3>Disbursements</h3>
+    {% endif %}
+        <span class="question-helper">{{ question }}</span>
+
+        <h4>Disbursements associated with this form</h4>
+        <div id="dis_list">
+        <table id ="dis_table" class="table">
+            <thead>
+            <tr>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Client</th>
+                <th></th>
+            </tr>
+            </thead> 
+        
+            <tbody class="highlight-child">   
+            {% for dis in dis_list %}
+                <tr>
+                <td class="dis">${{ dis.1 }}</td>
+                <td>{{ dis.2 }}</td>
+                <td>{{ dis.0 }}</td>
+                <td>
+                    <a class="js-popup" href="{% url 'fix-disbursement' dis.3 %}">Fix</a>
+                </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <td colspan="4">
+                        <p>Total: <span id="dis_total"></span></p>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        </div>
+
+        <h4>Add a disbursement</h4>
+        <form method="GET" id='disform' action="/disbursement/create">
+            {% csrf_token %}
+            <input type="hidden" name="reg_id" value="{{ reg_id }}">
+            <input type="hidden" name="link" value="{{ url }}">
+
+            <label for="client">Client</label>
+            <select name="client" id="dis_client" class="form-control">
+            {% if one_client == True %}
+                <option value="" selected disabled>Please Select Client</option>
+            {% endif %}                        
+            {% for client in reg_object.clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+            {% for client in reg_object.terminated_clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+            </select>
+
+            
+            <label for="date">Date</label>
+            <input id="disbursement_date" "text" name="date" class="form-control"/>
+            
+            <label for= "amount">Amount</label>
+            <input id="amount" type="text" class="form-control" name="amount" placeholder="$"/>
+            
+            <label for="purpose">Purpose</label>
+            <textarea name="purpose" class="form-control"></textarea>
+            
+            <label for="subcontractor">Subcontractor</label>
+            <span class="help-block">(Add this field if the money is going to another registrant.)</span>
+            <input type="hidden" id="disbursement_subcontractor" name="subcontractor" class="select-control"/>
+
+            <button type="submit" class="btn btn-default form-control">Submit</button>
+        </form>
+
+        <span class="help" ><a href="{% url 'instructions' %}#Disbursement" target="blank">Help</a></span><br>
+    {% if toggle %}</div>{% endif %}
+</section>

@@ -145,14 +145,16 @@ def oneclient(reg_object):
 def return_big_form(request, form_id):
         url, reg_id, s_date = doc_id(form_id)
         #forms
+        ### don't think I am using any of these
         client_form = ClientForm()
         reg_form = RegForm()
         recipient_form = RecipientForm()
-        #options for the forms
         #for displaying information already in the system
         reg_object = reg_info(reg_id)
         one_client = oneclient(reg_object)
-        contact_list = contact_info(url, page)
+        page = request.GET.get('page')
+        contact_list = contact_info(url, page)[0]
+        c_page_data = contact_info(url, page)[1]
         dis_list = dis_info(url)
         pay_list = pay_info(url)
         cont_list = cont_info(url)
@@ -179,6 +181,7 @@ def return_big_form(request, form_id):
             's_date' : s_date,
             'one_client' : one_client,
             'client_reg' : client_reg,
+            'data': c_page_data,
         })
 
 @login_required(login_url='/admin')
@@ -189,6 +192,23 @@ def index(request, form_id):
 @login_required(login_url='/admin')
 def supplemental_base(request, form_id):
     return render(request, 'FaraData/supplemental_base.html', {'form_id': form_id})   
+
+@login_required(login_url='/admin')
+def wrapper(request, form_id):
+    url, reg_id, s_date = doc_id(form_id)
+    reg_object = reg_info(reg_id)
+    client_form = ClientForm()
+    meta_list = meta_info(url)
+
+    return render(request, 'FaraData/dynamic_form.html',{
+        'reg_id' : reg_id,
+        'reg_object': reg_object,
+        'url': url,
+        'client_form': client_form,
+        'form_id': form_id,
+        's_date': s_date,
+        'meta_list': meta_list,
+    })
 
 @login_required(login_url='/admin')
 def supplemental_first(request, form_id):
@@ -214,7 +234,6 @@ def supplemental_contact(request, form_id):
     page = request.GET.get('page')
     contact_list = contact_info(url, page)[0]
     data = contact_info(url, page)[1]
-    print data
     client_form = ClientForm()
     recipient_form = RecipientForm()
     one_client = oneclient(reg_object)
@@ -313,6 +332,22 @@ def supplemental_last(request, form_id):
 @login_required(login_url='/admin')
 def registration_base(request, form_id):
     return render(request, 'FaraData/registration_base.html', {'form_id': form_id})   
+
+@login_required(login_url='/admin')
+def reg_wrapper(request, form_id):
+    url, reg_id, s_date = doc_id(form_id)
+    reg_object = reg_info(reg_id)
+    # think this is obsolete
+    client_form = ClientForm()
+
+    return render(request, 'FaraData/dynamic_reg_form.html',{
+        'reg_id' : reg_id,
+        'reg_object': reg_object,
+        'url': url,
+        'client_form': client_form,
+        'form_id': form_id,
+        's_date': s_date,
+    })
 
 @login_required(login_url='/admin')
 def registration_first(request, form_id):
@@ -704,7 +739,8 @@ def lobbyist(request):
         reg_id = request.GET['reg_id']
         lobby = Lobbyist(lobbyist_name = lobbyist_name, 
                         PAC_name = PAC_name, 
-                        lobby_id = request.GET['lobby_id'],
+                        # I would love to add but we don't have data entry time now
+                        #lobby_id = request.GET['lobby_id'],
         )
         lobby.save()
         # adds to registrant 
@@ -1142,9 +1178,12 @@ def contribution(request):
         date = cleandate(request.GET['date'])
         if type(date) != datetime:
             if date == '{"error":"No date"}':
-                date = ''
+                date = None
+                date_string = ''
             else:
                 return HttpResponse(date, mimetype="application/json")
+        else:
+            date_string = date.strftime("%B %d, %Y")
 
         registrant = Registrant.objects.get(reg_id=int(request.GET['registrant']))
         recipient = Recipient.objects.get(id=int(request.GET['recipient']))
@@ -1180,7 +1219,7 @@ def contribution(request):
             clear = "off"
 
         continfo = {'amount': contribution.amount, 
-                    'date': contribution.date.strftime("%B %d, %Y"), 
+                    'date': date_string, 
                     'recipient': contribution.recipient.name,
                     'lobbyist': lobbyist,
                     'cont_id': contribution.id,

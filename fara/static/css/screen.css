@@ -50,6 +50,19 @@ footer .btn:not(:first-child) {
 	background: #74b3b6;
 }
 
+.btn-default {
+	background: #daf1f2;
+}
+
+.btn-default.alt{
+	background: #f0f0f0;
+}
+
+.btn-default:hover, .btn-default:active , .btn-default:focus {
+	outline: none;
+	background: #c3e4e5;
+}
+
 /* ==========================================================================
    Basic Layout
    ========================================================================== */
@@ -234,9 +247,6 @@ main.container {
 .table thead > tr > th.flagged { width: 70px; }
 .table thead > tr > th.notes { width: 150px; }
 
-.table tfoot {
-	text-align: right;
-}
 .table td.status {
 	font-style: italic;
 }
@@ -258,21 +268,26 @@ main.container {
 
 .table td.paginate {
 	padding: 0;
-	font-size: 90%;
 }
 
-.table td.paginate span{
+.paginate {
+	padding: 0;
+	font-size: 90%;
+	text-align: right;
+}
+
+.paginate span{
 	display: inline-block;
 	padding: 5px 10px;
 	border-left: 1px solid #ddd;
 	border-bottom: 1px solid #ddd;
 }
 
-.table td.paginate span:last-of-type{
+.paginate span:last-of-type{
 	border-right: 1px solid #ddd;
 }
 
-.table td.paginate span:not(.current):hover{
+.paginate span:not(.current):hover{
 	background: #f2f9fa;
 	cursor: pointer;
 }
@@ -281,9 +296,6 @@ main.container {
    Javacript Classes
    ========================================================================== */
 
-.js-hidden .table {
-	display: none;
-}
 .doclist.toggle.js-hidden .table_title .glyphicon {
 	line-height: 28px;
 	transform:rotate(-90deg);
@@ -294,6 +306,12 @@ main.container {
 /* ==========================================================================
    Media Queries
    ========================================================================== */
+
+@media(max-width:600px){
+	header .container .btn-info {
+		display: none;
+	}
+}
 
 @media(min-width:992px){
 

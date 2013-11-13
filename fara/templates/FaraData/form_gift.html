@@ -1,0 +1,60 @@
+<section class="form-section">
+    {% if toggle %}
+    <h3 class="toggleOpen">Gifts</h3>
+    <div class="toggle">
+    {% else %}
+    <h3>Gifts</h3>
+    {% endif %}
+        <span class="question-helper">{{ question }}</span>
+        
+        <h4>Gifts associated with this form</h4>
+
+        <ul id="gift_basket" class="highlight-child">
+        {% for g in gift_list %}
+            <li>
+                {{ g.0 }}
+                from
+                {{ g.3 }},
+                on
+                {{ g.1 }}
+                <a class="js-popup pull-right" href="{% url 'fix-gift' g.2 %}">Fix</a>
+            </li> 
+        {% endfor %} 
+        </ul>
+
+        <h4>Add a New Form</h4>
+        <form method="GET" id="giftform" action="/gift/create">
+            {% csrf_token %}
+            <input type="hidden" name="reg_id" value="{{ reg_id }}">
+            <input type="hidden" name="link" value="{{  url }}">
+            
+            <span class="help-block pull-right"><a href="#client">Add a New Client</a></span>
+            <label for="client">Client</label>
+            <select name="client" id="gift_client" class="form-control">
+                <option value="None">Please Select Client</option>
+            {% for client in reg_object.clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+            {% for client in reg_object.terminated_clients.all %}
+                <option value="{{ client.id }}">{{ client.client_name }}</option>
+            {% endfor %}
+            </select>
+
+            <label for="date">Date</label>
+            <input id="gift_date" type="text" class="form-control" name= "date"/>
+            
+            <label for "purpose">Purpose</label>
+            <textarea name="purpose" class="form-control"></textarea>
+            
+            <label for="description">Thing of Value</label>
+            <textarea name="description" class="form-control"></textarea>
+
+            <label for="recipient">Recipient</label>
+            <input type="hidden" id="gift_recip" name="recipient" class="select-control"/>
+            
+            <button type="submit" class="btn btn-default form-control">Submit</button>
+        </form>
+            
+        <span class="help" ><a href="{% url 'instructions' %}#Gift" target="blank">Help</a></span>
+    {% if toggle %}</div>{% endif %}
+</section>

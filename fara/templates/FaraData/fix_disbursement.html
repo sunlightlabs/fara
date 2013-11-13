@@ -5,58 +5,62 @@
 
 {% block formquestions %}
 
-<h3>Fix Disbursement</h3>
+<section class="form-section">
+
+    <h3>Fix Disbursement</h3>
 
 {% if disbursement.subcontractor %}
-Delete subcontractor:
-<div>
-    <form method="GET" class="deleteable" action="/disbursement_remove_sub">  
-            <input type="hidden" name="disbursement_id" value="{{ disbursement.id }}">
-            {{ disbursement.subcontractor.reg_name }}
-            <input value="Delete" type="submit" />
+    <h4>Delete subcontractor</h4>
+    <form class="form-inline deleteable" method="GET" action="/disbursement_remove_sub">  
+        <input type="hidden" name="disbursement_id" value="{{ disbursement.id }}">
+        
+        <input disabled value="{{ disbursement.subcontractor.reg_name }}" class="form-control">    
+        <button type="submit" class="btn btn-danger form-control">Delete</button>
     </form> 
-</div> 
 {% endif  %}
 
-<form method="GET" id='dis_amend' class="fix" action="/amend_disbursement">
-    <input type="hidden" name="dis_id" value="{{ disbursement.id }}">
-    <input type="hidden" name="reg_id" value="{{ reg_object.reg_id }}">
-    <input type="hidden" name="link" value="{{ url }}">
-    
-    <p><label for="client">Clients:</label><select name="client" id="dis_client">
-        <option value="{{ disbursement.client.id }}">{{ disbursement.client.client_name }}</option>
-    {% for client in reg_object.clients.all %}
-        <option value="{{ client.id }}">{{ client.client_name }}</option>
-    {% endfor %}
-    {% for client in reg_object.terminated_clients.all %}
-        <option value="{{ client.id }}">{{ client.client_name }}</option>
-    {% endfor %}
-    </select></p></p><a href="#client">add a new client</a>
-    
-    <p><label for="date">Date: <br /></label>
-    <input id="disbursement_date" "text" name="date" value="{{ date }}" /></p>
-    
-    <p><label for= "amount">Amount: <br />$</label><input id="amount" type="text" name="amount" value="{{ disbursement.amount }}"/></p> 
+    <h4>Edit Disbursement</h4>
+    <form method="GET" id='dis_amend' class="fix" action="/amend_disbursement">
+        <input type="hidden" name="dis_id" value="{{ disbursement.id }}">
+        <input type="hidden" name="reg_id" value="{{ reg_object.reg_id }}">
+        <input type="hidden" name="link" value="{{ url }}">
+        
+        <span class="help-block pull-right"><a href="#client">Add a New Client</a></span>
+        <label for="client">Clients</label>
+        <select name="client" id="dis_client" class="form-control">
+            <option value="{{ disbursement.client.id }}">{{ disbursement.client.client_name }}</option>
+        {% for client in reg_object.clients.all %}
+            <option value="{{ client.id }}">{{ client.client_name }}</option>
+        {% endfor %}
+        {% for client in reg_object.terminated_clients.all %}
+            <option value="{{ client.id }}">{{ client.client_name }}</option>
+        {% endfor %}
+        </select>
+        
+        <label for="date">Date</label>
+        <input id="disbursement_date" "text" name="date" value="{{ date }}" class="form-control"/>
+        
+        <label for="amount">Amount</label>
+        <input id="amount" type="text" name="amount" value="{{ disbursement.amount }}" class="form-control" placeholder="$"/>
 
-    <p><lable for="purpose">Purpose: <br /><textarea name="purpose" cols="25" rows="5">{{ disbursement.purpose }}</textarea></p>
-    
-    (Add this field if the money is going to another registrant.)
-    <p><label for="subcontractor">Add Subcontractor: </label><input type="hidden" id="disbursement_subcontractor" name="subcontractor" style="width: 300px"/></p>
+        <label for="purpose">Purpose </label>
+        <textarea name="purpose" class="form-control">{{ disbursement.purpose }}</textarea>
 
-    <input type="submit" />
-</form>
+        <label for="subcontractor">Add Subcontractor</label>
+        <span class="help-block">(Add this field if the money is coming from to another registrant.)</span>
+        <input type="hidden" id="disbursement_subcontractor" name="subcontractor" class="select-control"/>
 
-<p><span class="help">
- <form method="GET" class= "fix" action="/delete_disbursement">  
+        <button type="submit" class="btn btn-default form-control">Submit</button>
+    </form>
+
+    <span class="help"><a href="{% url 'instructions' %}#Disbursement" target="blank">Help</a></span>
+
+</section>
+
+ <form method="GET" class= "wide fix" action="/delete_disbursement">  
     <input type="hidden" name="disbursement_id" value="{{ disbursement.id }}">
-    <input value="Delete this entry" type="submit" />
- </form> </span>
-</p>
-<br>
-<p>
-<div class="help" ><a href="{% url 'instructions' %}#Disbursement" target="blank">Help</a></div><br>
-</p>
-<hr />
+    <button type="submit" class="btn btn-danger form-control">Delete this entry</button>
+ </form>
 
 {% endblock formquestions %}
 

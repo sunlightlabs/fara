@@ -1,0 +1,95 @@
+<section class="form-section">
+    {% if toggle %}
+    <h3 class="toggleOpen">Payments</h3>
+    <div class="toggle">
+    {% else %}
+    <h3>Payments</h3>
+    {% endif %}
+        <span class="question-helper">{{ question }}</span>
+
+        <h4>Payments associated with this form</h4>
+        <table id="pay_table" class="table">
+            <thead>
+                <tr>
+                    <th>Amount</th>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Fee</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody class="highlight-child">
+            {% for pay in pay_list %}
+                <tr>
+                    <td class="pay">${{ pay.1 }}</td>
+                    <td>{{ pay.0 }}</td>
+                    <td>{{ pay.3 }}</td>
+                {% if pay.2 == True %}
+                    <td><span class="glyphicon glyphicon-ok"></span></td>
+                {% else %}
+                    <td>No</td>
+                {% endif %}
+                    <td>
+                        <a class="js-popup" href="{% url 'fix-payment' pay.4 %}">Fix</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <td colspan="5">
+                        <p>Total: <span id="pay_total"></span></p>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <h4>Add a payment</h4>
+        <form method="GET" id="payform" action="/payment/create">
+            {% csrf_token %}
+            <input type="hidden" name="reg_id" value="{{ reg_id }}"/>
+            <input type="hidden" name="link" value="{{ url }}"/> 
+
+                <label for="client">Client</label>
+                <select name="client" id="pay_client" class="form-control">
+                    {% if one_client == False %}
+                        <option value="" selected disabled>Select a Client</option>
+                    {% endif %}
+                    {% for client in reg_object.clients.all %}
+                        <option value="{{ client.id }}">{{ client.client_name }}</option>
+                    {% endfor %}
+                    {% for client in reg_object.terminated_clients.all %}
+                        <option value="{{ client.id }}">{{ client.client_name }}</option>
+                    {% endfor %}
+                </select>
+
+            
+            
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="fee">
+                    Fee
+                </label>
+            </div>
+            
+            <label for="amount">Amount</label>
+            <input id="amount" type="text" class="form-control" name="amount" placeholder="$"/>
+            
+            <label for="description">Description</label>
+            <textarea name="purpose" class="form-control"></textarea>
+            
+            <label for="date">Date</label>
+            <input id="payment_date" type="text" class="form-control" name="date"/>
+
+            <label for="subcontractor">Primary Contractor</label>
+            <span class="help-block">Does this client come through another contractor? Does the client name say "through" or "via" another entity? If so, find the name mentioned with the client below:</span>
+            <input type="hidden" id="payment_subcontractor" name="subcontractor" class="select-control"/>
+            
+            <button type="submit" class="btn btn-default form-control">Submit</button>
+        </form>
+
+        <span class="help" ><a href="{% url 'instructions' %}#Payment" target="blank">Help</a></span>
+    {% if toggle %}</div>{% endif %}
+</section>

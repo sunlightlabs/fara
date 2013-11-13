@@ -1,0 +1,67 @@
+<section class="form-section" id="lobby">
+    <a id="lobbyist"></a>
+    {% if toggle %}
+    <h3 class="toggleOpen">{{ title }}</h3>
+    <div class="toggle">
+    {% else %}
+    <h3>Lobbyists</h3>
+    {% endif %}
+        
+        <span class="help-block">{{ question }}</span>
+
+        {% if reg_object.lobbyists.all %}
+        <h4>Lobbyists {% if not noPAC %} and donating PACs{% endif %} already in system</h4>
+        {% endif %}
+        <ul id="lobby_list" class="highlight-child">
+        {% for lobbyist in reg_object.lobbyists.all %}
+            <li class="highlight">{{ lobbyist }}</li>
+        {% endfor %}
+        </ul>
+        <div id="lobbyist_ajaxwrapper"></div>
+
+        <h4>Select additional lobbyists{% if not noPAC %} or PACs{% endif %}</h4>
+
+        <div id="lobbyist_add">
+            <form method="GET" id='lobbyform' action="/registrant/add_lobbyist">
+                {% csrf_token %}
+                <input type="hidden" name="reg_id" value="{{ reg_id }}">
+                
+                <label class="sr-only" for="lobbyists">Lobbyists</label>
+                <input type="hidden" id="lobbyist_lobbyist" name="lobbyists" class="select-control"/>
+
+                <button type="submit" class="btn btn-default form-control">Submit</button>
+            </form>
+        </div>
+
+
+
+
+        <div id="lobbyist_create">
+            <h4>Add a lobbyists{% if not noPAC %} or PACs{% endif %} </h4>
+            
+            <form method="GET" id="add_lobbyform" action="/lobbyist/create">
+                <input type="hidden" name="reg_id" value="{{ reg_id }}">
+
+                <!-- <label class="sr-only" for="id_lobby_id">Lobby ID</label>
+                <input id="id_lobby_id" maxlength="150" name="lobby_id" type="text" class="form-control" placeholder="Lobby ID"/> -->
+
+                {% if not noPAC %}<span class="help-block">Is this a lobbyist or a PAC? Use only the appropriate field.</span>{% endif %}
+                <label class="sr-only" for="id_lobbyist_name">Lobbyist Name</label>
+                <input id="id_lobbyist_name" maxlength="150" name="lobbyist_name" type="text" class="form-control" placeholder="Lobbyist Name"/>
+                {% if noPAC %}
+                <label class="sr-only" for="id_PAC_name">PAC Name</label>
+                <input id="id_PAC_name" maxlength="150" name="PAC_name" type="hidden" class="
+                form-control" placeholder="PAC Name"/>
+                {% else %}
+                <input id="id_PAC_name" maxlength="150" name="PAC_name" type="text" class="
+                form-control" placeholder="PAC Name"/>
+                {% endif %}
+                <button type="submit" class="btn btn-default form-control">Submit</button>
+            </form>
+
+            <span class="help"><a href="{% url 'instructions' %}#Lobbyist" target="blank">Help</a></span>
+        </div>
+    {% if toggle%}    
+    </div>
+    {% endif %}
+</section>

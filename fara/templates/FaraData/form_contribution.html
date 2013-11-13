@@ -1,0 +1,77 @@
+<section class="form-section">
+    {% if toggle %}
+    <h3 class="toggleOpen">Contributions</h3>
+    <div class="toggle">
+    {% else %}
+    <h3>Contributions</h3>
+    {% endif %}
+        <span class="question-helper">{{ question }}</span>
+
+        <h4>Contributions associated with this form</h4>
+        <table id="cont_table" class="table">
+            <thead>
+                <tr>
+                    <th>Amount</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Date</th>
+                    <th></th>
+                </tr>
+            </thead> 
+      
+            <tbody class="highlight-child">   
+            {% for cont in cont_list %}
+                <tr>
+                    <td>${{ cont.1 }}</td>
+                    <td>{% if cont.0 == None %} {% else %}{{ cont.0 }}{% endif %}</td>
+                    <td>{{ cont.2 }}</td>
+                    <td>{{ cont.3 }}</td>
+                    <td>
+                        <a class="js-popup" href="{% url 'fix-contribution' cont.4 %}">Fix</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <h4>Enter Contributions</h4>
+        <form method="GET" id='contform' action="/contribution/create">
+
+            <div class="checkbox">
+                <label>
+                    <input name="do_not_clear" type="checkbox">
+                    Do not clear
+                </label>
+            </div>
+
+            <input type="hidden" name="registrant" value="{{ reg_id }}">
+            <input type="hidden" name="link" value="{{ url }}">
+            
+            <label for="date">Date</label>
+            <input id="contribution_date" type="text" class="form-control" name="date"/>
+
+            <label for="id_amount">Amount</label>
+            <input id="id_amount" name="amount" type="text" class="form-control" placeholder="$"/>
+
+            <span class="help-block pull-right"><a href="#recip">add a new recipient</a></span>
+            <label for="recipient">Recipient</label>
+            <span class="help-block">(Who gets the contribution)</span>
+            <input type="hidden" id="cont_recip" name="recipient" class="select-control"/>
+
+            
+            <span class="help-block pull-right"><a href="#lobbyist">add a new lobbyist or PAC</a></span>
+            <label for="lobbyist">Lobbyist or PAC</label>
+            <span class="help-block">(Who the money is coming from)</span>
+            <select id="cont_lobbyist" name="lobbyist" class="form-control">
+                <option value="" selected disabled>Select a lobbyist or PAC</option>
+            {% for lobbyist in reg_object.lobbyists.all %}
+                <option value="{{ lobbyist.id }}">{{ lobbyist }}</option>
+            {% endfor %}
+            </select>
+
+            <button type="submit" class="btn btn-default form-control">Submit</button>
+        </form>
+
+        <span class="help" ><a href="{% url 'instructions' %}#Contribution" target="blank">Help</a></span><br>
+    {% if toggle %}</div>{% endif %}
+</section> 

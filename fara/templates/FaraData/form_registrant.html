@@ -1,0 +1,59 @@
+{% if not reg_object %}
+<section class="form-section">
+    <h3>Create Registrant</h3>
+    <span class="question-helper">{{ question }}</span>
+
+    <div id="reg_list"></div>
+
+    <form action="{% url 'new-registrant' %}" id="regform" method="GET" id="regform">
+        <label class="sr-only">Reg ID</label>
+        <input id="id_reg_id" name="reg_id" type="text" readonly value="{{ reg_id }}" class="form-control"/>
+
+        <label class="sr-only" for="id_reg_name">Registrant Name</label>
+        <input id="id_reg_name" maxlength="200" name="reg_name" type="text" class="form-control" placeholder="Registrant Name"/>
+        
+        <label class="sr-only" for="id_address">Address</label>
+        <input id="id_address" maxlength="300" name="address" type="text" class="form-control" placeholder="Address"/>
+        
+        <label class="sr-only" for="id_city">City</label>
+        <input id="id_city" maxlength="100" name="city" type="text" class="form-control" placeholder="City"/>
+        
+        <label class="sr-only" for="id_state">State</label>
+        <input id="id_state" maxlength="2" name="state" type="text" class="form-control" placeholder="States"/>
+        
+        <label class="sr-only" for="id_zip">Zip Code</label>
+        <input id="id_zip" maxlength="10" name="zip" type="text" class="form-control" placeholder="Zip Code"/>
+        
+        <label class="sr-only" for="id_country">Country</label>
+        <input id="id_country" maxlength="100" name="country" type="text" class="form-control" placeholder="Country"/>
+        
+        <button type="submit" class="btn btn-default form-control">Submit</button>
+    </form>
+
+    <span class="help"><a href="{% url 'instructions' %}#Registrant" target="blank">Help</a></span>
+
+</section>
+{% else %}
+
+<section class="form-section">
+    <h3>Registrant</h3>
+    {{ question_2 }}
+
+    <div class="highlight">
+        <strong>{{ reg_object.reg_name }}</strong>
+        <br>
+        {{ reg_object.address }}
+        <br>
+        {{ reg_object.city }}, {{ reg_object.state }} {{ reg_object.zip }}
+        <br>
+        {% if reg_object.country != None %}{{ reg_object.country }}{% endif %}
+        <br>
+        Registration number <b>{{ reg_object.reg_id }}</b>
+    </div>
+        
+    <span class="help"><a class="js-popup" href="{% url 'fix-registrant' reg_id form_id %}">Fix Registrant</a></span>
+
+{% endif %}
+
+    
+</section>

@@ -5,33 +5,40 @@
 
 {% block formquestions %}
 
-<h3>Fix Registrant</h3>
+<section class="form-section">
+    
+    <h3>Fix Registrant</h3>
 
-<form action="/amend_registrant" id="amend_registrant" class="fix" method="GET">
+    <form action="/amend_registrant" id="amend_registrant" class="fix" method="GET">
+        <input id="form_id" name="form_id" type="hidden" value="{{ form_id }}" />
 
-  <p>Reg id:{{ reg.reg_id }}</p> 
-    <input id="reg_id" name="reg_id" type="hidden" value="{{ reg.reg_id }}" />
-    <input id="form_id" name="form_id" type="hidden" value="{{ form_id }}" />
+        <label>Reg ID</label>
+        <input id="reg_id" name="reg_id" type="text" readonly value="{{ reg.reg_id }}" class="form-control" class="form-control"/>
 
-  <p><label for="reg_name">Reg name:</label> <input id="reg_name" maxlength="200" name="reg_name" type="text" value="{{ reg.reg_name }}" /></p>
-  <p><label for="address">Address:</label> <input id="address" maxlength="300" name="address" type="text" value="{{ reg.address }}" /></p>
-  <p><label for="city">City:</label> <input id="city" maxlength="100" name="city" type="text" value="{{ reg.city }}" /></p>
-  <p><label for="state">State:</label> <input id="state" maxlength="2" name="state" type="text" value="{{ reg.state }}" /></p>
-  <p><label for="zip_code">Zip:</label> <input id="zip_code" maxlength="10" name="zip_code" type="text" value="{{ reg.zip_code }}" /></p>
-  
-  {% if reg.country != None %}
-    <p><label for="country">Country:</label> <input id="country" maxlength="100" name="country" type="text" value="{{ reg.country }}" /></p>
-  {% else %}
-    <p><label for="country">Country:</label> <input id="country" maxlength="100" name="country" type="text" /></p>
-  {% endif %}
+        <label for="reg_name">Reg Name</label>
+        <input id="reg_name" maxlength="200" name="reg_name" type="text" value="{{ reg.reg_name }}" class="form-control"/>
 
-  <input type="submit" value="Send" class="closer" id="sendbutton"/>
-</form>
+        <label for="address">Address</label>
+        <input id="address" maxlength="300" name="address" type="text" value="{{ reg.address }}" class="form-control"/>
+        
+        <label for="city">City</label>
+        <input id="city" maxlength="100" name="city" type="text" value="{{ reg.city }}" class="form-control"/>
+        
+        <label for="state">State</label>
+        <input id="state" maxlength="2" name="state" type="text" value="{{ reg.state }}" class="form-control"/>
+        
+        <label for="zip_code">Zip</label>
+        <input id="zip_code" maxlength="10" name="zip_code" type="text" value="{{ reg.zip_code }}" class="form-control"/>
+        
+        <label for="country">Country</label>
+        <input id="country" maxlength="100" name="country" type="text" {% if reg.country != None %} value="{{ reg.country }}" {% endif %} class="form-control"/>
 
-<br>
+        <button type="submit" class="btn btn-default form-control">Submit</button>
+    </form>
 
-<span class="help" ><a href="{% url 'instructions' %}#Registrant" target="blank">Help</a></span><br>
+    <span class="help"><a href="{% url 'instructions' %}#Registrant" target="blank">Help</a></span>
 
+</section>
 
 {% endblock %}
 

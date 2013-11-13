@@ -1,8 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <title>FARA entry</title>
 
 <head>
+{% block head %}
 <meta charset="utf-8">
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/screen.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/entry_form.css" />
@@ -13,6 +15,8 @@
 <script src="{{ STATIC_URL }}javascript/jquery-ui.js"></script>
 <script src="{{ STATIC_URL }}javascript/jquery.form.js"></script>
 
+<script src="{{ STATIC_URL }}javascript/jquery.cookie.js"></script>
+<script src="{{ STATIC_URL }}javascript/application.js"></script>
 <!-- token search -->
 <script src="{{ STATIC_URL }}javascript/select2.min.js"></script>
 <link rel="stylesheet" href="{{ STATIC_URL }}css/select2.css"/>  
@@ -143,7 +147,7 @@ jQuery(document).ready(function() {
       
           // 2) update list
           var item = "<li>" + name + "</li>"
-          $("#client_list ul").append(item);
+          $("#client_list").append(item);
 
           // 3) clear form
           $('#clientform').each(function(){
@@ -206,7 +210,7 @@ jQuery(document).ready(function(){
       
           // 2) update list
           var item = "<li>" + name + "</li>";
-          $("#lobby_list ul").append(item);
+          $("#lobby_list").append(item);
 
           // 3) clear form
           $('#lobbyform').each(function(){
@@ -250,8 +254,8 @@ var total_pay = function pay_totaler(){
     var p = parseFloat(pay[i].innerHTML.slice(1))
     pay_total += p;
   }
-  var pay_total_txt = '<div id="pay_total"> $ '+ (pay_total).toFixed(2) +'</div>'
-  $('#pay_total').replaceWith(pay_total_txt); 
+  var pay_total_txt = "$" + (pay_total).toFixed(2);
+  $('#pay_total').html(pay_total_txt); 
 };
 
 var total_dis = function dis_totaler(){
@@ -261,8 +265,8 @@ var total_dis = function dis_totaler(){
     var d = parseFloat(dis[i].innerHTML.slice(1))
     dis_total += d;
   }
-  var dis_total_txt = '<div id="dis_total"> $ '+ (dis_total).toFixed(2) +'</div>'
-  $('#dis_total').replaceWith(dis_total_txt); 
+  var dis_total_txt = "$" + (dis_total).toFixed(2);
+  $('#dis_total').html(dis_total_txt); 
 };
 
 
@@ -306,7 +310,7 @@ jQuery(document).ready(function(){
               var name = responses.name;
               var id = responses.id;
               var item = "<li>" + name + "</li>";
-            $("#terminated_client_list ul").append(item)
+            $("#terminated_client_list").append(item)
             }
           }
 
@@ -315,9 +319,9 @@ jQuery(document).ready(function(){
             var name = response.name;
             var contact_id = response.contact_id;
             var link_to = link + '/fix_contact/' + contact_id;
-            var pop = "<a href= " + '"' + link_to + '"' + 'onclick="return popitup(' + "'" + link_to  + "')"+ '" >';
-            var item = "<li>"+ name + " " + date + pop + ' fix</a>'+ '</li>';
-            $("#contact_list ul").append(item);
+            var pop = "<a class='js-popup pull-right' href= " + '"' + link_to + '">';
+            var item = "<li>"+ name + " " + date + pop + ' Fix</a>'+ '</li>';
+            $("#contact_list").append(item);
             var $contact_recip = $('#contact_recip');
             $contact_recip.select2('data', null)
           }
@@ -329,17 +333,14 @@ jQuery(document).ready(function(){
             var fee = response.fee;
             var pay_id = response.pay_id;
             
-            console.log(fee);
-            
-            if(response.fee == "true"){
-              var fee = "fee";
+            if(response.fee == true) {
+              var fee = '<span class="glyphicon glyphicon-ok"></span>';
+            } else {
+              var fee = "No";
             }
-            else{
-              var fee = "no";
-            }
-            
+
             var link_to = link + '/fix_payment/' + pay_id
-            var item = '<tr><td class="pay">$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td><td><a href= "' + link_to +'" onclick="return popitup(' + "'" + link +"/fix_payment/" + pay_id + "')" + '"' + '>fix</a><td></tr>';
+            var item = '<tr><td class="pay">$'+ amount + '</td><td>'+ client +'</td><td>'+ date +'</td><td>'+ fee +'</td><td><a class="js-popup" href="' + link_to + '">Fix</a></td></tr>';
             $('#pay_table').append(item);
             var $payment_subcontractor = $('#payment_subcontractor');
             $payment_subcontractor.select2('data', null);
@@ -354,7 +355,7 @@ jQuery(document).ready(function(){
             var dis_id = response.dis_id;
 
             link_to = link + '/fix_disbursement/' + dis_id
-            item = '<tr><td class="dis">$'+ amount +'</td><td>'+ date + '</td><td>'+ client +'</td><td><a href= "' + link_to + ' " onclick="return popitup(' + "'" + link_to + "')" + '"' + '>fix</a><td></tr></tr>'
+            item = '<tr><td class="dis">$'+ amount +'</td><td>'+ date + '</td><td>'+ client +'</td><td><a class="js-popup" href= "' + link_to + '">Fix</a></td></tr>';
             $('#dis_table').append(item);
             var $disbursement_subcontractor = $('#disbursement_subcontractor');
             $disbursement_subcontractor.select2('data', null)
@@ -373,7 +374,7 @@ jQuery(document).ready(function(){
             var cont_id = response.cont_id;
 
             var link_to = link + '/fix_contribution/' + cont_id
-            var item = '<tr><td>$' + amount + '</td><td>' + lobbyist + '</td><td>' + recipient + '</td><td>' + date + '</td><td><a href= "' + link_to + ' " onclick="return popitup(' + "'" + link_to + "')" + '"' + '> fix</a><td></tr></tr>';
+            var item = '<tr><td>$' + amount + '</td><td>' + lobbyist + '</td><td>' + recipient + '</td><td>' + date + '</td><td><a class="js-popup" href= "' + link_to + '">Fix</a></td></tr>';
             $('#cont_table').append(item);
             var $cont_recip = $('#cont_recip');
             $cont_recip.select2('data', null);
@@ -386,8 +387,8 @@ jQuery(document).ready(function(){
             var gift_id = response.gift_id
             var link_to = link + '/fix_gift/' + gift_id
 
-            var item = '<li>' + description + " from " + client + " on " + date + ' <a href= "' + link_to + ' " onclick="return popitup(' + "'" + link_to + "')" + '"' + '>fix</a></li>'
-            $('#gift_basket ul').append(item);
+            var item = '<li>' + description + " from " + client + " on " + date + ' <a class="js-popup pull-right" href= "' + link_to + '">Fix</a></li>'
+            $('#gift_basket').append(item);
             var $gift_recip = $('#gift_recip');
             $gift_recip.select2('data', null) 
           }
@@ -400,7 +401,7 @@ jQuery(document).ready(function(){
 
           if (tag == '#locationform'){
             var location = response.location;
-            var item = '<p>' + location + ' added to locations </p>';
+            var item = '<li>' + location + ' added to locations </li>';
             $('#location_list').append(item);
           }
           if (tag == '#recipform'){
@@ -423,12 +424,12 @@ jQuery(document).ready(function(){
           }
 
           if (tag == '.deleteable'){
-            h.parent('div').remove();
+            h.remove();
           }
 
           if (tag == '#noteform'){
             var note = response.note
-            var item = "<p> Note replaced with: " + note + "</p>"
+            var item = '<div id="note"><p> Note replaced with: ' + note + "</p></div>"
             $('#note').replaceWith(item);
           }
         }
@@ -474,20 +475,6 @@ jQuery(document).ready(function(){
 });
 </script>
 
-<script type="text/javascript">
-// expandable forms
-jQuery(document).ready(function(){
-  $(function() {
-    $('h3.toggleOpen').click(function() {
-        $(this).next('.toggle').slideDown("fast");
-    });
-    $('span.toggleClose').click(function() {
-        $(this).parents('.toggle').slideUp("fast");
-    });
-});
-
-});
-</script>
 
 
 <!-- pop ups for fix forms -->
@@ -521,49 +508,39 @@ $('.fix').ajaxForm(direct);
 
 // -->
 </script>
-</head>
+{% endblock head %}
 
 
-<body>
-
-{% block show_doc %}
-<div id="left">
-   <iframe height=100% width="700" scrolling="yes" src="{{ url }}"></iframe>
-</div>
-<div id="wrap" class="form-wrap">
-{% endblock show_doc %}
-
-{% block doc_header %}
   <header>
     <div id="logo">
-      <a href="/"><h1>FARA</h1></a>
+      <a href="/" target="_parent"><h1>FARA</h1></a>
     </div>
       <div class="container">
-        <a class="btn btn-info pull-right help" href="{% url 'instructions' %}">Instructions</a>
-        <a class="btn btn-info pull-right help" href="{% url 'full-list' %}">View All Docs</a>
+        <a class="btn btn-info pull-right help" href="{% url 'instructions' %}" target="_parent">Instructions</a>
+        <a class="btn btn-info pull-right help" href="{% url 'full-list' %}" target="_parent">View All Docs</a>
         <h4>{% block page_heading %}{% endblock page_heading %}</h4>
-          <span>{% block page_description %}{% endblock page_description %}</span>
+        <span>{% block page_description %}{% endblock page_description %}</span>
       </div>
   </header>
-{% endblock doc_header %}
 
-  <main class="container">
 
-  {% block formheading %}{% endblock formheading %}
-  {% block formquestions %}{% endblock formquestions %}
-  {% block quicklinks %}{% endblock quicklinks %}
-
+  <main class="container form-wrap">
+  
+    {% block formheading %}{% endblock formheading %}
+    {% block formquestions %}{% endblock formquestions %}
+    {% block quicklinks %}{% endblock quicklinks %}
   </main>
 
 {% block doc_footer %}
-  <span class="push"></span>
-</div> <!-- end #wrap -->
 
-<footer class="form-wrap">
-  <div class="container">
-      <a class="btn btn-info pull-right" href="{{ url }}" target="_blank">View Form Source</a>
-  </div>
-</footer>
+  <footer class="form-wrap">
+    <div class="container">
+        <a class="btn btn-info pull-right" href="{{ url }}" target="_blank">View Form Source</a>
+    </div>
+  </footer>
+
 {% endblock doc_footer %}
+
 </body>
 </html>
+
