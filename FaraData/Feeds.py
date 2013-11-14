@@ -251,7 +251,7 @@ class RegionFeed(Feed):
         for c in clients:
             client = client + c.client_name + "; "
         
-        if len(client) > 1:
+        if len(client) >= 1:
             info = info + "Active clients: %s"%(client)
         
         terminated = ' '
@@ -259,7 +259,7 @@ class RegionFeed(Feed):
         for c in terminated_clients:
             terminated = c.client_name + "; "
         
-        if len(terminated) > 1:
+        if len(terminated) >= 1:
             info = info + "Terminated clients: %s"%(terminated) 
         
         if doc_type == "Exhibit AB":
@@ -314,6 +314,12 @@ class BigSpenderFeed(Feed):
                     spenders.append(d)
 
         return spenders
+    
+    def item_title(self, item):
+        reg = find_reg(item)
+        name = reg.reg_name
+        title = "%s-- %s %s" %(name, item.doc_type, item.stamp_date)
+        return title
 
     def item_pubdate(self, item):
         return datetime.combine(item.stamp_date, datetime.min.time())
@@ -335,14 +341,14 @@ class BigSpenderFeed(Feed):
         for c in clients:
             client = client + c.client_name + "; "
         
-        if len(client) > 1:
+        if len(client) >= 1:
             info = info + "Active clients: %s"%(client)
         
         terminated = ' '
         terminated_clients = reg.terminated_clients.all()
         for c in terminated_clients:
             terminated = c.client_name + "; "
-        if len(terminated) > 1:
+        if len(terminated) >= 1:
             info = info + "Terminated clients: %s"%(terminated)
 
         if doc_type == "Exhibit AB":
