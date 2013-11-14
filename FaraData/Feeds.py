@@ -132,7 +132,7 @@ class LatestEntriesFeed(Feed):
 class DataEntryFeed(Feed):
     title = "Latest entered documents in the Foreign lobbying database"
     link = base_url + "/entry/rss/"
-    description = "recently added"
+    description = "Most recently added to our data, regardless of when it was originally posted"
 
     def items(self):
         return MetaData.objects.filter(processed=True).order_by('-upload_date')[:25]
@@ -186,7 +186,7 @@ class DataEntryFeed(Feed):
             
             contacts = Contact.objects.filter(link=link).count()
             if contacts > 0:
-                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
+                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, doc.id)
 
         if doc_type == "Registration":
             pay_info = compute_pay(link)
@@ -195,7 +195,7 @@ class DataEntryFeed(Feed):
             
             contacts = Contact.objects.filter(link=link).count()
             if contacts > 0:
-                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
+                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, doc.id)
 
         return info
 
