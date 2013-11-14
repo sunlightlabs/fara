@@ -44,6 +44,12 @@
 
         <h4>Add a disbursement</h4>
         <form method="GET" id='disform' action="/disbursement/create">
+            <div class="checkbox">
+                <label>
+                    <input name="do_not_clear" type="checkbox">
+                    Do Not Clear
+                </label>
+            </div>
             {% csrf_token %}
             <input type="hidden" name="reg_id" value="{{ reg_id }}">
             <input type="hidden" name="link" value="{{ url }}">
