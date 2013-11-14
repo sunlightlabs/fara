@@ -214,7 +214,7 @@ class RegionFeed(Feed):
     link = "placeholder"
    
     def get_object(self, request, region):
-        self.link = "/" + region + "/rss"
+        self.link = "/region/" + region + "/rss"
         region = region.replace("__", "-").replace("_", " ").title()
         return Location.objects.filter(region=region)[0]
 
@@ -298,7 +298,7 @@ class RegionFeed(Feed):
 
 class BigSpenderFeed(Feed):
     title = "Registrants that report over $1,000,000 in a reporting period."
-    link = "http://54.234.244.182/latest/rss/"
+    link = "http://54.234.244.182/big_spender/rss/"
     description = "Updates"
 
     def items(self):
