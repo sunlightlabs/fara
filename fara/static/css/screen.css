@@ -15,6 +15,7 @@ html, body {
 	color: #666;
 	font-family: "Open Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 	font-weight: 400;
+	background-color: transparent; 
 }
 
 /* Link Styles */
@@ -292,6 +293,64 @@ main.container {
 	cursor: pointer;
 }
 
+/* Instructions/Help Page */
+
+main.container.instructions {
+	font-size: 110%;
+	background: #fff;
+}
+
+.jumbotron.instructions {
+	height: 275px;
+	background: #f5f5f5 url('../images/AskFara.png') 85% bottom no-repeat;
+}
+
+.jumbotron.instructions h1 {
+	margin-top: 30px;
+	font-family: 'Open Sans';
+	font-weight: 400;
+	font-style: italic;
+	color: #aaa;
+}
+
+.jumbotron .quicklinks {
+	border: 0;
+	font-size: 55%;
+	width: 70%;
+}
+
+.instructions h2 {
+	margin: 75px 0 50px;
+}
+
+.instructions h2:first-of-type {
+	margin: 0 0 50px;
+}
+
+main.container.instructions h4 {
+	margin-top: 50px;
+	text-transform: uppercase;
+}
+
+section.info {
+	padding-bottom: 25px;
+	margin-bottom: 25px;
+	border-bottom: 1px dashed #ccc;
+}
+
+section.info:last-of-type {
+	border-bottom: 0;
+}
+
+dt {
+	margin-left: 50px;
+	border-bottom: 1px dotted #ddd;
+}
+dd {
+	margin: 5px 0 15px 50px;
+	color: #999;
+}
+
 /* ==========================================================================
    Javacript Classes
    ========================================================================== */
@@ -306,12 +365,6 @@ main.container {
 /* ==========================================================================
    Media Queries
    ========================================================================== */
-
-@media(max-width:600px){
-	header .container .btn-info {
-		display: none;
-	}
-}
 
 @media(min-width:992px){
 
