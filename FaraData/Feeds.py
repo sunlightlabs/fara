@@ -57,8 +57,8 @@ def compute_pay(url):
 #@login_required(login_url='/admin')
 class LatestEntriesFeed(Feed):
     title = "Latest entries in the Foreign lobbying database"
-    link = "http://54.234.244.182/latest/rss/"
-    description = "Updates"
+    link = base_url + "/latest/rss/"
+    description = "Most recent Foreign Agent Registration Act documents with description."
 
     def items(self):
         return Document.objects.filter(processed=True).order_by('-stamp_date')[:25]
@@ -131,7 +131,7 @@ class LatestEntriesFeed(Feed):
 
 class DataEntryFeed(Feed):
     title = "Latest entered documents in the Foreign lobbying database"
-    link = "http://54.234.244.182/entry/rss/"
+    link = base_url + "/entry/rss/"
     description = "recently added"
 
     def items(self):
@@ -209,13 +209,12 @@ class DataEntryFeed(Feed):
 
 
 class RegionFeed(Feed):
-    title = "Latest entries in the Foreign lobbying database"
-    description = "Updates"
-    link = "placeholder"
+    title = "Latest entries in the Foreign influence database by region"
    
     def get_object(self, request, region):
         self.link = "/region/" + region + "/rss"
         region = region.replace("__", "-").replace("_", " ").title()
+        self.description = "Latest Foreign Agent Registration Act updates for all registrants that represent a client from %s "% (region)
         return Location.objects.filter(region=region)[0]
 
     def items(self, location):
@@ -298,8 +297,8 @@ class RegionFeed(Feed):
 
 class BigSpenderFeed(Feed):
     title = "Registrants that report over $1,000,000 in a reporting period."
-    link = "http://54.234.244.182/big_spender/rss/"
-    description = "Updates"
+    link = base_url + "/big_spender/rss/"
+    description = "Foreign Agent Registrations that receive over $1,000,000 in a 6-month reporting period."
 
     def items(self):
         spenders = []
