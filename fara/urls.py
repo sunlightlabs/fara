@@ -111,4 +111,7 @@ urlpatterns = patterns('',
     url(r'^contact_csv/(\d+)', 'FaraData.views.contact_csv', name='contact-csv'),
     url(r'^payment_csv/(\d+)', 'FaraData.views.payment_csv', name='payment-csv'),
     url(r'^clients_csv', 'FaraData.views.clients_csv', name='clients_csv'),
+    # API
+    (r'^api/', include('fara.api.urls')),
     )
+
