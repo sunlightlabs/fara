@@ -132,6 +132,7 @@ INSTALLED_APPS = (
     'south',
     'gunicorn',
     'reversion',
+    'api',
 )
 
 INTERNAL_IPS = ('127.0.0.1',)
