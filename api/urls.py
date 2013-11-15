@@ -1,7 +1,7 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from piston.resource import Resource
 from piston.authentication import HttpBasicAuthentication
-from mysite.myapp.api.handlers import BlogpostHandler
+from handlers import DocumentHandler
 
 auth = HttpBasicAuthentication(realm="Narnia")
 document_handler = Resource(DocumentHandler)
