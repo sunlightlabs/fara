@@ -8,7 +8,7 @@ class DocumentHandler(BaseHandler):
 
 	def read(self, request, doc_id=None):
 		base = Document.objects
-		
+		# document type would make for good kwarg
 		if doc_id:
 			return base.get(id=doc_id)
 		else:
