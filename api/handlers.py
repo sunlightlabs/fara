@@ -1,6 +1,6 @@
 from piston.handler import BaseHandler
 from fara_feed.models import *
-#from FaraData.models import *
+from FaraData.models import *
 
 class DocumentHandler(BaseHandler):
 	allowed_methods = ('GET',)
@@ -25,3 +25,13 @@ class RegDocHandler(BaseHandler):
 			return base.filter(reg_id=reg_id)
 		else:
 			return base.all().order_by('-stamp_date')
+
+
+#class ContactHandler(BaseHandler):
+	#Contact by Registrant
+
+
+
+#Contact by Client
+#Contact by Recipient
+#Contact by Agency

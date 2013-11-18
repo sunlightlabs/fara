@@ -3,9 +3,9 @@ from piston.resource import Resource
 from piston.authentication import HttpBasicAuthentication
 from handlers import DocumentHandler, RegDocHandler
 
-#auth = HttpBasicAuthentication(realm="Narnia")
-document_handler = Resource(DocumentHandler)
-regdoc_handler = Resource(RegDocHandler)
+auth = HttpBasicAuthentication(realm="Narnia")
+document_handler = Resource(DocumentHandler, authentication=auth)
+regdoc_handler = Resource(RegDocHandler, authentication=auth)
 
 urlpatterns = patterns('',
    url(r'^doc/(\d+)/', document_handler),
