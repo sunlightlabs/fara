@@ -1,10 +1,23 @@
 Reminder- I needed to un-install simple json to get it to work
 
 api/doc/form_id
-	Retrieves document Model info on that particular form
+	Retrieves document model info on that particular form
 
 api/docs 
 	Returns all documents most recent first
 	(will add doc type as kwarg, wouldn't that be fun?)
 api/regdocs
 	Finds all documents for a given registrant; searches by FARA Registration ID.
+
+api/metadata/form_id
+	Retrieves metadata Modelinfo on that particular form.
+
+	returns:
+is_amendment: false,
+upload_date: "2013-11-13",
+end_date: "2013-09-03",
+form: "14707",
+notes: "Test",
+reviewed: false,
+link: "http://www.fara.gov/docs/6174-Registration-Statement-20130710-1.pdf",
+processed: true
