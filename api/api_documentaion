@@ -1,8 +1,10 @@
 Reminder- I needed to un-install simple json to get it to work
 
 api/doc/form_id
-	retrieves document Model info on that particular form
+	Retrieves document Model info on that particular form
 
 api/docs 
-	returns all documents most recent first
+	Returns all documents most recent first
 	(will add doc type as kwarg, wouldn't that be fun?)
+api/regdocs
+	Finds all documents for a given registrant; searches by FARA Registration ID.
