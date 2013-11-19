@@ -17,6 +17,10 @@ simplejson==2.3.0
 virtualenv==1.7.1.2
 django-reversion==1.7.1
 django-piston==0.2.3
+django-storages==1.1.8
+boto==2.17.0
+
+
 
 
 

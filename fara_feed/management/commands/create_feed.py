@@ -7,12 +7,18 @@ import urllib
 import urllib2
 import string
 import lxml.html
-from bs4 import BeautifulSoup
+import logging
 
 from django.core.management.base import BaseCommand, CommandError
+from django.core.files.storage import default_storage
+
+from bs4 import BeautifulSoup
 from optparse import make_option
 
 from fara_feed.models import Document
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 def add_document(url_info):
     document = Document(url = url_info[0],
@@ -22,6 +28,24 @@ def add_document(url_info):
     )
     document.save()
     
+def add_file(url):
+    if url[:25] != "http://www.fara.gov/docs/":
+        message = 'bad link ' + url
+        logger.error(message)
+    
+    else:
+        file_name = url[25:]
+        if not default_storage.exists(file_name):
+            try:
+                url = str(url)
+                u = urllib2.urlopen(url)
+                localFile = default_storage.open(file_name, 'w')
+                localFile.write(u.read())
+                localFile.close()
+            except:
+                message = 'bad upload ' + url
+                logger.error(message)
+
 
 def parse_and_save(page):
     filings = page.find("table", {"class" : "t14Standard"})
@@ -29,10 +53,8 @@ def parse_and_save(page):
     
 
     for l in filings.find_all("tr"):
-        #print "starting l loop"
         row = str(l)
         url = str(re.findall(r'href="(.*?)"', row))
-        print url
         url = str(url)
         url = re.sub("\['",'', re.sub("'\]", '', url))
     
@@ -42,7 +64,7 @@ def parse_and_save(page):
             stamp_date_obj = datetime.datetime.strptime(stamp_date, "%m/%d/%Y")
 
             if Document.objects.filter(url = url).exists():
-                pass
+                add_file(url)
             else:     
                 reg_id = re.sub('-','', url[25:29])
                 reg_id = re.sub('S','', reg_id)
@@ -74,7 +96,8 @@ def parse_and_save(page):
                     doc_type = 'Supplemental' 
 
                 else:
-                    print "Can't identify form-- ", url
+                    message = "Can't identify form-- " + url
+                    logger.error(message)
 
                 if stamp_date_obj != None:
                     try:
@@ -87,18 +110,15 @@ def parse_and_save(page):
                 url_info= [url, reg_id, doc_type, stamp_date_obj]
                 #saves url info
                 add_document(url_info)
-
+                add_file(url)
                 new_fara_docs.append(url_info)
-                print "saving", url_info
-                ##new_info.append(new_fara_docs)
+                
                    
     return new_fara_docs
 
 class Command(BaseCommand):
     help = "Crawls the DOJ's FARA site looking for new documents."
     can_import_settings = True
-    #option_list = BaseCommand.option_list + (
-        #make_option()) to add more console command options
         
     def handle(self, *args, **options):
         url = 'https://efile.fara.gov/pls/apex/f?p=125:10:::NO::P10_DOCTYPE:ALL'
@@ -115,8 +135,6 @@ class Command(BaseCommand):
                 data.append((input.attrib['name'], input.attrib['value']))
 
         start_date = datetime.date.today() - datetime.timedelta(days=10)
-        
-        print start_date
         end_date = datetime.date.today()
 
         data += [('p_t01', 'ALL'),
@@ -126,7 +144,6 @@ class Command(BaseCommand):
                  ('p_request', 'SEARCH'),
                  ]
     
-        #url = 'http://209.11.109.152/pls/htmldb/wwv_flow.accept'
         url = 'https://efile.fara.gov/pls/apex/wwv_flow.accept'
 
         req = urllib2.Request(url, data=urllib.urlencode(data))
@@ -144,7 +161,6 @@ class Command(BaseCommand):
             url_end = url_end.replace('&amp;', '&')
             url_end = re.sub('<a class="t14pagination" href="', '/', url_end) 
             url_end = re.sub('">Next &gt;</a>', '', url_end)
-            #url_end = re.sub('>&lt;Previous</a>', '', url_end)
             next_url = 'https://efile.fara.gov/pls/apex' + url_end
             
             req = urllib2.Request(next_url)
@@ -154,7 +170,6 @@ class Command(BaseCommand):
             
             url_end = page.findAll("a", {"class":"t14pagination"})
             
-            #for m in url_end:
             if len(url_end) > 1:
                 url_end = url_end[1]
             else: 
@@ -162,10 +177,8 @@ class Command(BaseCommand):
             
             
             new_info = parse_and_save(filings)
-            print datetime.date.today()
-            print new_info
+
           
-        #return new_fara_docs
 
 
 

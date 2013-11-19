@@ -1,23 +1,51 @@
 Reminder- I needed to un-install simple json to get it to work
 
+DOCUMETS
 api/doc/form_id
 	Retrieves document model info on that particular form
 
 api/docs 
-	Returns all documents most recent first
+	Retrieves all documents most recent first
 	(will add doc type as kwarg, wouldn't that be fun?)
+
 api/regdocs
 	Finds all documents for a given registrant; searches by FARA Registration ID.
 
-api/metadata/form_id
-	Retrieves metadata Modelinfo on that particular form.
+	all document endpoints return-
+	url: original document url
+	doc_type: Supplemental, Amendment, Short-Form, Exibits A, B, C and D
+	processed: True if data been entered into the database
+	stamp_date: Date the FARA office received the form
 
-	returns:
-is_amendment: false,
-upload_date: "2013-11-13",
-end_date: "2013-09-03",
-form: "14707",
-notes: "Test",
-reviewed: false,
-link: "http://www.fara.gov/docs/6174-Registration-Statement-20130710-1.pdf",
-processed: true
+api/metadata/form_id
+	Retrieves metadata Model information on that particular form.
+
+	returns-
+	is_amendment: Is true if information amending this form has been entered into the database
+	upload_date: The day the document was added to our system
+	end_date: For supplemental documents, it is the last day of the 6 month period that the document covers
+	form: internal id for the form
+	reviewed: if true, the document has been identified by data entry personnel as having some problem or inconsistency
+	link: link to the original document
+	processed: If true this form has been completed and its entries can be made public.
+
+api/registrant/reg_id
+	Looks up registrant by ID
+	
+api/registrants
+	Retrieves all registrants in the system
+	
+	returns-
+	city: city of client
+	terminated_clients: list of terminated clients
+	country: country of the registrant (null= U.S)
+	clients: list of active clients
+	reg_name: name of registrant
+	state: state of the registrant, two-letter abbreviations
+	address: address of registrant
+	zip_code: zip of the registrant
+
+
+
+
+

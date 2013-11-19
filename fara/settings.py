@@ -68,7 +68,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static_root')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
+STATIC_URL = 'https://fara.sunlightfoundation.com.s3.amazonaws.com/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
@@ -84,6 +84,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
+
 
 
 # List of callables that know how to import templates from various sources.
@@ -133,6 +134,7 @@ INSTALLED_APPS = (
     'gunicorn',
     'reversion',
     'api',
+    'storages',
 )
 
 INTERNAL_IPS = ('127.0.0.1',)
@@ -144,7 +146,7 @@ INTERNAL_IPS = ('127.0.0.1',)
 # more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -163,6 +165,11 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'feed': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        }
     }
 }
 
