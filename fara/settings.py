@@ -165,11 +165,7 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        'feed': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        }
+       
     }
 }
 
