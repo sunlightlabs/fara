@@ -84,14 +84,14 @@ class LatestEntriesFeed(Feed):
         for c in clients:
             client = client + c.client_name + "; "
         
-        if len(client) >= 1:
+        if len(client) > 0:
             info = info + "Active clients: %s"%(client)
         
         terminated = ' '
         terminated_clients = reg.terminated_clients.all()
         for c in terminated_clients:
             terminated = c.client_name + "; "
-        if len(terminated) >= 1:
+        if len(terminated) > 0:
             info = info + "Terminated clients: %s"%(terminated)
 
         if doc_type == "Exhibit AB":
@@ -162,14 +162,14 @@ class DataEntryFeed(Feed):
         clients = reg.clients.all()
         for c in clients:
             client + c.client_name
-        if len(client) > 17:
+        if len(client) > 0:
             info = info + "Active clients: %s"%(client)
         
         terminated = ' '
         terminated_clients = reg.terminated_clients.all()
         for c in terminated_clients:
             terminated = c.client_name
-        if len(terminated) > 20:
+        if len(terminated) > 0:
             info = info + "Terminated clients: %s"%(terminated)
 
         if doc_type == "Exhibit AB":
@@ -251,7 +251,7 @@ class RegionFeed(Feed):
         for c in clients:
             client = client + c.client_name + "; "
         
-        if len(client) >= 1:
+        if len(client) > 0:
             info = info + "Active clients: %s"%(client)
         
         terminated = ' '
@@ -259,7 +259,7 @@ class RegionFeed(Feed):
         for c in terminated_clients:
             terminated = c.client_name + "; "
         
-        if len(terminated) >= 1:
+        if len(terminated) > 0:
             info = info + "Terminated clients: %s"%(terminated) 
         
         if doc_type == "Exhibit AB":
@@ -341,14 +341,14 @@ class BigSpenderFeed(Feed):
         for c in clients:
             client = client + c.client_name + "; "
         
-        if len(client) >= 1:
+        if len(client) > 0:
             info = info + "Active clients: %s"%(client)
         
         terminated = ' '
         terminated_clients = reg.terminated_clients.all()
         for c in terminated_clients:
             terminated = c.client_name + "; "
-        if len(terminated) >= 1:
+        if len(terminated) > 0:
             info = info + "Terminated clients: %s"%(terminated)
 
         if doc_type == "Exhibit AB":
