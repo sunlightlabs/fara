@@ -2,6 +2,15 @@ from piston.handler import BaseHandler
 from fara_feed.models import *
 from FaraData.models import *
 
+def format_link_bit(link):
+	if link[:25] != "http://www.fara.gov/docs/":
+		link = "http://www.fara.gov/docs/" + link
+	if link[-4:] != ".pdf":
+		link = link + ".pdf"
+	link = link.replace("_", "-")
+	return link
+
+
 class DocumentHandler(BaseHandler):
 	allowed_methods = ('GET',)
 	model = Document
@@ -49,6 +58,43 @@ class RegistrantDataHandler(BaseHandler):
 			return base.filter(reg_id=reg_id)
 		else:
 			return base.all()
+
+class ContactDocHandler(BaseHandler):
+	allowed_methods = ('GET',)
+	model = Contact
+
+	def read(self, request, link=None):
+		base = Contact.objects
+		link = format_link_bit(link)
+		return base.filter(link=link)
+
+class ContribDocHandler(BaseHandler):
+	allowed_methods = ('GET',)
+	model = Contribution
+	
+	def read(self, request, link=None):
+		base = Contribution.objects
+		link = format_link_bit(link)
+		return base.filter(link=link)
+
+class PaymentDocHandler(BaseHandler):
+	allowed_methods = ('GET',)
+	model = Payment
+	
+	def read(self, request, link=None):
+		base = Payment.objects
+		link = format_link_bit(link)
+		return base.filter(link=link)
+
+class DisburseDocHandler(BaseHandler):
+	allowed_methods = ('GET',)
+	model = Disbursement
+	
+	def read(self, request, link=None):
+		base = Disbursement.objects
+		link = format_link_bit(link)
+		return base.filter(link=link)
+
 """
 For the view page, I need to add look up by source url for:
 			contacts

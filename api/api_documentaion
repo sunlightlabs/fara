@@ -45,7 +45,8 @@ api/registrants
 	address: address of registrant
 	zip_code: zip of the registrant
 
-
-
+api/contactbydoc/link/
+#feel free to give me suggestions on how to improve this
+	look up buy "link chunk" which is link[25:-4].replace("_", "-")
 
 

@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 
 from FaraData.models import Recipient
 
+from fara.local_settings import apikey
+
 def cleantext(text):
 	if text!= None:
 	    text = re.sub(' +',' ', text)
@@ -25,13 +27,13 @@ def find_member(request):
 	q = request.GET['member'],
 
 	query_params = { 'query': q,
-					'apikey': 'aaf0ab990fc4443ab8d9a7d899686694',
+					'apikey': apikey,
 					'per_page': 50,
 	               }
 
 	# it defaults to currently in office, so need this one too
 	old_query_params = { 'query': q,
-					'apikey': 'aaf0ab990fc4443ab8d9a7d899686694',
+					'apikey': apikey,
 					'in_office': 'false',
 					'per_page': 50,
 	               }
