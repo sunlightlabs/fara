@@ -24,8 +24,7 @@ report page to replace a page like: http://reporting.sunlightfoundation.com/lobb
 
 	display document
 
-
-	Try to look up registrant by api/registrant/ endpoint for basic info
+	Try to look up registrant by api/registrant/ endpoint for basic info like reg name and clients
 
 	if processed == True:
 		link_chunk = link[25:-4].replace("_", "-")

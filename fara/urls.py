@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-from FaraData.Feeds import LatestEntriesFeed, RegionFeed, DataEntryFeed, BigSpenderFeed
+from FaraData.rss_feeds import LatestEntriesFeed, RegionFeed, DataEntryFeed, BigSpenderFeed
 
 admin.autodiscover()
 
@@ -112,7 +112,7 @@ urlpatterns = patterns('',
     url(r'^payment_csv/(\d+)', 'FaraData.views.payment_csv', name='payment-csv'),
     url(r'^disbursement_csv/(\d+)', 'FaraData.views.disbursement_csv', name='disbursement-csv'),
     url(r'^contribution_csv/(\d+)', 'FaraData.views.contribution_csv', name='contribution-csv'),
-    url(r'^clients_csv/(\d+)', 'FaraData.views.clients_csv', name='clients_csv'),
+    url(r'^clients_csv', 'FaraData.views.clients_csv', name='clients_csv'),
     # API
     (r'^api/', include('api.urls')),
     )

@@ -95,13 +95,7 @@ class DisburseDocHandler(BaseHandler):
 		link = format_link_bit(link)
 		return base.filter(link=link)
 
-"""
-For the view page, I need to add look up by source url for:
-			contacts
-			contributions
-			payments
-			disbursements
-"""
+
 
 #class ContactHandler(BaseHandler):
 	#Contact by Registrant

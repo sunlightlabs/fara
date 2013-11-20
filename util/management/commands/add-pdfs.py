@@ -25,13 +25,19 @@ def add_file(url, record_id):
 			    localFile = default_storage.open(file_name, 'w')
 			    localFile.write(u.read())
 			    localFile.close()
-			    print "saved", file_name
+			    #print "saved", file_name
 			except:
 				message = 'bad upload ' + url
+				logger.error(message)
 
 
 class Command(BaseCommand):
 	for doc in Document.objects.all():
-		if doc.id:
-			add_file(doc.url, doc.id)
-		else: print "bad record"
+		try:
+			if doc.url:
+				add_file(doc.url, doc.id)
+			else: 
+				message = "bad record"
+				logger.error(message)
+		except:
+			print "wtf"
