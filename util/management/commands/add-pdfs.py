@@ -11,8 +11,8 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-def add_file(url):
-	if url[:25] != "http://www.fara.gov/docs/":
+def add_file(url, record_id):
+	if url[:25] != "http://www.fara.gov/docs/" or len(url) < 25:
 		message = 'bad link ' + url
 		logger.error(message)
 
@@ -28,10 +28,10 @@ def add_file(url):
 			    print "saved", file_name
 			except:
 				message = 'bad upload ' + url
-				logger.error(message)
-		else:
-			print "found it", file_name
+
 
 class Command(BaseCommand):
 	for doc in Document.objects.all():
-		add_file(doc.url)
+		if doc.id:
+			add_file(doc.url, doc.id)
+		else: print "bad record"

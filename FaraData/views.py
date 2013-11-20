@@ -11,6 +11,19 @@ from django.http import HttpResponse
 from FaraData.models import *
 from fara_feed.models import *
 
+def namebuilder(r):
+	contact_name = ''
+	if r.title != None and r.title != '':	
+		contact_name = r.title.encode('ascii', errors='ignore') + ' '
+	if r.name != None and r.name != '':
+		contact_name = contact_name + r.name.encode('ascii', errors='ignore') + ', '
+	if r.office_detail != None and r.office_detail != '':
+		contact_name = contact_name + "office: " + r.office_detail.encode('ascii', errors='ignore') + ', '
+	if r. agency != None and r.agency != '':
+		contact_name = contact_name + "agency: " + r.agency.encode('ascii', errors='ignore')
+	contact_name = contact_name.encode('ascii', errors='ignore') + "; "
+	return contact_name
+
 @login_required(login_url='/admin')
 def temp_home(request):
 	return render(request, 'fara_feed/temp_home.html')
@@ -19,7 +32,7 @@ def temp_home(request):
 def instructions(request):
 	return render(request, 'FaraData/instructions.html')
 
-### Creating CSV results 
+### Creating CSV results by form
 
 @login_required(login_url='/admin')
 def contact_csv(request, form_id):
@@ -34,26 +47,17 @@ def contact_csv(request, form_id):
 	dumb_date = md.end_date
 
 	writer = csv.writer(response)
-	writer.writerow(['Date', 'Contact', 'Client', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Source'])
+	writer.writerow(['Date', 'Contact', 'Client', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Source', 'Record ID'])
 	for c in contacts:
 
 		lobbyists = ''
 		for l in c.lobbyist.all():
 			lobbyists = lobbyists + l.lobbyist_name + ", "
 		lobbyists = lobbyists.encode('ascii', errors='ignore')
-		recipients = []
+		#recipients = []
 		contact_name = ''
 		for r in c.recipient.all():
-			contact_name = ''
-			if r.title != None and r.title != '':	
-				contact_name = r.title.encode('ascii', errors='ignore') + ' '
-			if r.name != None and r.name != '':
-				contact_name = contact_name + r.name.encode('ascii', errors='ignore') + ', '
-			if r.office_detail != None and r.office_detail != '':
-				contact_name = contact_name + "office: " + r.office_detail.encode('ascii', errors='ignore') + ', '
-			if r. agency != None and r.agency != '':
-				contact_name = contact_name + "agency: " + r.agency.encode('ascii', errors='ignore')
-			contact_name = contact_name.encode('ascii', errors='ignore') + "; "
+			contact_name = namebuilder(r)
 		
 		if c.date == None:
 			date = dumb_date.strftime('%x') + "*"
@@ -87,10 +91,68 @@ def payment_csv(request, form_id):
 			date = dumb_date.strftime('%x') + "*"
 		else:
 			date = p.date
+		
 		writer.writerow([p.client, p.amount, date, p.registrant, p.purpose, p.link])
 
 	return response
 
+@login_required(login_url='/admin')
+def disbursement_csv(request, form_id):
+	doc = Document.objects.get(id=form_id)
+	url = doc.url
+	disbursement = Disbursement.objects.filter(link=url)
+	response = HttpResponse(content_type='text/csv')
+	filename = "disbursements" + form_id + ".csv"
+	response['Content-Disposition'] = 'attachment; filename='+ filename
+
+	md = MetaData.objects.get(link=url)
+	dumb_date = md.end_date
+
+	writer = csv.writer(response)
+	writer.writerow(['Amount', 'Date','Client', 'Registrant', 'Purpose', 'Source', 'Record ID'])
+
+	for d in disbursement:
+		if d.date == None:
+			date = dumb_date.strftime('%x') + "*"
+		else:
+			date = d.date
+		
+		writer.writerow([d.amount, date, d.client, d.registrant, d.purpose, d.link, d.id])
+
+	return response
+
+# not finished
+@login_required(login_url='/admin')
+def contribution_csv(request, form_id):
+	doc = Document.objects.get(id=form_id)
+	url = doc.url
+	contribution = Contribution.objects.filter(link=url)
+	response = HttpResponse(content_type='text/csv')
+	filename = "contributions" + form_id + ".csv"
+	response['Content-Disposition'] = 'attachment; filename='+ filename
+
+	md = MetaData.objects.get(link=url)
+	dumb_date = md.end_date
+
+	writer = csv.writer(response)
+	writer.writerow(['Amount', 'Date', 'Recipient', 'Registrant', 'Contributing Lobbyist or PAC', 'Source', 'Record ID'])
+
+	for c in contribution:	
+ 		recipient_name = namebuilder(c.recipient)
+ 		if c.lobbyist:
+ 			lobby = c.lobbyist
+ 		else:
+ 			lobby = ''
+ 		if c.date == None:
+			date = dumb_date.strftime('%x') + "*"
+		else:
+			date = c.date
+		writer.writerow([c.amount, date, recipient_name, c.registrant, lobby, c.link, c.id])
+
+	return response
+
+
+#I wrote this as a resource for clean-up 
 @login_required(login_url='/admin')
 def clients_csv(request):
 	response = HttpResponse(content_type='text/csv')
@@ -102,4 +164,9 @@ def clients_csv(request):
 
 	for c in clients:
 		writer.writerow([c.id, c.client_name]) 
+	
 	return response
+
+
+
+
