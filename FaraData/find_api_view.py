@@ -1,3 +1,4 @@
+# This Python file uses the following encoding: utf-8
 import requests
 import re
 
@@ -74,13 +75,21 @@ def find_member(request):
 
 	data = response.json()
 	old_data = response_old.json()
-	
-	# if accent_response or accent_response_old in locals:
-	# 	read_response(data, "new")
-	# 	read_response(old_data, "old")
 
 	read_response(data, "new")
 	read_response(old_data, "old")
+
+	accent_dict = {"MENENDEZ": "Menéndez", "VALAZQUEZ": "Velázquez" , "SANCHEZ": "Sánchez", "LUJAN": "Luján", "GUTIERREZ": "Gutiérrez", "CARDENAS":"Cárdenas"}
+	name_variation = q[0].upper()
+	if accent_dict.has_key(name_variation):
+		r = accent_dict[name_variation]
+		query={ 'query': r,
+					'apikey': apikey,
+					'per_page': 50,
+	               }
+		response = requests.get(endpoint, params=query)
+		accent_data = response.json()
+		read_response(accent_data, "accent")
 
 	return render(request, 'FaraData/api_lookup.html', {'results': results}) 
 
