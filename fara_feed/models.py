@@ -7,7 +7,7 @@ class Document(models.Model):
     doc_type = models.CharField(max_length=100, null=True)
     stamp_date = models.DateField(null=True, blank=True) 
     processed = models.BooleanField(default=False)
-    #add some file storage or links to lobby tracker?
+    uploaded = models.BooleanField(default=False)
     
     def __unicode__(self):
         return "%s ---%s---  Date: %s" %(self.reg_id, self.url, self.stamp_date)

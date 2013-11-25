@@ -42,9 +42,17 @@ def add_file(url):
                 localFile = default_storage.open(file_name, 'w')
                 localFile.write(u.read())
                 localFile.close()
+                doc = Document.objects.get(url=url)
+                doc.uploaded = True
+                doc.save()
             except:
                 message = 'bad upload ' + url
                 logger.error(message)
+        else:
+            doc = Document.objects.get(url=url)
+            if doc.uploaded != True:  
+                doc.uploaded = True
+                doc.save()
 
 
 def parse_and_save(page):
@@ -134,7 +142,7 @@ class Command(BaseCommand):
                     continue
                 data.append((input.attrib['name'], input.attrib['value']))
 
-        start_date = datetime.date.today() - datetime.timedelta(days=10)
+        start_date = datetime.date.today() - datetime.timedelta(days=20)
         end_date = datetime.date.today()
 
         data += [('p_t01', 'ALL'),

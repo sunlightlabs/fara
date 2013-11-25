@@ -18,26 +18,41 @@ def add_file(url, record_id):
 
 	else:
 		file_name = url[25:]
+		doc = Document.objects.get(id=record_id)
 		if not default_storage.exists(file_name):
 			try:
-			    url = str(url)
-			    u = urllib2.urlopen(url)
-			    localFile = default_storage.open(file_name, 'w')
-			    localFile.write(u.read())
-			    localFile.close()
-			    #print "saved", file_name
+				url = str(url)
+				u = urllib2.urlopen(url)
+				localFile = default_storage.open(file_name, 'w')
+				localFile.write(u.read())
+				localFile.close()
+				if doc.uploaded != True:
+					doc.uploaded = True
+					doc.save()
+
 			except:
 				message = 'bad upload ' + url
 				logger.error(message)
+				if doc.uploaded != False:
+					doc.uploaded = False
+					doc.save()
+		else:
+			if doc.uploaded != True:
+				doc.uploaded = True
+				doc.save()
 
 
 class Command(BaseCommand):
-	for doc in Document.objects.all():
-		try:
-			if doc.url:
-				add_file(doc.url, doc.id)
-			else: 
-				message = "bad record"
-				logger.error(message)
-		except:
-			print "wtf"
+	def handle(self, pythonpath, verbosity, traceback, settings):
+		for doc in Document.objects.all():
+			try:
+				if doc.url:
+					add_file(doc.url, doc.id)
+				else: 
+					message = "bad record"
+					if doc.uploaded != False:
+						doc.uploaded = False
+						doc.save()
+					logger.error(message)
+			except:
+				print "wtf"
