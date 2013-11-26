@@ -34,7 +34,7 @@ def add_file(url):
         logger.error(message)
     
     else:
-        file_name = url[25:]
+        file_name = "pdfs/" + url[25:]
         if not default_storage.exists(file_name):
             try:
                 url = str(url)
