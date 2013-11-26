@@ -70,7 +70,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, '..', 'static_root')
 #STATIC_URL = 'https://fara.sunlightfoundation.com.s3.amazonaws.com/'
 STATIC_URL = 'http://fara.sunlightfoundation.com.s3.amazonaws.com/'
 
-MEDIA_URL = STATIC_URL
+#MEDIA_URL = STATIC_URL
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
