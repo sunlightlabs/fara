@@ -20,6 +20,10 @@ from fara_feed.models import Document
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
+def pdf2htmlEX(): 
+    return true
+
+
 def add_document(url_info):
     document = Document(url = url_info[0],
         reg_id = url_info[1],
@@ -41,10 +45,12 @@ def add_file(url):
                 u = urllib2.urlopen(url)
                 localFile = default_storage.open(file_name, 'w')
                 localFile.write(u.read())
-                localFile.close()
+                localFile.close() # where it sends to s3 ??? 
+		# shim here !! --timball need to know what the filename is ... and either call my script . 
+		# so maybe GET the file from s3 . and the process w/ pdf2htmlEX . i'll make a function pdf2htmlEX($) that takes the url to the the document . 
                 doc = Document.objects.get(url=url)
                 doc.uploaded = True
-                doc.save()
+                doc.save() 
             except:
                 message = 'bad upload ' + url
                 logger.error(message)
