@@ -4,9 +4,8 @@
 # Wed Nov 27 19:06:33 UTC 2013
 
 DEBUG = True
-HTML_DEST_DIR = 'html'
-PDF_DEST_DIR = 'pdfs'
-
+HTML_DEST_DIR = '/mnt/html'
+PDF_DEST_DIR = '/mnt/fara-pdfs'
 
 import subprocess 
 import os
@@ -16,13 +15,14 @@ def make_list_from_stdout (stdout_thing, **kwargs):
     # $2 -- a dict w/ option ext='.foo' where .foo is the extension to strip from the response
     # return -- list that has been stripped of newlines and possibly extension
     ret_list = []
+
     for line in stdout_thing:
         item = line.rstrip()
         if (kwargs.has_key('ext')):
             item = item.replace(kwargs['ext'], '')
-
         ret_list.append(item)
     return(ret_list)
+
 
 def process_diff(diff_list):
     # $1 -- list of pdfs to get and convert into html directories
@@ -32,16 +32,17 @@ def process_diff(diff_list):
 
     for i in diff_list:
         get_pdf_cmd = get_pdf_cmd_raw + i + '.pdf'
-        pdf2htmlEX_cmd = "%s %s/%s %s.pdf" % (pdf2htmlEX_cmd_raw, HTML_DEST_DIR, i, i)
+        pdf2htmlEX_cmd = "%s %s/%s %s/%s.pdf" % (pdf2htmlEX_cmd_raw, HTML_DEST_DIR, i, PDF_DEST_DIR, i)
 
         if not DEBUG:
             subprocess.call(get_pdf_cmd)
             subprocess.call(pdf2htmlEX_cmd)
-            os.rename(i+'.pdf', PDF_DEST_DIR)
+            os.rename(i+'.pdf', PDF_DEST_DIR) # this puts things in to pwd
             process_index(i)
         else:
             print get_pdf_cmd
             print pdf2htmlEX_cmd
+
 
 def process_index(basename):
     #from cStringIO import StringIO
@@ -49,19 +50,23 @@ def process_index(basename):
     #with open(basename+".pdf") as fin: 
     print "process_index: " + basename
 
+
 def munge_html(s3_list):
     ret_list = []
+
     for i in s3_list:
         item = os.path.basename(os.path.dirname(i))
         ret_list.append(item)
-
     return ret_list
+
 
 def munge_pdfs(s3_list):
     ret_list = []
+
     for i in s3_list:
         ret_list.append(os.path.splitext(os.path.basename(i))[0])
     return ret_list
+
 
 def main():
     pdfs = []
@@ -92,7 +97,7 @@ def main():
     # now get each pdf and then process them into html files 
     process_diff(diff)
 
+
 if __name__ == "__main__":
     main()
-
 # vim: set shiftwidth=4 tabstop=4 expandtab:
