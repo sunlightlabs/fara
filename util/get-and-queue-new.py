@@ -3,9 +3,10 @@
 # --timball@sunlightfoundation.com
 # Wed Nov 27 19:06:33 UTC 2013
 
-DEBUG = True
+DEBUG = False
 HTML_DEST_DIR = '/mnt/html'
 PDF_DEST_DIR = '/mnt/fara-pdfs'
+PROCESS_INDEX = '/mnt/process-index.sh'
 
 import subprocess 
 import os
@@ -35,21 +36,42 @@ def process_diff(diff_list):
         pdf2htmlEX_cmd = "%s %s/%s %s/%s.pdf" % (pdf2htmlEX_cmd_raw, HTML_DEST_DIR, i, PDF_DEST_DIR, i)
 
         if not DEBUG:
-            subprocess.call(get_pdf_cmd)
-            subprocess.call(pdf2htmlEX_cmd)
-            os.rename(i+'.pdf', PDF_DEST_DIR) # this puts things in to pwd
+            #print "get_pdf_cmd: " + get_pdf_cmd
+            subprocess.call(get_pdf_cmd, shell=True) # this puts things in to pwd 
+            os.rename(i+'.pdf', PDF_DEST_DIR+"/"+i+'.pdf') 
+            #print "pdf2htmlEX_cmd: " + pdf2htmlEX_cmd
+            subprocess.call(pdf2htmlEX_cmd, shell=True)
+            #print "process_index(%s)" % (i)
             process_index(i)
+            put_to_s3(i)
         else:
             print get_pdf_cmd
             print pdf2htmlEX_cmd
+            process_index(i)
+            put_to_s3(i)
 
 
 def process_index(basename):
     #from cStringIO import StringIO
     #from contextlib import closing
     #with open(basename+".pdf") as fin: 
-    print "process_index: " + basename
+    #print "process_index: " + basename
+    process_index_cmd = "%s %s %s" % (PROCESS_INDEX, basename, "/mnt/html")
+    
+    if not DEBUG:
+        #print process_index_cmd
+        subprocess.call(process_index_cmd, shell=True)
+    else:
+        print process_index_cmd
 
+
+def put_to_s3(basename):
+    s3sync_cmd = "s3cmd put --recursive %s/%s s3://fara.sunlightfoundation.com/html/" % (HTML_DEST_DIR, basename)
+
+    if not DEBUG:
+        subprocess.call(s3sync_cmd, shell=True)
+    else: 
+        print s3sync_cmd
 
 def munge_html(s3_list):
     ret_list = []
@@ -85,13 +107,6 @@ def main():
     htmls = munge_html(htmls)
     pdfs = munge_pdfs(pdfs)
 
-#    print "=========HTML============"
-#    for i in htmls:
-#        print i
-#    print "=========PDFS============"
-#    for i in pdfs: 
-#        print i
-#    # figure out what's in pdfs that isn't in htmls
     diff = list(set(pdfs).difference(htmls))
 
     # now get each pdf and then process them into html files 
