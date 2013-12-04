@@ -44,11 +44,13 @@ def process_diff(diff_list):
             #print "process_index(%s)" % (i)
             process_index(i)
             put_to_s3(i)
+            s3_set_acls(i)
         else:
             print get_pdf_cmd
             print pdf2htmlEX_cmd
             process_index(i)
             put_to_s3(i)
+            s3_set_acls(i)
 
 
 def process_index(basename):
@@ -88,6 +90,15 @@ def munge_pdfs(s3_list):
     for i in s3_list:
         ret_list.append(os.path.splitext(os.path.basename(i))[0])
     return ret_list
+
+
+def s3_set_acls(basename):
+    s3_setacl_cmd = "s3cmd setacl s3://fara.sunlightfoundation.com/html/%s --acl-public --recursive" % (basename)
+
+    if not DEBUG:
+        subprocess.call(s3_setacl_cmd, shell=True) 
+    else:
+        print "s3_set_acl_cmd: " + s3_setacl_cmd
 
 
 def main():
