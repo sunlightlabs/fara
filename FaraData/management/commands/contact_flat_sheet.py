@@ -1,15 +1,12 @@
 import csv
 import datetime
 
-from django.core.files.storage import default_storage
+#maybe move the files to s3 later?
+#from django.core.files.storage import default_storage
 from django.core.management.base import BaseCommand, CommandError
-# from django.shortcuts import render
-# from django.contrib.auth import authenticate, login, logout
-# from django.contrib.auth.decorators import login_required
-# from django.http import HttpResponseRedirect
-# from django.http import HttpResponse
 
-from FaraData.models import *
+
+from FaraData.models import Contact, MetaData
 from fara_feed.models import *
 
 def namebuilder(r):
@@ -28,7 +25,8 @@ def namebuilder(r):
 
 def big_bad_contacts():
 	filename = "data/contacts" + str(datetime.date.today()) + ".csv"
-	docs = Document.objects.filter(processed=True, doc_type="Supplemental",stamp_date__range=(datetime.date(2011,1,1), datetime.date.today()))
+	#filter out old files
+	docs = Document.objects.filter(processed=True, doc_type="Supplemental",stamp_date__range=(datetime.date(2012,1,1), datetime.date.today()))
 	writer = csv.writer(open(filename, 'wb'))
 	writer.writerow(['Date', 'Contact', 'Client', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Source', 'Record ID'])
 
