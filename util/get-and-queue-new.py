@@ -6,7 +6,7 @@
 DEBUG = False
 HTML_DEST_DIR = '/mnt/html'
 PDF_DEST_DIR = '/mnt/fara-pdfs'
-PROCESS_INDEX = '/mnt/process-index.sh'
+PROCESS_INDEX = '/projects/fara/src/fara/util/process-index.sh'
 
 import subprocess 
 import os
