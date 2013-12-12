@@ -3,6 +3,7 @@ import json
 import dateutil
 import dateutil.parser
 from datetime import datetime, date
+import reversion
 
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -1719,6 +1720,7 @@ def amend_registrant(request):
 
 
 @login_required(login_url='/admin')
+@reversion.create_revision()
 def amend_gift(request):
     g_id = int(request.GET['gift_id'])
     gift= Gift.objects.get(id=g_id)
@@ -1761,6 +1763,7 @@ def amend_gift(request):
 
 
 @login_required(login_url='/admin')
+@reversion.create_revision()
 def delete_gift(request):   
     
     gift= Gift.objects.get(id=request.GET['gift_id'])
@@ -1775,6 +1778,7 @@ def delete_gift(request):
     return HttpResponse(info, mimetype="application/json")
         
 @login_required(login_url='/admin')
+@reversion.create_revision()
 def gift_remove_recip(request):
     if request.method == 'GET':
         gift = Gift.objects.get(id=request.GET['gift_id'])

@@ -65,7 +65,7 @@ def find_contributions(url, writer):
 
 
 class Command(BaseCommand):
-    help = "Creates mega contact download"
+    help = "Creates mega contribution download"
     can_import_settings = True
         
     def handle(self, *args, **options):

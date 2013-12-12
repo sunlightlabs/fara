@@ -1,12 +1,13 @@
 import csv
 import datetime
 
-#maybe move the files to s3 later?
-#from django.core.files.storage import default_storage
-from django.core.management.base import BaseCommand, CommandError
+from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 
-
-from FaraData.models import Contact, MetaData
+from FaraData.models import *
 from fara_feed.models import *
 
 def namebuilder(r):
@@ -14,22 +15,21 @@ def namebuilder(r):
 	if r.title != None and r.title != '':	
 		contact_name = r.title.encode('ascii', errors='ignore') + ' '
 	if r.name != None and r.name != '':
-		contact_name = contact_name + r.name.encode('ascii', errors='ignore')
+		contact_name = contact_name + r.name.encode('ascii', errors='ignore') + ', '
 	if r.office_detail != None and r.office_detail != '':
-		contact_name = contact_name + ", office: " + r.office_detail.encode('ascii', errors='ignore')
+		contact_name = contact_name + "office: " + r.office_detail.encode('ascii', errors='ignore') + ', '
 	if r. agency != None and r.agency != '':
-		contact_name = contact_name + ", agency: " + r.agency.encode('ascii', errors='ignore')
+		contact_name = contact_name + "agency: " + r.agency.encode('ascii', errors='ignore')
 	contact_name = contact_name.encode('ascii', errors='ignore') + "; "
-	if contact_name == "unknown; ":
-		contact_name = ''
 	return contact_name
 
-
-def big_bad_contacts():
-	filename = "data/contacts" + str(datetime.date.today()) + ".csv"
-	# filter out old files
-	docs = Document.objects.filter(processed=True, doc_type="Supplemental",stamp_date__range=(datetime.date(2012,1,1), datetime.date.today()))
-	writer = csv.writer(open(filename, 'wb'))
+@login_required(login_url='/admin')
+def big_bad_contacts(request):
+	filename = "contacts" + str(datetime.date.today()) + ".csv"
+	docs = Document.objects.filter(processed=True, doc_type="Supplemental",stamp_date__range=(datetime.date(2011,1,1), datetime.date.today()))
+	response = HttpResponse(content_type='text/csv')
+	writer = csv.writer(response)
+	response['Content-Disposition'] = 'attachment; filename='+ filename
 	writer.writerow(['Date', 'Contact', 'Client', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Source', 'Record ID'])
 
 	for d in docs:
@@ -50,8 +50,9 @@ def big_bad_contacts():
 			"writer": writer,
 		}
 
-		find_contacts(info)
 		
+
+	return response
 
 def find_contacts(info):
 	contacts = info['contacts']
@@ -83,10 +84,4 @@ def find_contacts(info):
 		
 		writer.writerow([date, contact_name, c.client, c.registrant, c.description, c_type[c.contact_type], lobbyists, c.link, c.id])
 
-
-class Command(BaseCommand):
-    help = "Creates mega contact download"
-    can_import_settings = True
-        
-    def handle(self, *args, **options):
-    	return big_bad_contacts()
+big_bad_

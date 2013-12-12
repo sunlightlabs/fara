@@ -115,7 +115,7 @@ ROOT_URLCONF = 'fara.urls'
 WSGI_APPLICATION = 'fara.wsgi.application'
 
 LOGIN_URL = 'accounts/login'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = ''
 
 
 INSTALLED_APPS = (

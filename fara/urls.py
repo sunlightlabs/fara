@@ -99,6 +99,7 @@ urlpatterns = patterns('',
     url(r'^supplemental_list', 'fara_feed.document_select_view.fast_supplemental', name='supplemental-list'),
     #Temp landing page
     url(r'^$', 'FaraData.views.temp_home', name='temp-home'),
+    url(r'^direct_home', 'FaraData.views.temp_home', name='temp-home'),
     #Instructions for data entry 
     url(r'^instructions', 'FaraData.views.instructions', name='instructions'),
     ### End of forms
@@ -115,6 +116,7 @@ urlpatterns = patterns('',
     url(r'^clients_csv', 'FaraData.views.clients_csv', name='clients_csv'),
     # API
     (r'^api/', include('api.urls')),
+    # Flatsheets moved to management commands
+    # url(r'^big_bad_contacts', 'FaraData.big_bad_csvs.big_bad_contacts', name='big_contacts'),
     )
-
 

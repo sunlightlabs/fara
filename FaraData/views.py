@@ -7,7 +7,6 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 
-
 from FaraData.models import *
 from fara_feed.models import *
 
@@ -16,11 +15,11 @@ def namebuilder(r):
 	if r.title != None and r.title != '':	
 		contact_name = r.title.encode('ascii', errors='ignore') + ' '
 	if r.name != None and r.name != '':
-		contact_name = contact_name + r.name.encode('ascii', errors='ignore') + ', '
+		contact_name = contact_name + r.name.encode('ascii', errors='ignore')
 	if r.office_detail != None and r.office_detail != '':
-		contact_name = contact_name + "office: " + r.office_detail.encode('ascii', errors='ignore') + ', '
+		contact_name = contact_name + ", office: " + r.office_detail.encode('ascii', errors='ignore')
 	if r. agency != None and r.agency != '':
-		contact_name = contact_name + "agency: " + r.agency.encode('ascii', errors='ignore')
+		contact_name = contact_name + ", agency: " + r.agency.encode('ascii', errors='ignore')
 	contact_name = contact_name.encode('ascii', errors='ignore') + "; "
 	return contact_name
 
@@ -84,7 +83,7 @@ def payment_csv(request, form_id):
 	dumb_date = md.end_date
 
 	writer = csv.writer(response)
-	writer.writerow(['Client', 'Amount', 'Date', 'Registrant', 'Purpose', 'Source'])
+	writer.writerow(['Client', 'Amount', 'Date', 'Registrant', 'Purpose', 'From Subcontractor' 'Source'])
 
 	for p in payments:
 		if p.date == None:
@@ -92,7 +91,7 @@ def payment_csv(request, form_id):
 		else:
 			date = p.date
 		
-		writer.writerow([p.client, p.amount, date, p.registrant, p.purpose, p.link])
+		writer.writerow([p.client, p.amount, date, p.registrant, p.purpose, p.subcontractor, p.link])
 
 	return response
 
