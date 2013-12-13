@@ -40,14 +40,11 @@ def find_contributions(url, writer):
 	if md.end_date == None:
 		if md.notes == "legacy":
 			end_date = None
-		else:
-			print url
 
 
 	contribution = Contribution.objects.filter(link=url)
 
 	for c in contribution:	
-		print "working"
  		recipient_name = namebuilder(c.recipient)
  		if c.lobbyist:
  			lobby = c.lobbyist
@@ -61,7 +58,7 @@ def find_contributions(url, writer):
 		else:
 			date = c.date
 
-		writer.writerow([c.amount, date, recipient_name.encode('ascii', errors='ignore'), c.registrant.encode('ascii', errors='ignore'), lobby, c.link, c.id])
+		writer.writerow([c.amount, date, recipient_name, c.registrant, lobby, c.link, c.id])
 
 
 class Command(BaseCommand):

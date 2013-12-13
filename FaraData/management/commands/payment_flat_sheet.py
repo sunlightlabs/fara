@@ -12,7 +12,7 @@ from fara_feed.models import *
 def big_bad_payments():
 	filename = "data/payments" + str(datetime.date.today()) + ".csv"
 	# filtering archival information for now
-	docs = Document.objects.filter(processed=True, doc_type="Supplemental",stamp_date__range=(datetime.date(2010,1,1), datetime.date.today()))
+	docs = Document.objects.filter(processed=True, doc_type="Supplemental",stamp_date__range=(datetime.date(2012,1,1), datetime.date.today()))
 	writer = csv.writer(open(filename, 'wb'))
 	writer.writerow(['Client', 'Amount', 'Date', 'Registrant', 'Purpose', 'From subcontractor', 'Source'])
 	
@@ -29,8 +29,6 @@ def find_payments(url, writer):
 	if md.end_date == None:
 		if md.notes == "legacy":
 			end_date = None
-		else:
-			print url
 
 	for p in payments:
 		if p.date == None:
@@ -41,7 +39,12 @@ def find_payments(url, writer):
 		else:
 			date = p.date
 		
-		writer.writerow([p.client.encode('ascii', errors='ignore'), p.amount, date, p.registrant.encode('ascii', errors='ignore'), p.purpose.encode('ascii', errors='ignore'), p.subcontractor.encode('ascii', errors='ignore'), p.link])
+		if p.purpose == None:
+			purpose = None
+		else:
+			purpose = p.purpose.encode('ascii', errors='ignore')
+		
+		writer.writerow([p.client, p.amount, date, p.registrant, purpose , p.subcontractor, p.link])
 
 class Command(BaseCommand):
     help = "Creates mega payment download"

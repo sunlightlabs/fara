@@ -23,13 +23,18 @@ def find_disbursements(url, writer):
 		else:
 			date = d.date
 		
-		writer.writerow([d.amount, date, d.client.encode('ascii', errors='ignore'), d.registrant.encode('ascii', errors='ignore'), d.purpose.encode('ascii', errors='ignore'), d.subcontractor.encode('ascii', errors='ignore'), d.link, d.id])
+		if d.purpose == None:
+			purpose = None
+		else:
+			purpose = d.purpose.encode('ascii', errors='ignore')
+
+		writer.writerow([d.amount, date, d.client, d.registrant, purpose, d.subcontractor, d.link, d.id])
 
 
 def big_bad_disbursements():
 	filename = "data/disbursements" + str(datetime.date.today()) + ".csv"
 	# filtering archival information for now
-	docs = Document.objects.filter(processed=True, doc_type="Supplemental",stamp_date__range=(datetime.date(2010,1,1), datetime.date.today()))
+	docs = Document.objects.filter(processed=True, doc_type="Supplemental",stamp_date__range=(datetime.date(2012,1,1), datetime.date.today()))
 	writer = csv.writer(open(filename, 'wb'))
 	writer.writerow(['Amount', 'Date','Client', 'Registrant', 'Purpose', 'To Subcontractor', 'Source', 'Record ID'])
 
