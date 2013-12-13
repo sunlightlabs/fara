@@ -23,7 +23,7 @@ def find_disbursements(url, writer):
 		else:
 			date = d.date
 		
-		writer.writerow([d.amount, date, d.client, d.registrant, d.purpose, d.subcontractor, d.link, d.id])
+		writer.writerow([d.amount, date, d.client.encode('ascii', errors='ignore'), d.registrant.encode('ascii', errors='ignore'), d.purpose.encode('ascii', errors='ignore'), d.subcontractor.encode('ascii', errors='ignore'), d.link, d.id])
 
 
 def big_bad_disbursements():

@@ -41,7 +41,7 @@ def find_payments(url, writer):
 		else:
 			date = p.date
 		
-		writer.writerow([p.client, p.amount, date, p.registrant, p.purpose, p.subcontractor, p.link])
+		writer.writerow([p.client.encode('ascii', errors='ignore'), p.amount, date, p.registrant.encode('ascii', errors='ignore'), p.purpose.encode('ascii', errors='ignore'), p.subcontractor.encode('ascii', errors='ignore'), p.link])
 
 class Command(BaseCommand):
     help = "Creates mega payment download"

@@ -61,7 +61,7 @@ def find_contributions(url, writer):
 		else:
 			date = c.date
 
-		writer.writerow([c.amount, date, recipient_name, c.registrant, lobby, c.link, c.id])
+		writer.writerow([c.amount, date, recipient_name.encode('ascii', errors='ignore'), c.registrant.encode('ascii', errors='ignore'), lobby, c.link, c.id])
 
 
 class Command(BaseCommand):

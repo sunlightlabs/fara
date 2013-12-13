@@ -81,7 +81,7 @@ def find_contacts(info):
 		
 		c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "email"}
 		
-		writer.writerow([date, contact_name, c.client, c.registrant, c.description, c_type[c.contact_type], lobbyists, c.link, c.id])
+		writer.writerow([date, contact_name, c.client.encode('ascii', errors='ignore'), c.registrant.encode('ascii', errors='ignore'), c.description.encode('ascii', errors='ignore'), c_type[c.contact_type], lobbyists, c.link, c.id])
 
 
 class Command(BaseCommand):
