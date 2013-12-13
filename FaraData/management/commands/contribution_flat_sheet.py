@@ -9,17 +9,20 @@ from django.core.management.base import BaseCommand, CommandError
 from FaraData.models import Contribution, MetaData
 from fara_feed.models import *
 
+
 def namebuilder(r):
 	contact_name = ''
 	if r.title != None and r.title != '':	
 		contact_name = r.title.encode('ascii', errors='ignore') + ' '
 	if r.name != None and r.name != '':
-		contact_name = contact_name + r.name.encode('ascii', errors='ignore') + ', '
+		contact_name = contact_name + r.name.encode('ascii', errors='ignore')
 	if r.office_detail != None and r.office_detail != '':
 		contact_name = contact_name + ", office: " + r.office_detail.encode('ascii', errors='ignore')
 	if r. agency != None and r.agency != '':
 		contact_name = contact_name + ", agency: " + r.agency.encode('ascii', errors='ignore')
 	contact_name = contact_name.encode('ascii', errors='ignore') + "; "
+	if contact_name == "unknown; ":
+		contact_name = ''
 	return contact_name
 
 def big_bad_contributions():

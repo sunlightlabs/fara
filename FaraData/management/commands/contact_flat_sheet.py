@@ -35,7 +35,7 @@ def big_bad_contacts():
 	# one line per contact sheet
 	filename = "data/contacts-by-contact" + str(datetime.date.today()) + ".csv"
 	writer2 = csv.writer(open(filename, 'wb'))
-	writer2.writerow(['Date', 'Contact', 'Client', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Source', 'Affiliated Member CRP ID', 'Contact ID', 'Record ID'])
+	writer2.writerow(['Date', 'Contact Title','Contact Name', 'Contact Office', 'Contact Agency', 'Client', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Source', 'Affiliated Member CRP ID', 'Contact ID', 'Record ID'])
 
 	for d in docs:
 		url = d.url
@@ -94,8 +94,29 @@ def find_contacts(info):
 		writer.writerow([date, contact_name, c.client, c.registrant, description, c_type[c.contact_type], lobbyists, c.link, c.id])
 
 		for r in c.recipient.all():
-			contact_name = namebuilder(r)
-			writer2.writerow([date, contact_name, c.client, c.registrant, description, c_type[c.contact_type], lobbyists, c.link, r.crp_id, r.id, c.id])
+			if r.title != None and r.title != '':	
+				contact_title = r.title.encode('ascii', errors='ignore')	
+			else:
+				contact_title = ''
+			
+			if r.name != None and r.name != '':
+				contact_name = r.name.encode('ascii', errors='ignore')
+				if contact_name == "unknown; ":
+					contact_name = ''
+			else:
+				contact_name = ''
+			
+			if r.office_detail != None and r.office_detail != '':
+				contact_office = r.office_detail.encode('ascii', errors='ignore')
+			else:
+				contact_office = ''
+			if r. agency != None and r.agency != '':
+				contact_agency = r.agency.encode('ascii', errors='ignore')
+			else:
+				contact_agency = ''
+			
+			
+			writer2.writerow([date, contact_title, contact_name, contact_office, contact_agency, c.client, c.registrant, description, c_type[c.contact_type], lobbyists, c.link, r.crp_id, r.id, c.id])
 
 
 class Command(BaseCommand):
