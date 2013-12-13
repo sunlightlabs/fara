@@ -65,7 +65,7 @@ def contact_csv(request, form_id):
 		
 		c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "email"}
 		
-		writer.writerow([date, contact_name, c.client, c.registrant, c.description, c_type[c.contact_type], lobbyists, c.link, c.id])
+		writer.writerow([date, contact_name, c.client, c.registrant.encode('ascii', errors='ignore'), c.description.encode('ascii', errors='ignore'), c_type[c.contact_type], lobbyists, c.link, c.id])
 
 	return response
 
@@ -91,7 +91,7 @@ def payment_csv(request, form_id):
 		else:
 			date = p.date
 		
-		writer.writerow([p.client, p.amount, date, p.registrant, p.purpose, p.subcontractor, p.link])
+		writer.writerow([p.client.encode('ascii', errors='ignore'), p.amount, date, p.registrant.encode('ascii', errors='ignore'), p.purpose.encode('ascii', errors='ignore'), p.subcontractor.encode('ascii', errors='ignore'), p.link])
 
 	return response
 
@@ -116,11 +116,11 @@ def disbursement_csv(request, form_id):
 		else:
 			date = d.date
 		
-		writer.writerow([d.amount, date, d.client, d.registrant, d.purpose, d.link, d.id])
+		writer.writerow([d.amount, date, d.client.encode('ascii', errors='ignore'), d.registrant.encode('ascii', errors='ignore'), d.purpose.encode('ascii', errors='ignore'), d.link, d.id])
 
 	return response
 
-# not finished
+#
 @login_required(login_url='/admin')
 def contribution_csv(request, form_id):
 	doc = Document.objects.get(id=form_id)
@@ -146,7 +146,7 @@ def contribution_csv(request, form_id):
 			date = dumb_date.strftime('%x') + "*"
 		else:
 			date = c.date
-		writer.writerow([c.amount, date, recipient_name, c.registrant, lobby, c.link, c.id])
+		writer.writerow([c.amount, date, recipient_name, c.registrant.encode('ascii', errors='ignore'), lobby, c.link, c.id])
 
 	return response
 

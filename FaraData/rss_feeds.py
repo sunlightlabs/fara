@@ -10,7 +10,7 @@ from django.utils.html import format_html
 from FaraData.models import *
 from fara_feed.models import *
 
-base_url = "http://54.234.244.182"
+base_url = "http://fara.sunlightlabs.com"
 
 doc_type = ''
 link = ''
