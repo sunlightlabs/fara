@@ -26,11 +26,16 @@ def namebuilder(r):
 
 
 def big_bad_contacts():
-	filename = "data/contacts" + str(datetime.date.today()) + ".csv"
+	filename = "data/contacts-condensed" + str(datetime.date.today()) + ".csv"
 	# filter out old files
 	docs = Document.objects.filter(processed=True, doc_type="Supplemental",stamp_date__range=(datetime.date(2012,1,1), datetime.date.today()))
+	# combined contact sheet
 	writer = csv.writer(open(filename, 'wb'))
 	writer.writerow(['Date', 'Contact', 'Client', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Source', 'Record ID'])
+	# one line per contact sheet
+	filename = "data/contacts-by-contact" + str(datetime.date.today()) + ".csv"
+	writer2 = csv.writer(open(filename, 'wb'))
+	writer2.writerow(['Date', 'Contact', 'Client', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Source', 'Affiliated Member CRP ID', 'Contact ID', 'Record ID'])
 
 	for d in docs:
 		url = d.url
@@ -39,8 +44,6 @@ def big_bad_contacts():
 		if md.end_date == None:
 			if md.notes == "legacy":
 				end_date = None
-			else:
-				print md.link
 
 		info = {
 			"url": url,
@@ -48,6 +51,7 @@ def big_bad_contacts():
 			"md": md,
 			"dumb_date": end_date,
 			"writer": writer,
+			"writer2": writer2,
 		}
 
 		find_contacts(info)
@@ -59,6 +63,7 @@ def find_contacts(info):
 	md = info['md']
 	dumb_date = info['dumb_date']
 	writer = info['writer']
+	writer2 = info['writer2']
 	
 	for c in contacts:
 		lobbyists = ''
@@ -68,7 +73,7 @@ def find_contacts(info):
 		#recipients = []
 		contact_name = ''
 		for r in c.recipient.all():
-			contact_name = namebuilder(r)
+			contact_name = contact_name + namebuilder(r)
 		
 		if c.date == None:
 			try:
@@ -87,6 +92,10 @@ def find_contacts(info):
 		c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "email"}
 		
 		writer.writerow([date, contact_name, c.client, c.registrant, description, c_type[c.contact_type], lobbyists, c.link, c.id])
+
+		for r in c.recipient.all():
+			contact_name = namebuilder(r)
+			writer2.writerow([date, contact_name, c.client, c.registrant, description, c_type[c.contact_type], lobbyists, c.link, r.crp_id, r.id, c.id])
 
 
 class Command(BaseCommand):

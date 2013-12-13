@@ -17,7 +17,6 @@ def find_disbursements(url, writer):
 		if d.date == None:
 			try:
 				date = dumb_date.strftime('%x') + '*'
-				print date
 			except:
 				date = '*'
 		else:
