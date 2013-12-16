@@ -64,7 +64,7 @@ def fast_pages(form, page):
 
 @login_required(login_url='/admin')
 def fast_supplemental(request):
-    supplementals = Document.objects.filter(doc_type = "Supplemental", processed=False).order_by('-stamp_date')
+    supplementals = Document.objects.filter(doc_type = "Supplemental", processed=False, uploaded=True).order_by('-stamp_date')
     page = request.GET.get('page')
     supplementals = make_pages(supplementals, page)
     
@@ -82,26 +82,26 @@ def full_list(request):
     o_page = request.GET.get('o_page')
     a_page = request.GET.get('a_page')
     
-    supplementals = Document.objects.filter(doc_type = 'Supplemental').order_by('-stamp_date')
+    supplementals = Document.objects.filter(doc_type = 'Supplemental', uploaded=True).order_by('-stamp_date')
     s_page = request.GET.get('s_page')
     supplementals = make_pages(supplementals, s_page)
     
-    registrations = Document.objects.filter(doc_type = 'Registration').order_by('-stamp_date') 
+    registrations = Document.objects.filter(doc_type = 'Registration', uploaded=True).order_by('-stamp_date') 
     r_page = request.GET.get('r_page')
     registrations = make_pages(registrations, r_page)
 
-    amendments = Document.objects.filter(doc_type = 'Amendment').order_by('-stamp_date')
+    amendments = Document.objects.filter(doc_type = 'Amendment', uploaded=True).order_by('-stamp_date')
     a_page = request.GET.get('a_page')
     amendments = make_pages(amendments, a_page)
     
-    short_forms = Document.objects.filter(doc_type = 'Short Form').order_by('-stamp_date')
+    short_forms = Document.objects.filter(doc_type = 'Short Form', uploaded=True).order_by('-stamp_date')
     short_forms = fast_pages(short_forms, sf_page)
 
-    ab = Document.objects.filter(doc_type = 'Exhibit AB').order_by('-stamp_date')
+    ab = Document.objects.filter(doc_type = 'Exhibit AB', uploaded=True).order_by('-stamp_date')
     ab_page = request.GET.get('ab_page')
     ab = make_pages(ab, ab_page)
     
-    others = Document.objects.filter(doc_type__in=['Exhibit C', 'Exhibit D', 'Conflict Provision']).order_by('-stamp_date')
+    others = Document.objects.filter(doc_type__in=['Exhibit C', 'Exhibit D', 'Conflict Provision'], uploaded=True).order_by('-stamp_date')
     o_page = request.GET.get('o_page')
     others = fast_pages(others, o_page)
     
@@ -120,7 +120,7 @@ def full_list(request):
 
 @login_required(login_url='/admin')
 def entry_list(request):
-    entry_docs = Document.objects.filter(doc_type__in=['Supplemental', 'Registration', 'Amendment', 'Exhibit AB' ], processed=False).order_by('stamp_date')
+    entry_docs = Document.objects.filter(doc_type__in=['Supplemental', 'Registration', 'Amendment', 'Exhibit AB' ], processed=False, uploaded=True).order_by('-stamp_date')
     page = request.GET.get('page')
     entry_docs = make_pages(entry_docs, page)
     
