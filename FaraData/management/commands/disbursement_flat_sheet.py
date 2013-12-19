@@ -33,7 +33,7 @@ def find_disbursements(url, writer):
 def big_bad_disbursements():
 	filename = "data/disbursements" + str(datetime.date.today()) + ".csv"
 	# filtering archival information for now
-	docs = Document.objects.filter(processed=True, doc_type="Supplemental",stamp_date__range=(datetime.date(2012,1,1), datetime.date.today()))
+	docs = Document.objects.filter(processed=True, doc_type__in=["Supplemental", "Amendment", "Registration"],stamp_date__range=(datetime.date(2012,1,1), datetime.date.today()))
 	writer = csv.writer(open(filename, 'wb'))
 	writer.writerow(['Amount', 'Date','Client', 'Registrant', 'Purpose', 'To Subcontractor', 'Source', 'Record ID'])
 

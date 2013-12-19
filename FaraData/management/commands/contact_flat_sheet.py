@@ -28,7 +28,9 @@ def namebuilder(r):
 def big_bad_contacts():
 	filename = "data/contacts-condensed" + str(datetime.date.today()) + ".csv"
 	# filter out old files
-	docs = Document.objects.filter(processed=True, doc_type="Supplemental",stamp_date__range=(datetime.date(2012,1,1), datetime.date.today()))
+	docs = Document.objects.filter(processed=True, doc_type__in=["Supplemental", "Amendment", "Registration"], stamp_date__range=(datetime.date(2012,1,1), datetime.date.today()))
+	for d in docs:
+		print d
 	# combined contact sheet
 	writer = csv.writer(open(filename, 'wb'))
 	writer.writerow(['Date', 'Contact', 'Client', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Source', 'Record ID'])
