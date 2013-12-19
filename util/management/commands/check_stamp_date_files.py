@@ -27,8 +27,7 @@ class Command(BaseCommand):
                     print d.stamp_date, "in system"
                     d.stamp_date = date
                     print d.stamp_date
-                    # dry run
-                    # d.save()
+                    d.save()
             else:
                 message = 'bad date parsing ' + url
                 logger.error(message)
