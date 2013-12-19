@@ -189,8 +189,7 @@ class Command(BaseCommand):
             else: 
                 break
             
-            
-            new_info = parse_and_save(filings)
+            new_info = parse_and_save(url_end)
 
           
 

@@ -1,0 +1,32 @@
+{% extends "FaraData/form_base.html" %}
+
+{% block show_doc %}
+{% endblock show_doc %}
+
+{% block formquestions %}
+
+<section class="form-section">
+
+<h3>Journalist or Media Outlet</h3>
+
+        <form method="GET" id='recipform' action="/recipient/journalist">
+            <label class="sr-only" for="office_detail">Publication</label>
+            <input type="text" name="office_detail" class="form-control" placeholder="Publication"/>
+            <label class="sr-only" for="name">Name</label>
+            <input type="text" name="name" class="form-control" placeholder="Name"/>
+            <label class="sr-only" for="title">Title</label>
+            <input type="text" name="title" class="form-control" placeholder="Title"/>
+            <div class="checkbox">
+            </div>
+            <button type="submit" class="btn btn-default form-control">Submit</button>
+        </form>    
+
+        <span class="help" ><a href="{% url 'instructions' %}#Recipient" target="blank">Help</a></span>
+
+
+</section>
+
+{% endblock formquestions %}
+
+{% block doc_footer %}
+{% endblock doc_footer %}

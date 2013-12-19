@@ -6,9 +6,15 @@
     <h3>Recipients</h3>
     {% endif %}
 
-        <p><a class="js-popup" href="{% url 'find-form' %}">Add a new member of Congress or congressional staffer.</a></p>
-        <p><a href="http://www.opensecrets.org/">Check CRP if a PAC is associated with a member of Congress.</a>
+        <p><button class="btn btn-default form-control"><a class="js-popup" href="{% url 'find-form' %}">Add a new member of Congress, congressional staffer or leadership PAC.</a></button></p>
+
+        <p><button class="btn btn-default form-control"><a class="js-popup" href="{% url 'add-state-employee' %}">Add a U.S. State Department employee</a></button></p>
+
+        <p><button class="btn btn-default form-control"><a class="js-popup" href="{% url 'add-journalist' %}">Add a journalist or media outlet</a></button></p>
+
+        <p><a href="http://www.opensecrets.org/" target="blank">Check CRP if a PAC is associated with a member of Congress.</a>
         </p>
+       
         <h4>Add a new recipient</h4>
         <p><i>People who are being met, given contributions and gifts</i></p>
 

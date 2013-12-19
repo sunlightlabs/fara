@@ -604,7 +604,15 @@ def fix_gift(request, gift_id):
 def fix_client(request, client_id):
     print "placeholder"
 
-    
+@login_required(login_url='/admin')
+def add_state_employee(request):
+    return render(request, 'FaraData/form_state_employee.html')
+
+@login_required(login_url='/admin')
+def add_journalist(request):
+    return render(request, 'FaraData/form_add_journalist.html')
+
+
 ## Section for functions that process forms
 
 #data cleaning
@@ -710,9 +718,32 @@ def recipient(request):
         recip_choice = json.dumps({'name': recipient.name}, separators=(',',':'))        
         return HttpResponse(recip_choice, mimetype="application/json")
             
-        # except:
-        #     return HttpResponse(request, {'error': 'failed'})
 
+@login_required(login_url='/admin')
+def recipient_journalist(request):
+    if request.method == 'GET':
+        office_detail = cleantext(request.GET['office_detail'])
+        name  = cleantext(request.GET['name'])
+        print type(name)
+        title = cleantext(request.GET['title'])
+        print type(name)
+        if (name == None or name == '') and (office_detail == None or office_detail == ''):
+            error = json.dumps({'error': 'Pleasse fill out name or publication before submitting'}, separators=(',',':'))        
+            return HttpResponse(error, mimetype="application/json")
+
+        if (name is None or name == '') and (office_detail is not None or office_detail != ''):
+            name = office_detail
+
+        recipient = Recipient(
+                            agency = "Media",
+                            office_detail = office_detail,
+                            name  = name,
+                            title = title, 
+        )
+
+        recipient.save()
+        recip_choice = json.dumps({'name': recipient.name}, separators=(',',':'))        
+        return HttpResponse(recip_choice, mimetype="application/json")
             
 # creates a new lobbyist and adds it to Registrant  
 @login_required(login_url='/admin')       
