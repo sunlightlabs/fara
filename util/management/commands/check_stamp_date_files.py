@@ -22,11 +22,13 @@ class Command(BaseCommand):
                 date = datetime.datetime.strptime(date, "%Y%m%d")
 
                 if datetime.datetime.strftime(d.stamp_date, "%Y-%m-%d") != datetime.datetime.strftime(date, "%Y-%m-%d"):
+                    print url
                     print date, "url date"
                     print d.stamp_date, "in system"
                     d.stamp_date = date
                     print d.stamp_date
-                    d.save()
+                    # dry run
+                    # d.save()
             else:
                 message = 'bad date parsing ' + url
                 logger.error(message)
