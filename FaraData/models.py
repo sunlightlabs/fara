@@ -330,19 +330,6 @@ class ClientReg(models.Model):
     
     def __unicode__(self):
         return "%s - %s" % (self.client_id, self.reg_id)
-    
-#models for the data entry form.
-# class RegForm(ModelForm):
-#     class Meta:
-#         model = Registrant
-#         exclude = ('terminated_clients', 'clients', 'lobbyists', 'description')
 
-# class RecipientForm(ModelForm):
-#     class Meta:
-#         model = Recipient
-
-# class ClientForm(ModelForm):
-#     class Meta:
-#         model = Client
 
     
