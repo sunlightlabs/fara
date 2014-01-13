@@ -30,7 +30,7 @@ def big_bad_contributions():
 	# filtering archival information for now
 	docs = Document.objects.filter(processed=True, doc_type__in=["Supplemental", "Amendment", "Registration"],stamp_date__range=(datetime.date(2012,1,1), datetime.date.today()))
 	writer = csv.writer(open(filename, 'wb'))
-	writer.writerow(['Amount', 'Date', 'Recipient', 'Registrant', 'Contributing Lobbyist or PAC', 'Source', 'Record ID'])
+	writer.writerow(['Date', 'Amount', 'Recipient', 'Registrant', 'Contributing Lobbyist or PAC', 'CRP ID of Recipient', 'Bioguide ID', 'Source', 'Record ID'])
 
 	for d in docs:
 		url = d.url
@@ -61,7 +61,7 @@ def find_contributions(url, writer):
 		else:
 			date = c.date
 
-		writer.writerow([c.amount, date, recipient_name, c.registrant, lobby, c.link, c.id])
+		writer.writerow([date, c.amount, recipient_name, c.registrant, lobby, c.recipient.crp_id, c.recipient.bioguide_id, c.link, c.id])
 
 
 class Command(BaseCommand):
