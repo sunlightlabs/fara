@@ -10,12 +10,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     #login view
     url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
-    #views for viewing #### GET RID OF THESE
-    url(r'^regview/', 'FaraData.reg_view.index', name='reg-view'),
-    url(r'^entersupplemental/(\d+)', 'FaraData.entry_view.index', name='enter-supplemental'),
     # functions for forms
-    url(r'^registrant/create', 'FaraData.entry_view.new_registrant', name= 'create-registrant'),
-    # still need to get rid of create
     url(r'^registrant/new', 'FaraData.entry_view.new_registrant', name= 'new-registrant'),
     url(r'^lobbyist/create', 'FaraData.entry_view.lobbyist', name='create-lobbyist'),
     url(r'^client/create', 'FaraData.entry_view.client', name='create-client'),
@@ -119,9 +114,7 @@ urlpatterns = patterns('',
     url(r'^disbursement_csv/(\d+)', 'FaraData.views.disbursement_csv', name='disbursement-csv'),
     url(r'^contribution_csv/(\d+)', 'FaraData.views.contribution_csv', name='contribution-csv'),
     url(r'^clients_csv', 'FaraData.views.clients_csv', name='clients_csv'),
-    # API
+    # API (looking up IDs using the Congress API)
     (r'^api/', include('api.urls')),
-    # Flatsheets moved to management commands
-    # url(r'^big_bad_contacts', 'FaraData.big_bad_csvs.big_bad_contacts', name='big_contacts'),
     )
 
