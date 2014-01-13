@@ -145,11 +145,6 @@ def oneclient(reg_object):
 #all in one supplemental data entry form- good for amendments
 def return_big_form(request, form_id):
         url, reg_id, s_date = doc_id(form_id)
-        #forms
-        ### don't think I am using any of these
-        client_form = ClientForm()
-        reg_form = RegForm()
-        recipient_form = RecipientForm()
         #for displaying information already in the system
         reg_object = reg_info(reg_id)
         one_client = oneclient(reg_object)
@@ -164,10 +159,6 @@ def return_big_form(request, form_id):
         client_reg = client_reg_info(reg_object)
 
         return render(request, 'FaraData/entry_form.html',{
-            'recipient_form': recipient_form,
-            #'lobby_form': lobby_form,
-            'client_form': client_form,
-            'reg_form': reg_form,
             #options for forms
             'url': url, 
             'reg_object': reg_object,
@@ -198,14 +189,14 @@ def supplemental_base(request, form_id):
 def wrapper(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    client_form = ClientForm()
+    # client_form = ClientForm()
     meta_list = meta_info(url)
 
     return render(request, 'FaraData/dynamic_form.html',{
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
-        'client_form': client_form,
+        # 'client_form': client_form,
         'form_id': form_id,
         's_date': s_date,
         'meta_list': meta_list,
@@ -215,14 +206,14 @@ def wrapper(request, form_id):
 def supplemental_first(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    client_form = ClientForm()
+    # client_form = ClientForm()
     meta_list = meta_info(url)
 
     return render(request, 'FaraData/supplemental_first.html',{
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
-        'client_form': client_form,
+        # 'client_form': client_form,
         'form_id': form_id,
         's_date': s_date,
         'meta_list': meta_list,
@@ -235,7 +226,7 @@ def supplemental_contact(request, form_id):
     page = request.GET.get('page')
     contact_list = contact_info(url, page)[0]
     data = contact_info(url, page)[1]
-    client_form = ClientForm()
+    # client_form = ClientForm()
     recipient_form = RecipientForm()
     one_client = oneclient(reg_object)
 
@@ -244,7 +235,7 @@ def supplemental_contact(request, form_id):
         'reg_object': reg_object,
         'one_client': one_client,
         'url': url,
-        'client_form': client_form,
+        # 'client_form': client_form,
         'form_id': form_id,
         'recipient_form': recipient_form,
         'contact_list': contact_list,
@@ -272,7 +263,7 @@ def supplemental_gift(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     gift_list = gift_info(url)
     reg_object = reg_info(reg_id)
-    recipient_form= RecipientForm()
+    #recipient_form= RecipientForm()
     one_client = oneclient(reg_object)
 
     return render(request, 'FaraData/supplemental_gift.html',{
@@ -281,7 +272,7 @@ def supplemental_gift(request, form_id):
     'form_id': form_id,
     'reg_object': reg_object,
     'gift_list': gift_list,
-    'recipient_form': recipient_form,
+    #'recipient_form': recipient_form,
     'one_client' : one_client,
     })
 
@@ -306,7 +297,7 @@ def supplemental_contribution(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     cont_list = cont_info(url)
-    recipient_form = RecipientForm()
+    # recipient_form = RecipientForm()
 
     return render(request, 'FaraData/supplemental_contribution.html',{
     'reg_id': reg_id,
@@ -314,7 +305,7 @@ def supplemental_contribution(request, form_id):
     'form_id': form_id,
     'reg_object': reg_object,
     'cont_list': cont_list,
-    'recipient_form': recipient_form,
+    # 'recipient_form': recipient_form,
     })
 
 @login_required(login_url='/admin')
@@ -339,13 +330,13 @@ def reg_wrapper(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     # think this is obsolete
-    client_form = ClientForm()
+    #client_form = ClientForm()
 
     return render(request, 'FaraData/dynamic_reg_form.html',{
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
-        'client_form': client_form,
+        #'client_form': client_form,
         'form_id': form_id,
         's_date': s_date,
     })
@@ -354,37 +345,37 @@ def reg_wrapper(request, form_id):
 def registration_first(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    client_form = ClientForm()
+    #client_form = ClientForm()
 
     return render(request, 'FaraData/registration_first.html',{
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
-        'client_form': client_form,
+        #'client_form': client_form,
         'form_id': form_id,
         's_date': s_date,
     })
+# Registration doesn't have contact
+# @login_required(login_url='/admin')
+# def registration_contact(request, form_id):
+#     url, reg_id, s_date = doc_id(form_id)
+#     reg_object = reg_info(reg_id)
+#     contact_list = contact_info(url, 1)
+#     #client_form = ClientForm()
+#     #recipient_form = RecipientForm()
+#     one_client = oneclient(reg_object)
 
-@login_required(login_url='/admin')
-def registration_contact(request, form_id):
-    url, reg_id, s_date = doc_id(form_id)
-    reg_object = reg_info(reg_id)
-    contact_list = contact_info(url, 1)
-    client_form = ClientForm()
-    recipient_form = RecipientForm()
-    one_client = oneclient(reg_object)
-
-    return render(request, 'FaraData/registration_contact.html',{
-        'reg_id' : reg_id,
-        'reg_object': reg_object,
-        'url': url,
-        'client_form': client_form,
-        'form_id': form_id,
-        'recipient_form': recipient_form,
-        'contact_list': contact_list,
-        'one_client': one_client,
-        'page': 1,
-    })
+#     return render(request, 'FaraData/registration_contact.html',{
+#         'reg_id' : reg_id,
+#         'reg_object': reg_object,
+#         'url': url,
+#         #'client_form': client_form,
+#         #'form_id': form_id,
+#         'recipient_form': recipient_form,
+#         'contact_list': contact_list,
+#         'one_client': one_client,
+#         'page': 1,
+#     })
 
 @login_required(login_url='/admin')
 def registration_payment(request, form_id):
@@ -406,7 +397,7 @@ def registration_payment(request, form_id):
 def registration_gift(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     gift_list = gift_info(url)
-    recipient_form = RecipientForm()
+    #recipient_form = RecipientForm()
     reg_object = reg_info(reg_id)
 
     return render(request, 'FaraData/registration_gift.html',{
@@ -414,7 +405,7 @@ def registration_gift(request, form_id):
     'url': url,
     'form_id': form_id,
     'gift_list': gift_list,
-    'recipient_form': recipient_form,
+    #'recipient_form': recipient_form,
     'reg_object': reg_object,
     })
 
@@ -439,7 +430,7 @@ def registration_contribution(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
     cont_list = cont_info(url)
-    recipient_form = RecipientForm()
+    #recipient_form = RecipientForm()
 
     return render(request, 'FaraData/registration_contribution.html',{
     'reg_id': reg_id,
@@ -447,7 +438,7 @@ def registration_contribution(request, form_id):
     'form_id': form_id,
     'reg_object': reg_object,
     'cont_list': cont_list,
-    'recipient_form': recipient_form,
+    #s'recipient_form': recipient_form,
     })
 
 @login_required(login_url='/admin')
@@ -466,7 +457,7 @@ def registration_last(request, form_id):
 def enter_AB(request, form_id):
     url, reg_id, s_date = doc_id(form_id)
     reg_object = reg_info(reg_id)
-    client_form = ClientForm()
+    #client_form = ClientForm()
     meta_list = meta_info(url)
     one_client = oneclient(reg_object)
     client_reg = client_reg_info(reg_object)
@@ -475,7 +466,7 @@ def enter_AB(request, form_id):
         'reg_id' : reg_id,
         'reg_object': reg_object,
         'url': url,
-        'client_form': client_form,
+        #'client_form': client_form,
         'form_id': form_id,
         'meta_list': meta_list,
         's_date': s_date,
@@ -927,27 +918,27 @@ def location(request):
 
 #creates a new registrant
 # phasing this one out
-@login_required(login_url='/admin') 
-def registrant(request):
-    if request.method == 'GET': # If the form has been submitted...
-        form = RegForm(request.GET) # A form bound to the POST data
-        if form.is_valid(): # All validation rules pass
-            registrant = Registrant(reg_id = form.cleaned_data['reg_id'],
-                            reg_name = form.cleaned_data['reg_name'],
-                            address = form.cleaned_data['address'],
-                            city = form.cleaned_data['city'],
-                            state = form.cleaned_data['state'],
-                            zip = form.cleaned_data['zip'],
-                            country = form.cleaned_data['country'],
-                            #description = form.cleaned_data['description'],
-            )
-            registrant.save()
-            reg_info = json.dumps({'reg_id': registrant.reg_id, 'reg_name': registrant.reg_name} , separators=(',',':'))
-            return HttpResponse(reg_info, mimetype="application/json")
+# @login_required(login_url='/admin') 
+# def registrant(request):
+#     if request.method == 'GET': # If the form has been submitted...
+#         form = RegForm(request.GET) # A form bound to the POST data
+#         if form.is_valid(): # All validation rules pass
+#             registrant = Registrant(reg_id = form.cleaned_data['reg_id'],
+#                             reg_name = form.cleaned_data['reg_name'],
+#                             address = form.cleaned_data['address'],
+#                             city = form.cleaned_data['city'],
+#                             state = form.cleaned_data['state'],
+#                             zip = form.cleaned_data['zip'],
+#                             country = form.cleaned_data['country'],
+#                             #description = form.cleaned_data['description'],
+#             )
+#             registrant.save()
+#             reg_info = json.dumps({'reg_id': registrant.reg_id, 'reg_name': registrant.reg_name} , separators=(',',':'))
+#             return HttpResponse(reg_info, mimetype="application/json")
 
-        else:
-            error = json.dumps({'error': 'failed'} , separators=(',',':'))
-            return HttpResponse(error, mimetype="application/json")
+#         else:
+#             error = json.dumps({'error': 'failed'} , separators=(',',':'))
+#             return HttpResponse(error, mimetype="application/json")
 
 @login_required(login_url='/admin')
 def new_registrant(request):

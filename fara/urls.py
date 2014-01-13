@@ -14,7 +14,8 @@ urlpatterns = patterns('',
     url(r'^regview/', 'FaraData.reg_view.index', name='reg-view'),
     url(r'^entersupplemental/(\d+)', 'FaraData.entry_view.index', name='enter-supplemental'),
     # functions for forms
-    url(r'^registrant/create', 'FaraData.entry_view.registrant', name= 'create-registrant'),
+    url(r'^registrant/create', 'FaraData.entry_view.new_registrant', name= 'create-registrant'),
+    # still need to get rid of create
     url(r'^registrant/new', 'FaraData.entry_view.new_registrant', name= 'new-registrant'),
     url(r'^lobbyist/create', 'FaraData.entry_view.lobbyist', name='create-lobbyist'),
     url(r'^client/create', 'FaraData.entry_view.client', name='create-client'),
