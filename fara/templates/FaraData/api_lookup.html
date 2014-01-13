@@ -33,6 +33,7 @@
 	<div class="api-result">
 		<form class="form-inline-api" method="GET" id='add_member_form' action="{% url 'add-member' %}">
 			<input type="hidden" name="crp_id" value="{{ r.0 }}">
+			<input type="hidden" name="bioguide_id" value="{{ r.6 }}">
 			<input type="hidden" name="agency" value="{{ r.1 }}"> 
 			<input type="hidden" name="office_detail" value="{{ r.2 }}">
 			<input type="hidden" name="name"  value="{{ r.3 }}">
@@ -46,6 +47,7 @@
 
 		<form class="form-inline-api" method="GET" id='add_member_form' action="{% url 'add-staff' %}">
 			<input type="hidden" name="crp_id" value="{{ r.0 }}">
+			<input type="hidden" name="bioguide_id" value="{{ r.6 }}">
 			<input type="hidden" name="agency" value="{{ r.2 }}"> 
 			<input type="hidden" name="office_detail" value="{{ r.3 }}">
 
@@ -60,6 +62,7 @@
 
 		<form class="form-inline-api" method="GET" id='add_pac_form' action="{% url 'add-leader-PAC' %}">
 			<input type="hidden" name="crp_id" value="{{ r.0 }}">
+			<input type="hidden" name="bioguide_id" value="{{ r.6 }}">
 			<input type="hidden" name="agency" value="{{ r.2 }}"> 
 			<input type="hidden" name="office_detail" value="{{ r.3 }}">
 			

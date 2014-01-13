@@ -63,6 +63,7 @@ def find_member(request):
 				full_name = "%s %s" %(first_name, last_name)
 				party = d['party']
 				crp_id = d['crp_id']
+				bioguide_id = d['bioguide_id']
 				state = d['state']
 				
 				if time == 'old':
@@ -70,7 +71,7 @@ def find_member(request):
 				else:
 					text = "%s %s %s (%s-%s) CRP ID = %s" %(title, first_name, last_name, party, state, crp_id) 
 				
-				result = [crp_id, "Congress", chamber,  full_name, title, text]
+				result = [crp_id, "Congress", chamber,  full_name, title, text, bioguide_id]
 				results.append(result)
 
 	data = response.json()
@@ -96,6 +97,7 @@ def find_member(request):
 @login_required(login_url='/admin')
 def add_member(request):
 	member = Recipient(crp_id = request.GET['crp_id'],
+						bioguide_id= request.GET['bioguide_id'],
 					    agency = request.GET['agency'],
 					    office_detail = request.GET['office_detail'],
 					    name = request.GET['name'],
@@ -118,6 +120,7 @@ def add_staff(request):
 		member_name = "Sen. " + member_name
 
 	staff = Recipient(crp_id = request.GET['crp_id'],
+						bioguide_id = request.GET['bioguide_id'],
 					    agency = request.GET['agency'],
 					    office_detail = member_name,
 					    name = cleantext(request.GET['name']),
@@ -141,6 +144,7 @@ def add_leader_PAC(request):
 		member_name = "Sen. " + member_name
 
 	staff = Recipient(crp_id = request.GET['crp_id'],
+						bioguide_id = request.GET['bioguide_id'],
 					    agency = "Leadership PAC",
 					    office_detail = member_name,
 					    name = cleantext(request.GET['PAC_name']),
