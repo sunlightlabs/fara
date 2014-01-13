@@ -28,14 +28,14 @@ def namebuilder(r):
 def big_bad_contacts():
 	filename = "data/contacts-condensed" + str(datetime.date.today()) + ".csv"
 	# filter out old files
-	docs = Document.objects.filter(processed=True, doc_type__in=["Supplemental", "Amendment", "Registration"], stamp_date__range=(datetime.date(2012,1,1), datetime.date.today()))
+	docs = Document.objects.filter(processed=True, doc_type__in=["Supplemental", "Amendment", "Registration"], stamp_date__range=(datetime.date(2013,1,1), datetime.date.today()))
 	# combined contact sheet
 	writer = csv.writer(open(filename, 'wb'))
 	writer.writerow(['Date', 'Contact', 'Client', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Source', 'Record ID'])
 	# one line per contact sheet
 	filename = "data/contacts-by-contact" + str(datetime.date.today()) + ".csv"
 	writer2 = csv.writer(open(filename, 'wb'))
-	writer2.writerow(['Date', 'Contact Title','Contact Name', 'Contact Office', 'Contact Agency', 'Client', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Source', 'Affiliated Member CRP ID', 'Contact ID', 'Record ID'])
+	writer2.writerow(['Date', 'Contact Title','Contact Name', 'Contact Office', 'Contact Agency', 'Client', 'Client Location', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Affiliated Member CRP ID', 'Affiliated Member Bioguide ID', 'Source', 'Contact ID', 'Record ID'])
 
 	for d in docs:
 		url = d.url
@@ -70,7 +70,6 @@ def find_contacts(info):
 		for l in c.lobbyist.all():
 			lobbyists = lobbyists + l.lobbyist_name + ", "
 		lobbyists = lobbyists.encode('ascii', errors='ignore')
-		#recipients = []
 		contact_name = ''
 		for r in c.recipient.all():
 			contact_name = contact_name + namebuilder(r)
@@ -79,7 +78,7 @@ def find_contacts(info):
 			try:
 				date = dumb_date.strftime('%x') + "*"
 			except:
-				# this is bad, it means a missing date
+				# missing date
 				date = "*"
 		else:
 			date = c.date
@@ -116,7 +115,7 @@ def find_contacts(info):
 				contact_agency = ''
 			
 			
-			writer2.writerow([date, contact_title, contact_name, contact_office, contact_agency, c.client, c.registrant, description, c_type[c.contact_type], lobbyists, c.link, r.crp_id, r.id, c.id])
+			writer2.writerow([date, contact_title, contact_name, contact_office, contact_agency, c.client, c.client.location, c.registrant, description, c_type[c.contact_type], lobbyists, r.crp_id, r.bioguide_id, c.link, r.id, c.id])
 
 
 class Command(BaseCommand):
