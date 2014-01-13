@@ -1,3 +1,4 @@
+# still need to test out methods 
 import re
 
 from django.db import models
@@ -8,6 +9,7 @@ from django.forms import ModelForm, Select
 # the person, like a congressperson, that receives communication or contribution
 class Recipient(models.Model):
     crp_id = models.CharField(max_length=9, null=True, blank=True)
+    bioguide_id = models.CharField(max_length=7, null=True, blank=True)
     agency = models.CharField(max_length=100, blank=True, null=True)
     office_detail = models.CharField(max_length=100, blank=True, null=True)# formerly agency and office in agency detail
     name = models.CharField(max_length=150, null=True)
@@ -297,7 +299,7 @@ class Contribution(models.Model):
     
 class MetaData(models.Model):
     link = models.CharField(primary_key=True, max_length=255, db_index=True)
-    # similar to stamp date
+    # last time the metadata was updated
     upload_date = models.DateField(null=True)
     reviewed = models.BooleanField(default=False)
     processed = models.BooleanField(default=False)#processed means form is finished and info can be displayed on front end
