@@ -46,26 +46,27 @@ def contact_csv(request, form_id):
 	dumb_date = md.end_date
 
 	writer = csv.writer(response)
-	writer.writerow(['Date', 'Contact', 'Client', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Source', 'Record ID'])
+	writer.writerow(['Date', 'Contact Title', 'Contact Name', 'Contact Agency', 'Contact Office', 'CRP ID', 'Bioguide ID', 'Client', 'Client Location', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Source', 'Record ID'])
 	for c in contacts:
 
 		lobbyists = ''
 		for l in c.lobbyist.all():
 			lobbyists = lobbyists + l.lobbyist_name + ", "
 		lobbyists = lobbyists.encode('ascii', errors='ignore')
-		#recipients = []
-		contact_name = ''
-		for r in c.recipient.all():
-			contact_name = contact_name + namebuilder(r)
 		
 		if c.date == None:
 			date = dumb_date.strftime('%x') + "*"
 		else:
 			date = c.date
-		
+
 		c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "email"}
-		
-		writer.writerow([date, contact_name, c.client, c.registrant, c.description, c_type[c.contact_type], lobbyists, c.link, c.id])
+
+		for r in c.recipient.all():
+			if str(r.name).lower() != "unknown":
+				name = str(r.name).encode('ascii', errors='ignore')
+			else:
+				name = ''
+			writer.writerow([date, r.title, name, r.agency, r.office_detail, r.crp_id, r.bioguide_id, c.client, c.client.location, c.registrant, c.description, c_type[c.contact_type], lobbyists, c.link, c.id])
 
 	return response
 
@@ -162,7 +163,7 @@ def clients_csv(request):
 	writer = csv.writer(response)
 
 	for c in clients:
-		writer.writerow([c.id, c.client_name]) 
+		writer.writerow([c.id, c.client_name, c.location]) 
 	
 	return response
 
