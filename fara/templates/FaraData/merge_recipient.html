@@ -1,3 +1,4 @@
+<!-- using labels from other forms to make js work for now -->
 {% extends "FaraData/form_base.html" %}
 
 {% block show_doc %}
@@ -13,13 +14,13 @@
 <ul id="changelist" class="highlight-child">
 </ul>
 
-<form method="GET" id="mergeform" action="/merge_recipients">
+<form method="GET" id="cont_form" action="/merge_recipients">
 	<span class="help-block pull-right"><a href="{% url 'instructions' %}#Recipient" target="blank">This is the <b>correct entry</b> </a></span>
 
 	            <label for="correct_recipient">
 	                Correct Recipient
 	            </label>
-	            <input type="hidden" id="correct_recip" name="correct_recipient" class="select-control" placeholder="Correct Recipient"/>
+	            <input type="hidden" id="cont_recip" name="correct_recipient" class="select-control" placeholder="Correct Recipient"/>
 	
 	<br/>
 	<h4>The previous entry will replace the incorrect entries below.</h4>
@@ -30,7 +31,7 @@
 	            <label for="wrong_recipient">
 	                Flawed recipients
 	            </label>
-	            <input type="hidden" id="wrong_recip" name="wrong_recipient" class="select-control" placeholder="Incorrect Recipients"/>
+	            <input type="hidden" id="contact_recip" name="wrong_recipient" class="select-control" placeholder="Incorrect Recipients"/>
 	<br/>
 	<br/>
 	<br/>
