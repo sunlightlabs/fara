@@ -1,3 +1,4 @@
+// I am trying to add the merge form. It is not working properly yet
 jQuery(document).ready(function() {
 
   var direct = {
@@ -82,7 +83,8 @@ createSelect("#disbursement_subcontractor", "/formchoices/reg");
 createSelect("#primary_contractor", "/formchoices/reg")
 createSelect("#payment_subcontractor", "/formchoices/reg");
 createSelect("#gift_recip", "/formchoices/recip");
-
+createSelect("#correct_recip","/formchoices/recip");
+createSelect("#wrong_recip","/formchoices/recip");
 });
 
 
@@ -396,10 +398,10 @@ jQuery(document).ready(function(){
             $('#note').replaceWith(item);
           }
 
-          if (tag == '#merge_form'){
+          if (tag == '#mergeform'){
             var note = response.note
-            var item = '<div id="corrections"><p>' + note + "</p></div>"
-            $('#corrections').replaceWith(item);
+            var item = '<li>' + note + "</li>"
+            $('#changelist').append(item);
           }
         }
         
@@ -439,7 +441,8 @@ jQuery(document).ready(function(){
   update('#contact_remove_lobby');
   update('.deleteable');
   update('#noteform');
-  update('#merge_form');
+  update('#mergeform');
+
 });
 
 

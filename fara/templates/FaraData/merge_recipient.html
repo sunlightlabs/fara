@@ -1,4 +1,5 @@
 {% extends "FaraData/form_base.html" %}
+<script src="{{ STATIC_URL }}javascript/entry_form.js"></script>
 
 {% block show_doc %}
 {% endblock show_doc %}
@@ -18,7 +19,7 @@
 	            <label for="correct_recipient">
 	                Correct Recipient
 	            </label>
-	            <input type="hidden" id="cont_recip" name="correct_recipient" class="select-control" placeholder="Correct Recipient"/>
+	            <input type="hidden" id="correct_recip" name="correct_recipient" class="select-control" placeholder="Correct Recipient"/>
 	
 	<br/>
 	<h4>The previous entry will replace the incorrect entries below.</h4>
@@ -29,7 +30,7 @@
 	            <label for="wrong_recipient">
 	                Flawed recipients
 	            </label>
-	            <input type="hidden" id="contact_recip" name="wrong_recipient" class="select-control" placeholder="Incorrect Recipients"/>
+	            <input type="hidden" id="wrong_recip" name="wrong_recipient" class="select-control" placeholder="Incorrect Recipients"/>
 	<br/>
 	<br/>
 	<br/>
