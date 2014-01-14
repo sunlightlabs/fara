@@ -559,8 +559,11 @@ def add_state_employee(request):
 def add_journalist(request):
     return render(request, 'FaraData/form_add_journalist.html')
 
+@login_required(login_url='/admin')
+def merge_recipient_form(request):
+    return render(request, 'FaraData/merge_recipient.html')
 
-## Section for functions that process forms
+## cleaning functions
 
 #data cleaning
 def cleantext(text):
@@ -601,6 +604,7 @@ def cleandate(date):
                 date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
                 return date_error
 
+## Section for functions that process forms
 
 #corrects stamp date
 @login_required(login_url='/admin')
@@ -1369,7 +1373,7 @@ def metadata(request):
         error = json.dumps({'error': 'failed'} , separators=(',',':'))
         return HttpResponse(error, mimetype="application/json")        
     
-#Easy fix forms
+## Section for Easy fix forms
 
 # Contacts
 @login_required(login_url='/admin')
@@ -1673,7 +1677,7 @@ def amend_registrant(request):
 
 
 @login_required(login_url='/admin')
-@reversion.create_revision()
+# this doesn't work @reversion.create_revision()
 def amend_gift(request):
     g_id = int(request.GET['gift_id'])
     gift= Gift.objects.get(id=g_id)
@@ -1716,7 +1720,7 @@ def amend_gift(request):
 
 
 @login_required(login_url='/admin')
-@reversion.create_revision()
+# this doesn't work @reversion.create_revision()
 def delete_gift(request):   
     
     gift= Gift.objects.get(id=request.GET['gift_id'])
@@ -1731,7 +1735,7 @@ def delete_gift(request):
     return HttpResponse(info, mimetype="application/json")
         
 @login_required(login_url='/admin')
-@reversion.create_revision()
+# this doesn't work @reversion.create_revision()
 def gift_remove_recip(request):
     if request.method == 'GET':
         gift = Gift.objects.get(id=request.GET['gift_id'])
@@ -1740,3 +1744,60 @@ def gift_remove_recip(request):
 
         info = json.dumps({'gift_id': gift.id}, separators=(',',':'))
         return HttpResponse(info, mimetype="application/json")
+
+## Section for merging forms
+@login_required(login_url='/admin')
+def merge_recipients(request):
+    if request.method == "GET":
+        correct = request.GET.get('correct_recipient')
+        if correct == None or correct == '':
+            error = json.dumps({'error': 'Please select a correct recipient.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")        
+        correct = Recipient.objects.get(id=correct)
+        fix_list = []
+        wrong_ids = request.GET.get('wrong_recipient')
+        wrong_list = wrong_ids.split(',')
+        if str(correct.id) in wrong_list:
+            error = json.dumps({'error': 'You listed the same entry as correct and incorrect. Please remove it from the list of flawed recipients.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")
+        print wrong_list
+        for w in wrong_list:
+            print w
+            wrong = Recipient.objects.get(id=int(w))
+            # contacts
+            fix_contacts = Contact.objects.filter(recipient=wrong)
+            for contact in fix_contacts:
+                fix_list.append({contact.id:str(contact.description)})
+                print contact.recipient.all()
+                if correct not in contact.recipient.all():
+                    contact.recipient.add(correct)
+                contact.recipient.remove(wrong)
+                contact.save()
+                print "2)", contact.recipient.all(), "\n"
+            # contribution
+            fix_contributions = Contribution.objects.filter(recipient=wrong)
+            for contribution in fix_contributions:
+                fix_list.append({contribution.id:str(contribution.amount)})
+                print contribution.recipient
+                contribution.recipient = correct
+                contribution.save()
+                print "2)", contribution.recipient, "\n"
+            # gift
+            fix_gifts = Gift.objects.filter(recipient=wrong)
+            for gift in fix_gifts:
+                fix_list.append({gift.id:str(gift.description)})
+                print gift.recipient
+                gift.recipient = correct
+                gift.save()
+                print "2)", gift.recipient, "\n"
+        
+        # delete after
+        print wrong.id
+        wrong.delete()
+
+        info = json.dumps({'note': fix_list}, separators=(',',':'))
+        return HttpResponse(info)
+
+
+
+            

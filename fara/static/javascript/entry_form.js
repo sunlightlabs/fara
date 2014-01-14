@@ -395,6 +395,12 @@ jQuery(document).ready(function(){
             var item = '<div id="note"><p> Note replaced with: ' + note + "</p></div>"
             $('#note').replaceWith(item);
           }
+
+          if (tag == '#merge_form'){
+            var note = response.note
+            var item = '<div id="corrections"><p>' + note + "</p></div>"
+            $('#corrections').replaceWith(item);
+          }
         }
         
         // creates error messages generated in views
@@ -433,8 +439,7 @@ jQuery(document).ready(function(){
   update('#contact_remove_lobby');
   update('.deleteable');
   update('#noteform');
-  update('#recipform');
-  
+  update('#merge_form');
 });
 
 

@@ -90,14 +90,17 @@ urlpatterns = patterns('',
     url(r'^add_member/', 'FaraData.find_api_view.add_member', name='add-member'),
     url(r'^add_staff/', 'FaraData.find_api_view.add_staff', name='add-staff'),
     url(r'^add_leader_PAC/', 'FaraData.find_api_view.add_leader_PAC', name='add-leader-PAC'),
-    # add other special recipients
+    #Add other special recipients
     url(r'^add_state_employee', 'FaraData.entry_view.add_state_employee', name='add-state-employee'),
     url(r'^add_journalist', 'FaraData.entry_view.add_journalist', name='add-journalist'),
+    #Merge forms
+    url(r'^merge_recip_form', 'FaraData.entry_view.merge_recipient_form', name='merge-recipient-form'),
+    url(r'^merge_recipients', 'FaraData.entry_view.merge_recipients', name='merge-recipients'),
     #Document managers
     url(r'^full_list', 'fara_feed.document_select_view.full_list', name='full-list'),
     url(r'^entry_list', 'fara_feed.document_select_view.entry_list', name='entry-list'),
     url(r'^supplemental_list', 'fara_feed.document_select_view.fast_supplemental', name='supplemental-list'),
-    #Temp landing page
+    #Data entry landing page
     url(r'^$', 'FaraData.views.temp_home', name='temp-home'),
     url(r'^direct_home', 'FaraData.views.temp_home', name='temp-home'),
     #Instructions for data entry 

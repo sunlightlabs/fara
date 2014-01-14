@@ -1,0 +1,36 @@
+{% extends "FaraData/form_base.html" %}
+
+{% block show_doc %}
+{% endblock show_doc %}
+
+{% block formquestions %}
+
+<ul id="contact_list" class="highlight-child">
+</ul>
+
+<form method="GET" id="contactform" action="/merge_recipients">
+	<span class="help-block pull-right"><a href="#recip">This is the <b>correct entry</b> </a></span>
+
+	            <label for="correct_recipient">
+	                Correct Recipient
+	            </label>
+	            <input type="hidden" id="cont_recip" name="correct_recipient" class="select-control" placeholder="Correct Recipient"/>
+	<br/>
+	<h4>The previous entry will replace the incorrect entries below.</h4>
+	<br/>
+	<span class="help-block pull-right"><a href="#recip">This is the <b>incorrect</b> entry </a></span>
+
+	            <label for="wrong_recipient">
+	                Flawed recipients
+	            </label>
+	            <input type="hidden" id="contact_recip" name="wrong_recipient" class="select-control" placeholder="Incorrect Recipients"/>
+<br/>
+<br/>
+<br/>
+<button type="submit" class="btn btn-default form-control">Merge</button>
+</form>
+
+{% endblock %}
+
+{% block doc_footer %}
+{% endblock doc_footer %}
