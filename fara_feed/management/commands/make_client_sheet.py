@@ -16,9 +16,14 @@ class Command(BaseCommand):
 		writer = csv.writer(open(filename, 'wb'))
 		writer.writerow(["Client name", "Registrant name", "Location of Client", "Description of service (when available)"])
 
-		regs = Registrant.objects.filter(clients__isnull=False)
+		regs = Registrant.objects.all()
+		print regs
+		print 1
 		for reg in regs:
+			print reg
+			print reg.clients.all()
 			for client in reg.clients.all():
+				print client
 				client_name = client.client_name
 				reg_name = reg.reg_name
 				client_loc = client.location.location
@@ -28,4 +33,4 @@ class Command(BaseCommand):
 				except:
 					discription = ''
 
-				writer.writerow([client_name, reg_name, client_loc, discription])
+				writer.writerow([client_name, reg_name, client_loc, discription, reg.reg_id, client.id])
