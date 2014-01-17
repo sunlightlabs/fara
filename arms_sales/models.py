@@ -16,7 +16,6 @@ class Proposed(models.Model):
     def __unicode__(self):
         return "%s, %s" %(self.title, self.date)
 
-
 class proposed_admin(admin.ModelAdmin):
     search_fields=['title']
 admin.site.register(Proposed, proposed_admin)

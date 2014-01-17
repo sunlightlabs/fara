@@ -137,6 +137,7 @@ INSTALLED_APPS = (
     'reversion',
     'api',
     'storages',
+    'arms_sales',
 )
 
 
