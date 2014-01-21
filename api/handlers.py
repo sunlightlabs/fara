@@ -33,7 +33,7 @@ def paginate(form, page):
 class PagedDochandler(BaseHandler):
 	allowed_methods = ('GET',)
 	model = Document
-	fields = ('url', 'reg_id', 'doc_type', 'processed', 'stamp_date')
+	fields = ('url', 'reg_id', 'doc_type', 'processed', 'stamp_date', 'id')
 	print 1   
 
 	def read(self, request, page=None):
