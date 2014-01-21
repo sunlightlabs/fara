@@ -12,10 +12,12 @@ contactdoc_handler = Resource(ContactDocHandler, authentication=auth)
 contribdoc_handler = Resource(ContribDocHandler, authentication=auth)
 paymentdoc_handler = Resource(PaymentDocHandler, authentication=auth)
 disbursedoc_handler = Resource(DisburseDocHandler, authentication=auth)
+pageddoc_handler = Resource(PagedDochandler, authentication=auth) 
 
 urlpatterns = patterns('',
    url(r'^doc/(\d+)/', document_handler),
    url(r'^docs', document_handler),
+   url(r'^documents/(\d+)/', pageddoc_handler),
    url(r'^regdocs/(\d+)/', regdoc_handler),
    url(r'^metadata/(\d+)/', metadata_handler),
    url(r'^registrant/(\d+)/', registrant_handler),

@@ -1,6 +1,14 @@
+
+import datetime
+
 from piston.handler import BaseHandler
+
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 from fara_feed.models import *
 from FaraData.models import *
+
+
 
 def format_link_bit(link):
 	if link[:25] != "http://www.fara.gov/docs/":
@@ -10,19 +18,46 @@ def format_link_bit(link):
 	link = link.replace("_", "-")
 	return link
 
+def paginate(form, page):
+	print 3
+	paginator = Paginator(form, 20)
+	try:
+		form = paginator.page(page)
+	except PageNotAnInteger:
+		form = paginator.page(1)
+	except EmptyPage:
+		form = paginator.page(paginator.num_pages)
+	print form
+	return form
 
-class DocumentHandler(BaseHandler):
+class PagedDochandler(BaseHandler):
 	allowed_methods = ('GET',)
 	model = Document
-	fields = ('url', 'reg_id', 'doc_type', 'processed', 'stamp_date')   
+	fields = ('url', 'reg_id', 'doc_type', 'processed', 'stamp_date')
+	print 1   
 
-	def read(self, request, doc_id=None):
-		base = Document.objects
-		# document type would make for good kwarg
-		if doc_id:
-			return base.get(id=doc_id)
-		else:
-			return base.all().order_by('-stamp_date')
+	def read(self, request, page=None):
+		print 2
+		base = Document.objects.filter(doc_type__in=['Supplemental', 'Amendment', 'Exhibit AB', 'Registration'],stamp_date__range=(datetime.date(2012,1,1), datetime.date.today())).order_by('-stamp_date')
+		form = paginate(base, page)
+		page = form[0]
+		results = form[0:]
+
+		return results, page
+
+
+class DocumentHandler(BaseHandler):
+    allowed_methods = ('GET',)
+    model = Document
+    fields = ('url', 'reg_id', 'doc_type', 'processed', 'stamp_date')   
+
+    def read(self, request, doc_id=None):
+            base = Document.objects
+            # document type would make for good kwarg
+            if doc_id:
+                    return base.get(id=doc_id)
+            else:
+                    return base.all().order_by('-stamp_date')
 
 class RegDocHandler(BaseHandler):
 	allowed_methods = ('GET',)
