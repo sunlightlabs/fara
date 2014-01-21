@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from django.core.management.base import BaseCommand, CommandError
 from django.core.files.storage import default_storage
 
-#from arms_sales.models import Proposed
+from arms_sales.models import Proposed
 
 class Command(BaseCommand):
 	def handle(self, *args, **options):
@@ -18,8 +18,8 @@ class Command(BaseCommand):
 		
 		# create list of links to search
 		links2archives = []
-		year = int(datetime.strftime(datetime.today().date(), "%Y"))
-		month = int(datetime.strftime(datetime.today().date(), "%m"))
+		year = 2009 #int(datetime.strftime(datetime.today().date(), "%Y"))
+		month = 7 #int(datetime.strftime(datetime.today().date(), "%m"))
 
 		while year >= 2008:
 			if year == 2008 and month == 05:
@@ -103,7 +103,12 @@ class Command(BaseCommand):
 						try:	
 							date_obj = datetime.strptime(date, "%b. %d, %Y")
 						except:
+							pass
+						try:
 							date_obj = datetime.strptime(date, "%B %d, %Y")
+						except: 
+							date_obj = None
+					
 					print 4.5
 					# looking at individual page
 					page = soupify(pagelink)
