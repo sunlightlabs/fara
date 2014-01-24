@@ -19,7 +19,6 @@ def format_link_bit(link):
 	return link
 
 def paginate(form, page):
-	print 3
 	paginator = Paginator(form, 20)
 	try:
 		form = paginator.page(page)
@@ -27,17 +26,23 @@ def paginate(form, page):
 		form = paginator.page(1)
 	except EmptyPage:
 		form = paginator.page(paginator.num_pages)
-	print form
 	return form
 
-class PagedDochandler(BaseHandler):
+class Dochandler(BaseHandler):
 	allowed_methods = ('GET',)
 	model = Document
 	fields = ('url', 'reg_id', 'doc_type', 'processed', 'stamp_date', 'id')
-	print 1   
 
-	def read(self, request, page=None):
-		print 2
+	def read(self, request):
+		if request.method == 'GET':
+			if request.GET.get('doc_id'):
+				doc_id = int(request.GET.get('doc_id'))
+				return Document.objects.get(id=doc_id)
+			if request.GET.get('p'):
+				page = int(request.GET.get('p'))
+			else:
+				page = 1
+		
 		base = Document.objects.filter(doc_type__in=['Supplemental', 'Amendment', 'Exhibit AB', 'Registration'],stamp_date__range=(datetime.date(2012,1,1), datetime.date.today())).order_by('-stamp_date')
 		form = paginate(base, page)
 		page = form[0]
@@ -46,18 +51,18 @@ class PagedDochandler(BaseHandler):
 		return results, page
 
 
-class DocumentHandler(BaseHandler):
-    allowed_methods = ('GET',)
-    model = Document
-    fields = ('url', 'reg_id', 'doc_type', 'processed', 'stamp_date')   
+# class DocumentHandler(BaseHandler):
+#     allowed_methods = ('GET',)
+#     model = Document
+#     fields = ('url', 'reg_id', 'doc_type', 'processed', 'stamp_date')   
 
-    def read(self, request, doc_id=None):
-            base = Document.objects
-            # document type would make for good kwarg
-            if doc_id:
-                    return base.get(id=doc_id)
-            else:
-                    return base.all().order_by('-stamp_date')
+#     def read(self, request, doc_id=None):
+#             base = Document.objects
+#             # document type would make for good kwarg
+#             if doc_id:
+#                     return base.get(id=doc_id)
+#             else:
+#                     return base.all().order_by('-stamp_date')
 
 class RegDocHandler(BaseHandler):
 	allowed_methods = ('GET',)
@@ -69,6 +74,7 @@ class RegDocHandler(BaseHandler):
 
 		if reg_id:
 			return base.filter(reg_id=reg_id)
+
 
 
 class MetaDataHandler(BaseHandler):
@@ -87,12 +93,21 @@ class RegistrantDataHandler(BaseHandler):
 	model = Registrant
 	fields = ('reg_id', 'reg_name', 'address', 'city', 'state', 'zip_code', 'country', 'terminated_clients', 'clients')
 
-	def read(self, request, reg_id=None):
-		base = Registrant.objects
-		if reg_id:
-			return base.filter(reg_id=reg_id)
-		else:
-			return base.all()
+	def read(self, request):
+		if request.method == 'GET':
+			if request.GET.get('reg_id'):
+				reg_id = int(request.GET.get('reg_id'))
+				return Registrant.objects.get(reg_id=reg_id)
+			if request.GET.get('p'):
+				page = int(request.GET.get('p'))
+			else:
+				page = 1
+		base = Registrant.objects.all().order_by('reg_name')
+		form = paginate(base, page)
+		page = form[0]
+		results = form[0:]
+
+		return (results, page)
 
 class ContactDocHandler(BaseHandler):
 	allowed_methods = ('GET',)

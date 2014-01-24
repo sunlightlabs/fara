@@ -1,13 +1,15 @@
 Reminder- I needed to un-install simple json to get it to work
 
 DOCUMETS
-api/doc/form_id
-	Retrieves document model info on that particular form
 
 api/docs 
 	Retrieves all documents most recent first
-	(will add doc type as kwarg, wouldn't that be fun?)
-
+	p = page {20 per page}
+	doc_id = fetches a particular doc
+	
+	Returns ('url', 'reg_id', 'doc_type', 'processed', 'stamp_date', 'id')
+	
+	
 api/regdocs
 	Finds all documents for a given registrant; searches by FARA Registration ID.
 
@@ -29,11 +31,10 @@ api/metadata/form_id
 	link: link to the original document
 	processed: If true this form has been completed and its entries can be made public.
 
-api/registrant/reg_id
-	Looks up registrant by ID
-	
-api/registrants
-	Retrieves all registrants in the system
+api/registrant
+	reg_id = Looks up registrant by ID
+	p = page {20 is default
+	Retrieves all registrants in the system, alphabetically by name
 	
 	returns-
 	city: city of client
