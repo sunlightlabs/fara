@@ -1,8 +1,6 @@
 import csv
 import datetime
 
-import csv
-
 from django.core.management.base import BaseCommand, CommandError
 
 from FaraData.models import Payment, MetaData, Contact

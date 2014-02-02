@@ -13,6 +13,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from FaraData.models import * 
 from fara_feed.models import Document
+from FaraData import spread_sheets 
 
 ## Section for functions that create variables for the templates 
     
@@ -1366,6 +1367,11 @@ def metadata(request):
             document.processed = False
         document.save()
         
+        if metadata.processed == True:
+            print "making form"
+            spread_sheets.make_file(form)
+            print "made form"
+
         metadata_info = json.dumps({'note': metadata.notes, 'do_not_clear': 'on'} , separators=(',',':'))
         return HttpResponse(metadata_info, mimetype="application/json")
         

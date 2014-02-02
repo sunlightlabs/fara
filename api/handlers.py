@@ -50,20 +50,7 @@ class Dochandler(BaseHandler):
 
 		return results, page
 
-
-# class DocumentHandler(BaseHandler):
-#     allowed_methods = ('GET',)
-#     model = Document
-#     fields = ('url', 'reg_id', 'doc_type', 'processed', 'stamp_date')   
-
-#     def read(self, request, doc_id=None):
-#             base = Document.objects
-#             # document type would make for good kwarg
-#             if doc_id:
-#                     return base.get(id=doc_id)
-#             else:
-#                     return base.all().order_by('-stamp_date')
-
+# I should make this an option for the previous 
 class RegDocHandler(BaseHandler):
 	allowed_methods = ('GET',)
 	model = Document

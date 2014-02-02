@@ -9,6 +9,8 @@ from django.http import HttpResponse
 
 from FaraData.models import *
 from fara_feed.models import *
+# the functions in here should replace the ones below to be consistent  
+from FaraData.spread_sheets import make_file
 
 def namebuilder(r):
 	contact_name = ''
