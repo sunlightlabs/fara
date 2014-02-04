@@ -10,38 +10,54 @@ from StringIO import StringIO
 
 from django.core.files.storage import default_storage
 
-from FaraData.models import *
-from fara_feed.models import *
+from fara_feed.models import Document
+from FaraData.models import Contact, Payment, Registrant, Contribution, Disbursement, MetaData
+from django.conf import settings
 
+from django.db import connection
+import time
+
+def print_last_query():
+	q = connection.queries[-1]
+	print "Execution time: %s" % q['time']
+	print "Query: %s\n" % q['sql']
 
 # makes a file package per form 
 def make_file(form_id):
 	form = Document.objects.get(id=form_id)
+
 	contacts = make_contacts([form])
-	print "contacts"
+	
+	print "Contacts"
+	
 	payments = make_payments([form])
 	print "payments"
+
 	contributions = make_contributions([form])
 	print "contrib"
+
 	disbursements = make_disbursements([form])
 	print "dis"
-	sheets = {"contacts.csv":contacts, "payments.csv":payments, "contributions.csv":contributions, "disbursements.csv":disbursements}
-	if not (contacts == None and payments == None and contributions == None and disbursements == None):
-		print "saving a zipped file of sheets"
-		name = "form_" + form + ".zip"
-		form_file = zipfile.ZipFile(name, 'w')
-		for sheet in sheets.keys():
-			print sheet
-			if sheet is not None:
-				form_file.write
 
+	print "saving a zipped file of sheets"
+	name = "form_%s.zip" % form_id 
+
+	if disbursements or contacts or contributions or payments:
+		with zipfile.ZipFile(name, 'w') as form_file:
+			if disbursements: form_file.write(disbursements)	
+			if contacts: form_file.write(contacts)
+			if contributions: form_file.write(contributions)
+			if payments: form_file.write(payments)
+
+		
 		print "saving to amazon" 
-		bucket_file = default_storage.open(file_name, 'w')
-		bucket_file.write(form_file.read())
+		bucket_file = default_storage.open('/spreadsheets/forms/' + name, 'w')
+		bucket_file.write(open(name).read())
 		bucket_file.close()
-		form_file.close()
+
 	# removing tmp
-	
+	### DELETE FILES
+
 
 def make_contacts(docs):
 	links = []
@@ -49,13 +65,15 @@ def make_contacts(docs):
 		if d.processed == True:
 			links.append(d.url)
 	contacts = Contact.objects.filter(link__in=links) 
+
 	if len(contacts) >= 1:
-		filename = "tmp/contacts.csv"
-		writer = csv.writer(open(filename, 'wb'))
+		filename = settings.BASE_DIR + "/tmp/contacts.csv"
+		contact_file = open(filename, 'wb')
+		writer = csv.writer(contact_file)
 		writer.writerow(['Date', 'Contact Title','Contact Name', 'Contact Office', 'Contact Agency', 'Client', 'Client Location', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Affiliated Member CRP ID', 'Affiliated Member Bioguide ID', 'Source', 'Contact ID', 'Record ID'])
-		contact_file = contact_sheet(contacts, writer)
+		contact_sheet(contacts, writer)
 		print "PLEASE WORK"
-		return contact_file
+		return filename
 	else: return None
 
 def make_contributions(docs):
@@ -66,11 +84,11 @@ def make_contributions(docs):
 	contributions = Contribution.objects.filter(link__in=links) 
 		
 	if len(contributions) >=1:
-		filename = "tmp/contributions.csv"
+		filename = settings.BASE_DIR + "/tmp/contributions.csv"
 		writer = csv.writer(open(filename, 'wb'))
 		writer.writerow(['Date', 'Amount', 'Recipient', 'Registrant', 'Contributing Lobbyist or PAC', 'CRP ID of Recipient', 'Bioguide ID', 'Source', 'Record ID'])
-		contributions_file = contributions_sheet(contributions, writer)
-		return contributions_file
+		contributions_sheet(contributions, writer)
+		return filename
 	else: return None
 
 def make_payments(docs):
@@ -81,11 +99,11 @@ def make_payments(docs):
 	payments = Payment.objects.filter(link__in=links)
 
 	if len(payments) >=1:
-		filename = "tmp/payments.csv"
+		filename = settings.BASE_DIR + "/tmp/payments.csv"
 		writer = csv.writer(open(filename, 'wb'))
 		writer.writerow(['Client', 'Amount', 'Date', 'Registrant', 'Purpose', 'From subcontractor', 'Source'])
-		payments_file = payments_sheet(payments, writer)
-		return payments_file
+		payments_sheet(payments, writer)
+		return filename
 	else: return None
 
 def make_disbursements(docs):
@@ -96,11 +114,11 @@ def make_disbursements(docs):
 	disbursements = Disbursement.objects.filter(link__in=links)
 
 	if len(disbursements) >=1:
-		filename = "tmp/disbursements.csv"
+		filename = settings.BASE_DIR + "/tmp/disbursements.csv"
 		writer = csv.writer(open(filename, 'wb'))
 		writer.writerow(['Amount', 'Date','Client', 'Registrant', 'Purpose', 'To Subcontractor', 'Source', 'Record ID'])
-		disbursements_file = disbursements_sheet(disbursements, writer)
-		return disbursements_file
+		disbursements_sheet(disbursements, writer)
+		return filename
 	else: return None
 
 def contact_sheet(contacts, writer):
@@ -128,6 +146,7 @@ def contact_sheet(contacts, writer):
 
 		c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "email"}
 		
+
 		for r in c.recipient.all():
 			if r.title != None and r.title != '':	
 				contact_title = r.title.encode('ascii', errors='ignore')	
@@ -149,7 +168,7 @@ def contact_sheet(contacts, writer):
 				contact_agency = r.agency.encode('ascii', errors='ignore')
 			else:
 				contact_agency = ''
-			
+		
 			writer.writerow([date, contact_title, contact_name, contact_office, contact_agency, c.client, c.client.location, c.registrant, description, c_type[c.contact_type], lobbyists, r.crp_id, r.bioguide_id, c.link, r.id, c.id])
 
 
