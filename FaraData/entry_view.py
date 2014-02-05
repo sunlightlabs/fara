@@ -95,7 +95,6 @@ def client_reg_info(reg):
     try:
         clients = reg.clients.all()
         for c in clients:
-            print c
             c_name = c.client_name
             c_type = c.client_type
            
@@ -501,7 +500,6 @@ def fix_contribution(request, cont_id):
     try:
         date = contribution.date
         date = date.strftime('%m/%d/%Y')
-        print date
     except:
         date = ''
 
@@ -676,9 +674,7 @@ def recipient_journalist(request):
     if request.method == 'GET':
         office_detail = cleantext(request.GET['office_detail'])
         name  = cleantext(request.GET['name'])
-        print type(name)
         title = cleantext(request.GET['title'])
-        print type(name)
         if (name == None or name == '') and (office_detail == None or office_detail == ''):
             error = json.dumps({'error': 'Pleasse fill out name or publication before submitting'}, separators=(',',':'))        
             return HttpResponse(error, mimetype="application/json")
@@ -1368,10 +1364,9 @@ def metadata(request):
         document.save()
         
         if metadata.processed == True:
-            print "making form"
             spread_sheets.make_file(form)
-            print "made form"
-
+            print "through"
+   
         metadata_info = json.dumps({'note': metadata.notes, 'do_not_clear': 'on'} , separators=(',',':'))
         return HttpResponse(metadata_info, mimetype="application/json")
         
@@ -1401,7 +1396,7 @@ def amend_contact(request):
             return HttpResponse(date, mimetype="application/json")
         
         contact.save()
-        print 1
+
         # add additional recipients
         try:
             recipients = request.GET['recipient']
@@ -1412,7 +1407,7 @@ def amend_contact(request):
         
         except:
             recipients = None
-        print 2
+
         if recipients != None and recipients != ['']:
             for r in recipients:
                 recipient = Recipient.objects.get(id=int(r))
@@ -1427,7 +1422,7 @@ def amend_contact(request):
                 lobbyists = request.GET['lobbyist']
             except:
                 lobbyists = None
-        print 3
+
         if lobbyists != None:
             for l in lobbyists:
                 l = int(l)
@@ -1657,7 +1652,6 @@ def delete_contribution(request):
 @login_required(login_url='/admin')
 def amend_client(request):
     if request.method == 'GET':
-    
         print "placeholder"
 
 @login_required(login_url='/admin')
@@ -1714,7 +1708,6 @@ def amend_gift(request):
         recip = request.GET['recipient']
         if recip != '':
             recip_obj = Recipient.objects.get(id=int(recip))
-            print recip_obj
             gift.recipient = recip_obj
     except:
         pass
@@ -1766,39 +1759,30 @@ def merge_recipients(request):
         if str(correct.id) in wrong_list:
             error = json.dumps({'error': 'You listed the same entry as correct and incorrect. Please remove it from the list of flawed recipients.'} , separators=(',',':'))
             return HttpResponse(error, mimetype="application/json")
-        print wrong_list
         for w in wrong_list:
-            print w
             wrong = Recipient.objects.get(id=int(w))
             # contacts
             fix_contacts = Contact.objects.filter(recipient=wrong)
             for contact in fix_contacts:
                 fix_list.append({contact.id:str(contact.description)})
-                print contact.recipient.all()
                 if correct not in contact.recipient.all():
                     contact.recipient.add(correct)
                 contact.recipient.remove(wrong)
                 contact.save()
-                print "2)", contact.recipient.all(), "\n"
             # contribution
             fix_contributions = Contribution.objects.filter(recipient=wrong)
             for contribution in fix_contributions:
                 fix_list.append({contribution.id:str(contribution.amount)})
-                print contribution.recipient
                 contribution.recipient = correct
                 contribution.save()
-                print "2)", contribution.recipient, "\n"
             # gift
             fix_gifts = Gift.objects.filter(recipient=wrong)
             for gift in fix_gifts:
                 fix_list.append({gift.id:str(gift.description)})
-                print gift.recipient
                 gift.recipient = correct
                 gift.save()
-                print "2)", gift.recipient, "\n"
         
         # delete after
-        print wrong.id
         wrong.delete()
 
         info = json.dumps({'note': fix_list}, separators=(',',':'))

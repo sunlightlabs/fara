@@ -6,7 +6,6 @@ import tempfile
 import sys
 import os
 import zipfile
-from StringIO import StringIO
 
 from django.core.files.storage import default_storage
 
@@ -14,7 +13,7 @@ from fara_feed.models import Document
 from FaraData.models import Contact, Payment, Registrant, Contribution, Disbursement, MetaData
 from django.conf import settings
 
-from django.db import connection
+#from django.db import connection
 import time
 
 def print_last_query():
@@ -24,24 +23,16 @@ def print_last_query():
 
 # makes a file package per form 
 def make_file(form_id):
+	print 'making forms'
 	form = Document.objects.get(id=form_id)
-
 	contacts = make_contacts([form])
-	
-	print "Contacts"
-	
 	payments = make_payments([form])
-	print "payments"
-
 	contributions = make_contributions([form])
-	print "contrib"
-
 	disbursements = make_disbursements([form])
-	print "dis"
-
-	print "saving a zipped file of sheets"
-	name = "form_%s.zip" % form_id 
-
+	if not os.path.exists("tmp"):
+		os.mkdir("tmp")
+	name = "tmp/form_%s.zip" % form_id 
+	print 'writing forms'
 	if disbursements or contacts or contributions or payments:
 		with zipfile.ZipFile(name, 'w') as form_file:
 			if disbursements: form_file.write(disbursements)	
@@ -49,14 +40,16 @@ def make_file(form_id):
 			if contributions: form_file.write(contributions)
 			if payments: form_file.write(payments)
 
-		
-		print "saving to amazon" 
+
+		#print "PRTEND saving to amazon" 
 		bucket_file = default_storage.open('/spreadsheets/forms/' + name, 'w')
 		bucket_file.write(open(name).read())
 		bucket_file.close()
 
-	# removing tmp
-	### DELETE FILES
+	if disbursements: os.remove(disbursements)	
+	if contacts: os.remove(contacts)
+	if contributions: os.remove(contributions)
+	if payments: os.remove(payments)
 
 
 def make_contacts(docs):
@@ -72,7 +65,6 @@ def make_contacts(docs):
 		writer = csv.writer(contact_file)
 		writer.writerow(['Date', 'Contact Title','Contact Name', 'Contact Office', 'Contact Agency', 'Client', 'Client Location', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Affiliated Member CRP ID', 'Affiliated Member Bioguide ID', 'Source', 'Contact ID', 'Record ID'])
 		contact_sheet(contacts, writer)
-		print "PLEASE WORK"
 		return filename
 	else: return None
 
