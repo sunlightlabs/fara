@@ -43,7 +43,7 @@ def make_file(form_id):
 
 
 		# print "PRTEND saving to amazon" 
-		bucket_file = default_storage.open('/spreadsheets/forms/' + name, 'w')
+		bucket_file = default_storage.open('/spreadsheets/' + name, 'w')
 		bucket_file.write(open(name).read())
 		bucket_file.close()
 
