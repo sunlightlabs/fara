@@ -39,9 +39,9 @@ def make_file(form_id):
 	if disbursements or contacts or contributions or payments:
 		with zipfile.ZipFile(name, 'w') as form_file:
 			if disbursements != None: form_file.write(disbursements)	
-			if contacts != None:: form_file.write(contacts)
-			if contributions != None:: form_file.write(contributions)
-			if payments != None:: form_file.write(payments)
+			if contacts != None: form_file.write(contacts)
+			if contributions != None: form_file.write(contributions)
+			if payments != None: form_file.write(payments)
 
 
 		#print "PRTEND saving to amazon" 
