@@ -61,6 +61,7 @@ def make_contacts(docs):
 		if d.processed == True:
 			links.append(d.url)
 	contacts = Contact.objects.filter(link__in=links) 
+	print contacts
 
 	if len(contacts) >= 1:
 		filename = settings.BASE_DIR + "/tmp/contacts.csv"
