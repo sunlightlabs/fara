@@ -2,10 +2,11 @@
 
 import csv
 import datetime
-import tempfile
 import sys
 import os
 import zipfile
+
+from tempfile import TemporaryFile
 
 from django.core.files.storage import default_storage
 
@@ -24,13 +25,15 @@ def print_last_query():
 # makes a file package per form 
 def make_file(form_id):
 	print 'making forms'
+	if not os.path.exists("tmp"):
+		os.mkdir("tmp")
+
 	form = Document.objects.get(id=form_id)
 	contacts = make_contacts([form])
 	payments = make_payments([form])
 	contributions = make_contributions([form])
 	disbursements = make_disbursements([form])
-	if not os.path.exists("tmp"):
-		os.mkdir("tmp")
+
 	name = "tmp/form_%s.zip" % form_id 
 	print 'writing forms'
 	if disbursements or contacts or contributions or payments:
