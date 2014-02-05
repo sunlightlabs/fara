@@ -24,9 +24,8 @@ import time
 
 # makes a file package per form 
 def make_file(form_id):
-
-	if not os.path.exists("/forms"):
-		os.mkdir("/forms")
+	if not os.path.exists("forms"):
+		os.mkdir("forms")
 	print "make form"
 	form = Document.objects.get(id=form_id)
 	contacts = make_contacts([form])
@@ -43,7 +42,7 @@ def make_file(form_id):
 			if payments != None: form_file.write(payments)
 
 
-		#print "PRTEND saving to amazon" 
+		# print "PRTEND saving to amazon" 
 		bucket_file = default_storage.open('/spreadsheets/forms/' + name, 'w')
 		bucket_file.write(open(name).read())
 		bucket_file.close()
@@ -62,7 +61,7 @@ def make_contacts(docs):
 	contacts = Contact.objects.filter(link__in=links) 
 
 	if len(contacts) >= 1:
-		filename = settings.BASE_DIR + "/forms/contacts.csv"
+		filename = "contacts.csv"
 		contact_file = open(filename, 'wb')
 		writer = csv.writer(contact_file)
 		writer.writerow(['Date', 'Contact Title','Contact Name', 'Contact Office', 'Contact Agency', 'Client', 'Client Location', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Affiliated Member CRP ID', 'Affiliated Member Bioguide ID', 'Source', 'Contact ID', 'Record ID'])
@@ -78,7 +77,7 @@ def make_contributions(docs):
 	contributions = Contribution.objects.filter(link__in=links) 
 		
 	if len(contributions) >=1:
-		filename = settings.BASE_DIR + "/forms/contributions.csv"
+		filename = "contributions.csv"
 		writer = csv.writer(open(filename, 'wb'))
 		writer.writerow(['Date', 'Amount', 'Recipient', 'Registrant', 'Contributing Lobbyist or PAC', 'CRP ID of Recipient', 'Bioguide ID', 'Source', 'Record ID'])
 		contributions_sheet(contributions, writer)
@@ -93,7 +92,7 @@ def make_payments(docs):
 	payments = Payment.objects.filter(link__in=links)
 
 	if len(payments) >=1:
-		filename = settings.BASE_DIR + "/forms/payments.csv"
+		filename = "payments.csv"
 		writer = csv.writer(open(filename, 'wb'))
 		writer.writerow(['Client', 'Amount', 'Date', 'Registrant', 'Purpose', 'From subcontractor', 'Source'])
 		payments_sheet(payments, writer)
@@ -108,7 +107,7 @@ def make_disbursements(docs):
 	disbursements = Disbursement.objects.filter(link__in=links)
 
 	if len(disbursements) >=1:
-		filename = settings.BASE_DIR + "/forms/disbursements.csv"
+		filename = "disbursements.csv"
 		writer = csv.writer(open(filename, 'wb'))
 		writer.writerow(['Amount', 'Date','Client', 'Registrant', 'Purpose', 'To Subcontractor', 'Source', 'Record ID'])
 		disbursements_sheet(disbursements, writer)
