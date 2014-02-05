@@ -17,25 +17,24 @@ from django.conf import settings
 #from django.db import connection
 import time
 
-def print_last_query():
-	q = connection.queries[-1]
-	print "Execution time: %s" % q['time']
-	print "Query: %s\n" % q['sql']
+# def print_last_query():
+# 	q = connection.queries[-1]
+# 	print "Execution time: %s" % q['time']
+# 	print "Query: %s\n" % q['sql']
 
 # makes a file package per form 
 def make_file(form_id):
-	print 'making forms'
+
 	if not os.path.exists(settings.BASE_DIR +"/tmp"):
 		os.mkdir(settings.BASE_DIR +"/tmp")
-
+	print "make form"
 	form = Document.objects.get(id=form_id)
 	contacts = make_contacts([form])
 	payments = make_payments([form])
 	contributions = make_contributions([form])
 	disbursements = make_disbursements([form])
-
+	print "write form"
 	name = "tmp/form_%s.zip" % form_id 
-	print 'writing forms'
 	if disbursements or contacts or contributions or payments:
 		with zipfile.ZipFile(name, 'w') as form_file:
 			if disbursements != None: form_file.write(disbursements)	
@@ -61,7 +60,6 @@ def make_contacts(docs):
 		if d.processed == True:
 			links.append(d.url)
 	contacts = Contact.objects.filter(link__in=links) 
-	print contacts
 
 	if len(contacts) >= 1:
 		filename = settings.BASE_DIR + "/tmp/contacts.csv"
@@ -176,7 +174,7 @@ def contributions_sheet(contributions, writer):
  		else:
  			lobby = ''
  		if c.date == None:
-			md = MetaData.objects.get(link=url)
+			md = MetaData.objects.get(link=c.link)
 			end_date = md.end_date
 			date = end_date
 
