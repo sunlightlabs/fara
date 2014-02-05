@@ -178,9 +178,9 @@ def contributions_sheet(contributions, writer):
  		if c.date == None:
 			md = MetaData.objects.get(link=url)
 			end_date = md.end_date
-			dumb_date = end_date
+			date = end_date
 			if md.end_date == None:
-				end_date == None
+				end_date == ''
 		else:
 			date = c.date
 
