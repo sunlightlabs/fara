@@ -129,9 +129,9 @@ def contact_sheet(contacts, writer):
 			if MetaData.objects.get(link=c.link):
 				md = MetaData.objects.get(link=c.link)
 				end_date = md.end_date
-				dumb_date = end_date	
+				date = end_date	
 			else:
-				end_date == ''
+				date == ''
 		else:
 			date = c.date
 		
@@ -179,8 +179,7 @@ def contributions_sheet(contributions, writer):
 			md = MetaData.objects.get(link=url)
 			end_date = md.end_date
 			date = end_date
-			if md.end_date == None:
-				end_date == ''
+
 		else:
 			date = c.date
 
