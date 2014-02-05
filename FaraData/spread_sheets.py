@@ -25,8 +25,8 @@ def print_last_query():
 # makes a file package per form 
 def make_file(form_id):
 	print 'making forms'
-	if not os.path.exists("tmp"):
-		os.mkdir("tmp")
+	if not os.path.exists(settings.BASE_DIR +"/tmp"):
+		os.mkdir(settings.BASE_DIR +"/tmp")
 
 	form = Document.objects.get(id=form_id)
 	contacts = make_contacts([form])
@@ -38,10 +38,10 @@ def make_file(form_id):
 	print 'writing forms'
 	if disbursements or contacts or contributions or payments:
 		with zipfile.ZipFile(name, 'w') as form_file:
-			if disbursements: form_file.write(disbursements)	
-			if contacts: form_file.write(contacts)
-			if contributions: form_file.write(contributions)
-			if payments: form_file.write(payments)
+			if disbursements != None: form_file.write(disbursements)	
+			if contacts != None:: form_file.write(contacts)
+			if contributions != None:: form_file.write(contributions)
+			if payments != None:: form_file.write(payments)
 
 
 		#print "PRTEND saving to amazon" 
