@@ -28,7 +28,7 @@ def paginate(form, page):
 		form = paginator.page(paginator.num_pages)
 	return form
 
-class Dochandler(BaseHandler):
+class DocHandler(BaseHandler):
 	allowed_methods = ('GET',)
 	model = Document
 	fields = ('url', 'reg_id', 'doc_type', 'processed', 'stamp_date', 'id')

@@ -11,7 +11,7 @@ contactdoc_handler = Resource(ContactDocHandler, authentication=auth)
 contribdoc_handler = Resource(ContribDocHandler, authentication=auth)
 paymentdoc_handler = Resource(PaymentDocHandler, authentication=auth)
 disbursedoc_handler = Resource(DisburseDocHandler, authentication=auth)
-doc_handler = Resource(Dochandler, authentication=auth) 
+doc_handler = Resource(DocHandler, authentication=auth) 
 loc_handler = Resource(LocationHandler, authentication=auth)
 
 urlpatterns = patterns('',
