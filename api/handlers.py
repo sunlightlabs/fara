@@ -96,6 +96,18 @@ class RegistrantDataHandler(BaseHandler):
 
 		return (results, page)
 
+class LocationHandler(BaseHandler):
+	allowed_methods = ('GET',)
+	model = Location
+	def read(self, request):
+		if request.GET.get('id'):
+			id = int(request.GET.get('id'))
+			return Location.objects.get(id=id)
+		else:
+			base = Location.objects
+			return base
+
+
 class ContactDocHandler(BaseHandler):
 	allowed_methods = ('GET',)
 	model = Contact

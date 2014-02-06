@@ -64,7 +64,7 @@ def make_contacts(docs):
 		filename = "contacts.csv"
 		contact_file = open(filename, 'wb')
 		writer = csv.writer(contact_file)
-		writer.writerow(['Date', 'Contact Title','Contact Name', 'Contact Office', 'Contact Agency', 'Client', 'Client Location', 'Registrant', 'Description', 'Type', 'Employees mentioned', 'Affiliated Member CRP ID', 'Affiliated Member Bioguide ID', 'Source', 'Contact ID', 'Record ID'])
+		writer.writerow(['Date', 'Contact Title','Contact Name', 'Contact Office', 'Contact Agency', 'Client', 'Client Location', 'Registrant', 'Description', 'Type', 'Employees Mentioned', 'Affiliated Member CRP ID', 'Affiliated Member Bioguide ID', 'Source', 'Contact ID', 'Record ID'])
 		contact_sheet(contacts, writer)
 		return filename
 	else: return None
@@ -79,7 +79,7 @@ def make_contributions(docs):
 	if len(contributions) >=1:
 		filename = "contributions.csv"
 		writer = csv.writer(open(filename, 'wb'))
-		writer.writerow(['Date', 'Amount', 'Recipient', 'Registrant', 'Contributing Lobbyist or PAC', 'CRP ID of Recipient', 'Bioguide ID', 'Source', 'Record ID'])
+		writer.writerow(['Date', 'Amount', 'Recipient', 'Registrant', 'Contributing Individual or PAC', 'CRP ID of Recipient', 'Bioguide ID', 'Source', 'Record ID'])
 		contributions_sheet(contributions, writer)
 		return filename
 	else: return None
