@@ -99,6 +99,8 @@ class RegistrantDataHandler(BaseHandler):
 class LocationHandler(BaseHandler):
 	allowed_methods = ('GET',)
 	model = Location
+	fields = ('location', 'region', 'id')
+
 	def read(self, request):
 		if request.GET.get('id'):
 			id = int(request.GET.get('id'))
