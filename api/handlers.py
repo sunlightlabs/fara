@@ -106,7 +106,7 @@ class LocationHandler(BaseHandler):
 			id = int(request.GET.get('id'))
 			return Location.objects.get(id=id)
 		else:
-			base = Location.objects
+			base = Location.objects.all()
 			return base
 
 
