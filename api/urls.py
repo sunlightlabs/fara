@@ -12,7 +12,7 @@ contribdoc_handler = Resource(ContribDocHandler, authentication=auth)
 paymentdoc_handler = Resource(PaymentDocHandler, authentication=auth)
 disbursedoc_handler = Resource(DisburseDocHandler, authentication=auth)
 doc_handler = Resource(Dochandler, authentication=auth) 
-loc_handler = Resource(Dochandler, authentication=auth)
+loc_handler = Resource(Locationhandler, authentication=auth)
 
 urlpatterns = patterns('',
    url(r'^docs', doc_handler),
