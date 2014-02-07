@@ -70,6 +70,7 @@ def incoming_fara(request):
 
 @login_required
 def doc_profile(request, doc_id):
+	doc_id= int(doc_id)
 	doc = Document.objects.get(id=doc_id)
 	url = doc.url
 	reg_id = doc.reg_id
