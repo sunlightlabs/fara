@@ -5,8 +5,9 @@ from piston.handler import BaseHandler
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from fara_feed.models import *
+from fara_feed.models import Document
 from FaraData.models import *
+from arms_sales.models import Proposed
 
 
 
@@ -109,50 +110,20 @@ class LocationHandler(BaseHandler):
 			base = Location.objects.all()
 			return base
 
-
-class ContactDocHandler(BaseHandler):
+class ProposedHandler(BaseHandler):
 	allowed_methods = ('GET',)
-	model = Contact
+	model = Proposed
+	fields = ('date', 'title', 'id')
 
-	def read(self, request, link=None):
-		base = Contact.objects
-		link = format_link_bit(link)
-		return base.filter(link=link)
+	def read(self, request):
+		if request.method == 'GET':
+			if request.GET.get('p'):
+				page = int(request.GET.get('p'))
+			else:
+				page = 1
+			base = Proposed.objects.all()
+			form = paginate(base, page)
+			page = form[0]
+			results = form[0:]
+			return {"results":results, 'page':page}
 
-class ContribDocHandler(BaseHandler):
-	allowed_methods = ('GET',)
-	model = Contribution
-	
-	def read(self, request, link=None):
-		base = Contribution.objects
-		link = format_link_bit(link)
-		return base.filter(link=link)
-
-class PaymentDocHandler(BaseHandler):
-	allowed_methods = ('GET',)
-	model = Payment
-	
-	def read(self, request, link=None):
-		base = Payment.objects
-		link = format_link_bit(link)
-		return base.filter(link=link)
-
-class DisburseDocHandler(BaseHandler):
-	allowed_methods = ('GET',)
-	model = Disbursement
-	
-	def read(self, request, link=None):
-		base = Disbursement.objects
-		link = format_link_bit(link)
-		return base.filter(link=link)
-
-
-
-#class ContactHandler(BaseHandler):
-	#Contact by Registrant
-
-
-
-#Contact by Client
-#Contact by Recipient
-#Contact by Agency
