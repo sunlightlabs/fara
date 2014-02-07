@@ -18,13 +18,23 @@ class Command(BaseCommand):
 		
 		# create list of links to search
 		links2archives = []
-		year = 2009 #int(datetime.strftime(datetime.today().date(), "%Y"))
-		month = 7 #int(datetime.strftime(datetime.today().date(), "%m"))
+		year = int(datetime.strftime(datetime.today().date(), "%Y"))
+		month = int(datetime.strftime(datetime.today().date(), "%m"))
 
-		while year >= 2008:
+		if month == 1:
+			month_limit = 12
+			year_limit = year - 1
+
+		else:
+			month_limit = month - 1
+			year_limit = year
+
+		# set to 2008 for full records
+
+		while year >= year_limit:
 			if year == 2008 and month == 05:
 					break
-			while month > 0:
+			while month >= month_limit:
 				if year == 2008 and month == 05:
 					break
 				if len(str(month)) < 2:
@@ -48,11 +58,10 @@ class Command(BaseCommand):
 			except IndexError:
 				continue		
 			info = archive_body.select(".mas-regions")
-			print .1
+
 			# find info for each
 			for profile in info:
 				links2pages = profile.find_all("a")
-				print 1
 				pagelink = links2pages[0].get("href")
 				pagelink = base_url + pagelink
 				
@@ -60,21 +69,14 @@ class Command(BaseCommand):
 					existing_record = Proposed.objects.get(dsca_url=pagelink)
 					
 				except:
-				
-				
-					print 2
 					title = links2pages[0].text
-					print 3
 					date_p = profile.find_all("div")[-1]
 					date_p = date_p.text
 					
 					if "Defense Security Cooperation Agency\n" in date_p:
 						date_p = date_p.replace("Defense Security Cooperation Agency\n", "")
-						print date_p, "no spaces---------"
-
 
 					date = date_p.split(u"–")
-					print 4
 					date = date[0]
 					date = date.replace("WASHINGTON, ", "")
 					date = date.strip()
@@ -85,14 +87,13 @@ class Command(BaseCommand):
 						date = date[0]
 						date = date.replace("WASHINGTON, ", "")
 						date = date.strip()
-						print date, "2 again"
 
 					if len(date) > 25:
 						date = date_p.split("--")
 						date = date[0]
 						date = date.replace("WASHINGTON, ", "")
 						date = date.strip()
-						print date, "3 again" 
+
 
 					try:
 						date_obj = datetime.strptime(date, "%b %d, %Y")
@@ -109,25 +110,21 @@ class Command(BaseCommand):
 						except: 
 							date_obj = None
 					
-					print 4.5
 					# looking at individual page
 					page = soupify(pagelink)
-					print 5
 					print_link = page.select(".print_html")[0].find_all("a")
-					print 6
 					print_link = print_link[0].get("href")
-					print 7
+					
 					# a few don't have pdfs
 					try:
 						pdf_link = page.select(".file")[0].find_all("a")
 					except:
 						pdf_link = None
-					print 8
+
 					if pdf_link != None:
 						pdf_link = pdf_link[0].get("href")
 					
 					print_page = soupify(print_link)
-					print 9
 					data_text = print_page.select(".print-content")[0] 
 					data_text = data_text.text
 					record = Proposed(
@@ -161,9 +158,3 @@ def soupify(url):
 	soupy = BeautifulSoup(text)
 	return soupy
 
-# find ".mas-regions"
-# find href to the page, the text will be the title
-	#title could give location
-
-# look to the pages for PDF and print friendly page
-	# text could be extracted from print friendly page
