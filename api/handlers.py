@@ -113,7 +113,7 @@ class LocationHandler(BaseHandler):
 class ProposedHandler(BaseHandler):
 	allowed_methods = ('GET',)
 	model = Proposed
-	fields = ('date', 'title', 'id', 'text')
+	fields = ('date', 'title', 'id', 'text', 'location')
 
 	def read(self, request):
 		if request.method == 'GET':
