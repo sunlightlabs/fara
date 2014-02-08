@@ -18,5 +18,4 @@ urlpatterns = patterns('',
    url(r'^metadata/(\d+)/', metadata_handler),
    url(r'^registrant', registrant_handler),
    url(r'^proposed_arms', proposed_handler),
-
 )

@@ -26,31 +26,45 @@ import time
 def make_file(form_id):
 	if not os.path.exists("forms"):
 		os.mkdir("forms")
-	print "make form"
+		
 	form = Document.objects.get(id=form_id)
 	contacts = make_contacts([form])
 	payments = make_payments([form])
 	contributions = make_contributions([form])
 	disbursements = make_disbursements([form])
-	print "write form"
+	
+	read_text = open('forms/README.txt', 'r').read()
+	date_message = "\nThis record was created on %s" % (datetime.date.today().strftime('%m/%d/%Y'))
+	full_read_text = read_text + date_message
+	readme = open("README.txt", 'wb')
+	readme.write(full_read_text)
+
+
+	readme = str(readme) + str(date_message)
+	
 	name = "forms/form_%s.zip" % form_id 
 	if disbursements or contacts or contributions or payments:
+		print "write form"
 		with zipfile.ZipFile(name, 'w') as form_file:
+			form_file.write("README.txt")
 			if disbursements != None: form_file.write(disbursements)	
 			if contacts != None: form_file.write(contacts)
 			if contributions != None: form_file.write(contributions)
 			if payments != None: form_file.write(payments)
 
 
-		# print "PRTEND saving to amazon" 
+		#print "PRTEND saving to amazon" 
 		bucket_file = default_storage.open('/spreadsheets/' + name, 'w')
 		bucket_file.write(open(name).read())
 		bucket_file.close()
+
+		os.remove(name)
 
 	if disbursements: os.remove(disbursements)	
 	if contacts: os.remove(contacts)
 	if contributions: os.remove(contributions)
 	if payments: os.remove(payments)
+
 
 
 def make_contacts(docs):
@@ -234,3 +248,6 @@ def namebuilder(r):
 	if contact_name == "unknown; ":
 		contact_name = ''
 	return contact_name
+
+
+

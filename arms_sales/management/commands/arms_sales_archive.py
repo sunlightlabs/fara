@@ -10,6 +10,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.files.storage import default_storage
 
 from arms_sales.models import Proposed
+from FaraData.models import Location
 
 class Command(BaseCommand):
 	def handle(self, *args, **options):
@@ -24,13 +25,11 @@ class Command(BaseCommand):
 		if month == 1:
 			month_limit = 12
 			year_limit = year - 1
-
 		else:
 			month_limit = month - 1
 			year_limit = year
 
 		# set to 2008 for full records
-
 		while year >= year_limit:
 			if year == 2008 and month == 05:
 					break
@@ -94,7 +93,6 @@ class Command(BaseCommand):
 						date = date.replace("WASHINGTON, ", "")
 						date = date.strip()
 
-
 					try:
 						date_obj = datetime.strptime(date, "%b %d, %Y")
 					except:
@@ -136,21 +134,35 @@ class Command(BaseCommand):
 						    print_url = print_link,
 						)
 					
+					country = title.split(u"–")
+					if len(country) <= 1:
+						country = title.split(u"-")
+					
+					country = country[0]
+					country = country.replace("Government of ", "")
+					country = country.replace("The ", "")
+					country = country.strip()
 
-					# existing_record = Proposed.objects.get(dsca_url=link)
-					# if len(existing_record) == 0:	
-					# 	print "2exists- ", existing_record
-					# else:
-					# 	print "saving", title
+					cleaning = {"Iraq F":"Iraq", "Republic of Korea":"South Korea", "Republic of Korea (ROK)":"South Korea", "United Arab Emirates (UAE)":"United Arab Emirates", "Taipei Economic and Cultural Representative Office in the United States":"Taiwan", "Kingdom of Morocco":"Morocco"}
+					if cleaning.has_key(country):
+						country = cleaning[country]
+
+					try:
+						matching_loc = Location.objects.get(location=country)
+						loc_id = int(matching_loc.id)
+						record.location_id = loc_id
+					except:
+						matching_loc = None
+					
 					record.save()
 					
 					results.append({"title":title, "date":date, "link": pagelink, "pdf_link":pdf_link, "print_link":print_link, "text": data_text})
 					print title	
-		print "saving"
-		f = open('proposed_arms_sales.json', 'w')
-		data = json.dumps(results, separators=(',',':'))
-		f.write(data)
-		f.close()	
+		# print "saving"
+		# f = open('proposed_arms_sales.json', 'w')
+		# data = json.dumps(results, separators=(',',':'))
+		# f.write(data)
+		# f.close()	
 
 def soupify(url):
 	page = requests.get(url)
