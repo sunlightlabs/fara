@@ -32,7 +32,7 @@ def paginate(form, page):
 class DocHandler(BaseHandler):
 	allowed_methods = ('GET',)
 	model = Document
-	fields = ('url', 'reg_id', 'doc_type', 'processed', 'stamp_date', 'id')
+	fields = ('id', 'url', 'reg_id', 'doc_type', 'processed', 'stamp_date')
 
 	def read(self, request):
 		if request.method == 'GET':
