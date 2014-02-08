@@ -26,7 +26,7 @@ import time
 def make_file(form_id):
 	if not os.path.exists("forms"):
 		os.mkdir("forms")
-		
+
 	form = Document.objects.get(id=form_id)
 	contacts = make_contacts([form])
 	payments = make_payments([form])
@@ -64,7 +64,6 @@ def make_file(form_id):
 	if contacts: os.remove(contacts)
 	if contributions: os.remove(contributions)
 	if payments: os.remove(payments)
-
 
 
 def make_contacts(docs):

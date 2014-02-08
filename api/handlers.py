@@ -113,10 +113,13 @@ class LocationHandler(BaseHandler):
 class ProposedHandler(BaseHandler):
 	allowed_methods = ('GET',)
 	model = Proposed
-	fields = ('date', 'title', 'id')
+	fields = ('date', 'title', 'id', 'text')
 
 	def read(self, request):
 		if request.method == 'GET':
+			if request.GET.get('doc_id'):
+				doc_id = int(request.GET.get('doc_id'))
+				return Proposed.objects.get(id=doc_id)
 			if request.GET.get('p'):
 				page = int(request.GET.get('p'))
 			else:
