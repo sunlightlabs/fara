@@ -81,6 +81,7 @@ def doc_profile(request, doc_id):
 		"stamp_date": doc.stamp_date.strftime("%m/%d/%Y"),
 		"doc_type": doc.doc_type,
 		"processed": doc.processed,
+		"doc_id": doc.id,
 	}
 
 	if Registrant.objects.filter(reg_id=reg_id).exists():

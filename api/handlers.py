@@ -32,7 +32,7 @@ def paginate(form, page):
 class DocHandler(BaseHandler):
 	allowed_methods = ('GET',)
 	model = Document
-	fields = ('id', 'url', 'reg_id', 'doc_type', 'processed', 'stamp_date')
+	fields = ( 'url', 'reg_id', 'doc_type', 'processed', 'stamp_date', 'id')
 
 	def read(self, request):
 		if request.method == 'GET':
@@ -46,10 +46,11 @@ class DocHandler(BaseHandler):
 		
 		base = Document.objects.filter(doc_type__in=['Supplemental', 'Amendment', 'Exhibit AB', 'Registration'],stamp_date__range=(datetime.date(2012,1,1), datetime.date.today())).order_by('-stamp_date')
 		form = paginate(base, page)
+		# wants it in the opposite order
 		page = form[0]
 		results = form[0:]
 
-		return results, page
+		return results
 
 # I should make this an option for the previous 
 class RegDocHandler(BaseHandler):
