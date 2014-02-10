@@ -11,8 +11,8 @@ loc_handler = Resource(LocationHandler, authentication=auth)
 proposed_handler = Resource(ProposedHandler, authentication=auth)
 
 urlpatterns = patterns('',
-   url(r'^docs', doc_handler),
-   url(r'^agentfeed',  'api.views.incoming_fara', name= 'incoming-fara'),
+   url(r'^docs', 'api.views.incoming_fara', name= 'incoming-fara'),
+   url(r'^agentfeed',  proposed_handler),
    url(r'^doc_profile/(\d+)/','api.views.doc_profile', name= 'doc-profile'),
    url(r'^location', loc_handler),
    url(r'^metadata/(\d+)/', metadata_handler),

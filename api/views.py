@@ -88,10 +88,8 @@ def doc_profile(request, doc_id):
 		reg = Registrant.objects.get(reg_id=reg_id)
 		results['reg_name'] = reg.reg_name
 		client_results = reg.clients.all()
-		print client_results
 		clients = []
 		for client in client_results:
-			print client
 			c = {
 				'client_name':client.client_name,
 				'location': client.location.location,
