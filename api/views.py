@@ -4,10 +4,11 @@ import json
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 
 from fara_feed.models import Document
 from FaraData.models import Registrant
+from fara.local_settings import API_PASSWORD
 #from arms_sales.models import Proposed
 
 def paginate(form, page):
@@ -20,12 +21,15 @@ def paginate(form, page):
 		form = paginator.page(paginator.num_pages)
 	return form
 
-@login_required
+
 def incoming_fara(request):
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied
+
 	if request.GET.get('doc_id'):
 		doc_id = int(request.GET.get('doc_id'))
 		doc =  Document.objects.get(id=doc_id)
-		
+		reg_id = doc.reg_id
 		info = {
 			"doc_id": doc.id,
 			"doc_type": doc.doc_type,
@@ -68,8 +72,10 @@ def incoming_fara(request):
 	results = json.dumps({'results': results, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
-@login_required
+
 def doc_profile(request, doc_id):
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied
 	doc_id= int(doc_id)
 	doc = Document.objects.get(id=doc_id)
 	url = doc.url

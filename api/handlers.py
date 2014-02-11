@@ -10,7 +10,6 @@ from FaraData.models import *
 from arms_sales.models import Proposed
 
 
-
 def format_link_bit(link):
 	if link[:25] != "http://www.fara.gov/docs/":
 		link = "http://www.fara.gov/docs/" + link
@@ -63,8 +62,6 @@ class RegDocHandler(BaseHandler):
 
 		if reg_id:
 			return base.filter(reg_id=reg_id)
-
-
 
 class MetaDataHandler(BaseHandler):
 	allowed_methods = ('GET',)
