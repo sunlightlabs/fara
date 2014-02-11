@@ -99,6 +99,7 @@ def doc_profile(request, doc_id):
 			c = {
 				'client_name':client.client_name,
 				'location': client.location.location,
+				'client_id': client.id,
 			}
 			clients.append(c)
 		results['clients'] = clients
