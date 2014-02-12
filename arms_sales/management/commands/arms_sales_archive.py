@@ -162,7 +162,7 @@ class Command(BaseCommand):
 
 					save to amazon
 					try:
-						file_name = "arms_pdf/" + str(record.id)
+						file_name = "arms_pdf/" + str(record.id) + ".pdf"
 						pdf_link = str(pdf_link)
 						u = urllib2.urlopen(pdf_link)
 						localFile = default_storage.open(file_name, 'w')
