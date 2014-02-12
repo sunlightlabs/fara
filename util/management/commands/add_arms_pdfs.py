@@ -12,9 +12,10 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
 	def handle(self, *args, **options):
-		for propsal in Proposed.objects.all():
+		for proposal in Proposed.objects.all():
 			try:
-				file_name = "arms_pdf/" + str(record.id)
+				file_name = "arms_pdf/" + str(proposal.id)
+				pdf_link = proposal.pdf_url
 				pdf_link = str(pdf_link)
 				u = urllib2.urlopen(pdf_link)
 				localFile = default_storage.open(file_name, 'w')
