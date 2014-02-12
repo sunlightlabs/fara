@@ -2,6 +2,8 @@
 # Scrapes DSCA TO find proposed arms sales
 import requests
 import json
+import logging
+import urllib2
 from datetime import datetime, date
 
 from bs4 import BeautifulSoup
@@ -11,6 +13,9 @@ from django.core.files.storage import default_storage
 
 from arms_sales.models import Proposed
 from FaraData.models import Location
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
 	def handle(self, *args, **options):
@@ -79,7 +84,6 @@ class Command(BaseCommand):
 					date = date[0]
 					date = date.replace("WASHINGTON, ", "")
 					date = date.strip()
-					print date
 
 					if len(date) > 25:
 						date = date_p.split("-")
@@ -155,7 +159,21 @@ class Command(BaseCommand):
 						matching_loc = None
 					
 					record.save()
-					
+
+					save to amazon
+					try:
+						file_name = "arms_pdf/" + str(record.id)
+						pdf_link = str(pdf_link)
+						u = urllib2.urlopen(pdf_link)
+						localFile = default_storage.open(file_name, 'w')
+						localFile.write(u.read())
+						localFile.close() 
+
+					except:
+						print 'not working'
+						message = 'bad upload ' + title
+						logger.error(message)
+							
 					results.append({"title":title, "date":date, "link": pagelink, "pdf_link":pdf_link, "print_link":print_link, "text": data_text})
 					print title	
 		# print "saving"
