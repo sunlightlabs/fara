@@ -41,7 +41,7 @@ def make_file(form_id):
 	disbursements = make_disbursements([form])
 	logger.debug("made spreadsheets")
 	
-	read_text = open('forms/README.txt', 'r').read()
+	read_text = open(settings.BASE_DIR + '/forms/README.txt', 'r').read()
 	logger.debug("read text")
 	date_message = "\nThis record was created on %s" % (datetime.date.today().strftime('%m/%d/%Y'))
 	full_read_text = read_text + date_message
