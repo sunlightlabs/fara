@@ -2,6 +2,9 @@
 import urllib2
 import logging
 
+from django.core.management.base import BaseCommand, CommandError
+from django.core.files.storage import default_storage
+
 from arms_sales.models import Proposed
 
 logging.basicConfig()
