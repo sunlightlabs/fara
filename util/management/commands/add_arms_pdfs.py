@@ -23,5 +23,6 @@ class Command(BaseCommand):
 
 			except:
 				print 'not working'
+				title = proposal.title
 				message = 'bad upload ' + title
 				logger.error(message)
