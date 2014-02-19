@@ -26,7 +26,7 @@ DEST_DIR=$HTML_DIR/$BASE_NAME
 #echo "\$DEST_DIR == $DEST_DIR"
 
 #echo "mv $DEST_DIR/$1.html $DEST_DIR/index.html"
-mv $DEST_DIR/$1.html $DEST_DIR/index.html
+#mv $DEST_DIR/$1.html $DEST_DIR/index.html
 
 cat $DEST_DIR/index.html | sed 's/base.min.css/\/css\/base.min.css/' > $DEST_DIR/tmp1	
 cat $DEST_DIR/tmp1 	 | sed 's/fancy.min.css/\/css\/fancy.min.css/' > $DEST_DIR/tmp2
