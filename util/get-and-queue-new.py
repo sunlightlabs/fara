@@ -1,11 +1,16 @@
 #!/usr/bin/env python
+# get-and-queue-new.py
 #
-# --timball@sunlightfoundation.com
-# Wed Nov 27 19:06:33 UTC 2013
+# $1 -- type of pdf to process . technically these are the keys to_s3_path
+#       right now just "fara" and "arms"
+#
+# currently relies on pdf2htmlEX but NOT the virtualenv for fara . all
+# hardcoded paths are now at the top of this file ... so it doubles as it's own
+# config file !
+#
+# --timball@sunlightfoundation.com Wed Nov 27 19:06:33 UTC 2013
 
 DEBUG = False
-#HTML_DEST_DIR = '/mnt/html'
-#PDF_DEST_DIR = '/mnt/fara-pdfs'
 PROCESS_INDEX = '/projects/fara/src/fara/util/process-index.sh'
 global thing   # i needed a global
 
@@ -88,6 +93,7 @@ def put_to_s3(basename):
     else: 
         print s3sync_cmd
 
+
 def munge_html(s3_list):
     ret_list = []
 
@@ -115,6 +121,7 @@ def s3_set_acls(basename):
     else:
         print "s3_set_acl_cmd: " + s3_setacl_cmd
 
+
 def make_the_dirs():
     import os
 
@@ -124,6 +131,7 @@ def make_the_dirs():
     except OSError as e:
         sys.stderr.write("Error: %s: %s\n" % (e.errno, e.strerror))
         pass
+
 
 def main(argv):
     pdfs = []
@@ -154,6 +162,7 @@ def main(argv):
 
     # now get each pdf and then process them into html files 
     process_diff(diff)
+
 
 if __name__ == "__main__":
     global thing
