@@ -309,7 +309,6 @@ class MetaData(models.Model):
     # this is just for supplementals
     end_date = models.DateField(null=True, blank=True)
 
-    
     def __unicode__(self):
         if len(str(self.notes)) < 1:
             return self.link

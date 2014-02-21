@@ -28,56 +28,45 @@ logger = logging.getLogger(__name__)
 
 # makes a file package per form 
 def make_file(form_id):
-	logger.debug("starting")
 	if not os.path.exists("forms"):
 		os.mkdir("forms")
-		logger.debug("made forms")
-
+		
 	form = Document.objects.get(id=form_id)
-	logger.debug(form_id)
 	contacts = make_contacts([form])
 	payments = make_payments([form])
 	contributions = make_contributions([form])
 	disbursements = make_disbursements([form])
-	logger.debug("made spreadsheets")
 	
 	read_text = open(settings.BASE_DIR + '/forms/README.txt', 'r').read()
-	logger.debug("read text")
 	date_message = "\nThis record was created on %s" % (datetime.date.today().strftime('%m/%d/%Y'))
 	full_read_text = read_text + date_message
 	readme = open("README.txt", 'wb')
-	logger.debug("opened new file")
 	readme.write(full_read_text)
-	logger.debug("wrote readme")
 
 
 	readme = str(readme) + str(date_message)
 	
 	name = "forms/form_%s.zip" % form_id 
 	if disbursements or contacts or contributions or payments:
-		logger.debug("write form")
 		with zipfile.ZipFile(name, 'w') as form_file:
 			form_file.write("README.txt")
 			if disbursements != None: form_file.write(disbursements)	
 			if contacts != None: form_file.write(contacts)
 			if contributions != None: form_file.write(contributions)
 			if payments != None: form_file.write(payments)
-			logger.debug("wrote files")
 
 
 		#print "PRTEND saving to amazon" 
 		bucket_file = default_storage.open('/spreadsheets/' + name, 'w')
-		logger.debug("named bucket")
 		bucket_file.write(open(name).read())
 		bucket_file.close()
-		logger.debug("closed bucket")
 		os.remove(name)
 
 	if disbursements: os.remove(disbursements)	
 	if contacts: os.remove(contacts)
 	if contributions: os.remove(contributions)
 	if payments: os.remove(payments)
-	logger.debug("Made it through!")
+
 
 def make_contacts(docs):
 	links = []

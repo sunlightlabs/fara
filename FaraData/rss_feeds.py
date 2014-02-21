@@ -1,3 +1,4 @@
+import requests
 from datetime import datetime, date
 
 from django.contrib.syndication.views import Feed
@@ -48,11 +49,20 @@ def compute_pay(url):
             amount = pay.amount
             if amount != '':
                 total = total + amount
-        payment = ' Total payments this report: $ %.2f Download detailed payment spreadsheet: %s/payment_csv/%d ' %(total, base_url, doc.id)
+        payment = ' Total payments this report: $ %.2f ' %(total)
         return payment
     else:
         payment = None
         return payment
+
+def check_for_download(form_id):
+    form_id = str(form_id)
+    download = 'http://fara.sunlightfoundation.com.s3.amazonaws.com/spreadsheets/forms/form_' + form_id + '.zip'
+    r = requests.head(download)
+    if r.status_code == requests.codes.ok:
+        download = download
+    else:
+        download = None
 
 #@login_required(login_url='/admin')
 class LatestEntriesFeed(Feed):
@@ -72,7 +82,6 @@ class LatestEntriesFeed(Feed):
     def item_pubdate(self, item):
         return datetime.combine(item.stamp_date, datetime.min.time())
 
-
     def item_description(self, item):
         info = "Date received: %s " %(item.stamp_date)
         link = item.url
@@ -85,14 +94,15 @@ class LatestEntriesFeed(Feed):
             client = client + c.client_name + "; "
         
         if len(client) > 0:
-            info = info + "Active clients: %s"%(client)
+            info = info + "Clients: %s"%(client)
         
-        terminated = ''
-        terminated_clients = reg.terminated_clients.all()
-        for c in terminated_clients:
-            terminated = c.client_name + "; "
-        if len(terminated) > 0:
-            info = info + "Terminated clients: %s"%(terminated)
+        # This made the alerts too verbose
+        # terminated = ''
+        # terminated_clients = reg.terminated_clients.all()
+        # for c in terminated_clients:
+        #     terminated = c.client_name + "; "
+        # if len(terminated) > 0:
+        #     info = info + "Terminated clients: %s"%(terminated)
 
         if doc_type == "Exhibit AB":
             try:
@@ -108,7 +118,7 @@ class LatestEntriesFeed(Feed):
 
             contacts = Contact.objects.filter(link=link).count()
             if contacts > 0:
-                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
+                info = info + ' Number of contacts: %i ' %(contacts)
 
         if doc_type == "Registration":
             pay_info = compute_pay(link)
@@ -117,8 +127,13 @@ class LatestEntriesFeed(Feed):
 
             contacts = Contact.objects.filter(link=link).count()
             if contacts > 0:
-                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
+                info = info + ' Number of contacts: %i' %(contacts)
 
+        # download
+        download = check_for_download(item.id)
+        if download is not None:
+            info = info + " Download detailed spreadsheet: %s" % (download)
+        
         return info
 
     def item_title(self, item):
@@ -164,13 +179,6 @@ class DataEntryFeed(Feed):
             client = client + c.client_name
         if len(client) > 0:
             info = info + " Active clients: %s"%(client)
-        
-        terminated = ''
-        terminated_clients = reg.terminated_clients.all()
-        for c in terminated_clients:
-            terminated = c.client_name
-        if len(terminated) > 0:
-            info = info + " Terminated clients: %s"%(terminated)
 
         if doc_type == "Exhibit AB":
             try:
@@ -179,23 +187,18 @@ class DataEntryFeed(Feed):
             except:
                 pass
 
-        if doc_type == "Supplemental":
+        if doc_type == "Supplemental" or doc_type == "Registration" or doc_type == "Amendment":
             pay_info = compute_pay(link)
             if pay_info != None:
                 info = info + pay_info
             
             contacts = Contact.objects.filter(link=link).count()
             if contacts > 0:
-                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, doc.id)
+                info = info + ' Number of contacts: %i ' %(contacts)
 
-        if doc_type == "Registration":
-            pay_info = compute_pay(link)
-            if pay_info != None:
-                info = info + pay_info
-            
-            contacts = Contact.objects.filter(link=link).count()
-            if contacts > 0:
-                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, doc.id)
+        download = check_for_download(item.id)
+        if download is not None:
+            info = info + " Download detailed spreadsheet: %s" % (download)
 
         return info
 
@@ -218,16 +221,25 @@ class RegionFeed(Feed):
         return Location.objects.filter(region=region)[0]
 
     def items(self, location):
+        # would like to do this more efficiently
         docs = Document.objects.filter(processed=True).order_by('-stamp_date')[:50]
         hits = []
+        # recent documents
         for d in docs:
             reg = find_reg(d)
             clients = reg.clients.all()
+            link = d.url
+            # making sure there are clients
             if len(clients) > 0:
-                for l in clients:
-                    if l.location.region == location.region:    
-                        if d not in hits:
-                            hits.append(d)
+                continue
+            # looking for clients in the right region
+            for l in clients:
+                if l.location.region == location.region:
+                    # checking to see if there is something meaningful to say about the filing
+                    download = check_for_download(d.id)
+                    if ClientReg.objects.get(link=link).exists or download != None:
+                        hits.append(d)
+
         hits = hits[:20]
         return hits #document objects being returned
     
@@ -252,15 +264,7 @@ class RegionFeed(Feed):
             client = client + c.client_name + "; "
         
         if len(client) > 0:
-            info = info + "Active clients: %s"%(client)
-        
-        terminated = ' '
-        terminated_clients = reg.terminated_clients.all()
-        for c in terminated_clients:
-            terminated = c.client_name + "; "
-        
-        if len(terminated) > 0:
-            info = info + "Terminated clients: %s"%(terminated) 
+            info = info + "Clients: %s"%(client)
         
         if doc_type == "Exhibit AB":
             try:
@@ -269,23 +273,18 @@ class RegionFeed(Feed):
             except:
                 pass
 
-        if doc_type == "Supplemental":
+        if doc_type == "Supplemental" or doc_type == "Registration" or doc_type == "Amendment":
             pay_info = compute_pay(link)
             if pay_info != None:
                 info = info + pay_info
             
             contacts = Contact.objects.filter(link=link).count()
             if contacts > 0:
-                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
+                info = info + ' Number of contacts: %i' %(contacts)
 
-        if doc_type == "Registration":
-            pay_info = compute_pay(link)
-            if pay_info != None:
-                info = info + pay_info 
-
-            contacts = Contact.objects.filter(link=link).count()
-            if contacts > 0:
-                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
+        download = check_for_download(item.id)
+        if download is not None:
+            info = info + " Download detailed spreadsheet: %s" % (download)
 
         return info
 
@@ -343,13 +342,6 @@ class BigSpenderFeed(Feed):
         
         if len(client) > 0:
             info = info + "Active clients: %s"%(client)
-        
-        terminated = ' '
-        terminated_clients = reg.terminated_clients.all()
-        for c in terminated_clients:
-            terminated = c.client_name + "; "
-        if len(terminated) > 0:
-            info = info + "Terminated clients: %s"%(terminated)
 
         if doc_type == "Exhibit AB":
             try:
@@ -358,23 +350,18 @@ class BigSpenderFeed(Feed):
             except:
                 pass
 
-        if doc_type == "Supplemental":
+        if doc_type == "Supplemental" or doc_type == "Registration" or doc_type == "Amendment":
             pay_info = compute_pay(link)
             if pay_info != None:
                 info = info + pay_info
             
             contacts = Contact.objects.filter(link=link).count()
             if contacts > 0:
-                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
+                info = info + ' Number of contacts: %i ' %(contacts)
 
-        if doc_type == "Registration":
-            pay_info = compute_pay(link)
-            if pay_info != None:
-                info = info + pay_info 
-
-            contacts = Contact.objects.filter(link=link).count()
-            if contacts > 0:
-                info = info + ' Number of contacts: %i Download detailed contact spreadsheet: %s/contact_csv/%d ' %(contacts, base_url, item.id)
+        download = check_for_download(item.id)
+        if download is not None:
+            info = info + " Download detailed spreadsheet: %s" % (download)
 
         return format_html(info)    
 

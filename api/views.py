@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 
 from fara_feed.models import Document
-from FaraData.models import Registrant
+from FaraData.models import Registrant, Payment, Contact
 from fara.local_settings import API_PASSWORD
 #from arms_sales.models import Proposed
 
@@ -101,9 +101,22 @@ def doc_profile(request, doc_id):
 				'location': client.location.location,
 				'client_id': client.id,
 			}
+			
+			if Payment.objects.filter(link=url,client=client).exists():
+				total_pay = 0
+				for payment in Payment.objects.filter(link=url,client=client):
+					total_pay = total_pay + int(payment.amount)
+				c['payment'] = total_pay
+
+			if Contact.objects.filter(link=url,client=client).exists():
+				total_contacts = 0
+				for contact in Contact.objects.filter(link=url,client=client):
+					total_contacts = total_contacts + 1
+				c['contact'] = total_contacts
+
 			clients.append(c)
 		results['clients'] = clients
-
+	print results
 	results = json.dumps({'results': results}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
