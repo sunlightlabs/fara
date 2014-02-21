@@ -45,12 +45,38 @@ def incoming_fara(request):
 		results = json.dumps({'results':info}, separators=(',',':'))
 		return HttpResponse(results, mimetype="application/json")
 
+
+	query_params = {}
+	query_params['stamp_date__range'] = (datetime.date(2012,1,1), datetime.date.today())
+
 	if request.GET.get('p'):
 		page = int(request.GET.get('p'))
 	else:
 		page = 1
-		
-	doc_pool = Document.objects.filter(doc_type__in=['Supplemental', 'Amendment', 'Exhibit AB', 'Registration'],stamp_date__range=(datetime.date(2012,1,1), datetime.date.today())).order_by('-stamp_date')
+	
+	# Would like to make this not case sensitive 
+	if request.GET.get('type'):
+		form_type = request.GET.get('type')
+		form_type = [form_type]
+	else:
+		form_type = ['Supplemental', 'Amendment', 'Exhibit AB', 'Registration']
+	query_params['doc_type__in']=form_type
+
+
+	if request.GET.get('processed'):
+		processed = request.GET.get('processed')
+		if processed == 'true':
+			processed = True
+		if processed == 'false':
+			processed = False
+		query_params['processed'] = processed
+
+	if request.GET.get('reg_id'):
+		reg_id = request.GET.get('reg_id')
+		query_params['reg_id'] = reg_id
+
+	print query_params
+	doc_pool = Document.objects.filter(**query_params).order_by('-stamp_date')
 	paginate_docs = paginate(doc_pool, page)
 	page_of_docs = paginate_docs[0:]
 
@@ -76,6 +102,7 @@ def incoming_fara(request):
 def doc_profile(request, doc_id):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
+	
 	doc_id= int(doc_id)
 	doc = Document.objects.get(id=doc_id)
 	url = doc.url
