@@ -5,9 +5,10 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
+from django.db.models import Sum
 
 from fara_feed.models import Document
-from FaraData.models import Registrant, Payment, Contact
+from FaraData.models import Registrant, Payment, Contact, Contribution, Recipient, Client, Disbursement
 from fara.local_settings import API_PASSWORD
 #from arms_sales.models import Proposed
 
@@ -130,15 +131,12 @@ def doc_profile(request, doc_id):
 			}
 			
 			if Payment.objects.filter(link=url,client=client).exists():
-				total_pay = 0
-				for payment in Payment.objects.filter(link=url,client=client):
-					total_pay = total_pay + int(payment.amount)
+				payment = Payment.objects.filter(link=url,client=client).aggregate(total_pay=Sum('amount'))
+				total_pay = float(payment['total_pay'])
 				c['payment'] = total_pay
 
 			if Contact.objects.filter(link=url,client=client).exists():
-				total_contacts = 0
-				for contact in Contact.objects.filter(link=url,client=client):
-					total_contacts = total_contacts + 1
+				total_contacts = Contact.objects.filter(link=url,client=client).count()
 				c['contact'] = total_contacts
 
 			clients.append(c)
@@ -147,11 +145,83 @@ def doc_profile(request, doc_id):
 	results = json.dumps({'results': results}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
+def recipient_profile(request, recip_id):
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied
+	recipient = Recipient.objects.get(id=recip_id)
+	results = []
+	# If a member of congress, we want to get all the connected contacts
+
+	if recipient.agency == "Congress":
+		recipients = Recipient.objects.filter(bioguide_id=recipient.bioguide_id)
+	else:
+		recipients = [recipient]
+			
+	for recip in recipients:
+		recipient = {}
+		recipient['agency'] = recip.agency
+		recipient['office_detail'] = recip.office_detail
+		recipient['name'] = recip.name
+		recipient['title'] = recip.title
+		recipient['state_local'] = recip.state_local
+		recipient['bioguide_id'] = recip.bioguide_id
+		recip_id = recip.id 
+
+		if Contribution.objects.filter(recipient=recip_id).exists():
+			contribution = Contribution.objects.filter(recipient=recip_id).aggregate(total_pay=Sum('amount'))
+			recipient['total_contribution'] = float(contribution['total_pay'])
+		
+		if Contact.objects.filter(recipient=recip_id).exists():
+			recipient['contacts'] = Contact.objects.filter(recipient=recip_id).count()
+
+		results.append(recipient)
+	
+	results = json.dumps({'results': results }, separators=(',',':'))
+	return HttpResponse(results, mimetype="application/json")
+
+# agency profile
+
+def client_profile(request, client_id):
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied
+	c = Client.objects.get(id=client_id)
+	results = []
+	client = {}
+	client['location'] = c.location.location 
+	client['client_name'] = c.client_name
+	client['address'] = c.address1
+	client['city'] = c.city
+	client['state'] = c.state
+	client['zip_code'] = c.zip_code
+	client['client_type'] = c.client_type
+	client['description'] = c.description
+
+	# don't know how to incorporate this yet
+	if Contact.objects.filter(client=client_id).exists():
+		client['contacts'] = Contact.objects.filter(client=client_id).count()
+
+	if Payment.objects.filter(client=client_id).exists():
+		payment = Payment.objects.filter(client=client_id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
+		client['total_payment'] = float(payment['total_pay'])
+
+	if Disbursement.objects.filter(client=client_id).exists():
+		disbursement = Disbursement.objects.filter(client=client_id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
+		client['total_disbursement'] = float(disbursement['total_pay'])
+
+	results = json.dumps({'results': client }, separators=(',',':'))
+	return HttpResponse(results, mimetype="application/json")
+
+# def location_profile(request, loc_id):
+	# if not request.GET.get('key') == API_PASSWORD:
+	# 	raise PermissionDenied
+# 	#arms = 
+
+
+# def reg_profile(request, reg_id):
+	# if not request.GET.get('key') == API_PASSWORD:
+	# 	raise PermissionDenied
 
 
 
 
 
-# json_choices = json.dumps(choice_list, separators=(',',':'))
-# client_choices = makeJson(client_choices, 'client_name')
-# return HttpResponse(client_choices, mimetype="application/json")

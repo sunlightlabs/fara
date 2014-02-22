@@ -13,9 +13,11 @@ proposed_handler = Resource(ProposedHandler, authentication=auth)
 urlpatterns = patterns('',
    url(r'^docs', 'api.views.incoming_fara', name= 'incoming-fara'),
    url(r'^agentfeed',  proposed_handler),
-   url(r'^doc_profile/(\d+)/','api.views.doc_profile', name= 'doc-profile'),
+   url(r'^doc-profile/(\d+)/','api.views.doc_profile', name= 'doc-profile'),
    url(r'^location', loc_handler),
    url(r'^metadata/(\d+)/', metadata_handler),
    url(r'^registrant', registrant_handler),
-   url(r'^proposed_arms', proposed_handler),
+   url(r'^proposed-arms', proposed_handler),
+   url(r'^recipient-profile/(\d+)/', 'api.views.recipient_profile', name='recipient-profile'),
+   url(r'^client-profile/(\d+)/', 'api.views.client_profile', name= 'client-profile'),
 )
