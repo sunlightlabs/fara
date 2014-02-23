@@ -190,6 +190,7 @@ def client_profile(request, client_id):
 	results = []
 	client = {}
 	client['location'] = c.location.location 
+	client['location_id'] = c.location.id
 	client['client_name'] = c.client_name
 	client['address'] = c.address1
 	client['city'] = c.city
@@ -201,6 +202,7 @@ def client_profile(request, client_id):
 	if Contact.objects.filter(client=client_id).exists():
 		client['contacts'] = Contact.objects.filter(client=client_id).count()
 
+	# is null makes sure there is not double counting money flowing through multiple contractors
 	if Payment.objects.filter(client=client_id).exists():
 		payment = Payment.objects.filter(client=client_id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
 		client['total_payment'] = float(payment['total_pay'])
@@ -242,6 +244,7 @@ def location_profile(request, loc_id):
 		client['description'] = c.description
 		client['id'] = c.id
 
+		# is null makes sure there is not double counting money flowing through multiple contractors
 		if Payment.objects.filter(client=c.id).exists():
 			payment = Payment.objects.filter(client=c.id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
 			client['total_payment'] = float(payment['total_pay'])
@@ -310,11 +313,11 @@ def reg_profile(request, reg_id):
 			total_contacts = Contact.objects.filter(client=client).count()
 			c['contact'] = total_contacts
 
-		if ClientReg.objects.filter(client=client_id,reg_id=reg_id).exists():
-			cr = ClintReg.objects.get(client=client_id,reg_id=reg_id)
+		if ClientReg.objects.filter(client_id=client_id,reg_id=reg_id).exists():
+			cr = ClintReg.objects.get(client_id=client.id,reg_id=reg_id)
 			c['primary_contractor'] = cr.primary_contractor_id
 			c['primary_contractor_id'] = cr.primary_contractor_id.id
-			c['discrption'] = cr.discrption
+			c['description'] = cr.discrption
 
 		clients.append(c)
 
@@ -344,7 +347,7 @@ def reg_profile(request, reg_id):
 			cr = ClintReg.objects.get(client_id=client.id,reg_id=reg_id)
 			c['primary_contractor'] = cr.primary_contractor_id
 			c['primary_contractor_id'] = cr.primary_contractor_id.id
-			c['discrption'] = cr.discrption
+			c['description'] = cr.discrption
 
 		clients.append(c)
 
