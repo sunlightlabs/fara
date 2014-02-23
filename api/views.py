@@ -8,9 +8,10 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Sum
 
 from fara_feed.models import Document
-from FaraData.models import Registrant, Payment, Contact, Contribution, Recipient, Client, Disbursement
+from FaraData.models import Registrant, Payment, Contact, Contribution, Recipient, Client, Disbursement, ClientReg
+from arms_sales.models import Proposed
+
 from fara.local_settings import API_PASSWORD
-#from arms_sales.models import Proposed
 
 def paginate(form, page):
 	paginator = Paginator(form, 20)
@@ -148,6 +149,7 @@ def doc_profile(request, doc_id):
 def recipient_profile(request, recip_id):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
+	
 	recipient = Recipient.objects.get(id=recip_id)
 	results = []
 	# If a member of congress, we want to get all the connected contacts
@@ -196,7 +198,6 @@ def client_profile(request, client_id):
 	client['client_type'] = c.client_type
 	client['description'] = c.description
 
-	# don't know how to incorporate this yet
 	if Contact.objects.filter(client=client_id).exists():
 		client['contacts'] = Contact.objects.filter(client=client_id).count()
 
@@ -211,17 +212,143 @@ def client_profile(request, client_id):
 	results = json.dumps({'results': client }, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
-# def location_profile(request, loc_id):
-	# if not request.GET.get('key') == API_PASSWORD:
-	# 	raise PermissionDenied
-# 	#arms = 
+def location_profile(request, loc_id):
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied 	
+	
+	results = {}
+	# Proposed arms sales
+	if Proposed.objects.filter(location_id=loc_id).exists():
+		arms = Proposed.objects.filter(location_id=loc_id)
+		proposed_sales = []
+		for arms_press in arms:
+			record = {}
+			record['title'] = arms_press.title
+			record['date'] = arms_press.date.strftime("%m/%d/%Y")
+			# this is not scraped yet
+			record['amount'] = arms_press.amount
+			proposed_sales.append(record)
 
+		results['proposed_sales'] = proposed_sales
+	
+	# Find client and reg information
+	clients = Client.objects.filter(location=loc_id)
+	client_list = []
+	for c in clients:
+		client = {}
+		client['location'] = c.location.location 
+		client['client_name'] = c.client_name
+		client['client_type'] = c.client_type
+		client['description'] = c.description
+		client['id'] = c.id
 
-# def reg_profile(request, reg_id):
-	# if not request.GET.get('key') == API_PASSWORD:
-	# 	raise PermissionDenied
+		if Payment.objects.filter(client=c.id).exists():
+			payment = Payment.objects.filter(client=c.id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
+			client['total_payment'] = float(payment['total_pay'])
 
+		if Contact.objects.filter(client=c.id).exists():
+			client['contacts'] = Contact.objects.filter(client=c.id).count()
+		
+		# registrant and status
+		if Registrant.objects.filter(clients=c).exists():
+			active_regs = Registrant.objects.filter(client=c)
+			acitve_regstrants = []
+			for reg in active_regs:
+				active_reg= {}
+				active_reg['name'] = reg.reg_name
+				active_reg['reg_id'] = reg.reg_id
+				acitve_regstrants.append(active_reg)
+			client['active_reg'] = acitve_regstrants
+			client['active'] = True
 
+		if Registrant.objects.filter(terminated_clients=c).exists():
+			terminated_regs = Registrant.objects.filter(terminated_clients=c)
+			terminated_registrants = []
+			for reg in terminated_regs:
+				terminated_reg = {}
+				terminated_reg['name'] = reg.reg_name
+				terminated_reg['reg_id'] = reg.reg_id
+				terminated_registrants.append(terminated_reg)	
+			client['terminated_reg'] = terminated_registrants
+		
+		client_list.append(client)
+	results['clients'] = client_list
+	results = json.dumps({'results': results }, separators=(',',':'))
+	return HttpResponse(results, mimetype="application/json")
 
+def reg_profile(request, reg_id):
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied
 
+	results = {}
+	clients = []
+	registrant = {}
+	reg = Registrant.objects.get(reg_id=reg_id)
+	registrant['reg_id'] = reg.reg_id
+	registrant['name'] = reg.reg_name
+	results['registrant'] =  registrant
+	# could add address information 
+
+	# active client info
+	client_results = reg.clients.all()
+	for client in client_results:
+		c = {
+			'client_name':client.client_name,
+			'location': client.location.location,
+			'client_id': client.id,
+			'location': client.location.location,
+			'location_id': client.location.id, 
+			'active': True,
+		}
+		
+		if Payment.objects.filter(link=url,client=client).exists():
+			payment = Payment.objects.filter(link=url,client=client).aggregate(total_pay=Sum('amount'))
+			total_pay = float(payment['total_pay'])
+			c['payment'] = total_pay
+
+		if Contact.objects.filter(client=client_id).exists():
+			total_contacts = Contact.objects.filter(client=client).count()
+			c['contact'] = total_contacts
+
+		if ClientReg.objects.filter(client=client_id,reg_id=reg_id).exists():
+			cr = ClintReg.objects.get(client=client_id,reg_id=reg_id)
+			c['primary_contractor'] = cr.primary_contractor_id
+			c['primary_contractor_id'] = cr.primary_contractor_id.id
+			c['discrption'] = cr.discrption
+
+		clients.append(c)
+
+	# terminated client info
+	terminated_results = reg.terminated_clients.all()
+	for client in terminated_results:
+		client_id = int(client.id)
+		c = {
+			'client_name':client.client_name,
+			'location': client.location.location,
+			'client_id': client_id,
+			'location': client.location.location,
+			'location_id': client.location.id, 
+			'active': False,
+		}
+		
+		if Payment.objects.filter(client_id=client_id).exists():
+			payment = Payment.objects.filter(client_id=client).aggregate(total_pay=Sum('amount'))
+			total_pay = float(payment['total_pay'])
+			c['payment'] = total_pay
+
+		if Contact.objects.filter(client_id=client_id).exists():
+			total_contacts = Contact.objects.filter(client=client.id).count()
+			c['contact'] = total_contacts
+
+		if ClientReg.objects.filter(client_id=client_id,reg_id=reg_id).exists():
+			cr = ClintReg.objects.get(client_id=client.id,reg_id=reg_id)
+			c['primary_contractor'] = cr.primary_contractor_id
+			c['primary_contractor_id'] = cr.primary_contractor_id.id
+			c['discrption'] = cr.discrption
+
+		clients.append(c)
+
+	results['clients'] = clients
+	results = json.dumps({'results': results }, separators=(',',':'))
+	return HttpResponse(results, mimetype="application/json")
 

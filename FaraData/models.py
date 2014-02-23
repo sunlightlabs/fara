@@ -19,12 +19,12 @@ class Recipient(models.Model):
     
     def __unicode__(self):
         if self.title != None:
-            if self.agency != None:
+            if self.agency != None or self.agency == '':
                 return "%s %s of %s" %(self.title, self.name, self.agency) 
             else:
                 return "%s %s" %(self.title, self.name) 
         else: 
-            if self.agency != None:
+            if self.agency != None or self.agency == '':
                 return "%s of %s" %(self.name, self.agency) 
             else:
                 return "%s" % (self.name) 
@@ -32,12 +32,12 @@ class Recipient(models.Model):
 
     def __str__(self):
         if self.title != None:
-            if self.agency != None:
+            if self.agency != None or self.agency == '':
                 return "%s %s of %s".encode('ascii', errors='ignore') % (self.title, self.name, self.agency)
             else:
                 return "%s %s".encode('ascii', errors='ignore') % (self.title, self.name)
         else:
-            if self.agency != None:
+            if self.agency != None or self.agency == '':
                 return "%s of %s".encode('ascii', errors='ignore') % (self.name, self.agency)
             else:
                 return "%s".encode('ascii', errors='ignore') % (self.name)
@@ -77,58 +77,7 @@ class Client(models.Model):
     def __unicode__(self):
         return self.client_name
 
-    def yearly_client_pay(self):
-        client_totals = {}
-        client_id = self.id
-        payments = Payment.objects.filter(client=self)
 
-        for p in payments:
-            if client_contacts.has_key(client_id):
-                if p.date == None:
-                    meta = MetaData.objects.get(link=p.link)
-                    p.date = meta.upload_date
-                year = p.date.year
-                
-                if p.fee == True:
-                    if client_totals[client_id].has_key('lobbying_total'):
-                        if client_totals[client_id]['lobbying_total'].has_key(year):
-                            client_totals[client_id]['lobbying_total'][year] += amount
-                        else:
-                            client_totals[client_id]['lobbying_total'][year] = amount
-                    else:
-                       client_totals[client_id]['lobbying_total'][year] = amount 
-
-                    if client_totals[client_id].has_key('total'):
-                        if client_totals[client_id]['total'](year):
-                            client_totals[client_id]['total'][year] += amount
-                        else:
-                            client_totals[client_id]['total'][year] = amount
-                    else:
-                        client_totals[client_id]['total'][year] = amount
-            else:
-                if p.fee == True:
-                    client_totals[client_id]['lobbying_total'][year] = amount
-                client_totals[client_id]['total'][year] = amount
-
-            return client_totals
-
-    def yearly_client_contact(self):
-        client_contacts = {}
-        client_id = self.id
-        contacts = Contact.objects.filter(client=self)
-
-        for c in contacts:
-            if c.date == None:
-                meta = MetaData.objects.get(link=c.link)
-                c.date = meta.upload_date
-            year = c.date.year
-
-            if client_contacts.has_key(client_id):
-                contact_total[client_id] += 1
-            else:
-                contact_total[client_id] = 1
-
-        return client_contacts
 # the firm or person doing the lobbying and registering with FARA (including those that represent themselves)       
 class Registrant(models.Model):
     reg_id = models.IntegerField(primary_key=True) #this is assigned by DOJ
@@ -145,78 +94,6 @@ class Registrant(models.Model):
     def __unicode__(self):
         return self.reg_name
 
-    # Payment aggregate 
-    def yearly_reg_pay(self):
-        reg_totals = {}
-        reg_id = self.reg_id
-        payments = Payment.objects.filter(registrant=self)
-        
-        for p in payments:
-            if p.date == None:
-                meta = MetaData.objects.get(link=p.link)
-                p.date = meta.upload_date
-            year = p.date.year
-            
-            if reg_totals.has_key(reg_id):
-                if p.fee == True:
-                    if reg_totals[reg_id].has_key('lobbying_total'):
-                        if reg_totals[reg_id]['lobbying_total'].has_key(year):
-                            reg_totals[reg_id]['lobbying_total'][year] += amount
-                        else:
-                            reg_totals[reg_id]['lobbying_total'][year] = amount
-                    else:
-                       reg_totals[reg_id]['lobbying_total'][year] = amount 
-
-                    if reg_totals[reg_id].has_key('total'):
-                        if reg_totals[reg_id]['total'](year):
-                            reg_totals[reg_id]['total'][year] += amount
-                        else:
-                            reg_totals[reg_id]['total'][year] = amount
-                    else:
-                        reg_totals[reg_id]['total'][year] = amount
-            else:
-                if p.fee == True:
-                    reg_totals[reg_id]['lobbying_total'][year] = amount
-                reg_totals[reg_id]['total'][year] = amount
-
-            return reg_totals
-
-    # disbursement aggregate 
-    def yearly_reg_dis(self):
-        dis_totals = {}
-        reg_id = self.reg_id
-        disbursement = Disbursement.objects.filter(registrant=self)
-
-        for d in disbursement:
-            if d.date == None:
-                meta = MetaData.objects.get(link=d.link)
-                d.date = meta.upload_date
-            year = d.date.year
-
-            if dis_totals.has_key(reg_id):
-                dis_totals[reg_id] += d.amount
-            else:
-                dis_totals[reg_id] = d.amount
-        return dis_totals
-
-    #counts the number of contact records per year
-    def yearly_reg_contact(self):
-        contact_total = {}
-        reg_id = self.reg_id
-        contact = Contact.objects.filter(registrant=self)
-
-        for c in contact:
-            if c.date == None:
-                meta = MetaData.objects.get(link=c.link)
-                c.date = meta.upload_date
-            year = c.date.year
-            client_id = c.client.id
-            if contact_total.has_key(reg_id):
-                contact_total[reg_id] += 1
-            else:
-                contact_total[reg_id] = 1
-
-        return contact_total
 
 #Question 14(c)        
 # new category
