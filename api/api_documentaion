@@ -1,6 +1,20 @@
-Reminder- I needed to un-install simple json to get it to work
+# need to redo this
 
 DOCUMETS
+
+   docs', 'api.views.incoming_fara', name= 'incoming-fara'),
+   agentfeed',  proposed_handler),
+   doc-profile/(\d+)/','api.views.doc_profile', name= 'doc-profile'),
+   metadata/(\d+)/', metadata_handler),
+   registrant', registrant_handler),
+   proposed-arms', proposed_handler),
+   location', loc_handler),
+   recipient-profile/(\d+)/', 'api.views.recipient_profile', name='recipient-profile'),
+   client-profile/(\d+)/', 'api.views.client_profile', name= 'client-profile'),
+   place-profile/(\d+)/', 'api.views.location_profile', name= 'location-profile'),
+   reg-profile/(\d+)/', 'api.views.reg_profile', name= 'reg-profile'),
+
+
 
 api/docs 
 	Retrieves all documents most recent first
@@ -9,15 +23,6 @@ api/docs
 	
 	Returns ('url', 'reg_id', 'doc_type', 'processed', 'stamp_date', 'id')
 	
-	
-api/regdocs
-	Finds all documents for a given registrant; searches by FARA Registration ID.
-
-	all document endpoints return-
-	url: original document url
-	doc_type: Supplemental, Amendment, Short-Form, Exibits A, B, C and D
-	processed: True if data been entered into the database
-	stamp_date: Date the FARA office received the form
 
 api/metadata/form_id
 	Retrieves metadata Model information on that particular form.

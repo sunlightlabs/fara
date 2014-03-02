@@ -211,6 +211,27 @@ def client_profile(request, client_id):
 		disbursement = Disbursement.objects.filter(client=client_id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
 		client['total_disbursement'] = float(disbursement['total_pay'])
 
+	if Registrant.objects.filter(clients=c).exists():
+		active_regs = Registrant.objects.filter(clients=c)
+		acitve_regstrants = []
+		for reg in active_regs:
+			active_reg= {}
+			active_reg['name'] = reg.reg_name
+			active_reg['reg_id'] = reg.reg_id
+			acitve_regstrants.append(active_reg)
+		client['active_reg'] = acitve_regstrants
+		client['active'] = True
+
+	if Registrant.objects.filter(terminated_clients=c).exists():
+		terminated_regs = Registrant.objects.filter(terminated_clients=c)
+		terminated_registrants = []
+		for reg in terminated_regs:
+			terminated_reg = {}
+			terminated_reg['name'] = reg.reg_name
+			terminated_reg['reg_id'] = reg.reg_id
+			terminated_registrants.append(terminated_reg)	
+		client['terminated_reg'] = terminated_registrants
+
 	results = json.dumps({'results': client }, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
@@ -304,7 +325,7 @@ def reg_profile(request, reg_id):
 			'active': True,
 		}
 		
-		if Payment.objects.filter(link=url,client=client).exists():
+		if Payment.objects.filter(client=client).exists():
 			payment = Payment.objects.filter(link=url,client=client).aggregate(total_pay=Sum('amount'))
 			total_pay = float(payment['total_pay'])
 			c['payment'] = total_pay
