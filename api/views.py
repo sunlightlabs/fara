@@ -343,7 +343,7 @@ def reg_profile(request, reg_id):
 		if ClientReg.objects.filter(client_id=client.id,reg_id=reg_id).exists():
 			cr = ClientReg.objects.get(client_id=client.id,reg_id=reg_id)
 			c['primary_contractor'] = cr.primary_contractor_id
-			c['primary_contractor_id'] = cr.primary_contractor_id.id
+			c['primary_contractor.id'] = cr.primary_contractor_id.id
 			c['description'] = cr.discrption
 
 		clients.append(c)
