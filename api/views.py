@@ -331,14 +331,19 @@ def reg_profile(request, reg_id):
 			'active': True,
 		}
 		
-		if Payment.objects.filter(client=client).exists():
-			payment = Payment.objects.filter(client=client).aggregate(total_pay=Sum('amount'))
+		if Payment.objects.filter(client=client,registrant=reg).exists():
+			payment = Payment.objects.filter(client=client,registrant=reg).aggregate(total_pay=Sum('amount'))
 			total_pay = float(payment['total_pay'])
 			c['payment'] = total_pay
 
-		if Contact.objects.filter(client=client).exists():
-			total_contacts = Contact.objects.filter(client=client).count()
+		if Contact.objects.filter(client=client,registrant=reg).exists():
+			total_contacts = Contact.objects.filter(client=client,registrant=reg).count()
 			c['contact'] = total_contacts
+
+		if Disbursement.objects.filter(client=client,registrant=reg).exists():
+			disbursement = Disbursement.objects.filter(client=client,registrant=reg).aggregate(total_disbursement=Sum('amount'))
+			total_disbursement = float(disbursement['total_disbursement'])
+			c['disbursement'] = total_disbursement
 
 		if ClientReg.objects.filter(client_id=client,reg_id=reg_id).exists():
 			cr = ClientReg.objects.get(client_id=client,reg_id=reg_id)
@@ -361,14 +366,19 @@ def reg_profile(request, reg_id):
 			'active': False,
 		}
 		
-		if Payment.objects.filter(client_id=client_id).exists():
-			payment = Payment.objects.filter(client_id=client).aggregate(total_pay=Sum('amount'))
+		if Payment.objects.filter(client_id=client_id,registrant=reg).exists():
+			payment = Payment.objects.filter(client=client,registrant=reg).aggregate(total_pay=Sum('amount'))
 			total_pay = float(payment['total_pay'])
 			c['payment'] = total_pay
 
-		if Contact.objects.filter(client_id=client_id).exists():
-			total_contacts = Contact.objects.filter(client=client.id).count()
+		if Contact.objects.filter(client_id=client_id,registrant=reg).exists():
+			total_contacts = Contact.objects.filter(client=client,registrant=reg).count()
 			c['contact'] = total_contacts
+
+		if Disbursement.objects.filter(client=client,registrant=reg).exists():
+			disbursement = Disbursement.objects.filter(client=client,registrant=reg).aggregate(total_disbursement=Sum('amount'))
+			total_disbursement = float(disbursement['total_disbursement'])
+			c['disbursement'] = total_disbursement
 
 		if ClientReg.objects.filter(client_id=client,reg_id=reg_id).exists():
 			cr = ClientReg.objects.get(client_id=client,reg_id=reg_id)
