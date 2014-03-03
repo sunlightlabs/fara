@@ -353,6 +353,7 @@ def reg_profile(request, reg_id):
 			c['description'] = cr.description
 
 		clients.append(c)
+	results['clients'] = clients
 
 	# terminated client info
 	terminated_results = reg.terminated_clients.all()
