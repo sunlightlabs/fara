@@ -340,11 +340,11 @@ def reg_profile(request, reg_id):
 			total_contacts = Contact.objects.filter(client=client).count()
 			c['contact'] = total_contacts
 
-		if ClientReg.objects.filter(client_id=client.id,reg_id=reg_id).exists():
-			cr = ClientReg.objects.get(client_id=client.id,reg_id=reg_id)
-			c['primary_contractor'] = cr.primary_contractor_id
-			c['primary_contractor.id'] = cr.primary_contractor.id
-			c['description'] = cr.discrption
+		if ClientReg.objects.filter(client_id=client,reg_id=reg_id).exists():
+			cr = ClientReg.objects.get(client_id=client,reg_id=reg_id)
+			c['primary_contractor'] = cr.reg_id.reg_name
+			c['primary_contractor_id'] = cr.reg_id.reg_id
+			c['description'] = cr.description
 
 		clients.append(c)
 
@@ -370,11 +370,11 @@ def reg_profile(request, reg_id):
 			total_contacts = Contact.objects.filter(client=client.id).count()
 			c['contact'] = total_contacts
 
-		if ClientReg.objects.filter(client_id=client_id,reg_id=reg_id).exists():
-			cr = ClientReg.objects.get(client_id=client_id,reg_id=reg_id)
-			c['primary_contractor'] = cr.primary_contractor_id
-			c['primary_contractor_id'] = cr.primary_contractor_id.id
-			c['description'] = cr.discrption
+		if ClientReg.objects.filter(client_id=client,reg_id=reg_id).exists():
+			cr = ClientReg.objects.get(client_id=client,reg_id=reg_id)
+			c['primary_contractor'] = cr.reg_id.reg_name
+			c['primary_contractor_id'] = cr.reg_id.reg_id
+			c['description'] = cr.description
 
 		clients.append(c)
 
