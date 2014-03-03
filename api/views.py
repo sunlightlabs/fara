@@ -317,9 +317,31 @@ def reg_profile(request, reg_id):
 	reg = Registrant.objects.get(reg_id=reg_id)
 	registrant['reg_id'] = reg.reg_id
 	registrant['name'] = reg.reg_name
-	results['registrant'] =  registrant
+
 	# could add address information 
 
+	if Contribution.objects.filter(registrant=reg).exists():
+		contribution = Contribution.objects.filter(registrant=reg).aggregate(total_pay=Sum('amount'))
+		total_contribution = float(contribution['total_pay'])
+		registrant['total_contributions'] = total_contribution 
+
+	if Payment.objects.filter(registrant=reg).exists():
+		payment = Payment.objects.filter(registrant=reg).aggregate(total_pay=Sum('amount'))
+		total_payments = float(payment['total_pay'])
+		registrant['total_payments'] = total_payments
+
+	if Disbursement.objects.filter(registrant=reg).exists():
+		disbursement = Disbursement.objects.filter(registrant=reg).aggregate(total_pay=Sum('amount'))
+		total_disbursements = float(disbursement['total_pay'])
+		registrant['total_disbursements'] = total_disbursements
+
+	if Contact.objects.filter(registrant=reg).exists():
+		contacts = Contact.objects.filter(registrant=reg).count()
+		registrant['total_contacts'] = contacts
+
+	# contacts
+
+	results['registrant'] =  registrant
 	# active client info
 	client_results = reg.clients.all()
 	for client in client_results:
