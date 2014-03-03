@@ -1,3 +1,9 @@
+"""
+
+ADD date restrictions
+
+"""
+
 import datetime
 import json
 
@@ -326,7 +332,7 @@ def reg_profile(request, reg_id):
 		}
 		
 		if Payment.objects.filter(client=client).exists():
-			payment = Payment.objects.filter(link=url,client=client).aggregate(total_pay=Sum('amount'))
+			payment = Payment.objects.filter(client=client).aggregate(total_pay=Sum('amount'))
 			total_pay = float(payment['total_pay'])
 			c['payment'] = total_pay
 
