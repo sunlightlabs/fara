@@ -272,7 +272,7 @@ def location_profile(request, loc_id):
 		client['id'] = c.id
 
 		# is null makes sure there is not double counting money flowing through multiple contractors
-		if Payment.objects.filter(client=c.id).exists():
+		if Payment.objects.filter(client=c.id,subcontractor__isnull=True).exists():
 			payment = Payment.objects.filter(client=c.id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
 			client['total_payment'] = float(payment['total_pay'])
 
@@ -281,7 +281,7 @@ def location_profile(request, loc_id):
 		
 		# registrant and status
 		if Registrant.objects.filter(clients=c).exists():
-			active_regs = Registrant.objects.filter(client=c)
+			active_regs = Registrant.objects.filter(clients=c)
 			acitve_regstrants = []
 			for reg in active_regs:
 				active_reg= {}
