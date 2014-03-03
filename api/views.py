@@ -135,6 +135,7 @@ def doc_profile(request, doc_id):
 				'client_name':client.client_name,
 				'location': client.location.location,
 				'client_id': client.id,
+				'location_id': client.location.id,
 			}
 			
 			if Payment.objects.filter(link=url,client=client).exists():
