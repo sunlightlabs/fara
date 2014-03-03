@@ -312,6 +312,7 @@ def reg_profile(request, reg_id):
 
 	results = {}
 	clients = []
+	terminated_clients = []
 	registrant = {}
 	reg = Registrant.objects.get(reg_id=reg_id)
 	registrant['reg_id'] = reg.reg_id
@@ -386,9 +387,9 @@ def reg_profile(request, reg_id):
 			c['primary_contractor_id'] = cr.reg_id.reg_id
 			c['description'] = cr.description
 
-		clients.append(c)
+		terminated_clients.append(c)
 
-	results['clients'] = clients
+	results['terminated_clients'] = terminated_clients
 	results = json.dumps({'results': results }, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
