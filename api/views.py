@@ -336,11 +336,11 @@ def reg_profile(request, reg_id):
 			total_pay = float(payment['total_pay'])
 			c['payment'] = total_pay
 
-		if Contact.objects.filter(client=client_id).exists():
+		if Contact.objects.filter(client=client).exists():
 			total_contacts = Contact.objects.filter(client=client).count()
 			c['contact'] = total_contacts
 
-		if ClientReg.objects.filter(client_id=client_id,reg_id=reg_id).exists():
+		if ClientReg.objects.filter(client_id=client,reg_id=reg_id).exists():
 			cr = ClintReg.objects.get(client_id=client.id,reg_id=reg_id)
 			c['primary_contractor'] = cr.primary_contractor_id
 			c['primary_contractor_id'] = cr.primary_contractor_id.id
