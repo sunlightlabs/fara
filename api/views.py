@@ -256,11 +256,12 @@ def location_profile(request, loc_id):
 		proposed_sales = []
 		for arms_press in arms:
 			record = {}
+			record['id'] = arms_press.id
 			record['title'] = arms_press.title
-			if record.has_key('date'):
+			if arms_press.date:
 				record['date'] = arms_press.date.strftime("%m/%d/%Y")
 			# this is not scraped yet
-			if record.has_key('amount'):
+			if arms_press.amount:
 				record['amount'] = arms_press.amount
 			proposed_sales.append(record)
 
