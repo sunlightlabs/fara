@@ -14,7 +14,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Sum
 
 from fara_feed.models import Document
-from FaraData.models import Registrant, Payment, Contact, Contribution, Recipient, Client, Disbursement, ClientReg
+from FaraData.models import Registrant, Payment, Contact, Contribution, Recipient, Client, Disbursement, ClientReg, Location
 from arms_sales.models import Proposed
 
 from fara.local_settings import API_PASSWORD
@@ -247,6 +247,9 @@ def location_profile(request, loc_id):
 		raise PermissionDenied 	
 	
 	results = {}
+	location = Location.objects.get(id=loc_id)
+	results['location_name'] = location.location
+	results['location_id'] = location.id
 	# Proposed arms sales
 	if Proposed.objects.filter(location_id=loc_id).exists():
 		arms = Proposed.objects.filter(location_id=loc_id)
