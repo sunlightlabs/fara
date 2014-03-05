@@ -444,32 +444,32 @@ def contact_table(request):
 		reg_id = request.GET.get('reg_id')
 		registrant = Registrant.objects.get(reg_id=reg_id)
 		query_params['registrant'] = registrant
-		title.append({'id':reg_id, 'text':registrant.reg_name})
+		title.append({'id':reg_id, 'text':registrant.reg_name, "type":'registrant' })
 	
 	if request.GET.get('doc_id'):
 		doc_id = request.GET.get('doc_id')
 		doc = Document.objects.get(id=doc_id)
 		url = doc.url
 		query_params['link'] = url
-		title.append({'id':doc_id, 'text':'Document'})
+		title.append({'id':doc_id, 'text':'Document', "type": 'document'})
 
 	if request.GET.get('client_id'):
 		client_id = int(request.GET.get('client_id'))
 		client = Client.objects.get(id=client_id)
 		query_params['client'] = client
-		title.append({'id':cleint_id, 'text':str(client.client_name)})
+		title.append({'id':cleint_id, 'text':str(client.client_name), "type": 'client'})
 
 	if request.GET.get('recipient_id'):
 		recip_id = int(request.GET.get('recipient_id'))
 		recip = Recipient.objects.get(id=recip_id)
 		query_params['recipient'] = recip
-		title.append({'id':recip_id, 'text':str(recip.name)})
+		title.append({'id':recip_id, 'text':str(recip.name), "type": 'recipient'})
 
 	if request.GET.get('contact_id'):	
 		contact_id = int(request.GET.get('contact_id'))
 		query_params['id'] = contact_id
 		t = "Contact id " + str(contact_id)
-		title.append({'id':None, 'title': t})
+		title.append({'id':None, 'text': t, "type": 'contact'})
 
 	if request.GET.get('location_id'):
 		loc_id = int(request.GET.get('location_id'))
@@ -477,7 +477,7 @@ def contact_table(request):
 		query_params['client__in'] = clients
 		location = Location.objects.get(id=loc_id)
 		location = location.location
-		title.append({'id':loc_id, 'title':location})
+		title.append({'id':loc_id, 'text':location, "type": 'location'})
 	
 	contact_pool = Contact.objects.filter(**query_params)
 	
