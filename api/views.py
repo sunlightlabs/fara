@@ -439,44 +439,45 @@ def contact_table(request):
 	query_params = {}
 
 	### add date paras
-	title = ''
+	title = []
 	if request.GET.get('reg_id'):
 		reg_id = request.GET.get('reg_id')
 		registrant = Registrant.objects.get(reg_id=reg_id)
 		query_params['registrant'] = registrant
-		title = '<a href="/registrant-profile/' + str(reg_id) + '>' + str(registrant.reg_name) + '</a>'
+		title.append({'id':reg_id, 'text':registrant.reg_name})
 	
 	if request.GET.get('doc_id'):
 		doc_id = request.GET.get('doc_id')
 		doc = Document.objects.get(id=doc_id)
 		url = doc.url
 		query_params['link'] = url
-		title = '<a href="/form-profile/' + str(doc_id) + '>Document</a>'
+		title.append({'id':doc_id, 'text':'Document'})
 
 	if request.GET.get('client_id'):
 		client_id = int(request.GET.get('client_id'))
 		client = Client.objects.get(id=client_id)
 		query_params['client'] = client
-		title = '<a href="/client-profile/' + str(cleint_id) + '>' + str(client.client_name) + '</a>'
-
+		title.append({'id':cleint_id, 'text':str(client.client_name)})
 
 	if request.GET.get('recipient_id'):
 		recip_id = int(request.GET.get('recipient_id'))
 		recip = Recipient.objects.get(id=recip_id)
 		query_params['recipient'] = recip
-		title = '<a href="/recipient-profile/' + str(recip_id) + '>' + str(recip.name) + '</a>'
+		title.append({'id':recip_id, 'text':str(recip.name)})
 
 	if request.GET.get('contact_id'):	
 		contact_id = int(request.GET.get('contact_id'))
 		query_params['id'] = contact_id
-		title = "Contact id " + str(contact_id)
+		t = "Contact id " + str(contact_id)
+		title.append({'id':None, 'title': t})
 
 	if request.GET.get('location_id'):
 		loc_id = int(request.GET.get('location_id'))
 		clients = Client.objects.filter(location__id=loc_id)
 		query_params['client__in'] = clients
 		location = Location.objects.get(id=loc_id)
-		title =  location.location
+		location = location.location
+		title.append({'id':loc_id, 'title':location})
 	
 	contact_pool = Contact.objects.filter(**query_params)
 	
@@ -532,6 +533,8 @@ def contact_table(request):
 		record['client'] = contact.client.client_name
 		record['doc_id'] = doc.id
 		record['description'] = contact.description
+		record['registrant'] = contact.registrant.reg_name
+		record['reg_id'] = contact.registrant.reg_id
 
 		results.append(record)
 
