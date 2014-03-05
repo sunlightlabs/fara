@@ -262,6 +262,7 @@ def location_profile(request, loc_id):
 				record['row'] = "even"
 			else:
 				record['row'] = "odd"
+			count += 1
 			record['id'] = arms_press.id
 			record['title'] = arms_press.title
 			if arms_press.date:
@@ -514,7 +515,6 @@ def contact_table(request):
 				date = ''
 		else:
 			date = date.strftime("%m/%d/%Y")
-		date = '<a href="/form-profile/' + str(doc.id) + '">' + date + '</a>'
 		record['date'] = date
 		
 		employee = ''
@@ -522,10 +522,9 @@ def contact_table(request):
 			employee = employee + l.lobbyist_name + ", "
 		record['employee'] = employee
 
-		client_name = contact.client.client_name
-		client_id = str(contact.client.id)
-		record['client'] = '<a href="/client-profile/' + client_id + '">' + client_name + '</a>'
-
+		record['client_id'] = contact.client.id
+		record['client'] = contact.client.client_name
+		record['doc_id'] = doc.id
 		record['description'] = contact.description
 
 		results.append(record)
@@ -536,19 +535,16 @@ def contact_table(request):
 def namebuilder(r):
 	if r.name == "unknown":
 		return ''
-	
-	contact_name = '<a href="/recipient-profile/' + str(r.id) + '>'
 
 	if r.title != None and r.title != '':	
-		contact_name = r.title.encode('ascii', errors='ignore') + ' '
+		contact_name = r.title + ' '
 	if r.name != None and r.name != '':
-		contact_name = contact_name + r.name.encode('ascii', errors='ignore')
+		contact_name = contact_name + r.name
 	if r.office_detail != None and r.office_detail != '':
-		contact_name = contact_name + ", office: " + r.office_detail.encode('ascii', errors='ignore')
+		contact_name = contact_name + ", office: " + r.office_detail
 	if r. agency != None and r.agency != '':
-		contact_name = contact_name + ", agency: " + r.agency.encode('ascii', errors='ignore')
-	
-	contact_name = contact_name + "</a>"
+		contact_name = contact_name + ", agency: " + r.agency
+	print contact_name
 	return contact_name
 
 
