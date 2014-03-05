@@ -535,7 +535,7 @@ def contact_table(request):
 def namebuilder(r):
 	if r.name == "unknown":
 		return ''
-
+	contact_name = ''
 	if r.title != None and r.title != '':	
 		contact_name = r.title + ' '
 	if r.name != None and r.name != '':
@@ -544,7 +544,7 @@ def namebuilder(r):
 		contact_name = contact_name + ", office: " + r.office_detail
 	if r. agency != None and r.agency != '':
 		contact_name = contact_name + ", agency: " + r.agency
-	print contact_name
+
 	return contact_name
 
 
