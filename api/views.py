@@ -494,15 +494,21 @@ def contact_table(request):
 		url = contact.link
 		doc = Document.objects.get(url=url)
 
-		name = ''
+		contacts = []
 		for r in contact.recipient.all():
-			name = name + namebuilder(r) + "; "
-		record['name'] = name
+			person = {}
+			name = namebuilder(r) 
+			recipient_id = r.id
+			if name == '':
+				recipient_id = None
+			contacts.append({"name":name, "recipient_id":recipient_id})
+		record['contact'] =  contacts
 
 		if count %2 == 0:
 			record['row'] = "even"
 		else:
 			record['row'] = "odd"
+		count += 1
 		
 		date = contact.date
 		if date == None:
