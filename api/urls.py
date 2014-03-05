@@ -22,4 +22,5 @@ urlpatterns = patterns('',
    url(r'^place-profile/(\d+)/', 'api.views.location_profile', name= 'location-profile'),
    url(r'^reg-profile/(\d+)/', 'api.views.reg_profile', name= 'reg-profile'),
    url(r'^doc-profile/(\d+)/','api.views.doc_profile', name= 'doc-profile'),
+   url(r'^contact-table', 'api.views.contact_table', name= 'contact-table'),
 )

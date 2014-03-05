@@ -14,7 +14,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Sum
 
 from fara_feed.models import Document
-from FaraData.models import Registrant, Payment, Contact, Contribution, Recipient, Client, Disbursement, ClientReg, Location
+from FaraData.models import Registrant, Payment, Contact, Contribution, Recipient, Client, Disbursement, ClientReg, Location, MetaData
 from arms_sales.models import Proposed
 
 from fara.local_settings import API_PASSWORD
@@ -193,6 +193,7 @@ def recipient_profile(request, recip_id):
 def client_profile(request, client_id):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
+	
 	c = Client.objects.get(id=client_id)
 	results = []
 	client = {}
@@ -254,8 +255,13 @@ def location_profile(request, loc_id):
 	if Proposed.objects.filter(location_id=loc_id).exists():
 		arms = Proposed.objects.filter(location_id=loc_id)
 		proposed_sales = []
+		count = 2
 		for arms_press in arms:
 			record = {}
+			if count %2 == 0:
+				record['row'] = "even"
+			else:
+				record['row'] = "odd"
 			record['id'] = arms_press.id
 			record['title'] = arms_press.title
 			if arms_press.date:
@@ -422,4 +428,127 @@ def reg_profile(request, reg_id):
 	results['terminated_clients'] = terminated_clients
 	results = json.dumps({'results': results }, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
+
+## tables
+
+def contact_table(request):
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied
+	results = []
+	query_params = {}
+
+	### add date paras
+	title = ''
+	if request.GET.get('reg_id'):
+		reg_id = request.GET.get('reg_id')
+		registrant = Registrant.objects.get(reg_id=reg_id)
+		query_params['registrant'] = registrant
+		title = '<a href="/registrant-profile/' + str(reg_id) + '>' + str(registrant.reg_name) + '</a>'
+	
+	if request.GET.get('doc_id'):
+		doc_id = request.GET.get('doc_id')
+		doc = Document.objects.get(id=doc_id)
+		url = doc.url
+		query_params['link'] = url
+		title = '<a href="/form-profile/' + str(doc_id) + '>Document</a>'
+
+	if request.GET.get('client_id'):
+		client_id = int(request.GET.get('client_id'))
+		client = Client.objects.get(id=client_id)
+		query_params['client'] = client
+		title = '<a href="/client-profile/' + str(cleint_id) + '>' + str(client.client_name) + '</a>'
+
+
+	if request.GET.get('recipient_id'):
+		recip_id = int(request.GET.get('recipient_id'))
+		recip = Recipient.objects.get(id=recip_id)
+		query_params['recipient'] = recip
+		title = '<a href="/recipient-profile/' + str(recip_id) + '>' + str(recip.name) + '</a>'
+
+	if request.GET.get('contact_id'):	
+		contact_id = int(request.GET.get('contact_id'))
+		query_params['id'] = contact_id
+		title = "Contact id " + str(contact_id)
+
+	if request.GET.get('location_id'):
+		loc_id = int(request.GET.get('location_id'))
+		clients = Client.objects.filter(location__id=loc_id)
+		query_params['client__in'] = clients
+		location = Location.objects.get(id=loc_id)
+		title =  location.location
+	
+	contact_pool = Contact.objects.filter(**query_params)
+	
+	if request.GET.get('p'):
+		page = int(request.GET.get('p'))
+	else:
+		page = 1
+	
+	paginate_contacts = paginate(contact_pool, page)
+	page_of_contacts = paginate_contacts[0:]
+
+	count = 2
+	for contact in page_of_contacts:
+		record = {}
+		url = contact.link
+		doc = Document.objects.get(url=url)
+
+		name = ''
+		for r in contact.recipient.all():
+			name = name + namebuilder(r) + "; "
+		record['name'] = name
+
+		if count %2 == 0:
+			record['row'] = "even"
+		else:
+			record['row'] = "odd"
+		
+		date = contact.date
+		if date == None:
+			md = MetaData.objects.get(link=url)
+			date = md.end_date
+			try:
+				date = date.strftime("%m/%d/%Y")
+				date = "*" + date 
+			except:
+				date = ''
+		else:
+			date = date.strftime("%m/%d/%Y")
+		date = '<a href="/form-profile/' + str(doc.id) + '">' + date + '</a>'
+		record['date'] = date
+		
+		employee = ''
+		for l in contact.lobbyist.all():
+			employee = employee + l.lobbyist_name + ", "
+		record['employee'] = employee
+
+		client_name = contact.client.client_name
+		client_id = str(contact.client.id)
+		record['client'] = '<a href="/client-profile/' + client_id + '">' + client_name + '</a>'
+
+		record['description'] = contact.description
+
+		results.append(record)
+
+	results = json.dumps({'results':results, 'title':title, 'page':page}, separators=(',',':'))
+	return HttpResponse(results, mimetype="application/json")
+
+def namebuilder(r):
+	if r.name == "unknown":
+		return ''
+	
+	contact_name = '<a href="/recipient-profile/' + str(r.id) + '>'
+
+	if r.title != None and r.title != '':	
+		contact_name = r.title.encode('ascii', errors='ignore') + ' '
+	if r.name != None and r.name != '':
+		contact_name = contact_name + r.name.encode('ascii', errors='ignore')
+	if r.office_detail != None and r.office_detail != '':
+		contact_name = contact_name + ", office: " + r.office_detail.encode('ascii', errors='ignore')
+	if r. agency != None and r.agency != '':
+		contact_name = contact_name + ", agency: " + r.agency.encode('ascii', errors='ignore')
+	
+	contact_name = contact_name + "</a>"
+	return contact_name
+
 
