@@ -457,7 +457,7 @@ def contact_table(request):
 		client_id = int(request.GET.get('client_id'))
 		client = Client.objects.get(id=client_id)
 		query_params['client'] = client
-		title.append({'id':cleint_id, 'text':str(client.client_name), "type": 'client'})
+		title.append({'id':client_id, 'text':str(client.client_name), "type": 'client'})
 
 	if request.GET.get('recipient_id'):
 		recip_id = int(request.GET.get('recipient_id'))
