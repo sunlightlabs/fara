@@ -175,6 +175,7 @@ def recipient_profile(request, recip_id):
 		recipient['state_local'] = recip.state_local
 		recipient['bioguide_id'] = recip.bioguide_id
 		recip_id = recip.id 
+		recipient['recipient_id'] = recip_id
 
 		if Contribution.objects.filter(recipient=recip_id).exists():
 			contribution = Contribution.objects.filter(recipient=recip_id).aggregate(total_pay=Sum('amount'))
@@ -444,14 +445,14 @@ def contact_table(request):
 		reg_id = request.GET.get('reg_id')
 		registrant = Registrant.objects.get(reg_id=reg_id)
 		query_params['registrant'] = registrant
-		title.append({'id':reg_id, 'text':registrant.reg_name, "type":'registrant' })
+		title.append({'id':reg_id, 'text':registrant.reg_name, "type":'reg' })
 	
 	if request.GET.get('doc_id'):
 		doc_id = request.GET.get('doc_id')
 		doc = Document.objects.get(id=doc_id)
 		url = doc.url
 		query_params['link'] = url
-		title.append({'id':doc_id, 'text':'Document', "type": 'document'})
+		title.append({'id':doc_id, 'text':'Document', "type": 'form'})
 
 	if request.GET.get('client_id'):
 		client_id = int(request.GET.get('client_id'))
