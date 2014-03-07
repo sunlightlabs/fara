@@ -646,6 +646,7 @@ def payment_table(request):
 	paginate_payments = paginate(contact_pool, p)
 	page_of_payments = paginate_payments[0:]
 
+	count = 2
 	for payment in page_of_payments:
 		print payment
 		record = {}
@@ -675,7 +676,6 @@ def payment_table(request):
 		record['date'] = date	
 		results.append(record)
 
-		count = 2
 		if count %2 == 0:
 			record['row'] = "even"
 		else:
