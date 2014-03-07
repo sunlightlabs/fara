@@ -372,10 +372,10 @@ def reg_profile(request, reg_id):
 		registrant['total_contributions'] = total_contribution 
 
 	# need to filter by end date to get totals. This should catch all document reported for the year. You need 2 six-month filings to have a complete year
-	if Document.objects.filter(reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],date__range=(datetime.date(2013,1,1), datetime.date.today())).exists():
+	if Document.objects.filter(reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())).exists():
 		doc_list = []
 		# getting recent supplementals and amendments
-		for doc in Document.objects.filter(registrant=reg,doc_type__in=['Supplemental','Amendment'], processed=True,date__range=(datetime.date(2013,1,1), datetime.today())):
+		for doc in Document.objects.filter(registrant=reg,doc_type__in=['Supplemental','Amendment'], processed=True,stamp_date__range=(datetime.date(2013,1,1), datetime.today())):
 			doc_list.append(doc.url)
 		# checking the end date
 		docs = []
