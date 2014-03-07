@@ -375,7 +375,7 @@ def reg_profile(request, reg_id):
 	if Document.objects.filter(reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())).exists():
 		doc_list = []
 		# getting recent supplementals and amendments
-		for doc in Document.objects.filter(registrant=reg,doc_type__in=['Supplemental','Amendment'], processed=True,stamp_date__range=(datetime.date(2013,1,1), datetime.today())):
+		for doc in Document.objects.filter(registrant=reg,doc_type__in=['Supplemental','Amendment'], processed=True,stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())):
 			doc_list.append(doc.url)
 		# checking the end date
 		docs = []
