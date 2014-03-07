@@ -516,14 +516,12 @@ def contact_table(request):
 		p = int(request.GET.get('p'))
 	else:
 		p = 1
-	page = {}
-	page['query_params'] = query_params	
+	page = {}	
 	page['page'] = p
 	page['num_pages'] = int(contact_pool.count())/20
 
 	paginate_contacts = paginate(contact_pool, p)
 	page_of_contacts = paginate_contacts[0:]
-
 
 	count = 2
 	for contact in page_of_contacts:
@@ -566,13 +564,14 @@ def contact_table(request):
 		record['employee'] = employee
 		record['client_id'] = contact.client.id
 		record['client'] = contact.client.client_name
+		print contact.client.client_name
 		record['doc_id'] = doc.id
 		record['description'] = contact.description
 		record['registrant'] = contact.registrant.reg_name
 		record['reg_id'] = contact.registrant.reg_id
 
 		results.append(record)
-
+	print results
 	results = json.dumps({'results':results, 'title':title, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 

@@ -148,7 +148,7 @@ class Command(BaseCommand):
                     continue
                 data.append((input.attrib['name'], input.attrib['value']))
 
-        start_date = datetime.date.today() - datetime.timedelta(days=20)
+        start_date = datetime.date.today() - datetime.timedelta(days=25)
         end_date = datetime.date.today()
 
         data += [('p_t01', 'ALL'),
@@ -156,7 +156,7 @@ class Command(BaseCommand):
                  ('p_t06', start_date.strftime('%m/%d/%Y')),
                  ('p_t07', end_date.strftime('%m/%d/%Y')),
                  ('p_request', 'SEARCH'),
-                 ]
+        ]
     
         url = 'https://efile.fara.gov/pls/apex/wwv_flow.accept'
 
