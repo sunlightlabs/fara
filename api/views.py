@@ -53,7 +53,6 @@ def incoming_fara(request):
 		results = json.dumps({'results':info}, separators=(',',':'))
 		return HttpResponse(results, mimetype="application/json")
 
-
 	query_params = {}
 	query_params['stamp_date__range'] = (datetime.date(2012,1,1), datetime.date.today())
 
@@ -62,7 +61,7 @@ def incoming_fara(request):
 	else:
 		page = 1
 	
-	# Would like to make this not case sensitive 
+	### Would like to make this not case sensitive 
 	if request.GET.get('type'):
 		form_type = request.GET.get('type')
 		form_type = [form_type]
@@ -128,30 +127,50 @@ def doc_profile(request, doc_id):
 	if Registrant.objects.filter(reg_id=reg_id).exists():
 		reg = Registrant.objects.get(reg_id=reg_id)
 		results['reg_name'] = reg.reg_name
+
+		if Contribution.objects.filter(link=url).exists():
+			contribution = Contribution.objects.filter(link=url).aggregate(total_pay=Sum('amount'))
+			total_contributions = float(contribution['total_pay'])
+			results['total_contributions'] = total_contributions
+		
 		client_results = reg.clients.all()
-		clients = []
-		for client in client_results:
-			c = {
-				'client_name':client.client_name,
-				'location': client.location.location,
-				'client_id': client.id,
-				'location_id': client.location.id,
-			}
-			
-			if Payment.objects.filter(link=url,client=client).exists():
-				payment = Payment.objects.filter(link=url,client=client).aggregate(total_pay=Sum('amount'))
-				total_pay = float(payment['total_pay'])
-				c['payment'] = total_pay
-
-			if Contact.objects.filter(link=url,client=client).exists():
-				total_contacts = Contact.objects.filter(link=url,client=client).count()
-				c['contact'] = total_contacts
-
-			clients.append(c)
+		clients = client_form_summary(client_results, url)
 		results['clients'] = clients
-	print results
+
+		terminated_results = reg.terminated_clients.all()
+		terminated_clients = client_form_summary(terminated_results, url)
+		results['terminated_clients'] = clients
+
 	results = json.dumps({'results': results}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
+
+# used to make the summary section of the form profile page
+def client_form_summary(client_objects, url):
+	clients = []
+	for client in client_objects:
+		c = {
+			'client_name':client.client_name,
+			'location': client.location.location,
+			'client_id': client.id,
+			'location_id': client.location.id,
+		}		
+		if Payment.objects.filter(link=url,client=client).exists():
+			payment = Payment.objects.filter(link=url,client=client).aggregate(total_pay=Sum('amount'))
+			total_pay = float(payment['total_pay'])
+			c['payment'] = total_pay
+
+		if Contact.objects.filter(link=url,client=client).exists():
+			total_contacts = Contact.objects.filter(link=url,client=client).count()
+			c['contact'] = total_contacts
+		
+		if Disbursement.objects.filter(link=url,client=client).exists():
+			disbursements = Disbursement.objects.filter(link=url,client=client).aggregate(total_pay=Sum('amount'))
+			total_disbursements = float(disbursements['total_pay'])
+			c['disbursement'] = total_disbursements
+
+
+		clients.append(c)
+	return clients
 
 def recipient_profile(request, recip_id):
 	if not request.GET.get('key') == API_PASSWORD:
@@ -486,6 +505,8 @@ def contact_table(request):
 		page = int(request.GET.get('p'))
 	else:
 		page = 1
+	page['query_params'] = query_params
+	print query_params
 	
 	paginate_contacts = paginate(contact_pool, page)
 	page_of_contacts = paginate_contacts[0:]
@@ -529,7 +550,6 @@ def contact_table(request):
 		for l in contact.lobbyist.all():
 			employee = employee + l.lobbyist_name + ", "
 		record['employee'] = employee
-
 		record['client_id'] = contact.client.id
 		record['client'] = contact.client.client_name
 		record['doc_id'] = doc.id
@@ -557,4 +577,4 @@ def namebuilder(r):
 
 	return contact_name
 
-
+#def payment_table():
