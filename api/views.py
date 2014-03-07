@@ -471,6 +471,7 @@ def contact_table(request):
 
 	### add date paras
 	title = []
+	# this can't be later in the query or it turns in to a trademark symbol
 	if request.GET.get('reg_id'):
 		reg_id = request.GET.get('reg_id')
 		registrant = Registrant.objects.get(reg_id=reg_id)
@@ -482,7 +483,8 @@ def contact_table(request):
 		doc = Document.objects.get(id=doc_id)
 		url = doc.url
 		query_params['link'] = url
-		title.append({'id':doc_id, 'text':'Document', "type": 'form'})
+		text = "Document " + str(doc_id)
+		title.append({'id':doc_id, 'text':text, "type": 'form'})
 
 	if request.GET.get('client_id'):
 		client_id = int(request.GET.get('client_id'))
@@ -499,7 +501,7 @@ def contact_table(request):
 	if request.GET.get('contact_id'):	
 		contact_id = int(request.GET.get('contact_id'))
 		query_params['id'] = contact_id
-		t = "Contact id " + str(contact_id)
+		t = "Contact record " + str(contact_id)
 		title.append({'id':None, 'text': t, "type": 'contact'})
 
 	if request.GET.get('location_id'):
@@ -571,7 +573,7 @@ def contact_table(request):
 		record['reg_id'] = contact.registrant.reg_id
 
 		results.append(record)
-	print results
+
 	results = json.dumps({'results':results, 'title':title, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
@@ -585,9 +587,94 @@ def namebuilder(r):
 		contact_name = contact_name + r.name
 	if r.office_detail != None and r.office_detail != '':
 		contact_name = contact_name + ", office: " + r.office_detail
-	if r. agency != None and r.agency != '':
+	if r.agency != None and r.agency != '':
 		contact_name = contact_name + ", agency: " + r.agency
 
 	return contact_name
 
-#def payment_table():
+def payment_table(request):
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied
+	
+	results = []
+	query_params = {}
+	title = []
+
+	if request.GET.get('reg_id'):
+		reg_id = request.GET.get('reg_id')
+		registrant = Registrant.objects.get(reg_id=reg_id)
+		query_params['registrant'] = registrant
+		title.append({'id':reg_id, 'text':registrant.reg_name, "type":'reg' })
+
+	if request.GET.get('doc_id'):
+		doc_id = request.GET.get('doc_id')
+		doc = Document.objects.get(id=doc_id)
+		url = doc.url
+		query_params['link']= url 
+		text = "Document " + str(doc_id)
+		title.append({'id':doc_id, 'text':text, "type": 'form'})
+
+	if request.GET.get('client_id'):
+		client_id = int(request.GET.get('client_id'))
+		client = Client.objects.get(id=client_id)
+		query_params['client'] = client
+		title.append({'id':client_id, 'text':str(client.client_name), "type": 'client'})
+	
+	if request.GET.get('payment_id'):
+		payment_id = int(request.GET.get('payment_id'))
+		query_params['id'] = int(payment_id)
+		t = "Payment record " + str(payment_id)
+		title.append({'id':None, 'text': t, "type": 'payment'})
+	
+	if request.GET.get('location_id'):
+		loc_id = int(request.GET.get('location_id'))
+		clients = Client.objects.filter(location__id=loc_id)
+		query_params['client__in'] = clients
+		location = Location.objects.get(id=loc_id)
+		location = location.location
+		title.append({'id':loc_id, 'text':location, "type": 'location'})
+
+	contact_pool = Payment.objects.filter(**query_params).order_by('-date')
+	
+	if request.GET.get('p'):
+		p = int(request.GET.get('p'))
+	else:
+		p = 1
+	page = {}	
+	page['page'] = p
+	page['num_pages'] = int(contact_pool.count())/20
+	paginate_payments = paginate(contact_pool, p)
+	page_of_payments = paginate_payments[0:]
+
+	for payment in page_of_payments:
+		print payment
+		record = {}
+		url = payment.link
+		doc = Document.objects.get(url=url)
+		record['doc_id'] = doc.id
+		record['purpose'] = payment.purpose
+		record['client'] = payment.client.client_name
+		record['client_id'] = payment.client.id
+		record['registrant'] = payment.registrant.reg_name
+		record['reg_id'] = payment.registrant.reg_id
+		record['amount'] = float(payment.amount)
+		if payment.subcontractor != None:
+			record['subcontractor'] = payment.subcontractor.reg_name
+		date = payment.date
+		if date == None:
+			md = MetaData.objects.get(link=url)
+			date = md.end_date
+			try:
+				date = date.strftime("%m/%d/%Y")
+				date = "*" + date 
+			except:
+				date = ''
+		else:
+			date = date.strftime("%m/%d/%Y")
+		record['date'] = date	
+		results.append(record)
+
+
+	results = json.dumps({'results':results, 'title':title, 'page':page}, separators=(',',':'))
+	return HttpResponse(results, mimetype="application/json")
+

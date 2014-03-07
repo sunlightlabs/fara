@@ -23,4 +23,5 @@ urlpatterns = patterns('',
    url(r'^reg-profile/(\d+)/', 'api.views.reg_profile', name= 'reg-profile'),
    url(r'^doc-profile/(\d+)/','api.views.doc_profile', name= 'doc-profile'),
    url(r'^contact-table', 'api.views.contact_table', name= 'contact-table'),
+   url(r'^payment-table', 'api.views.payment_table', name= 'payment-table'),
 )
