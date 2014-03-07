@@ -387,6 +387,7 @@ def reg_profile(request, reg_id):
 		
 		payments2013 = Payment.objects.filter(link__in=docs).aggregate(total_pay=Sum('amount'))
 		print payments2013['total_pay']
+		print "hello"
 		payments2013 = float(payments2013['total_pay'])
 		registrant['payments2013'] = payments2013
 
