@@ -680,7 +680,7 @@ def payment_table(request):
 			record['row'] = "even"
 		else:
 			record['row'] = "odd"
-		count += 1
+		count =+ 1
 
 
 	results = json.dumps({'results':results, 'title':title, 'page':page}, separators=(',',':'))
