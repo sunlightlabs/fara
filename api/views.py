@@ -370,18 +370,22 @@ def reg_profile(request, reg_id):
 		total_contribution = float(contribution['total_pay'])
 		registrant['total_contributions'] = total_contribution 
 
-	# need to filter by end date to get totals. This should catch all document reported for the year. You need 2 six-month filings to have a complete year 
-	if MetaData.objects.filter(registrant=reg,end_date__range=(datetime.date(2013,1,1), datetime.date(2013,12,31)),processed=True).exists():
-		docs = MetaData.objects.filter(registrant=reg,end_date__range=(datetime.date(2013,1,1), datetime.date(2013,12,31)),processed=True)
+	# need to filter by end date to get totals. This should catch all document reported for the year. You need 2 six-month filings to have a complete year
+	if Document.objects.filter(registrant=reg,doc_type__in=['Supplemental','Amendment'],date__range=(datetime.date(2013,1,1), datetime.today())),exists():
 		doc_list = []
-		for d in docs:
-			doc_list.append(d.link)
-		# we need to filings to have a full year's worth of data	
-		if Payment.objects.filter(link__in=doc_list).exists() and len(doc_list)> 1:
-			payments = Payment.objects.filter(link__in=doc_list).aggregate(total_pay=Sum('amount'))
-			payments2013 = float(payment['total_pay'])
-			registrant['payments2013'] = payments2013
-
+		# getting recent supplementals and amendments
+		for doc in Document.objects.filter(registrant=reg,doc_type__in=['Supplemental','Amendment'], processed=True,date__range=(datetime.date(2013,1,1), datetime.today())):
+			doc_list.append(doc.url)
+		# checking the end date
+		docs = []
+		for doc in doc_list:
+			md = MetaData.object.get(link=doc)
+			end_date = md.en_date
+			if datetime.date(2013,1,1) > md.end_date > datetime.date(2013,12,31):
+				docs.append(doc_dict[key])
+		
+		payments2013 = Payment.object.filter(link__in=docs).aggregate(total_pay=Sum('amount'))
+		registrant['payments2013'] = payments2013
 
 	if Payment.objects.filter(registrant=reg).exists():
 		payment = Payment.objects.filter(registrant=reg).aggregate(total_pay=Sum('amount'))
