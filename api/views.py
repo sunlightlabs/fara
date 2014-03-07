@@ -660,6 +660,7 @@ def payment_table(request):
 		record['amount'] = float(payment.amount)
 		if payment.subcontractor != None:
 			record['subcontractor'] = payment.subcontractor.reg_name
+			record['subcontractor_id'] = payment.subcontractor.reg_id
 		date = payment.date
 		if date == None:
 			md = MetaData.objects.get(link=url)
@@ -673,6 +674,12 @@ def payment_table(request):
 			date = date.strftime("%m/%d/%Y")
 		record['date'] = date	
 		results.append(record)
+
+		if count %2 == 0:
+			record['row'] = "even"
+		else:
+			record['row'] = "odd"
+		count += 1
 
 
 	results = json.dumps({'results':results, 'title':title, 'page':page}, separators=(',',':'))
