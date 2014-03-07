@@ -675,6 +675,7 @@ def payment_table(request):
 		record['date'] = date	
 		results.append(record)
 
+		count = 2
 		if count %2 == 0:
 			record['row'] = "even"
 		else:
