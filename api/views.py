@@ -141,6 +141,20 @@ def doc_profile(request, doc_id):
 		terminated_clients = client_form_summary(terminated_results, url)
 		results['terminated_clients'] = clients
 
+		if Payment.objects.filter(link=url).exists():
+			payment = Payment.objects.filter(link=url).aggregate(total_pay=Sum('amount'))
+			total_pay = float(payment['total_pay'])
+			results['total_payment'] = total_pay
+
+		if Contact.objects.filter(link=url).exists():
+			total_contacts = Contact.objects.filter(link=url).count()
+			results['total_contact'] = total_contacts
+		
+		if Disbursement.objects.filter(link=url).exists():
+			disbursements = Disbursement.objects.filter(link=url).aggregate(total_pay=Sum('amount'))
+			total_disbursements = float(disbursements['total_pay'])
+			results['total_disbursement'] = total_disbursements
+
 	results = json.dumps({'results': results}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
