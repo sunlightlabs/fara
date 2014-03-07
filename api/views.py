@@ -370,9 +370,9 @@ def reg_profile(request, reg_id):
 		total_contribution = float(contribution['total_pay'])
 		registrant['total_contributions'] = total_contribution 
 
-	# need to filter by end date to get totals. This should catch all document reported for the year.
-	if Document.objects.filter(reg_id=reg,end_date__range=(datetime.date(2013,1,1), datetime.date(2013,12,31))).exists():
-		docs = Document.objects.filter(reg_id=reg,end_date__range=(datetime.date(2013,1,1), datetime.date(2013,12,31)))
+	# need to filter by end date to get totals. This should catch all document reported for the year. You need 2 six-month filings to have a complete year 
+	if Document.objects.filter(registrant=reg,end_date__range=(datetime.date(2013,1,1), datetime.date(2013,12,31)),processed=True).exists():
+		docs = Document.objects.filter(registrant=reg,end_date__range=(datetime.date(2013,1,1), datetime.date(2013,12,31)),processed=True)
 		doc_list = []
 		for d in docs:
 			doc_list.append(d.url)
