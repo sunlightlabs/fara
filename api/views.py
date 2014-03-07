@@ -385,7 +385,8 @@ def reg_profile(request, reg_id):
 			if datetime.date(2013,1,1) > md.end_date > datetime.date(2013,12,31):
 				docs.append(doc_dict[key])
 		
-		payments2013 = Payment.object.filter(link__in=docs).aggregate(total_pay=Sum('amount'))
+		payments2013 = Payment.objects.filter(link__in=docs).aggregate(total_pay=Sum('amount'))
+		payments2013 = float(payments2013['total_pay'])
 		registrant['payments2013'] = payments2013
 
 	if Payment.objects.filter(registrant=reg).exists():
