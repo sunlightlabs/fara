@@ -378,12 +378,12 @@ def reg_profile(request, reg_id):
 		for doc in Document.objects.filter(reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())):
 			doc_list.append(doc.url)
 		# checking the end date
-		docs = []
+		doc_urls = []
 		for doc in doc_list:
 			md = MetaData.objects.get(link=doc)
 			end_date = md.end_date
 			if datetime.date(2013,1,1) < md.end_date < datetime.date(2013,12,31):
-				docs.append(docs)
+				doc_urls.append(doc)
 		
 		payments2013 = Payment.objects.filter(link__in=docs).aggregate(total_pay=Sum('amount'))
 		print payments2013['total_pay']
