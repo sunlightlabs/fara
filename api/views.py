@@ -131,7 +131,7 @@ def doc_profile(request, doc_id):
 		if Contribution.objects.filter(link=url).exists():
 			contribution = Contribution.objects.filter(link=url).aggregate(total_pay=Sum('amount'))
 			total_contributions = float(contribution['total_pay'])
-			results['total_contributions'] = total_contributions
+			results['total_contribution'] = total_contributions
 		
 		client_results = reg.clients.all()
 		clients = client_form_summary(client_results, url)
@@ -181,8 +181,6 @@ def client_form_summary(client_objects, url):
 			disbursements = Disbursement.objects.filter(link=url,client=client).aggregate(total_pay=Sum('amount'))
 			total_disbursements = float(disbursements['total_pay'])
 			c['disbursement'] = total_disbursements
-
-
 		clients.append(c)
 	return clients
 
