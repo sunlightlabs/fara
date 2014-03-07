@@ -383,9 +383,10 @@ def reg_profile(request, reg_id):
 			md = MetaData.objects.get(link=doc)
 			end_date = md.end_date
 			if datetime.date(2013,1,1) > md.end_date > datetime.date(2013,12,31):
-				docs.append(doc_dict[key])
+				docs.append(doc)
 		
 		payments2013 = Payment.objects.filter(link__in=docs).aggregate(total_pay=Sum('amount'))
+		print payments2013['total_pay']
 		payments2013 = float(payments2013['total_pay'])
 		registrant['payments2013'] = payments2013
 
