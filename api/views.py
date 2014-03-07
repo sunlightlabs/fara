@@ -29,7 +29,6 @@ def paginate(form, page):
 		form = paginator.page(paginator.num_pages)
 	return form
 
-
 def incoming_fara(request):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
@@ -514,14 +513,17 @@ def contact_table(request):
 	contact_pool = Contact.objects.filter(**query_params)
 	
 	if request.GET.get('p'):
-		page = int(request.GET.get('p'))
+		p = int(request.GET.get('p'))
 	else:
-		page = 1
-	page['query_params'] = query_params
-	print query_params
-	
-	paginate_contacts = paginate(contact_pool, page)
+		p = 1
+	page = {}
+	page['query_params'] = query_params	
+	page['page'] = p
+	page['num_pages'] = int(contact_pool.count())/20
+
+	paginate_contacts = paginate(contact_pool, p)
 	page_of_contacts = paginate_contacts[0:]
+
 
 	count = 2
 	for contact in page_of_contacts:
