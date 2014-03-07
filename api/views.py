@@ -510,7 +510,7 @@ def contact_table(request):
 		location = location.location
 		title.append({'id':loc_id, 'text':location, "type": 'location'})
 	
-	contact_pool = Contact.objects.filter(**query_params)
+	contact_pool = Contact.objects.filter(**query_params).order_by('-date')
 	
 	if request.GET.get('p'):
 		p = int(request.GET.get('p'))
