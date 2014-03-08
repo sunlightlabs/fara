@@ -386,11 +386,11 @@ def reg_profile(request, reg_id):
 			if datetime.date(2013,1,1) < md.end_date < datetime.date(2013,12,31):
 				doc_urls.append(doc)
 
-		supplementals = 0
+		s = 0
 		for link in doc_urls:
 			if "Supplemental" in doc_urls:
-				supplementals = supplementals + 1
-		if supplementas == 2:
+				s = s + 1
+		if s == 2:
 			if Payment.objects.filter(link__in=doc_urls):
 				payments2013 = Payment.objects.filter(link__in=doc_urls).aggregate(total_pay=Sum('amount'))
 				payments2013 = float(payments2013['total_pay'])
