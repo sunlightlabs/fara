@@ -379,17 +379,27 @@ def reg_profile(request, reg_id):
 			doc_list.append(doc.url)
 		# checking the end date
 		doc_urls = []
+		
 		for doc in doc_list:
 			md = MetaData.objects.get(link=doc)
 			end_date = md.end_date
 			if datetime.date(2013,1,1) < md.end_date < datetime.date(2013,12,31):
 				doc_urls.append(doc)
-		
-		payments2013 = Payment.objects.filter(link__in=doc_urls).aggregate(total_pay=Sum('amount'))
-		print payments2013['total_pay']
-		print "hello"
-		payments2013 = float(payments2013['total_pay'])
-		registrant['payments2013'] = payments2013
+
+		supplementals = 0
+		for link in doc_urls:
+			if "Supplemental" in doc_urls:
+				supplementals = supplementals + 1
+		if supplementas == 2:
+			if Payment.objects.filter(link__in=doc_urls):
+				payments2013 = Payment.objects.filter(link__in=doc_urls).aggregate(total_pay=Sum('amount'))
+				payments2013 = float(payments2013['total_pay'])
+				registrant['payments2013'] = payments2013
+
+			if Disbursement.objects.filter(link__in=doc_urls):
+				disburse2013 = Disbursement.objects.filter(link__in=doc_urls).aggregate(total_pay=Sum('amount'))
+				disburse2013 = float(disburse2013['total_pay'])
+				registrant['disburse2013'] = disburse2013
 
 	if Payment.objects.filter(registrant=reg).exists():
 		payment = Payment.objects.filter(registrant=reg).aggregate(total_pay=Sum('amount'))
