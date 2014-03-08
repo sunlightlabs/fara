@@ -388,7 +388,7 @@ def reg_profile(request, reg_id):
 
 		s = 0
 		for link in doc_urls:
-			if "Supplemental" in doc_urls:
+			if "Supplemental" in link:
 				s = s + 1
 		if s == 2:
 			if Payment.objects.filter(link__in=doc_urls):
