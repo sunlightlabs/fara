@@ -378,7 +378,7 @@ def reg_profile(request, reg_id):
 		docs_2014 = []
 		s13 = 0
 		s14 = 0
-		for doc in docs_list:
+		for doc in doc_list:
 			md = MetaData.objects.get(link=doc)
 			end_date = md.end_date
 			if datetime.date(2013,1,1) < md.end_date < datetime.date(2013,12,31):
