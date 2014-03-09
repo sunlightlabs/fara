@@ -363,7 +363,6 @@ def reg_profile(request, reg_id):
 	reg_id = reg.reg_id
 	registrant['reg_id'] = reg_id
 	registrant['name'] = reg.reg_name
-
 	# could add address information 
 
 	if Contribution.objects.filter(registrant=reg).exists():
@@ -371,25 +370,25 @@ def reg_profile(request, reg_id):
 		total_contribution = float(contribution['total_pay'])
 		registrant['total_contributions'] = total_contribution 
 
-	# need to filter by end date to get totals. This should catch all document reported for the year. You need 2 six-month filings to have a complete year
+	# need to filter by stamp date (date received by DOJ) to get totals. This should catch all document reported for the year. You need 2 six-month filings to have a complete year
 	if Document.objects.filter(reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())).exists():
 		doc_list = []
 		# getting recent supplementals and amendments
 		for doc in Document.objects.filter(reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())):
 			doc_list.append(doc.url)
-		# checking the end date
-		doc_urls = []
 		
+		# checking the end date "Six-month period ending in"
+		doc_urls = []
+		s = 0
 		for doc in doc_list:
 			md = MetaData.objects.get(link=doc)
 			end_date = md.end_date
 			if datetime.date(2013,1,1) < md.end_date < datetime.date(2013,12,31):
 				doc_urls.append(doc)
-
-		s = 0
-		for link in doc_urls:
 			if "Supplemental" in link:
 				s = s + 1
+		
+		# need 2 supplementals for a complete year of record 
 		if s == 2:
 			if Payment.objects.filter(link__in=doc_urls):
 				payments2013 = Payment.objects.filter(link__in=doc_urls).aggregate(total_pay=Sum('amount'))
@@ -402,21 +401,16 @@ def reg_profile(request, reg_id):
 				registrant['disburse2013'] = disburse2013
 
 	if Payment.objects.filter(registrant=reg).exists():
-		payment = Payment.objects.filter(registrant=reg).aggregate(total_pay=Sum('amount'))
-		total_payments = float(payment['total_pay'])
-		registrant['total_payments'] = total_payments
+		registrant['total_payments'] = True
 
 	if Disbursement.objects.filter(registrant=reg).exists():
-		disbursement = Disbursement.objects.filter(registrant=reg).aggregate(total_pay=Sum('amount'))
-		total_disbursements = float(disbursement['total_pay'])
-		registrant['total_disbursements'] = total_disbursements
+		registrant['total_disbursements'] = True
 
 	if Contact.objects.filter(registrant=reg).exists():
 		contacts = Contact.objects.filter(registrant=reg).count()
 		registrant['total_contacts'] = contacts
 
 	# contacts
-
 	results['registrant'] =  registrant
 	# active client info
 	client_results = reg.clients.all()
@@ -430,19 +424,26 @@ def reg_profile(request, reg_id):
 			'active': True,
 		}
 		
-		if Payment.objects.filter(client=client,registrant=reg).exists():
-			payment = Payment.objects.filter(client=client,registrant=reg).aggregate(total_pay=Sum('amount'))
-			total_pay = float(payment['total_pay'])
-			c['payment'] = total_pay
+		if s == 2:		
+			if Payment.objects.filter(client=client,registrant=reg).exists():
+				c['payment'] = True
+
+			if Disbursement.objects.filter(client=client,registrant=reg).exists():
+				c['disbursement'] = True
+
+			if Payment.objects.filter(link__in=doc_urls):
+				payments2013 = Payment.objects.filter(link__in=doc_urls, client=client).aggregate(total_pay=Sum('amount'))
+				payments2013 = float(payments2013['total_pay'])
+				registrant['payments2013'] = payments2013
+
+			if Disbursement.objects.filter(link__in=doc_urls):
+				disburse2013 = Disbursement.objects.filter(link__in=doc_urls, client=client).aggregate(total_pay=Sum('amount'))
+				disburse2013 = float(disburse2013['total_pay'])
+				registrant['disburse2013'] = disburse2013
 
 		if Contact.objects.filter(client=client,registrant=reg).exists():
 			total_contacts = Contact.objects.filter(client=client,registrant=reg).count()
 			c['contact'] = total_contacts
-
-		if Disbursement.objects.filter(client=client,registrant=reg).exists():
-			disbursement = Disbursement.objects.filter(client=client,registrant=reg).aggregate(total_disbursement=Sum('amount'))
-			total_disbursement = float(disbursement['total_disbursement'])
-			c['disbursement'] = total_disbursement
 
 		if ClientReg.objects.filter(client_id=client,reg_id=reg_id).exists():
 			cr = ClientReg.objects.get(client_id=client,reg_id=reg_id)
