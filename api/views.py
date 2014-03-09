@@ -392,9 +392,9 @@ def reg_profile(request, reg_id):
 
 		# need 2 supplementals for a complete year of record 
 		if s13 == 2:
-			complete_records13 == True
+			complete_records13 = True
 		if s14 == 2:
-			complete_records14 == True
+			complete_records14 = True
 
 		if complete_records13 == True:
 			if Contribution.objects.filter(link__in=docs_2013).exists():
