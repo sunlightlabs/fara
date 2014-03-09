@@ -383,11 +383,11 @@ def reg_profile(request, reg_id):
 			end_date = md.end_date
 			if datetime.date(2013,1,1) < md.end_date < datetime.date(2013,12,31):
 				docs_2013.append(doc)
-				if "Supplemental" in link:
+				if "Supplemental" in doc:
 					s13 = s13 + 1
 			if datetime.date(2014,1,1) < md.end_date < datetime.date(2014,12,31):
 				docs_2014.append(doc)
-				if "Supplemental" in link:
+				if "Supplemental" in doc:
 					s14 = s14 + 1
 
 		# need 2 supplementals for a complete year of record 
