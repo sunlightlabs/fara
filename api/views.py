@@ -1,6 +1,9 @@
 """
 
 ADD date restrictions
+Reg profile has solid dates
+Need Client profile totals
+
 
 """
 
@@ -224,7 +227,17 @@ def recipient_profile(request, recip_id):
 def client_profile(request, client_id):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
-	
+
+	# need 2 supplementals for a complete year of record 
+	if s13 == 2:
+		complete_records13 = True
+		results['complete_records13'] = True
+	if s14 == 2:
+		complete_records14 = True
+		resuls['complete_records14'] = True
+
+
+
 	c = Client.objects.get(id=client_id)
 	results = []
 	client = {}
@@ -243,12 +256,29 @@ def client_profile(request, client_id):
 
 	# is null makes sure there is not double counting money flowing through multiple contractors
 	if Payment.objects.filter(client=client_id).exists():
-		payment = Payment.objects.filter(client=client_id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
-		client['total_payment'] = float(payment['total_pay'])
+		client['total_payment'] = true
+		payments = Payment.objects.filter(client=client_id,subcontractor__isnull=True)
+		
+
+		# link_date ={} # link: end_date
+		# docs_2013 = []
+		# docs_2014 = []
+		# find payments from client
+		# for p in payment:
+			# get date
+			# keep track of link_date
+			# make 2013 doc list
+			# make 2014 doc list
+
+		# check that each list has 2 supplementals 
+
+		# make totals
 
 	if Disbursement.objects.filter(client=client_id).exists():
 		disbursement = Disbursement.objects.filter(client=client_id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
 		client['total_disbursement'] = float(disbursement['total_pay'])
+
+
 
 	if Registrant.objects.filter(clients=c).exists():
 		active_regs = Registrant.objects.filter(clients=c)
@@ -886,3 +916,94 @@ def payment_table(request):
 	results = json.dumps({'results':results, 'title':title, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
+def disbursement_table(request):
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied
+	
+	results = []
+	query_params = {}
+	title = []
+
+	if request.GET.get('reg_id'):
+		reg_id = request.GET.get('reg_id')
+		registrant = Registrant.objects.get(reg_id=reg_id)
+		query_params['registrant'] = registrant
+		title.append({'id':reg_id, 'text':registrant.reg_name, "type":'reg' })
+
+	if request.GET.get('doc_id'):
+		doc_id = request.GET.get('doc_id')
+		doc = Document.objects.get(id=doc_id)
+		url = doc.url
+		query_params['link']= url 
+		text = "Document " + str(doc_id)
+		title.append({'id':doc_id, 'text':text, "type": 'form'})
+
+	if request.GET.get('client_id'):
+		client_id = int(request.GET.get('client_id'))
+		client = Client.objects.get(id=client_id)
+		query_params['client'] = client
+		title.append({'id':client_id, 'text':str(client.client_name), "type": 'client'})
+	
+	if request.GET.get('disbursement_id'):
+		disbursement_id = int(request.GET.get('disbursement_id'))
+		query_params['id'] = int(disbursement_id)
+		t = "Disbursement record " + str(disbursement_id)
+		title.append({'id':None, 'text': t, "type": 'disbursement'})
+	
+	if request.GET.get('location_id'):
+		loc_id = int(request.GET.get('location_id'))
+		clients = Client.objects.filter(location__id=loc_id)
+		query_params['client__in'] = clients
+		location = Location.objects.get(id=loc_id)
+		location = location.location
+		title.append({'id':loc_id, 'text':location, "type": 'location'})
+
+	contact_pool = Disbursement.objects.filter(**query_params).order_by('-date')
+	
+	if request.GET.get('p'):
+		p = int(request.GET.get('p'))
+	else:
+		p = 1
+	page = {}	
+	page['page'] = p
+	page['num_pages'] = int(contact_pool.count())/20
+	paginate_disbursements = paginate(contact_pool, p)
+	page_of_disbursements = paginate_disbursements[0:]
+
+	count = 2
+	for disbursement in page_of_disbursements:
+		record = {}
+		url = disbursement.link
+		doc = Document.objects.get(url=url)
+		record['doc_id'] = doc.id
+		record['purpose'] = disbursement.purpose
+		record['client'] = disbursement.client.client_name
+		record['client_id'] = disbursement.client.id
+		record['registrant'] = disbursement.registrant.reg_name
+		record['reg_id'] = disbursement.registrant.reg_id
+		record['amount'] = float(disbursement.amount)
+		if disbursement.subcontractor != None:
+			record['subcontractor'] = disbursement.subcontractor.reg_name
+			record['subcontractor_id'] = disbursement.subcontractor.reg_id
+		date = disbursement.date
+		if date == None:
+			md = MetaData.objects.get(link=url)
+			date = md.end_date
+			try:
+				date = date.strftime("%m/%d/%Y")
+				date = "*" + date 
+			except:
+				date = ''
+		else:
+			date = date.strftime("%m/%d/%Y")
+		record['date'] = date	
+		results.append(record)
+
+		if count %2 == 0:
+			record['row'] = "even"
+		else:
+			record['row'] = "odd"
+		count = count + 1
+
+	results = json.dumps({'results':results, 'title':title, 'page':page}, separators=(',',':'))
+	return HttpResponse(results, mimetype="application/json")
