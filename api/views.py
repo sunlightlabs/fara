@@ -397,7 +397,7 @@ def reg_profile(request, reg_id):
 			results['complete_records13'] = True
 		if s14 == 2:
 			complete_records14 = True
-			esuls['complete_records14'] = True
+			resuls['complete_records14'] = True
 
 		if complete_records13 == True:
 			if Contribution.objects.filter(link__in=docs_2013).exists():
@@ -483,7 +483,7 @@ def reg_profile(request, reg_id):
 		}
 		
 		if Payment.objects.filter(client=client,registrant=reg).exists():
-				c['payment'] = True
+			c['payment'] = True
 		if Disbursement.objects.filter(client=client,registrant=reg).exists():
 			c['disbursement'] = True
 		if Contact.objects.filter(client=client,registrant=reg).exists():
