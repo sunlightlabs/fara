@@ -394,7 +394,7 @@ def reg_profile(request, reg_id):
 		# need 2 supplementals for a complete year of record 
 		if s13 == 2:
 			complete_records13 = True
-			resuls['complete_records13'] = True
+			results['complete_records13'] = True
 		if s14 == 2:
 			complete_records14 = True
 			esuls['complete_records14'] = True
