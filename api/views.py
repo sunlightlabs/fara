@@ -4,6 +4,8 @@ ADD date restrictions
 Reg profile has solid dates
 Need Client profile totals
 
+add registrations to documents to complete checks
+
 
 """
 
@@ -229,14 +231,12 @@ def client_profile(request, client_id):
 		raise PermissionDenied
 
 	# need 2 supplementals for a complete year of record 
-	if s13 == 2:
-		complete_records13 = True
-		results['complete_records13'] = True
-	if s14 == 2:
-		complete_records14 = True
-		resuls['complete_records14'] = True
-
-
+	# if s13 == 2:
+	# 	complete_records13 = True
+	# 	results['complete_records13'] = True
+	# if s14 == 2:
+	# 	complete_records14 = True
+	# 	resuls['complete_records14'] = True
 
 	c = Client.objects.get(id=client_id)
 	results = []
@@ -256,7 +256,7 @@ def client_profile(request, client_id):
 
 	# is null makes sure there is not double counting money flowing through multiple contractors
 	if Payment.objects.filter(client=client_id).exists():
-		client['total_payment'] = true
+		client['total_payment'] = True
 		payments = Payment.objects.filter(client=client_id,subcontractor__isnull=True)
 		
 
@@ -277,8 +277,6 @@ def client_profile(request, client_id):
 	if Disbursement.objects.filter(client=client_id).exists():
 		disbursement = Disbursement.objects.filter(client=client_id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
 		client['total_disbursement'] = float(disbursement['total_pay'])
-
-
 
 	if Registrant.objects.filter(clients=c).exists():
 		active_regs = Registrant.objects.filter(clients=c)
