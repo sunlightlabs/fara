@@ -19,7 +19,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Sum
 
 from fara_feed.models import Document
-from FaraData.models import Registrant, Payment, Contact, Contribution, Recipient, Client, Disbursement, ClientReg, Location, MetaData
+from FaraData.models import Registrant, Payment, Contact, Contribution, Recipient, Client, Disbursement, ClientReg, Location, MetaData, Lobbyist
 from arms_sales.models import Proposed
 
 from fara.local_settings import API_PASSWORD
@@ -862,7 +862,7 @@ def payment_table(request):
 		location = location.location
 		title.append({'id':loc_id, 'text':location, "type": 'location'})
 
-	contact_pool = Payment.objects.filter(**query_params).order_by('-date')
+	payment_pool = Payment.objects.filter(**query_params).order_by('-date')
 	
 	if request.GET.get('p'):
 		p = int(request.GET.get('p'))
@@ -870,8 +870,8 @@ def payment_table(request):
 		p = 1
 	page = {}	
 	page['page'] = p
-	page['num_pages'] = int(contact_pool.count())/20
-	paginate_payments = paginate(contact_pool, p)
+	page['num_pages'] = int(payment_pool.count())/20
+	paginate_payments = paginate(payment_pool, p)
 	page_of_payments = paginate_payments[0:]
 
 	count = 2
@@ -956,7 +956,7 @@ def disbursement_table(request):
 		location = location.location
 		title.append({'id':loc_id, 'text':location, "type": 'location'})
 
-	contact_pool = Disbursement.objects.filter(**query_params).order_by('-date')
+	disbursement_pool = Disbursement.objects.filter(**query_params).order_by('-date')
 	
 	if request.GET.get('p'):
 		p = int(request.GET.get('p'))
@@ -964,8 +964,8 @@ def disbursement_table(request):
 		p = 1
 	page = {}	
 	page['page'] = p
-	page['num_pages'] = int(contact_pool.count())/20
-	paginate_disbursements = paginate(contact_pool, p)
+	page['num_pages'] = int(disbursement_pool.count())/20
+	paginate_disbursements = paginate(disbursement_pool, p)
 	page_of_disbursements = paginate_disbursements[0:]
 
 	count = 2
@@ -1005,3 +1005,88 @@ def disbursement_table(request):
 
 	results = json.dumps({'results':results, 'title':title, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
+
+def contribution_table(request):
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied
+
+	if request.GET.get('reg_id'):
+		reg_id = request.GET.get('reg_id')
+		registrant = Registrant.objects.get(reg_id=reg_id)
+		query_params['registrant'] = registrant
+		title.append({'id':reg_id, 'text':registrant.reg_name, "type":'reg' })
+
+	if request.GET.get('doc_id'):
+		doc_id = request.GET.get('doc_id')
+		doc = Document.objects.get(id=doc_id)
+		url = doc.url
+		query_params['link']= url 
+		text = "Document " + str(doc_id)
+		title.append({'id':doc_id, 'text':text, "type": 'form'})
+
+	if request.GET.get('recipient_id'):
+		recip_id = int(request.GET.get('recipient_id'))
+		recip = Recipient.objects.get(id=recipient_id)
+		query_params['recipient'] = recip
+		title.append({'id':recip_id, 'text':recip.name, "type": 'recipient'})
+
+	if request.GET.get('conribution_id'):
+		contribution_id = int(request.GET.get('conribution_id'))
+		query_params['id'] = contribution_id
+		text = "Contribution record " + contribution_id
+		title.append({'id':None, 'text': text, "type": 'recipient'})
+	
+	if request.GET.get('employee_id'):
+		lobbyist_id = int(request.GET.get('employee_id'))
+		lobbyist = Lobbyist.objects.get(id=lobbyist_id)
+		lobbyist_name = lobbyist.lobbyist_name
+   		pac_name = lobbyist.PAC_name
+   		# one of these will be an empty string
+   		text = str(lobbyist_name) + str(pac_name)
+		query_params['lobbyist'] = lobbyist
+		title.append({'id':None, 'text': text, "type": 'recipient'})
+	# lobbyist/ from
+	# 
+
+	contribution_pool = Contribution.objects.filter(**query_params).order_by('-date')
+	
+	if request.GET.get('p'):
+		p = int(request.GET.get('p'))
+	else:
+		p = 1
+	page = {}	
+	page['page'] = p
+	page['num_pages'] = int(contribution_pool.count())/20
+	paginate_contributions = paginate(contribution_pool, p)
+	page_of_contributions = paginate_contributions[0:]
+
+	count = 2
+	for contribution in page_of_contributions:
+		record = {}
+		url = contribution.link
+		doc = Document.objects.get(url=url)
+		record['doc_id'] = doc.id
+		record['amount'] = contribution.amount
+		record['recipient'] = contribution.recipient.name
+		record['recipient_id'] = contribution.recipient.id
+		record['registrant'] = contribution.registrant.reg_name
+		record['reg_id'] = contribution.registrant.reg_id
+		record['contributor'] = str(contribution.lobbyist)
+		record['contributor_id'] = contribution.lobbyist.id
+		date = contribution.date
+		if date == None:
+			md = MetaData.objects.get(link=url)
+			date = md.end_date
+			try:
+				date = date.strftime("%m/%d/%Y")
+				date = "*" + date 
+			except:
+				date = ''
+		else:
+			date = date.strftime("%m/%d/%Y")
+		record['date'] = date	
+		results.append(record)
+
+	results = []
+	query_params = {}
+	title = []
