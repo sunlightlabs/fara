@@ -397,10 +397,10 @@ def reg_profile(request, reg_id):
 	# could add address information 
 
 	# need to filter by stamp date (date received by DOJ) to get totals. This should catch all document reported for the year. You need 2 six-month filings to have a complete year
-	if Document.objects.filter(reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())).exists():
+	if Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())).exists():
 		doc_list = []
 		# getting recent supplementals and amendments
-		for doc in Document.objects.filter(reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())):
+		for doc in Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())):
 			doc_list.append(doc.url)
 		
 		# checking the end date "Six-month period ending in"
@@ -416,18 +416,26 @@ def reg_profile(request, reg_id):
 					docs_2013.append(doc)
 					if "Supplemental" in doc:
 						s13 = s13 + 1
+					if "Registration" in doc:
+						s13 = s13 + 1
 				if datetime.date(2014,1,1) < md.end_date < datetime.date(2014,12,31):
 					docs_2014.append(doc)
 					if "Supplemental" in doc:
 						s14 = s14 + 1
+					if "Registration" in doc:
+						s14 = s14 + 1
 
-		# need 2 supplementals for a complete year of record 
+		# need 2 supplementals, or a reg and supplemental for a complete year of records
 		if s13 == 2:
 			complete_records13 = True
 			results['complete_records13'] = True
+		else:
+			complete_records13 = False
 		if s14 == 2:
 			complete_records14 = True
 			resuls['complete_records14'] = True
+		else:
+			complete_records14 = False
 
 		if complete_records13 == True:
 			if Contribution.objects.filter(link__in=docs_2013).exists():
