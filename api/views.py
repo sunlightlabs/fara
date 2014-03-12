@@ -1151,9 +1151,6 @@ def reg_2013(request):
 			else:
 				registrant['complete_records13'] = s13
 
-			if s13 == 0:
-				continue
-
 			if Payment.objects.filter(link__in=docs_2013):
 				payments2013 = Payment.objects.filter(link__in=docs_2013).aggregate(total_pay=Sum('amount'))
 				payments2013 = float(payments2013['total_pay'])
@@ -1169,7 +1166,8 @@ def reg_2013(request):
 			if Contact.objects.filter(registrant=reg_id,recipient__agency="Media").exists:
 				registrant['pr'] = True
 				print True
-			results.append(registrant)
+			if s13 != 0:
+				results.append(registrant)
 
 	results = json.dumps({'results':results}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
