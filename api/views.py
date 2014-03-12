@@ -1,11 +1,8 @@
 """
 
 ADD date restrictions
-Reg profile has solid dates
+Reg profile has solid numbers
 Need Client profile totals
-
-add registrations to documents to complete checks
-
 
 """
 
@@ -440,6 +437,7 @@ def reg_profile(request, reg_id):
 				contribution = Contribution.objects.filter(link__in=docs_2013).aggregate(total_pay=Sum('amount'))
 				total_contribution = float(contribution['total_pay'])
 				registrant['contributions13'] = total_contribution 
+		
 		if Contribution.objects.filter(link__in=docs_2014).exists():
 			contribution = Contribution.objects.filter(link__in=docs_2014).aggregate(total_pay=Sum('amount'))
 			total_contribution = float(contribution['total_pay'])
@@ -1116,3 +1114,58 @@ def contribution_table(request):
 	results = json.dumps({'results':results, 'title':title, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 	
+# 2013 totals pages
+def reg_2013(request):
+	registrants = Registrant.objects.all()
+	results = []
+	for r in registrants:
+		reg_id = r.reg_id
+		registrant ={}
+		if Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())).exists():
+			doc_list = []
+			registrant["reg_name"] = r.reg_name
+			registrant['reg_id'] = r.reg_id
+			for doc in Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())):
+				doc_list.append(doc.url)
+				print doc.id
+			
+			docs_2013 = []
+			s13 = 0
+			for doc in doc_list:
+				md = MetaData.objects.get(link=doc)
+				end_date = md.end_date
+				if end_date != None:
+					if datetime.date(2013,1,1) < md.end_date < datetime.date(2013,12,31):
+						docs_2013.append(doc)
+						if "Supplemental" in doc:
+							s13 = s13 + 1
+						if "Registration" in doc:
+							s13 = s13 + 1
+
+			if s13 == 2:
+				complete_records13 = True
+				registrant['complete_records13'] = True
+			else:
+				registrant['complete_records13'] = s13
+
+			if Payment.objects.filter(link__in=docs_2013):
+				payments2013 = Payment.objects.filter(link__in=docs_2013).aggregate(total_pay=Sum('amount'))
+				payments2013 = float(payments2013['total_pay'])
+				registrant['payments2013'] = payments2013
+				print payments2013
+
+			if Contact.objects.filter(registrant=reg_id,recipient__agency__in=["Congress", "House", "Senate"]).exists():
+				registrant['federal_lobbying'] = True
+				print True
+			if Contact.objects.filter(registrant=reg_id,recipient__agency="U.S. Department of State").exists():
+				registrant['state_dept_lobbying'] = True
+				print True
+			if Contact.objects.filter(registrant=reg_id,recipient__agency="Media").exists:
+				registrant['pr'] = True
+				print True
+			results.append(registrant)
+
+	results = json.dumps({'results':results}, separators=(',',':'))
+	return HttpResponse(results, mimetype="application/json")
+
+
