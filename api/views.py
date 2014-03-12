@@ -476,7 +476,7 @@ def reg_profile(request, reg_id):
 		registrant['total_contacts'] = contacts
 	
 	if Contribution.objects.filter(registrant=reg).exists():
-		registrant['total_contribution'] = True
+		registrant['total_contributions'] = True
 
 	# contacts
 	results['registrant'] =  registrant
@@ -1060,8 +1060,8 @@ def contribution_table(request):
    		text = str(lobbyist_name) + str(pac_name)
 		query_params['lobbyist'] = lobbyist
 		title.append({'id':None, 'text': text, "type": 'recipient'})
+	
 	# lobbyist/ from
-	# 
 
 	contribution_pool = Contribution.objects.filter(**query_params).order_by('-date')
 	

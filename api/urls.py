@@ -25,4 +25,5 @@ urlpatterns = patterns('',
    url(r'^contact-table', 'api.views.contact_table', name= 'contact-table'),
    url(r'^payment-table', 'api.views.payment_table', name= 'payment-table'),
    url(r'^disbursement-table', 'api.views.disbursement_table', name= 'disbursement-table'),
+   url(r'^contribution-table', 'api.views.contribution_table', name= 'contribution-table'),
 )
