@@ -1116,6 +1116,9 @@ def contribution_table(request):
 	
 # 2013 totals pages
 def reg_2013(request):
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied
+	
 	registrants = Registrant.objects.all()
 	results = []
 	for r in registrants:
