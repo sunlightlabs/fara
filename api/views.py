@@ -1043,7 +1043,7 @@ def contribution_table(request):
 		recipient_id = int(request.GET.get('recipient_id'))
 		recip = Recipient.objects.get(id=recipient_id)
 		query_params['recipient'] = recip
-		title.append({'id':recip_id, 'text':recip.name, "type": 'recipient'})
+		title.append({'id':recipient_id, 'text':recip.name, "type": 'recipient'})
 
 	if request.GET.get('conribution_id'):
 		contribution_id = int(request.GET.get('conribution_id'))
