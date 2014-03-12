@@ -68,10 +68,12 @@ def incoming_fara(request):
 	### Would like to make this not case sensitive 
 	if request.GET.get('type'):
 		form_type = request.GET.get('type')
-		form_type = [form_type]
+		# all takes away doc type restrictions
+		if form_type != 'all':
+			query_params['doc_type'] = [form_type]
 	else:
-		form_type = ['Supplemental', 'Amendment', 'Exhibit AB', 'Registration']
-	query_params['doc_type__in']=form_type
+		query_params['doc_type__in'] = ['Supplemental', 'Amendment', 'Exhibit AB', 'Registration']
+
 
 
 	if request.GET.get('processed'):
