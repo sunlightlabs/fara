@@ -19,6 +19,7 @@ django-reversion==1.7.1
 django-piston==0.2.3
 django-storages==1.1.8
 boto==2.17.0
+PyPDF2
 
 
 

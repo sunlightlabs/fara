@@ -32,13 +32,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if args:
             for date_input in args:
-                print date_input
                 dates = date_input.split(':')
-                print dates
                 start_date = datetime.datetime.strptime(dates[0], "%Y-%m-%d")
-                print "hello"
                 end_date = datetime.datetime.strptime(dates[1], "%Y-%m-%d")
-                print start_date, end_date
         else:
             start_date = datetime.date.today() - datetime.timedelta(days=25)
             end_date = datetime.date.today()
@@ -87,7 +83,7 @@ class Command(BaseCommand):
             
 
 def save_text(url, url_info, outdir):
-    print "making file for %s" %(url)
+    
     # set up paths
     document_path = os.path.join(outdir, "documents")
     if not os.path.exists(document_path):
@@ -97,7 +93,13 @@ def save_text(url, url_info, outdir):
     
     if not os.path.isfile(doc_file_name):
         doc_file =  open(doc_file_name, 'w')
-        pdf = urllib2.urlopen(url)
+        
+        amazon_file_name = "pdfs/" + url[25:]
+        if default_storage.exists(amazon_file_name):
+            pdf = default_storage.open(amazon_file_name, 'rb')
+            print "saved from amazon"
+        else:
+            pdf = urllib2.urlopen(url)
         localFile = open("temp.pdf", 'w')
         localFile = localFile.write(pdf.read())
         tempDoc = file("temp.pdf", "rb")
@@ -114,6 +116,7 @@ def save_text(url, url_info, outdir):
             text_file.write(pgtxt) 
         print "-saving %s to disk" % (url)
         text_file.close()
+
     else:
         print "cashe works"
 
