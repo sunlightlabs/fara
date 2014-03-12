@@ -66,15 +66,13 @@ def incoming_fara(request):
 		page = 1
 	
 	### Would like to make this not case sensitive 
-	if request.GET.get('type'):
-		form_type = request.GET.get('type')
+	if request.GET.get('doc_type'):
+		form_type = request.GET.get('doc_type')
 		# all takes away doc type restrictions
 		if form_type != 'all':
 			query_params['doc_type'] = [form_type]
 	else:
 		query_params['doc_type__in'] = ['Supplemental', 'Amendment', 'Exhibit AB', 'Registration']
-
-
 
 	if request.GET.get('processed'):
 		processed = request.GET.get('processed')
@@ -476,6 +474,9 @@ def reg_profile(request, reg_id):
 	if Contact.objects.filter(registrant=reg).exists():
 		contacts = Contact.objects.filter(registrant=reg).count()
 		registrant['total_contacts'] = contacts
+	
+	if Contribution.objects.filter(registrant=reg).exists():
+		registrant['total_contribution'] = True
 
 	# contacts
 	results['registrant'] =  registrant
@@ -1020,6 +1021,10 @@ def contribution_table(request):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
 
+	results = []
+	query_params = {}
+	title = []
+
 	if request.GET.get('reg_id'):
 		reg_id = request.GET.get('reg_id')
 		registrant = Registrant.objects.get(reg_id=reg_id)
@@ -1076,13 +1081,15 @@ def contribution_table(request):
 		url = contribution.link
 		doc = Document.objects.get(url=url)
 		record['doc_id'] = doc.id
-		record['amount'] = contribution.amount
+		amount = contribution.amount
+		record['amount'] = float(amount)
 		record['recipient'] = contribution.recipient.name
 		record['recipient_id'] = contribution.recipient.id
 		record['registrant'] = contribution.registrant.reg_name
 		record['reg_id'] = contribution.registrant.reg_id
-		record['contributor'] = str(contribution.lobbyist)
-		record['contributor_id'] = contribution.lobbyist.id
+		if record.has_key('contributor'):
+			record['contributor'] = str(contribution.lobbyist)
+			record['contributor_id'] = contribution.lobbyist.id
 		date = contribution.date
 		if date == None:
 			md = MetaData.objects.get(link=url)
@@ -1097,6 +1104,6 @@ def contribution_table(request):
 		record['date'] = date	
 		results.append(record)
 
-	results = []
-	query_params = {}
-	title = []
+	results = json.dumps({'results':results, 'title':title, 'page':page}, separators=(',',':'))
+	return HttpResponse(results, mimetype="application/json")
+	
