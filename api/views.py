@@ -1087,9 +1087,11 @@ def contribution_table(request):
 		record['recipient_id'] = contribution.recipient.id
 		record['registrant'] = contribution.registrant.reg_name
 		record['reg_id'] = contribution.registrant.reg_id
+		
 		if record.has_key('contributor'):
 			record['contributor'] = str(contribution.lobbyist)
 			record['contributor_id'] = contribution.lobbyist.id
+		
 		date = contribution.date
 		if date == None:
 			md = MetaData.objects.get(link=url)
@@ -1101,6 +1103,13 @@ def contribution_table(request):
 				date = ''
 		else:
 			date = date.strftime("%m/%d/%Y")
+
+		if count %2 == 0:
+			record['row'] = "even"
+		else:
+			record['row'] = "odd"
+		count = count + 1
+
 		record['date'] = date	
 		results.append(record)
 
