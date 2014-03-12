@@ -125,8 +125,9 @@ def pdf2htmlEX():
 
 
 def add_document(url_info):
-    if not Document.objects.filter(url = url_info['url']).exists():
-        document = Document(url = url_info['url'],
+    url = str(url_info['url']).strip()
+    if not Document.objects.filter(url = url).exists():
+        document = Document(url = url,
             reg_id = url_info['reg_id'],
             doc_type = url_info['doc_type'],
             stamp_date = url_info['stamp_date'],
