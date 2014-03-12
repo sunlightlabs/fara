@@ -97,7 +97,6 @@ def save_text(url, url_info, outdir):
         amazon_file_name = "pdfs/" + url[25:]
         if default_storage.exists(amazon_file_name):
             pdf = default_storage.open(amazon_file_name, 'rb')
-            print "saved from amazon"
         else:
             pdf = urllib2.urlopen(url)
         localFile = open("temp.pdf", 'w')
@@ -117,8 +116,8 @@ def save_text(url, url_info, outdir):
         print "-saving %s to disk" % (url)
         text_file.close()
 
-    else:
-        print "cashe works"
+    # else:
+    #     print "cashe works"
 
 
 def pdf2htmlEX(): 
@@ -133,9 +132,9 @@ def add_document(url_info):
             stamp_date = url_info['stamp_date'],
         )
         document.save()
-        print "- added %s to document models" % (url_info['url'])
-    else:
-        print "existing model"
+        print "\n New document discovered- \n %s  \n" %(url)
+    # else:
+    #     print "existing model"
     
 def add_file(url):
     #print "add file"
@@ -154,13 +153,11 @@ def add_file(url):
                 doc = Document.objects.get(url=url)
                 doc.uploaded = True
                 doc.save()
-                print "- new add_file"
             except:
                 message = 'bad upload ' + url
                 logger.error(message)
                 print message
         else:
-            print "old add_file"
             doc = Document.objects.get(url=url)
             if doc.uploaded != True:  
                 doc.uploaded = True
