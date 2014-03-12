@@ -1040,7 +1040,7 @@ def contribution_table(request):
 		title.append({'id':doc_id, 'text':text, "type": 'form'})
 
 	if request.GET.get('recipient_id'):
-		recip_id = int(request.GET.get('recipient_id'))
+		recipient_id = int(request.GET.get('recipient_id'))
 		recip = Recipient.objects.get(id=recipient_id)
 		query_params['recipient'] = recip
 		title.append({'id':recip_id, 'text':recip.name, "type": 'recipient'})
