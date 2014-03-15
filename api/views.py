@@ -311,7 +311,7 @@ def location_profile(request, loc_id):
 	if Proposed.objects.filter(location_id=loc_id).exists():
 		arms = Proposed.objects.filter(location_id=loc_id)
 		proposed_sales = []
-		count = 2
+		count = 1
 		for arms_press in arms:
 			record = {}
 			if count %2 == 0:
@@ -762,7 +762,7 @@ def contact_table(request):
 	paginate_contacts = paginate(contact_pool, p)
 	page_of_contacts = paginate_contacts[0:]
 
-	count = 2
+	count = 1
 	for contact in page_of_contacts:
 		record = {}
 		url = contact.link
@@ -883,7 +883,7 @@ def payment_table(request):
 	paginate_payments = paginate(payment_pool, p)
 	page_of_payments = paginate_payments[0:]
 
-	count = 2
+	count = 1
 	for payment in page_of_payments:
 		print payment
 		record = {}
@@ -977,7 +977,7 @@ def disbursement_table(request):
 	paginate_disbursements = paginate(disbursement_pool, p)
 	page_of_disbursements = paginate_disbursements[0:]
 
-	count = 2
+	count = 1
 	for disbursement in page_of_disbursements:
 		record = {}
 		url = disbursement.link
@@ -1073,7 +1073,7 @@ def contribution_table(request):
 	paginate_contributions = paginate(contribution_pool, p)
 	page_of_contributions = paginate_contributions[0:]
 
-	count = 2
+	count = 1
 	for contribution in page_of_contributions:
 		record = {}
 		url = contribution.link
@@ -1115,6 +1115,8 @@ def contribution_table(request):
 	return HttpResponse(results, mimetype="application/json")
 	
 # 2013 totals pages
+
+# Obiviously, this is super slow
 def reg_2013(request):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
@@ -1155,21 +1157,30 @@ def reg_2013(request):
 				payments2013 = Payment.objects.filter(link__in=docs_2013).aggregate(total_pay=Sum('amount'))
 				payments2013 = float(payments2013['total_pay'])
 				registrant['payments2013'] = payments2013
-				print payments2013
 
 			if Contact.objects.filter(registrant=reg_id,recipient__agency__in=["Congress", "House", "Senate"]).exists():
 				registrant['federal_lobbying'] = True
-				print True
+				
 			if Contact.objects.filter(registrant=reg_id,recipient__agency="U.S. Department of State").exists():
 				registrant['state_dept_lobbying'] = True
-				print True
+				
 			if Contact.objects.filter(registrant=reg_id,recipient__agency="Media").exists:
 				registrant['pr'] = True
-				print True
+				
 			if s13 != 0:
 				results.append(registrant)
 
 	results = json.dumps({'results':results}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
+def location_page(request):
+	locations = Location.objects.all()
 
+	for l in location:
+		# find clients
+		# total spending
+
+		# find arms sales
+
+
+# number of clients # number of arms sales
