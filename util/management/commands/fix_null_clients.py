@@ -30,28 +30,28 @@ class Command(BaseCommand):
 			if Contact.objects.filter(registrant=reg,client=bad).exists():
 				for contact in Contact.objects.filter(registrant=reg,client=bad):
 					contact.client = real_client
-					# contact.save()
+					contact.save()
 					print real_client.client_name, "contact"
 			if Payment.objects.filter(registrant=reg,client=bad).exists():
 				for payment in Payment.objects.filter(registrant=reg,client=bad):
 					payment.client = real_client
-					#payment.save()
+					payment.save()
 					print real_client.client_name, "payment"
 			if Disbursement.objects.filter(registrant=reg,client=bad).exists():
 				for disbursement in Disbursement.objects.filter(registrant=reg,client=bad):
 					disbursement.client = real_client
-					#disbursement.save()
+					disbursement.save()
 					print real_client.client_name, "disbursement"
 			if Registrant.objects.filter(reg_id=reg_id,clients=bad).exists():
 				reg.clients.add(real_client)
 				reg.clients.remove(bad)
-				#reg.save
+				reg.save()
 				print real_client.client_name, "client"
 
 			if Registrant.objects.filter(reg_id=reg_id,terminated_clients=bad).exists():
 				reg.terminated_clients.add(real_client)
 				reg.terminated_clients.remove(bad)
-				#reg.save()
+				reg.save()
 				print real_client.client_name, "terminated_clients"
 
 
