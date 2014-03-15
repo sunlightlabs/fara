@@ -1173,10 +1173,10 @@ def reg_2013(request):
 	results = json.dumps({'results':results}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
-def location_page(request):
-	locations = Location.objects.all()
+# def location_page(request):
+# 	locations = Location.objects.all()
 
-	for l in location:
+# 	for l in location:
 		# find clients
 		# total spending
 
