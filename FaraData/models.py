@@ -138,6 +138,7 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     purpose = models.TextField(null=True, blank=True)
     date = models.DateField(null=True, blank=True)
+    sort_date = models.DateField(null=True, blank=True)
     link = models.CharField(max_length=100, db_index=True)
     subcontractor = models.ForeignKey(Registrant, related_name='payment_subcontractor', null=True, blank=True)
     
@@ -180,8 +181,8 @@ class MetaData(models.Model):
     upload_date = models.DateField(null=True)
     reviewed = models.BooleanField(default=False)
     processed = models.BooleanField(default=False)#processed means form is finished and info can be displayed on front end
-    is_amendment = models.BooleanField(default=False)
-    form = models.CharField(max_length=300)# I am guessing on this, we are storing on amazon
+    is_amendment = models.BooleanField(default=False)# if a form has been amended
+    form = models.CharField(max_length=300)# I should use this for doc id!
     notes = models.TextField(blank=True, null=True)
     # this is just for supplementals
     end_date = models.DateField(null=True, blank=True)
