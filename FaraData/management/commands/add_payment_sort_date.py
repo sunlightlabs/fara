@@ -6,17 +6,27 @@ from fara_feed.models import Document
 
 payments = Payment.objects.all()
 
-for payment in payments:
-	md = MetaData.objects.get(link=payment.link)
-	if payment.date is not None:
-		payment.sort_date = payment.date
-	elif md.end_date is not None:
-		payment.sort_date = md.end_date
-	else:
-		doc = Document.objects.get(url=payment.link)
-		payment.sort_date = doc.stamp_date
-	print payment.sort_date
-	# payment.save()
+problems = []
+class Command(BaseCommand):
+	def handle(self, *args, **options):
+		for payment in payments:
+			try:
+				md = MetaData.objects.get(link=payment.link)
+				date = md.end_date
+			except:
+				if not Document.objects.filter(url=payment.link).exists():
+					problems.append(payment.link)
+				else:
+					doc = Document.objects.get(url=payment.link)
+					date = doc.stamp_date
+
+			if payment.date is not None:
+				payment.sort_date = payment.date
+			else:
+				payment.sort_date = date
+			# payment.save()
+		print problems
+	
 
 
 
