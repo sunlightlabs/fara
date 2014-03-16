@@ -1,3 +1,6 @@
+import re
+import datetime
+
 from django.core.management.base import BaseCommand, CommandError
 from django.core.files.storage import default_storage
 
@@ -24,6 +27,13 @@ class Command(BaseCommand):
 				payment.sort_date = payment.date
 			else:
 				payment.sort_date = date
+
+			if payment.sort_date == None:
+				url = payment.link
+				stamp_date = re.findall(r'\d{8}', url)
+                stamp_date = stamp_date[0]
+                stamp_date_obj = datetime.datetime.strptime(stamp_date, "%Y%m%d")
+                print stamp_date
 			# payment.save()
 		print problems
 	
