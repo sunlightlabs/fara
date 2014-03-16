@@ -1077,15 +1077,25 @@ def payment(request):
         )
 
         date = cleandate(request.GET['date'])
+        
         if type(date) == datetime:
             payment.date = date
+            payment.sort_date = date
         else:
             if date == '{"error":"No date"}':
-                date = ''
+                if MetaData.objects.filter(link=request.GET['link']).exists():
+                    md = MetaData.objects.get(link=request.GET['link'])
+                    if md.end_date != None:
+                        payment.sort_date = md.end_date
+                        date = ''
+                    else: 
+                        error = json.dumps({'error': 'Fill out supplemental end date. The first question on the form.'} , separators=(',',':'))
+                        return HttpResponse(error, mimetype="application/json")
+                else:
+                    error = json.dumps({'error': 'Fill out supplemental end date. The first question on the form.'} , separators=(',',':'))
+                    return HttpResponse(error, mimetype="application/json") 
             else:
                 return HttpResponse(date, mimetype="application/json")
-
-
 
         subcontractor_id = request.GET['subcontractor']
         if subcontractor_id != '' and subcontractor_id != None:
@@ -1495,10 +1505,23 @@ def amend_payment(request):
         date = cleandate(request.GET['date'])
         if type(date) == datetime:
             payment.date = date
-        elif date == '{"error":"No date"}':
-            date = ""
+            payment.sort_date = date
         else:
-            return HttpResponse(date, mimetype="application/json")
+            if date == '{"error":"No date"}':
+                if MetaData.objects.filter(link=request.GET['link']).exists():
+                    md = MetaData.objects.get(link=request.GET['link'])
+                    if md.end_date != None:
+                        payment.sort_date = md.end_date
+                        date = ''
+                    else: 
+                        error = json.dumps({'error': 'Fill out supplemental end date. The first question on the form.'} , separators=(',',':'))
+                        return HttpResponse(error, mimetype="application/json")
+                else:
+                    error = json.dumps({'error': 'Fill out supplemental end date. The first question on the form.'} , separators=(',',':'))
+                    return HttpResponse(error, mimetype="application/json") 
+            else:
+                return HttpResponse(date, mimetype="application/json")
+
 
         if request.method == 'GET' and 'fee' in request.GET:
             fee = True

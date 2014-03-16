@@ -41,7 +41,7 @@ class Command(BaseCommand):
 				#print url
 			payment.save()
 			print payment.sort_date
-		print problems
+		print "Problems : %s" %(problems)
 	
 
 
