@@ -1169,14 +1169,23 @@ def reg_2013(request):
 	results = json.dumps({'results':results}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
-# def location_page(request):
-# 	locations = Location.objects.all()
+def location_list(request):
+	locations = Location.objects.all()
+	results = []
+	for l in locations:
+		clients = Client.objects.filter(location=l)
+		for client in clients:
+			record = {}
+			record['client_id'] = client.id
+			record['client_name'] = client.client_name
+			record['location_id'] = l.id
+			record['location_name'] = l.location
+			print record
+			results.append(record)
 
-# 	for l in location:
-		# find clients
-		# total spending
+	results = json.dumps({'results':results}, separators=(',',':'))
+	return HttpResponse(results, mimetype="application/json")
 
-		# find arms sales
 
 
 # number of clients # number of arms sales
