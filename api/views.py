@@ -83,7 +83,6 @@ def incoming_fara(request):
 		reg_id = request.GET.get('reg_id')
 		query_params['reg_id'] = reg_id
 
-	print query_params
 	doc_pool = Document.objects.filter(**query_params).order_by('-stamp_date')
 	paginate_docs = paginate(doc_pool, page)
 	page_of_docs = paginate_docs[0:]
@@ -140,7 +139,7 @@ def doc_profile(request, doc_id):
 
 		terminated_results = reg.terminated_clients.all()
 		terminated_clients = client_form_summary(terminated_results, url)
-		results['terminated_clients'] = clients
+		results['terminated_clients'] = terminated_clients
 
 		if Payment.objects.filter(link=url).exists():
 			payment = Payment.objects.filter(link=url).aggregate(total_pay=Sum('amount'))
@@ -803,7 +802,6 @@ def contact_table(request):
 		record['employee'] = employee
 		record['client_id'] = contact.client.id
 		record['client'] = contact.client.client_name
-		print contact.client.client_name
 		record['doc_id'] = doc.id
 		record['description'] = contact.description
 		record['registrant'] = contact.registrant.reg_name
@@ -885,7 +883,6 @@ def payment_table(request):
 
 	count = 1
 	for payment in page_of_payments:
-		print payment
 		record = {}
 		url = payment.link
 		doc = Document.objects.get(url=url)
@@ -1132,7 +1129,6 @@ def reg_2013(request):
 			registrant['reg_id'] = r.reg_id
 			for doc in Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())):
 				doc_list.append(doc.url)
-				print doc.id
 			
 			docs_2013 = []
 			s13 = 0
