@@ -160,7 +160,7 @@ class Command(BaseCommand):
 					
 					record.save()
 
-					save to amazon
+					#save to amazon
 					try:
 						file_name = "arms_pdf/" + str(record.id) + ".pdf"
 						pdf_link = str(pdf_link)
