@@ -226,14 +226,6 @@ def client_profile(request, client_id):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
 
-	# need 2 supplementals for a complete year of record 
-	# if s13 == 2:
-	# 	complete_records13 = True
-	# 	results['complete_records13'] = True
-	# if s14 == 2:
-	# 	complete_records14 = True
-	# 	resuls['complete_records14'] = True
-
 	c = Client.objects.get(id=client_id)
 	results = []
 	client = {}
@@ -253,26 +245,15 @@ def client_profile(request, client_id):
 	# is null makes sure there is not double counting money flowing through multiple contractors
 	if Payment.objects.filter(client=client_id).exists():
 		client['total_payment'] = True
-		payments = Payment.objects.filter(client=client_id,subcontractor__isnull=True)
-		
 
-		# link_date ={} # link: end_date
-		# docs_2013 = []
-		# docs_2014 = []
-		# find payments from client
-		# for p in payment:
-			# get date
-			# keep track of link_date
-			# make 2013 doc list
-			# make 2014 doc list
-
-		# check that each list has 2 supplementals 
-
-		# make totals
+	if Payment.objects.filter(client=client_id,subcontractor__isnull=True,sort_date__range=( datetime.date(2013,1,1), datetime.date.today())).exists():
+		payments = Payment.objects.filter(client=client_id,subcontractor__isnull=True,sort_date__range=(datetime.date(2013,1,1), datetime.date.today())).aggregate(total_pay=Sum('amount'))
+		total_pay = float(payments['total_pay'])
+		client['running_total_13'] = total_pay
 
 	if Disbursement.objects.filter(client=client_id).exists():
-		disbursement = Disbursement.objects.filter(client=client_id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
-		client['total_disbursement'] = float(disbursement['total_pay'])
+		#disbursement = Disbursement.objects.filter(client=client_id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
+		client['total_disbursement'] = True
 
 	if Registrant.objects.filter(clients=c).exists():
 		active_regs = Registrant.objects.filter(clients=c)
