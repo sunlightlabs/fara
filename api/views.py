@@ -56,15 +56,6 @@ def incoming_fara(request):
 
 	query_params = {}
 	query_params['stamp_date__range'] = (datetime.date(2012,1,1), datetime.date.today())
-
-	if request.GET.get('p'):
-		p = int(request.GET.get('p'))
-	else:
-		p = 1
-	page = {}	
-	page['page'] = p
-	page['num_pages'] = int(contribution_pool.count())/20
-	paginate_contributions = paginate(contribution_pool, p)
 	
 	### Would like to make this not case sensitive 
 	if request.GET.get('doc_type'):
@@ -87,9 +78,17 @@ def incoming_fara(request):
 		reg_id = request.GET.get('reg_id')
 		query_params['reg_id'] = reg_id
 
+	if request.GET.get('p'):
+		p = int(request.GET.get('p'))
+	else:
+		p = 1
+	page = {}	
+	page['page'] = p
+
 	doc_pool = Document.objects.filter(**query_params).order_by('-stamp_date')
 	paginate_docs = paginate(doc_pool, p)
 	page_of_docs = paginate_docs[0:]
+	page['num_pages'] = int(doc_pool.count())/20
 
 	results = []
 	for doc in page_of_docs:
