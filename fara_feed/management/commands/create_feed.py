@@ -136,7 +136,7 @@ def add_document(url_info):
         document.save()
         print "\n New document discovered- \n %s  \n" %(url)
     if not MetaData.objects.filter(link= url).exists():
-        md = MetaData.(link = url,
+        md = MetaData(link = url,
                         upload_date = datetime.date.today(),
                         reviewed = False,
                         processed = False,
