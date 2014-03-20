@@ -72,7 +72,7 @@ def pay_disburse_contact_contrib():
         else:
             md = add_md(link)  
 
-        gift.meta_data.add = md
+        gift.meta_data = md
         gift.save()
 
 
