@@ -17,6 +17,7 @@ from bs4 import BeautifulSoup
 from PyPDF2 import PdfFileReader
 
 from fara_feed.models import Document
+from FaraData.models import MetaData, Registrant
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -134,6 +135,21 @@ def add_document(url_info):
         )
         document.save()
         print "\n New document discovered- \n %s  \n" %(url)
+    if not MetaData.objects.filter(link= url).exists():
+        md = MetaData.(link = url,
+                        upload_date = datetime.date.today(),
+                        reviewed = False,
+                        processed = False,
+                        is_amendment = False,
+                        form = document.id,
+            )
+
+    reg_id = url_info['reg_id']
+    if not Registrant.objects.filter(reg_id=reg_id)
+        reg = Registrant (reg_id=reg_id,
+            reg_name = url_info['reg_name']
+            )
+        reg.save()
     # else:
     #     print "existing model"
     
