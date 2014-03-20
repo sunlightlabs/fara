@@ -13,7 +13,7 @@ class Command(BaseCommand):
     can_import_settings = True
         
     def handle(self, *args, **options):
-        #pay_disburse_contact_contrib()
+        pay_disburse_contact_contrib()
         add_reg()
     
 
