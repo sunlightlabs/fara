@@ -145,7 +145,7 @@ def add_document(url_info):
             )
 
     reg_id = url_info['reg_id']
-    if not Registrant.objects.filter(reg_id=reg_id)
+    if not Registrant.objects.filter(reg_id=reg_id):
         reg = Registrant (reg_id=reg_id,
             reg_name = url_info['reg_name']
             )
