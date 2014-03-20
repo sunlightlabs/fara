@@ -22,10 +22,10 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 # HEADINGS
-contact_heading = ['Date', 'Contact Title','Contact Name', 'Contact Office', 'Contact Agency', 'Client', 'Client Location', 'Registrant', 'Description', 'Type', 'Employees Mentioned', 'Affiliated Member Bioguide ID', 'Source','Registrant ID', 'Client ID', 'Location ID', 'Recipient ID', 'Record ID']
-contribution_heading = ['Date', 'Amount', 'Recipient', 'Registrant', 'Contributing Individual or PAC', 'CRP ID of Recipient', 'Bioguide ID', 'Source', 'Registrant ID', 'Recipient ID', 'Record ID']
-payment_heading = ['Date', 'Amount', 'Client', 'Registrant', 'Purpose', 'From subcontractor', 'Source', 'Registrant ID', 'Client ID','Location ID', 'Subcontractor ID', 'Record ID']
-disbursement_heading = ['Date', 'Amount', 'Client', 'Registrant', 'Purpose', 'To Subcontractor', 'Source','Registrant ID', 'Client ID','Location ID', 'Subcontractor ID', 'Record ID']
+contact_heading = ['Date', 'Contact Title','Contact Name', 'Contact Office', 'Contact Agency', 'Client', 'Client Location', 'Registrant', 'Description', 'Type', 'Employees Mentioned', 'Affiliated Member Bioguide ID', 'Source', 'Document ID', 'Registrant ID', 'Client ID', 'Location ID', 'Recipient ID', 'Record ID']
+contribution_heading = ['Date', 'Amount', 'Recipient', 'Registrant', 'Contributing Individual or PAC', 'CRP ID of Recipient', 'Bioguide ID', 'Source', 'Document ID', 'Registrant ID', 'Recipient ID', 'Record ID']
+payment_heading = ['Date', 'Amount', 'Client', 'Registrant', 'Purpose', 'From subcontractor', 'Source', 'Document ID', 'Registrant ID', 'Client ID','Location ID', 'Subcontractor ID', 'Record ID']
+disbursement_heading = ['Date', 'Amount', 'Client', 'Registrant', 'Purpose', 'To Subcontractor', 'Source', 'Document ID' 'Registrant ID', 'Client ID','Location ID', 'Subcontractor ID', 'Record ID']
 client_reg_heading = ['Client', 'Registrant name', 'Terminated', 'Location of Client', 'Description of service (when available)', 'Registrant ID', 'Client ID', 'Location ID']
 
 # makes a file package per form 
@@ -179,7 +179,7 @@ def contact_sheet(contacts, writer):
 			else:
 				contact_agency = ''
 
-			writer.writerow([date, contact_title, contact_name, contact_office, contact_agency, c.client, c.client.location, c.registrant, description, c_type[c.contact_type], lobbyists, r.bioguide_id, c.link, c.registrant.reg_id, c.client.id, c.client.location.id, r.id, c.id])
+			writer.writerow([date, contact_title, contact_name, contact_office, contact_agency, c.client, c.client.location, c.registrant, description, c_type[c.contact_type], lobbyists, r.bioguide_id, c.link, c.meta_data.form, c.registrant.reg_id, c.client.id, c.client.location.id, r.id, c.id])
 
 
 def contributions_sheet(contributions, writer):
@@ -197,7 +197,7 @@ def contributions_sheet(contributions, writer):
 		else:
 			date = c.date
 
-		writer.writerow([date, c.amount, recipient_name, c.registrant, lobby, c.recipient.crp_id, c.recipient.bioguide_id, c.link, c.registrant.reg_id, c.recipient.id, c.id])
+		writer.writerow([date, c.amount, recipient_name, c.registrant, lobby, c.recipient.crp_id, c.recipient.bioguide_id, c.link, c.meta_data.form, c.registrant.reg_id, c.recipient.id, c.id])
 
 	
 def payments_sheet(payments, writer):
@@ -216,7 +216,7 @@ def payments_sheet(payments, writer):
 		else:
 			purpose = p.purpose.encode('ascii', errors='ignore')
 
-		writer.writerow([date, p.amount, p.client, p.registrant, purpose , p.subcontractor, p.link, p.registrant.reg_id, p.client.id, p.client.location.id, p.subcontractor.reg_id, p.id])
+		writer.writerow([date, p.amount, p.client, p.registrant, purpose , p.subcontractor, p.link, p.meta_data.form, p.registrant.reg_id, p.client.id, p.client.location.id, p.subcontractor.reg_id, p.id])
 
 
 def disbursements_sheet(disbursements, writer):
@@ -235,7 +235,7 @@ def disbursements_sheet(disbursements, writer):
 		else:
 			purpose = d.purpose.encode('ascii', errors='ignore')
 
-		writer.writerow([date, d.amount, d.client, d.registrant, purpose, d.subcontractor, d.link, d.registrant.reg_id, d.client.id, d.location.id, d.subcontractor.id, d.id])
+		writer.writerow([date, d.amount, d.client, d.registrant, purpose, d.subcontractor, d.link, d.meta_data.form, d.registrant.reg_id, d.client.id, d.location.id, d.subcontractor.id, d.id])
 
 def namebuilder(r):
 	contact_name = ''
