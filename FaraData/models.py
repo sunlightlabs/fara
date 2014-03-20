@@ -5,6 +5,24 @@ from django.db import models
 from django.contrib import admin
 from django.forms import ModelForm, Select
 
+    
+class MetaData(models.Model):
+    link = models.CharField(primary_key=True, max_length=255, db_index=True)
+    # last time the metadata was updated
+    upload_date = models.DateField(null=True)
+    reviewed = models.BooleanField(default=False)
+    processed = models.BooleanField(default=False)#processed means form is finished and info can be displayed on front end
+    is_amendment = models.BooleanField(default=False)# if a form has been amended
+    form = models.CharField(max_length=300)# I should use this for doc id!
+    notes = models.TextField(blank=True, null=True)
+    # this is just for supplementals
+    end_date = models.DateField(null=True, blank=True)
+
+    def __unicode__(self):
+        if len(str(self.notes)) < 1:
+            return self.link
+        else:
+            return "%s (%s)" %(self.link, self.notes)
 
 # the person, like a congressperson, that receives communication or contribution
 class Recipient(models.Model):
@@ -73,6 +91,7 @@ class Client(models.Model):
     client_type = models.CharField(max_length=25, null=True, blank=True)
     # this will move to client reg
     description = models.TextField(null=True, blank=True)
+    meta_data = models.ManyToManyField(MetaData, null=True, blank=True)
     
     def __unicode__(self):
         return self.client_name
@@ -90,6 +109,7 @@ class Registrant(models.Model):
     terminated_clients = models.ManyToManyField(Client, related_name='terminated_clients', null=True, blank=True)
     clients = models.ManyToManyField(Client, null=True, blank=True)    
     lobbyists = models.ManyToManyField(Lobbyist, null=True, blank=True)
+    meta_data = models.ManyToManyField(MetaData, null=True, blank=True)
      
     def __unicode__(self):
         return self.reg_name
@@ -105,6 +125,7 @@ class Gift(models.Model):
     link = models.CharField(max_length=100, db_index=True)
     registrant = models.ForeignKey(Registrant)
     recipient = models.ForeignKey(Recipient, null=True, blank=True)
+    meta_data = models.ForeignKey(MetaData, null=True, blank=True)
     
     def __unicode__(self):
         return "%s to %s" % (self.description, self.registrant)
@@ -126,6 +147,7 @@ class Contact(models.Model):
     lobbyist = models.ManyToManyField(Lobbyist, null=True, blank=True)
     date = models.DateField(null=True, blank=True) 
     link = models.CharField(max_length=100, db_index=True)
+    meta_data = models.ForeignKey(MetaData, null=True, blank=True)
 
     def __unicode__(self):
         return "%s - %s - %s" % (self.client, self.registrant, self.date )
@@ -141,6 +163,7 @@ class Payment(models.Model):
     sort_date = models.DateField(null=True, blank=True)
     link = models.CharField(max_length=100, db_index=True)
     subcontractor = models.ForeignKey(Registrant, related_name='payment_subcontractor', null=True, blank=True)
+    meta_data = models.ForeignKey(MetaData, null=True, blank=True)
     
     def __unicode__(self):
          return "$%s from %s to %s" %(self.amount, self.client, self.registrant)
@@ -155,6 +178,7 @@ class Disbursement(models.Model):
     link = models.CharField(max_length=100, db_index=True) 
     #maybe this should only be with payment?
     subcontractor = models.ForeignKey(Registrant, related_name='subcontractor', null=True, blank=True)
+    meta_data = models.ForeignKey(MetaData, null=True, blank=True)
     
     def __unicode__(self):
         return "%s - %s - $%s" % (self.client, self.registrant, self.amount )
@@ -168,30 +192,13 @@ class Contribution(models.Model):
     registrant = models.ForeignKey(Registrant)
     recipient = models.ForeignKey(Recipient)
     lobbyist = models.ForeignKey(Lobbyist, null=True, blank=True)# it should not be blank but I want it to be compatible with old data
-    
+    meta_data = models.ForeignKey(MetaData, null=True, blank=True)
+
     def __unicode__(self):
         return "%s - %s - $%s" % (self.recipient, self.registrant, self.amount )
 
     def __str__(self):
         return "%s - %s - $%s".encode('ascii', errors='ignore') % (self.recipient, self.registrant, self.amount)
-    
-class MetaData(models.Model):
-    link = models.CharField(primary_key=True, max_length=255, db_index=True)
-    # last time the metadata was updated
-    upload_date = models.DateField(null=True)
-    reviewed = models.BooleanField(default=False)
-    processed = models.BooleanField(default=False)#processed means form is finished and info can be displayed on front end
-    is_amendment = models.BooleanField(default=False)# if a form has been amended
-    form = models.CharField(max_length=300)# I should use this for doc id!
-    notes = models.TextField(blank=True, null=True)
-    # this is just for supplementals
-    end_date = models.DateField(null=True, blank=True)
-
-    def __unicode__(self):
-        if len(str(self.notes)) < 1:
-            return self.link
-        else:
-            return "%s (%s)" %(self.link, self.notes)
 
 #Thinking if this would simplify things for data entry, to keep track of subcontracting and find clients and registrants for particular forms.
 #This will help create client based alerts on new clients
@@ -204,6 +211,7 @@ class ClientReg(models.Model):
     description = models.TextField(null=True, blank=True)
     # this is the form where the information was last modified
     link = models.CharField(max_length=255, db_index=True)
+    meta_data = models.ManyToManyField(MetaData, null=True, blank=True)
     
     def __unicode__(self):
         return "%s - %s" % (self.client_id, self.reg_id)

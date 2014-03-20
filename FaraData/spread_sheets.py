@@ -21,10 +21,12 @@ from django.conf import settings
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
-# def print_last_query():
-# 	q = connection.queries[-1]
-# 	print "Execution time: %s" % q['time']
-# 	print "Query: %s\n" % q['sql']
+# HEADINGS
+contact_heading = ['Date', 'Contact Title','Contact Name', 'Contact Office', 'Contact Agency', 'Client', 'Client Location', 'Registrant', 'Description', 'Type', 'Employees Mentioned', 'Affiliated Member Bioguide ID', 'Source','Registrant ID', 'Client ID', 'Location ID', 'Recipient ID', 'Record ID']
+contribution_heading = ['Date', 'Amount', 'Recipient', 'Registrant', 'Contributing Individual or PAC', 'CRP ID of Recipient', 'Bioguide ID', 'Source', 'Registrant ID', 'Recipient ID', 'Record ID']
+payment_heading = ['Date', 'Amount', 'Client', 'Registrant', 'Purpose', 'From subcontractor', 'Source', 'Registrant ID', 'Client ID','Location ID', 'Subcontractor ID', 'Record ID']
+disbursement_heading = ['Date', 'Amount', 'Client', 'Registrant', 'Purpose', 'To Subcontractor', 'Source','Registrant ID', 'Client ID','Location ID', 'Subcontractor ID', 'Record ID']
+client_reg_heading = ['Client', 'Registrant name', 'Terminated', 'Location of Client', 'Description of service (when available)', 'Registrant ID', 'Client ID', 'Location ID']
 
 # makes a file package per form 
 def make_file(form_id):
@@ -79,7 +81,7 @@ def make_contacts(docs):
 		filename = "contacts.csv"
 		contact_file = open(filename, 'wb')
 		writer = csv.writer(contact_file)
-		writer.writerow(['Date', 'Contact Title','Contact Name', 'Contact Office', 'Contact Agency', 'Client', 'Client Location', 'Registrant', 'Description', 'Type', 'Employees Mentioned', 'Affiliated Member CRP ID', 'Affiliated Member Bioguide ID', 'Source', 'Contact ID', 'Record ID'])
+		writer.writerow(contact_heading)
 		contact_sheet(contacts, writer)
 		return filename
 	else: return None
@@ -94,7 +96,7 @@ def make_contributions(docs):
 	if len(contributions) >=1:
 		filename = "contributions.csv"
 		writer = csv.writer(open(filename, 'wb'))
-		writer.writerow(['Date', 'Amount', 'Recipient', 'Registrant', 'Contributing Individual or PAC', 'CRP ID of Recipient', 'Bioguide ID', 'Source', 'Record ID'])
+		writer.writerow(contribution_heading)
 		contributions_sheet(contributions, writer)
 		return filename
 	else: return None
@@ -109,7 +111,7 @@ def make_payments(docs):
 	if len(payments) >=1:
 		filename = "payments.csv"
 		writer = csv.writer(open(filename, 'wb'))
-		writer.writerow(['Client', 'Amount', 'Date', 'Registrant', 'Purpose', 'From subcontractor', 'Source'])
+		writer.writerow(payment_heading)
 		payments_sheet(payments, writer)
 		return filename
 	else: return None
@@ -124,7 +126,7 @@ def make_disbursements(docs):
 	if len(disbursements) >=1:
 		filename = "disbursements.csv"
 		writer = csv.writer(open(filename, 'wb'))
-		writer.writerow(['Amount', 'Date','Client', 'Registrant', 'Purpose', 'To Subcontractor', 'Source', 'Record ID'])
+		writer.writerow(disbursement_heading)
 		disbursements_sheet(disbursements, writer)
 		return filename
 	else: return None
@@ -176,8 +178,8 @@ def contact_sheet(contacts, writer):
 				contact_agency = r.agency.encode('ascii', errors='ignore')
 			else:
 				contact_agency = ''
-		
-			writer.writerow([date, contact_title, contact_name, contact_office, contact_agency, c.client, c.client.location, c.registrant, description, c_type[c.contact_type], lobbyists, r.crp_id, r.bioguide_id, c.link, r.id, c.id])
+
+			writer.writerow([date, contact_title, contact_name, contact_office, contact_agency, c.client, c.client.location, c.registrant, description, c_type[c.contact_type], lobbyists, r.bioguide_id, c.link, c.registrant.reg_id, c.client.id, c.client.location.id, r.id, c.id])
 
 
 def contributions_sheet(contributions, writer):
@@ -195,7 +197,7 @@ def contributions_sheet(contributions, writer):
 		else:
 			date = c.date
 
-		writer.writerow([date, c.amount, recipient_name, c.registrant, lobby, c.recipient.crp_id, c.recipient.bioguide_id, c.link, c.id])
+		writer.writerow([date, c.amount, recipient_name, c.registrant, lobby, c.recipient.crp_id, c.recipient.bioguide_id, c.link, c.registrant.reg_id, c.recipient.id, c.id])
 
 	
 def payments_sheet(payments, writer):
@@ -213,8 +215,8 @@ def payments_sheet(payments, writer):
 			purpose = None
 		else:
 			purpose = p.purpose.encode('ascii', errors='ignore')
-		
-		writer.writerow([p.client, p.amount, date, p.registrant, purpose , p.subcontractor, p.link])
+
+		writer.writerow([date, p.amount, p.client, p.registrant, purpose , p.subcontractor, p.link, p.registrant.reg_id, p.client.id, p.client.location.id, p.subcontractor.reg_id, p.id])
 
 
 def disbursements_sheet(disbursements, writer):
@@ -233,7 +235,7 @@ def disbursements_sheet(disbursements, writer):
 		else:
 			purpose = d.purpose.encode('ascii', errors='ignore')
 
-		writer.writerow([d.amount, date, d.client, d.registrant, purpose, d.subcontractor, d.link, d.id])
+		writer.writerow([date, d.amount, d.client, d.registrant, purpose, d.subcontractor, d.link, d.registrant.reg_id, d.client.id, d.location.id, d.subcontractor.id, d.id])
 
 def namebuilder(r):
 	contact_name = ''
@@ -250,5 +252,29 @@ def namebuilder(r):
 		contact_name = ''
 	return contact_name
 
+def client_registrant(writer):
+	for reg in Registrant.objects.all():
+		for client in reg.clients.all():
+			print client
+			client_name = client.client_name
+			reg_name = reg.reg_name
+			client_loc = client.location.location
+			try:	
+				client_reg = ClientReg.objects.get(client_id=client,registrant_id=registrant)
+				discription = client_reg.description
+			except:
+				discription = ''
 
+			writer.writerow([client_name, reg_name, "Active". client_loc, discription, reg.reg_id, client.id])
+		for client in reg.terminated_clients.all():
+			print client
+			client_name = client.client_name
+			reg_name = reg.reg_name
+			client_loc = client.location.location
+			try:	
+				client_reg = ClientReg.objects.get(client_id=client,registrant_id=registrant)
+				discription = client_reg.description
+			except:
+				discription = ''
 
+			writer.writerow([client_name, reg_name, "Terminated", client_loc, discription, reg.reg_id, client.id, client.location.id])
