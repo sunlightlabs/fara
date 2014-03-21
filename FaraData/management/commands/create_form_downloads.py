@@ -4,7 +4,7 @@ import csv
 from django.core.management.base import BaseCommand, CommandError
 from django.core.files.storage import default_storage
 
-from FaraData import spread_sheets
+from FaraData.spread_sheets import *
 from FaraData.models import Contact, Payment, Disbursement, Contribution
 from fara_feed.models import Document
 
