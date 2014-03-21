@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 contact_heading = ['Date', 'Contact Title','Contact Name', 'Contact Office', 'Contact Agency', 'Client', 'Client Location', 'Registrant', 'Description', 'Type', 'Employees Mentioned', 'Affiliated Member Bioguide ID', 'Source', 'Document ID', 'Registrant ID', 'Client ID', 'Location ID', 'Recipient ID', 'Record ID']
 contribution_heading = ['Date', 'Amount', 'Recipient', 'Registrant', 'Contributing Individual or PAC', 'CRP ID of Recipient', 'Bioguide ID', 'Source', 'Document ID', 'Registrant ID', 'Recipient ID', 'Record ID']
 payment_heading = ['Date', 'Amount', 'Client', 'Registrant', 'Purpose', 'From subcontractor', 'Source', 'Document ID', 'Registrant ID', 'Client ID','Location ID', 'Subcontractor ID', 'Record ID']
-disbursement_heading = ['Date', 'Amount', 'Client', 'Registrant', 'Purpose', 'To Subcontractor', 'Source', 'Document ID' 'Registrant ID', 'Client ID','Location ID', 'Subcontractor ID', 'Record ID']
+disbursement_heading = ['Date', 'Amount', 'Client', 'Registrant', 'Purpose', 'To Subcontractor', 'Source', 'Document ID', 'Registrant ID', 'Client ID','Location ID', 'Subcontractor ID', 'Record ID']
 client_reg_heading = ['Client', 'Registrant name', 'Terminated', 'Location of Client', 'Description of service (when available)', 'Registrant ID', 'Client ID', 'Location ID']
 
 # makes a file package per form 
@@ -133,28 +133,48 @@ def make_disbursements(docs):
 
 def contact_sheet(contacts, writer):
 	for c in contacts:
+
 		lobbyists = ''
 		for l in c.lobbyist.all():
 			lobbyists = lobbyists + l.lobbyist_name + ", "
 		lobbyists = lobbyists.encode('ascii', errors='ignore')
-		
+
 		if c.date == None:
-			date = c.meta_data.end_date
+			date = str(c.meta_data.end_date) + '*'
 		else:
 			date = c.date
 
+		if c.description == None:
+			description = 'None'
+		else:
+			description = c.description.encode('ascii', errors='ignore')
+
 		c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "email"}
-		
+
+
 		for r in c.recipient.all():
-			
-			if r.name != None and r.name != '':
+			if r.title != None:	
+				contact_title = r.title.encode('ascii', errors='ignore')	
+			else:
+				contact_title = ''
+
+			if r.name != None:
 				contact_name = r.name.encode('ascii', errors='ignore')
 				if contact_name == "unknown":
 					contact_name = ''
 			else:
 				contact_name = ''
 
-			writer.writerow([date, r.title.encode('ascii', errors='ignore'), contact_name, r.office_detail.encode('ascii', errors='ignore'), r.agency.encode('ascii', errors='ignore'), c.client, c.client.location, c.registrant, c.description.encode('ascii', errors='ignore'), c_type[c.contact_type], lobbyists, r.bioguide_id, c.link, c.meta_data.form, c.registrant.reg_id, c.client.id, c.client.location.id, r.id, c.id])
+			if r.office_detail != None:
+				contact_office = r.office_detail.encode('ascii', errors='ignore')
+			else:
+				contact_office = ''
+			if r. agency != None:
+				contact_agency = r.agency.encode('ascii', errors='ignore')
+			else:
+				contact_agency = ''
+
+			writer.writerow([date, contact_title, contact_name, contact_office, contact_agency, c.client, c.client.location, c.registrant, description, c_type[c.contact_type], lobbyists, r.bioguide_id, c.link, c.meta_data.form, c.registrant.reg_id, c.client.id, c.client.location.id, r.id, c.id])
 
 
 def contributions_sheet(contributions, writer):
@@ -165,10 +185,7 @@ def contributions_sheet(contributions, writer):
  		else:
  			lobby = ''
  		if c.date == None:
-			md = MetaData.objects.get(link=c.link)
-			end_date = md.end_date
-			date = end_date
-
+			date = str(c.meta_data.end_date) + '*'
 		else:
 			date = c.date
 
@@ -177,14 +194,10 @@ def contributions_sheet(contributions, writer):
 	
 def payments_sheet(payments, writer):
 	for p in payments:
-		date = p.date
-		if p.date == None or p.date == '':
-			if MetaData.objects.get(link=p.link):
-				md = MetaData.objects.get(link=p.link)
-				end_date = md.end_date
-				date = end_date	
-			else:
-				date == ''
+		if p.date == None:
+			date = str(p.meta_data.end_date) + '*'
+		else:
+			date = p.date
 		
 		if p.purpose == None:
 			purpose = None
@@ -200,25 +213,17 @@ def payments_sheet(payments, writer):
 
 def disbursements_sheet(disbursements, writer):
 	for d in disbursements:
-		date = d.date
-		if d.date == None or d.date == '':
-			if MetaData.objects.get(link=d.link):
-				md = MetaData.objects.get(link=d.link)
-				end_date = md.end_date
-				date = end_date	
-			else:
-				date == ''
-		
-		if d.purpose == None:
-			purpose = None
+		if d.date == None:
+			date = str(d.meta_data.end_date) + '*'
 		else:
-			purpose = d.purpose.encode('ascii', errors='ignore')
+			date = d.date
+		
 		if d.subcontractor != None:
 			subid = d.subcontractor.reg_id
 		else:
 			subid = ''
 
-		writer.writerow([date, d.amount, d.client, d.registrant, purpose, d.subcontractor, d.link, d.meta_data.form, d.registrant.reg_id, d.client.id, d.client.location.id, subid, d.id])
+		writer.writerow([date, d.amount, d.client, d.registrant, d.purpose, d.subcontractor, d.link, d.meta_data.form, d.registrant.reg_id, d.client.id, d.client.location.id, subid, d.id])
 
 def namebuilder(r):
 	contact_name = ''
@@ -236,24 +241,25 @@ def namebuilder(r):
 	return contact_name
 
 def client_registrant(writer):
+	writer.writerow(client_reg_heading)
 	for reg in Registrant.objects.all():
 		for c in reg.clients.all():
 			client_name = c.client_name
 			reg_name = reg.reg_name
 			try:	
 				client_reg = ClientReg.objects.get(client_id=client,registrant_id=registrant)
-				discription = client_reg.description
+				description = client_reg.description
 			except:
-				discription = ''
-			writer.writerow([client_name, reg_name, "Active", c.location.location, discription, reg.reg_id, c.id])
+				description = ''
+			writer.writerow([client_name, reg_name, "Active", c.location.location, description, reg.reg_id, c.id])
 		for client in reg.terminated_clients.all():
 			client_name = client.client_name
 			reg_name = reg.reg_name
 			client_loc = client.location.location
 			try:	
 				client_reg = ClientReg.objects.get(client_id=client,registrant_id=registrant)
-				discription = client_reg.description
+				description = client_reg.description
 			except:
-				discription = ''
+				description = ''
 
-			writer.writerow([client_name, reg_name, "Terminated", client_loc, discription, reg.reg_id, client.id, client.location.id])
+			writer.writerow([client_name, reg_name, "Terminated", client_loc, description, reg.reg_id, client.id, client.location.id])
