@@ -11,7 +11,6 @@ loc_handler = Resource(LocationHandler, authentication=auth)
 
 urlpatterns = patterns('',
    url(r'^docs', 'api.views.incoming_fara', name= 'incoming-fara'),
-   url(r'^agentfeed',  proposed_handler),
    url(r'^metadata/(\d+)/', metadata_handler),
    url(r'^registrant', registrant_handler),
    url(r'^proposed-arms', 'api.views.incoming_arms', name='incoming-arms'),
