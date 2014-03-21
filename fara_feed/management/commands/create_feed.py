@@ -248,7 +248,7 @@ def parse_and_save(page, outdir):
             print "looking at url"
             url_info= {'url':url,'reg_name':reg_name,  'reg_id':reg_id, 'doc_type':doc_type, 'stamp_date':date_string}
             documents.append(url_info)
-            saving
+            #saving
             add_document(url_info)
             add_file(url)
             save_text(url, url_info, outdir)
