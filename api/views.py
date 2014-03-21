@@ -82,6 +82,7 @@ def incoming_fara(request):
 		p = int(request.GET.get('p'))
 	else:
 		p = 1
+	
 	page = {}	
 	page['page'] = p
 
@@ -108,6 +109,49 @@ def incoming_fara(request):
 	results = json.dumps({'results': results, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
+def incoming_arms(request):
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied
+
+	if request.GET.get('p'):
+		p = request.GET.get('p')
+	else:
+		p = 1
+	page = {}
+	page['page'] = p 
+	
+	if request.GET.get('location_id'):
+		query_params = {}
+		query_params['location__id'] = int(request.GET.get('location_id'))
+		arms_pool = Proposed.objects.filter(query_params)
+	else:
+		arms_pool = Proposed.objects.all()
+	
+	paginate_arms = paginate(arms_pool, p)
+	page_of_arms = paginate_arms[0:]
+	page['num_pages'] = int(arms_pool.count())/20
+
+	proposed_sales = []
+	count = 1
+	for arms_press in page_of_arms:
+		record = {}
+		if count %2 == 0:
+			record['row'] = "even"
+		else:
+			record['row'] = "odd"
+		count += 1
+		record['id'] = arms_press.id
+		record['title'] = arms_press.title
+		if arms_press.date:
+			record['date'] = arms_press.date.strftime("%m/%d/%Y")
+		# this is not scraped yet
+		if arms_press.amount:
+			record['amount'] = arms_press.amount
+		proposed_sales.append(record)
+
+	results = {'proposed_sales': proposed_sales, 'page': page}
+	results = json.dumps({'results': results}, separators=(',',':'))
+	return HttpResponse(results, mimetype="application/json")
 
 def doc_profile(request, doc_id):
 	if not request.GET.get('key') == API_PASSWORD:
@@ -131,11 +175,6 @@ def doc_profile(request, doc_id):
 		reg = Registrant.objects.get(reg_id=reg_id)
 		results['reg_name'] = reg.reg_name
 
-		if Contribution.objects.filter(link=url).exists():
-			contribution = Contribution.objects.filter(link=url).aggregate(total_pay=Sum('amount'))
-			total_contributions = float(contribution['total_pay'])
-			results['total_contribution'] = total_contributions
-		
 		client_results = reg.clients.all()
 		clients = client_form_summary(client_results, url)
 		results['clients'] = clients
@@ -144,19 +183,25 @@ def doc_profile(request, doc_id):
 		terminated_clients = client_form_summary(terminated_results, url)
 		results['terminated_clients'] = terminated_clients
 
-		if Payment.objects.filter(link=url).exists():
-			payment = Payment.objects.filter(link=url).aggregate(total_pay=Sum('amount'))
-			total_pay = float(payment['total_pay'])
-			results['total_payment'] = total_pay
+		if doc.processed == True:
+			if Contribution.objects.filter(link=url).exists():
+				contribution = Contribution.objects.filter(link=url).aggregate(total_pay=Sum('amount'))
+				total_contributions = float(contribution['total_pay'])
+				results['total_contribution'] = total_contributions
+			
+			if Payment.objects.filter(link=url).exists():
+				payment = Payment.objects.filter(link=url).aggregate(total_pay=Sum('amount'))
+				total_pay = float(payment['total_pay'])
+				results['total_payment'] = total_pay
 
-		if Contact.objects.filter(link=url).exists():
-			total_contacts = Contact.objects.filter(link=url).count()
-			results['total_contact'] = total_contacts
-		
-		if Disbursement.objects.filter(link=url).exists():
-			disbursements = Disbursement.objects.filter(link=url).aggregate(total_pay=Sum('amount'))
-			total_disbursements = float(disbursements['total_pay'])
-			results['total_disbursement'] = total_disbursements
+			if Contact.objects.filter(link=url).exists():
+				total_contacts = Contact.objects.filter(link=url).count()
+				results['total_contact'] = total_contacts
+			
+			if Disbursement.objects.filter(link=url).exists():
+				disbursements = Disbursement.objects.filter(link=url).aggregate(total_pay=Sum('amount'))
+				total_disbursements = float(disbursements['total_pay'])
+				results['total_disbursement'] = total_disbursements
 
 	results = json.dumps({'results': results}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
@@ -171,16 +216,16 @@ def client_form_summary(client_objects, url):
 			'client_id': client.id,
 			'location_id': client.location.id,
 		}		
-		if Payment.objects.filter(link=url,client=client).exists():
+		if Payment.objects.filter(link=url,client=client,meta_data__processed=True).exists():
 			payment = Payment.objects.filter(link=url,client=client).aggregate(total_pay=Sum('amount'))
 			total_pay = float(payment['total_pay'])
 			c['payment'] = total_pay
 
-		if Contact.objects.filter(link=url,client=client).exists():
+		if Contact.objects.filter(link=url,client=client,meta_data__processed=True).exists():
 			total_contacts = Contact.objects.filter(link=url,client=client).count()
 			c['contact'] = total_contacts
 		
-		if Disbursement.objects.filter(link=url,client=client).exists():
+		if Disbursement.objects.filter(link=url,client=client,meta_data__processed=True).exists():
 			disbursements = Disbursement.objects.filter(link=url,client=client).aggregate(total_pay=Sum('amount'))
 			total_disbursements = float(disbursements['total_pay'])
 			c['disbursement'] = total_disbursements

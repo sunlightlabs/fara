@@ -124,7 +124,9 @@ class ProposedHandler(BaseHandler):
 				page = 1
 			base = Proposed.objects.all()
 			form = paginate(base, page)
-			page = form[0]
+			page = {}
+			page['page'] = form[0]
+			page['num_pages'] = int(base.count())/20
 			results = form[0:]
 			return {"results":results, 'page':page}
 
