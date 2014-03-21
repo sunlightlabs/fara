@@ -8,7 +8,6 @@ metadata_handler = Resource(MetaDataHandler, authentication=auth)
 registrant_handler = Resource(RegistrantDataHandler, authentication=auth)
 doc_handler = Resource(DocHandler, authentication=auth) 
 loc_handler = Resource(LocationHandler, authentication=auth)
-proposed_handler = Resource(ProposedHandler, authentication=auth)
 
 urlpatterns = patterns('',
    url(r'^docs', 'api.views.incoming_fara', name= 'incoming-fara'),

@@ -51,18 +51,6 @@ class DocHandler(BaseHandler):
 
 		return results
 
-# I should make this an option for the previous 
-class RegDocHandler(BaseHandler):
-	allowed_methods = ('GET',)
-	model = Document
-	fields = ('url', 'reg_id', 'doc_type', 'processed', 'stamp_date')
-
-	def read(self, request, reg_id=None):
-		base = Document.objects
-
-		if reg_id:
-			return base.filter(reg_id=reg_id)
-
 class MetaDataHandler(BaseHandler):
 	allowed_methods = ('GET',)
 	model = MetaData
@@ -108,25 +96,25 @@ class LocationHandler(BaseHandler):
 			base = Location.objects.all()
 			return base
 
-class ProposedHandler(BaseHandler):
-	allowed_methods = ('GET',)
-	model = Proposed
-	fields = ('date', 'title', 'id', 'text', 'location', 'location_id', 'pdf_url')
+# class ProposedHandler(BaseHandler):
+# 	allowed_methods = ('GET',)
+# 	model = Proposed
+# 	fields = ('date', 'title', 'id', 'text', 'location', 'location_id', 'pdf_url')
 
-	def read(self, request):
-		if request.method == 'GET':
-			if request.GET.get('doc_id'):
-				doc_id = int(request.GET.get('doc_id'))
-				return Proposed.objects.get(id=doc_id)
-			if request.GET.get('p'):
-				page = int(request.GET.get('p'))
-			else:
-				page = 1
-			base = Proposed.objects.all()
-			form = paginate(base, page)
-			page = {}
-			page['page'] = form[0]
-			page['num_pages'] = int(base.count())/20
-			results = form[0:]
-			return {"results":results, 'page':page}
+# 	def read(self, request):
+# 		if request.method == 'GET':
+# 			if request.GET.get('doc_id'):
+# 				doc_id = int(request.GET.get('doc_id'))
+# 				return Proposed.objects.get(id=doc_id)
+# 			if request.GET.get('p'):
+# 				page = int(request.GET.get('p'))
+# 			else:
+# 				page = 1
+# 			base = Proposed.objects.all()
+# 			form = paginate(base, page)
+# 			page = {}
+# 			page['page'] = form[0]
+# 			page['num_pages'] = int(base.count())/20
+# 			results = form[0:]
+# 			return {"results":results, 'page':page}
 

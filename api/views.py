@@ -122,7 +122,7 @@ def incoming_arms(request):
 	
 	if request.GET.get('location_id'):
 		query_params = {}
-		query_params['location__id'] = int(request.GET.get('location_id'))
+		query_params['location_id'] = int(request.GET.get('location_id'))
 		arms_pool = Proposed.objects.filter(query_params)
 	else:
 		arms_pool = Proposed.objects.all()
@@ -336,28 +336,6 @@ def location_profile(request, loc_id):
 	location = Location.objects.get(id=loc_id)
 	results['location_name'] = location.location
 	results['location_id'] = location.id
-	# Proposed arms sales
-	if Proposed.objects.filter(location_id=loc_id).exists():
-		arms = Proposed.objects.filter(location_id=loc_id)
-		proposed_sales = []
-		count = 1
-		for arms_press in arms:
-			record = {}
-			if count %2 == 0:
-				record['row'] = "even"
-			else:
-				record['row'] = "odd"
-			count += 1
-			record['id'] = arms_press.id
-			record['title'] = arms_press.title
-			if arms_press.date:
-				record['date'] = arms_press.date.strftime("%m/%d/%Y")
-			# this is not scraped yet
-			if arms_press.amount:
-				record['amount'] = arms_press.amount
-			proposed_sales.append(record)
-
-		results['proposed_sales'] = proposed_sales
 	
 	# Find client and reg information
 	clients = Client.objects.filter(location=loc_id)
