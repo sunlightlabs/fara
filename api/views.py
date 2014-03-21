@@ -124,6 +124,10 @@ def incoming_arms(request):
 		query_params = {}
 		query_params['location_id'] = int(request.GET.get('location_id'))
 		arms_pool = Proposed.objects.filter(query_params)
+	elif request.GET.get('doc_id'):
+		arms = Proposed.objects.get(id=request.GET.get('doc_id'))
+
+		return HttpResponse(json.dumps({'pdf_url':arms.pdf_url, 'date':arms.date.strftime("%m/%d/%Y")  , 'title':arms.title, 'id':arms.id, 'location':arms.location, 'location_id':arms.location_id}), mimetype="application/json")
 	else:
 		arms_pool = Proposed.objects.all()
 	

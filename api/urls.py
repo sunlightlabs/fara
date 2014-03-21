@@ -7,13 +7,14 @@ auth = HttpBasicAuthentication(realm="Narnia")
 metadata_handler = Resource(MetaDataHandler, authentication=auth)
 registrant_handler = Resource(RegistrantDataHandler, authentication=auth)
 doc_handler = Resource(DocHandler, authentication=auth) 
-loc_handler = Resource(LocationHandler, authentication=auth)
+
 
 urlpatterns = patterns('',
    url(r'^docs', 'api.views.incoming_fara', name= 'incoming-fara'),
    url(r'^metadata/(\d+)/', metadata_handler),
    url(r'^registrant', registrant_handler),
-   url(r'^proposed-arms', 'api.views.incoming_arms', name='incoming-arms'),
+   url(r'^proposed-arms', 'api.views.incoming_arms', name='incoming-arms' ),
+   url(r'^arms-profile', 'api.views.incoming_arms', name='arms-profile' ),
    url(r'^recipient-profile/(\d+)/', 'api.views.recipient_profile', name='recipient-profile'),
    url(r'^client-profile/(\d+)/', 'api.views.client_profile', name= 'client-profile'),
    url(r'^place-profile/(\d+)/', 'api.views.location_profile', name= 'location-profile'),
