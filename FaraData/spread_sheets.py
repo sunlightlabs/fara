@@ -133,35 +133,19 @@ def make_disbursements(docs):
 
 def contact_sheet(contacts, writer):
 	for c in contacts:
-		
 		lobbyists = ''
 		for l in c.lobbyist.all():
 			lobbyists = lobbyists + l.lobbyist_name + ", "
 		lobbyists = lobbyists.encode('ascii', errors='ignore')
 		
 		if c.date == None:
-			if MetaData.objects.get(link=c.link):
-				md = MetaData.objects.get(link=c.link)
-				end_date = md.end_date
-				date = end_date	
-			else:
-				date == ''
+			date = c.meta_data.end_date
 		else:
 			date = c.date
-		
-		if c.description == None:
-			description = None
-		else:
-			description = c.description.encode('ascii', errors='ignore')
 
 		c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "email"}
 		
-
 		for r in c.recipient.all():
-			if r.title != None and r.title != '':	
-				contact_title = r.title.encode('ascii', errors='ignore')	
-			else:
-				contact_title = ''
 			
 			if r.name != None and r.name != '':
 				contact_name = r.name.encode('ascii', errors='ignore')
@@ -169,17 +153,8 @@ def contact_sheet(contacts, writer):
 					contact_name = ''
 			else:
 				contact_name = ''
-			
-			if r.office_detail != None and r.office_detail != '':
-				contact_office = r.office_detail.encode('ascii', errors='ignore')
-			else:
-				contact_office = ''
-			if r. agency != None and r.agency != '':
-				contact_agency = r.agency.encode('ascii', errors='ignore')
-			else:
-				contact_agency = ''
 
-			writer.writerow([date, contact_title, contact_name, contact_office, contact_agency, c.client, c.client.location, c.registrant, description, c_type[c.contact_type], lobbyists, r.bioguide_id, c.link, c.meta_data.form, c.registrant.reg_id, c.client.id, c.client.location.id, r.id, c.id])
+			writer.writerow([date, r.title.encode('ascii', errors='ignore'), contact_name, r.office_detail.encode('ascii', errors='ignore'), r.agency.encode('ascii', errors='ignore'), c.client, c.client.location, c.registrant, c.description.encode('ascii', errors='ignore'), c_type[c.contact_type], lobbyists, r.bioguide_id, c.link, c.meta_data.form, c.registrant.reg_id, c.client.id, c.client.location.id, r.id, c.id])
 
 
 def contributions_sheet(contributions, writer):
@@ -215,8 +190,12 @@ def payments_sheet(payments, writer):
 			purpose = None
 		else:
 			purpose = p.purpose.encode('ascii', errors='ignore')
+		if p.subcontractor:
+			subid = p.subcontractor.reg_id
+		else:
+			subid = ''
 
-		writer.writerow([date, p.amount, p.client, p.registrant, purpose , p.subcontractor, p.link, p.meta_data.form, p.registrant.reg_id, p.client.id, p.client.location.id, p.subcontractor.reg_id, p.id])
+		writer.writerow([date, p.amount, p.client, p.registrant, purpose , p.subcontractor, p.link, p.meta_data.form, p.registrant.reg_id, p.client.id, p.client.location.id, subid, p.id])
 
 
 def disbursements_sheet(disbursements, writer):
@@ -234,8 +213,12 @@ def disbursements_sheet(disbursements, writer):
 			purpose = None
 		else:
 			purpose = d.purpose.encode('ascii', errors='ignore')
+		if d.subcontractor != None:
+			subid = d.subcontractor.reg_id
+		else:
+			subid = ''
 
-		writer.writerow([date, d.amount, d.client, d.registrant, purpose, d.subcontractor, d.link, d.meta_data.form, d.registrant.reg_id, d.client.id, d.location.id, d.subcontractor.id, d.id])
+		writer.writerow([date, d.amount, d.client, d.registrant, purpose, d.subcontractor, d.link, d.meta_data.form, d.registrant.reg_id, d.client.id, d.client.location.id, subid, d.id])
 
 def namebuilder(r):
 	contact_name = ''
@@ -254,20 +237,16 @@ def namebuilder(r):
 
 def client_registrant(writer):
 	for reg in Registrant.objects.all():
-		for client in reg.clients.all():
-			print client
-			client_name = client.client_name
+		for c in reg.clients.all():
+			client_name = c.client_name
 			reg_name = reg.reg_name
-			client_loc = client.location.location
 			try:	
 				client_reg = ClientReg.objects.get(client_id=client,registrant_id=registrant)
 				discription = client_reg.description
 			except:
 				discription = ''
-
-			writer.writerow([client_name, reg_name, "Active". client_loc, discription, reg.reg_id, client.id])
+			writer.writerow([client_name, reg_name, "Active", c.location.location, discription, reg.reg_id, c.id])
 		for client in reg.terminated_clients.all():
-			print client
 			client_name = client.client_name
 			reg_name = reg.reg_name
 			client_loc = client.location.location
