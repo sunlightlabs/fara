@@ -29,7 +29,7 @@ class Command(BaseCommand):
 		writer = csv.writer(contact_file)
 		writer.writerow(contact_heading)
 		contact_sheet(contacts, writer)
-		
+		print "done with contacts"
 		# payments
 		payments = Payment.objects.filter(meta_data__processed=True)
 		filename = "InfluenceExplorer/payments.csv"
@@ -37,7 +37,7 @@ class Command(BaseCommand):
 		writer = csv.writer(payment_file)
 		writer.writerow(payment_heading)
 		payments_sheet(payments, writer)
-
+		print "done with payments"
 		# disbursements
 		disbursements = Disbursement.objects.filter(meta_data__processed=True)
 		filename = "InfluenceExplorer/disbursements.csv"
@@ -45,7 +45,7 @@ class Command(BaseCommand):
 		writer = csv.writer(disbursement_file)
 		writer.writerow(disbursement_heading)
 		disbursements_sheet(disbursements, writer)
-
+		print "done with disbursements"
 		# contributions
 		contributions = Contribution.objects.filter(meta_data__processed=True)
 		filename = "InfluenceExplorer/contributions.csv"
@@ -53,12 +53,13 @@ class Command(BaseCommand):
 		writer = csv.writer(contribution_file)
 		writer.writerow(contribution_heading)
 		contributions_sheet(contributions, writer)
-
+		print "done with contributions"
 		# client-registrant
 		filename = "InfluenceExplorer/client_registrant.csv"
 		cr_file = default_storage.open(filename, 'wb')
 		writer = csv.writer(cr_file)
 		client_registrant(writer)
+		print "done with client registrant"
 
 
 
