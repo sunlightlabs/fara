@@ -967,6 +967,13 @@ def contact(request):
             error = json.dumps({'error': 'Please select a recipient.'} , separators=(',',':'))
             return HttpResponse(error, mimetype="application/json")
 
+        link = request.GET['link']
+        if MetaData.objects.filter(link=link).exists():
+            md = MetaData.objects.get(link=link)
+        else:
+            error = json.dumps({'error': 'Fill out supplemental end date. The first question on the Supplemental form.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json") 
+
         lobbyists_ids = request.GET.getlist('lobbyist')
         if not lobbyists_ids:
             lobbyists_ids = [request.GET.get('lobbyists'),]
@@ -985,8 +992,9 @@ def contact(request):
         contact = Contact(registrant = reg_id,
                             contact_type = request.GET['contact_type'],
                             description = description,
-                            link = request.GET['link'],
+                            link = link,
                             client = client,
+                            meta_data = md,
         )
 
         date = cleandate(request.GET['date'])
@@ -1055,6 +1063,13 @@ def payment(request):
             return HttpResponse(error, mimetype="application/json")
         client = Client.objects.get(id=int(client))
         
+        link = request.GET['link']
+        if MetaData.objects.filter(link=link).exists():
+            md = MetaData.objects.get(link=link)
+        else:
+            error = json.dumps({'error': 'Fill out supplemental end date. The first question on the Supplemental form.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json") 
+
         reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']) )
             
         if request.method == 'GET' and 'fee' in request.GET:
@@ -1074,6 +1089,7 @@ def payment(request):
                             amount = amount,
                             purpose = purpose,
                             link = request.GET['link'],
+                            meta_data = md,
         )
 
         date = cleandate(request.GET['date'])
@@ -1083,17 +1099,13 @@ def payment(request):
             payment.sort_date = date
         else:
             if date == '{"error":"No date"}':
-                if MetaData.objects.filter(link=request.GET['link']).exists():
-                    md = MetaData.objects.get(link=request.GET['link'])
-                    if md.end_date != None:
-                        payment.sort_date = md.end_date
-                        date = ''
-                    else: 
-                        error = json.dumps({'error': 'Fill out supplemental end date. The first question on the form.'} , separators=(',',':'))
-                        return HttpResponse(error, mimetype="application/json")
-                else:
+                md = MetaData.objects.get(link=request.GET['link'])
+                if md.end_date != None:
+                    payment.sort_date = md.end_date
+                    date = ''
+                else: 
                     error = json.dumps({'error': 'Fill out supplemental end date. The first question on the form.'} , separators=(',',':'))
-                    return HttpResponse(error, mimetype="application/json") 
+                    return HttpResponse(error, mimetype="application/json")
             else:
                 return HttpResponse(date, mimetype="application/json")
 
@@ -1150,6 +1162,13 @@ def contribution(request):
         else:
             date_string = date.strftime("%B %d, %Y")
 
+        link = request.GET['link']
+        if MetaData.objects.filter(link=link).exists():
+            md = MetaData.objects.get(link=link)
+        else:
+            error = json.dumps({'error': 'Fill out supplemental end date. The first question on the Supplemental form.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json")  
+
         registrant = Registrant.objects.get(reg_id=int(request.GET['registrant']))
         recipient = Recipient.objects.get(id=int(request.GET['recipient']))
         
@@ -1162,6 +1181,7 @@ def contribution(request):
                                         link = request.GET['link'],
                                         registrant = registrant,
                                         recipient = recipient,
+                                        meta_data = md,
             ) 
             contribution.save()
             lobbyist = None
@@ -1174,6 +1194,7 @@ def contribution(request):
                                         registrant = registrant,
                                         recipient = recipient,
                                         lobbyist = lobby,
+                                        meta_data = md,
             ) 
             contribution.save()
             lobbyist = str(contribution.lobbyist.lobbyist_name)
@@ -1204,6 +1225,13 @@ def disbursement(request):
     if request.method == 'GET':
         registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
         
+        link = request.GET['link']
+        if MetaData.objects.filter(link=link).exists():
+            md = MetaData.objects.get(link=link)
+        else:
+            error = json.dumps({'error': 'Fill out supplemental end date. The first question on the Supplemental form.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json") 
+
         client = request.GET['client']
         if client == "":
             error = json.dumps({'error': 'Please select a client.'} , separators=(',',':'))
@@ -1221,6 +1249,7 @@ def disbursement(request):
                             amount = amount,
                             purpose = purpose,
                             link = request.GET['link'],
+                            meta_data = md,
         )
 
         date = cleandate(request.GET['date'])
@@ -1266,7 +1295,13 @@ def disbursement(request):
 def gift(request):
     if request.method == 'GET':
         registrant = Registrant.objects.get(reg_id=int(request.GET['reg_id']))
-        
+        link = request.GET['link']
+        if MetaData.objects.filter(link=link).exists():
+            md = MetaData.objects.get(link=link)
+        else:
+            error = json.dumps({'error': 'Fill out supplemental end date. The first question on the Supplemental form.'} , separators=(',',':'))
+            return HttpResponse(error, mimetype="application/json") 
+
         if request.GET['client'] == "None":
             error = json.dumps({'error': 'Please select a client.'} , separators=(',',':'))
             return HttpResponse(error, mimetype="application/json")
@@ -1279,6 +1314,7 @@ def gift(request):
             purpose =  purpose,
             description =  description,
             link = request.GET['link'],
+            meta_data = md,
         )
         
         date = cleandate(request.GET['date'])
@@ -1350,6 +1386,7 @@ def metadata(request):
         
         document = Document.objects.get(url=link)
         
+
         #supplemental end date- needed for supplementals, and some amendments
         try:
             end_date = cleandate(request.GET['end_date'])
@@ -1376,6 +1413,9 @@ def metadata(request):
         if metadata.processed == True:
             spread_sheets.make_file(form)
             print "through"
+
+        registrant.meta_data.add(metadata)
+        registrant.save()
    
         metadata_info = json.dumps({'note': metadata.notes, 'do_not_clear': 'on'} , separators=(',',':'))
         return HttpResponse(metadata_info, mimetype="application/json")
