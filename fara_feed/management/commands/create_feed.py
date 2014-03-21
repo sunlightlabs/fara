@@ -31,6 +31,7 @@ class Command(BaseCommand):
     args = 'date_range'
 
     def handle(self, *args, **options):
+
         if args:
             for date_input in args:
                 dates = date_input.split(':')
@@ -128,6 +129,7 @@ def pdf2htmlEX():
 def add_document(url_info):
     url = str(url_info['url']).strip()
     if not Document.objects.filter(url = url).exists():
+        print 1
         document = Document(url = url,
             reg_id = url_info['reg_id'],
             doc_type = url_info['doc_type'],
@@ -135,7 +137,10 @@ def add_document(url_info):
         )
         document.save()
         print "\n New document discovered- \n %s  \n" %(url)
+        
     if not MetaData.objects.filter(link= url).exists():
+        document = Document.objects.get(url = url)
+        print "good"
         md = MetaData(link = url,
                         upload_date = datetime.date.today(),
                         reviewed = False,
@@ -150,11 +155,11 @@ def add_document(url_info):
             reg_name = url_info['reg_name']
             )
         reg.save()
-    # else:
-    #     print "existing model"
+
+
     
 def add_file(url):
-    #print "add file"
+    print "add file"
     if url[:25] != "http://www.fara.gov/docs/":
         message = 'bad link ' + url
         logger.error(message)
@@ -240,9 +245,10 @@ def parse_and_save(page, outdir):
                 doc_type = 'unknown'
                 logger.error(message)
 
+            print "looking at url"
             url_info= {'url':url,'reg_name':reg_name,  'reg_id':reg_id, 'doc_type':doc_type, 'stamp_date':date_string}
             documents.append(url_info)
-            # saving
+            saving
             add_document(url_info)
             add_file(url)
             save_text(url, url_info, outdir)
