@@ -357,9 +357,10 @@ def location_profile(request, loc_id):
 		# changeing to 2013 running total
 		if Payment.objects.filter(client=c.id,subcontractor__isnull=True,sort_date__range=( datetime.date(2013,1,1), datetime.date.today()),meta_data__processed=True).exists():
 			payment = Payment.objects.filter(client=c.id,subcontractor__isnull=True,sort_date__range=( datetime.date(2013,1,1), datetime.date.today()),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
-			client['total_payment'] = float(payment['total_pay'])
-
-		client['running_total_13'] = total_pay
+			client['running_total_13'] = float(payment['total_pay'])
+		if Payment.objects.filter(client=c.id).exists():
+			client['total_pay'] = True
+		
 		if Contact.objects.filter(client=c.id).exists():
 			client['contacts'] = Contact.objects.filter(client=c.id).count()
 		
