@@ -675,15 +675,15 @@ def contact_table(request):
 		pass
 	try:
 		Disbursement.objects.filter(**query_params)
-		buttons['disburement'] = True
+		buttons['disbursement'] = True
 	except:
 		pass
 	try:
 		Contribution.objects.filter(**query_params)
-		buttons['contributions'] = True
+		buttons['contribution'] = True
 	except:
 		pass
-		
+
 	results = json.dumps({'results':results, 'title':title, 'buttons': buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
@@ -809,7 +809,7 @@ def payment_table(request):
 		pass
 	try:
 		Contribution.objects.filter(**query_params)
-		buttons['contributions'] = True
+		buttons['contribution'] = True
 	except:
 		pass
 
@@ -923,7 +923,7 @@ def disbursement_table(request):
 		pass
 	try:
 		Contribution.objects.filter(**query_params)
-		buttons['contributions'] = True
+		buttons['contribution'] = True
 	except:
 		pass
 
