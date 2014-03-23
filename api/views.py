@@ -357,7 +357,7 @@ def location_profile(request, loc_id):
 		# changeing to 2013 running total
 		if Payment.objects.filter(client=c.id,subcontractor__isnull=True,sort_date__range=( datetime.date(2013,1,1), datetime.date.today()),meta_data__processed=True).exists():
 			payment = Payment.objects.filter(client=c.id,subcontractor__isnull=True,sort_date__range=( datetime.date(2013,1,1), datetime.date.today()),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
-			client['running_total_13'] = float(payment['total_pay'])
+			client['running_total_13'] = float(payment['amount'])
 		if Payment.objects.filter(client=c.id).exists():
 			client['total_pay'] = True
 		
@@ -387,6 +387,14 @@ def location_profile(request, loc_id):
 			client['terminated_reg'] = terminated_registrants
 		
 		client_list.append(client)
+
+	if Contacts.objects.filter(client__in="client_list").exists():
+		reuslts['location-contacts'] = True
+	if Payments.objects.filter(client__in="client_list").exists():
+		results['location-payments'] = True
+	if Disbursement.objects.filter(client_in="client_list").exists():
+		results['location-disbursement'] = True
+
 	results['clients'] = client_list
 	results = json.dumps({'results': results }, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
