@@ -387,11 +387,11 @@ def location_profile(request, loc_id):
 		client_list.append(client)
 
 	if Contact.objects.filter(client__in=clients).exists():
-		results['location-contacts'] = True
+		results['location_contacts'] = True
 	if Payment.objects.filter(client__in=clients).exists():
-		results['location-payments'] = True
+		results['location_payments'] = True
 	if Disbursement.objects.filter(client__in=clients).exists():
-		results['location-disbursement'] = True
+		results['location_disbursements'] = True
 
 	results['clients'] = client_list
 	results = json.dumps({'results': results }, separators=(',',':'))
