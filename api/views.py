@@ -122,9 +122,7 @@ def incoming_arms(request):
 	page['page'] = p 
 	
 	if request.GET.get('location_id'):
-		query_params = {}
-		query_params['location_id'] = int(request.GET.get('location_id'))
-		arms_pool = Proposed.objects.filter(query_params)
+		arms_pool = Proposed.objects.filter(location_id=request.GET.get('location_id'))
 	elif request.GET.get('doc_id'):
 		arms = Proposed.objects.get(id=request.GET.get('doc_id'))
 
@@ -347,7 +345,6 @@ def location_profile(request, loc_id):
 	client_list = []
 	for c in clients:
 		client = {}
-		client['location'] = c.location.location 
 		client['client_name'] = c.client_name
 		client['client_type'] = c.client_type
 		client['description'] = c.description
