@@ -55,7 +55,8 @@ def incoming_fara(request):
 		return HttpResponse(results, mimetype="application/json")
 
 	query_params = {}
-	query_params['stamp_date__range'] = (datetime.date(2012,1,1), datetime.date.today())
+	if not request.GET.get('all_records'):
+		query_params['stamp_date__range'] = (datetime.date(2012,1,1), datetime.date.today())
 	
 	### Would like to make this not case sensitive 
 	if request.GET.get('doc_type'):
@@ -299,8 +300,8 @@ def client_profile(request, client_id):
 		client['total_payment'] = True
 
 	# running total beginning in 2013
-	if Payment.objects.filter(client=client_id,subcontractor__isnull=True,sort_date__range=( datetime.date(2013,1,1), datetime.date.today())).exists():
-		payments = Payment.objects.filter(client=client_id,subcontractor__isnull=True,sort_date__range=(datetime.date(2013,1,1), datetime.date.today())).aggregate(total_pay=Sum('amount'))
+	if Payment.objects.filter(client=client_id,subcontractor__isnull=True,sort_date__range=( datetime.date(2013,1,1), datetime.date.today()),meta_data__processed=True).exists():
+		payments = Payment.objects.filter(client=client_id,subcontractor__isnull=True,sort_date__range=(datetime.date(2013,1,1), datetime.date.today()),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
 		total_pay = float(payments['total_pay'])
 		client['running_total_13'] = total_pay
 
@@ -353,10 +354,12 @@ def location_profile(request, loc_id):
 		client['id'] = c.id
 
 		# is null makes sure there is not double counting money flowing through multiple contractors
-		if Payment.objects.filter(client=c.id,subcontractor__isnull=True).exists():
-			payment = Payment.objects.filter(client=c.id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
+		# changeing to 2013 running total
+		if Payment.objects.filter(client=c.id,subcontractor__isnull=True,sort_date__range=( datetime.date(2013,1,1), datetime.date.today()),meta_data__processed=True).exists():
+			payment = Payment.objects.filter(client=c.id,subcontractor__isnull=True,sort_date__range=( datetime.date(2013,1,1), datetime.date.today()),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
 			client['total_payment'] = float(payment['total_pay'])
 
+		client['running_total_13'] = total_pay
 		if Contact.objects.filter(client=c.id).exists():
 			client['contacts'] = Contact.objects.filter(client=c.id).count()
 		
@@ -529,7 +532,7 @@ def reg_profile(request, reg_id):
 			'location_id': client.location.id, 
 			'active': False,
 		}
-		
+
 		if Payment.objects.filter(client=client,registrant=reg).exists():
 			c['payment'] = True
 		if Disbursement.objects.filter(client=client,registrant=reg).exists():
@@ -598,7 +601,29 @@ def contact_table(request):
 		location = location.location
 		title.append({'id':loc_id, 'text':location, "type": 'location'})
 	
-	contact_pool = Contact.objects.filter(**query_params).order_by('-date')
+	buttons = {}
+	try:
+		Payment.objects.filter(**query_params)
+		buttons['payment'] = True
+	except:
+		pass
+	try:
+		Disbursement.objects.filter(**query_params)
+		buttons['disburement'] = True
+	except:
+		pass
+	try:
+		Contribution.objects.filter(**query_params)
+		buttons['contributions'] = True
+	except:
+		pass
+
+	if request.GET.get('sort'):
+		sort = request.GET.get('sort')
+	else:
+		sort = '-date'	
+
+	contact_pool = Contact.objects.filter(**query_params).order_by(sort)
 	
 	if request.GET.get('p'):
 		p = int(request.GET.get('p'))
@@ -659,7 +684,7 @@ def contact_table(request):
 
 		results.append(record)
 
-	results = json.dumps({'results':results, 'title':title, 'page':page}, separators=(',',':'))
+	results = json.dumps({'results':results, 'title':title, 'buttons': buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
 def namebuilder(r):
@@ -719,7 +744,29 @@ def payment_table(request):
 		location = location.location
 		title.append({'id':loc_id, 'text':location, "type": 'location'})
 
-	payment_pool = Payment.objects.filter(**query_params).order_by('-date')
+	buttons = {}
+	try:
+		Payment.objects.filter(**query_params)
+		buttons['payment'] = True
+	except:
+		pass
+	try:
+		Disbursement.objects.filter(**query_params)
+		buttons['disburement'] = True
+	except:
+		pass
+	try:
+		Contribution.objects.filter(**query_params)
+		buttons['contributions'] = True
+	except:
+		pass
+
+	if request.GET.get('sort'):
+		sort = request.GET.get('sort')
+	else:
+		sort = '-date'	
+
+	payment_pool = Payment.objects.filter(**query_params).order_by(sort)
 	
 	if request.GET.get('p'):
 		p = int(request.GET.get('p'))
@@ -767,7 +814,7 @@ def payment_table(request):
 		count = count + 1
 
 
-	results = json.dumps({'results':results, 'title':title, 'page':page}, separators=(',',':'))
+	results = json.dumps({'results':results, 'title':title, 'buttons':buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
 def disbursement_table(request):
@@ -811,8 +858,13 @@ def disbursement_table(request):
 		location = Location.objects.get(id=loc_id)
 		location = location.location
 		title.append({'id':loc_id, 'text':location, "type": 'location'})
+	
+	if request.GET.get('sort'):
+		sort = request.GET.get('sort')
+	else:
+		sort = '-date'	
 
-	disbursement_pool = Disbursement.objects.filter(**query_params).order_by('-date')
+	disbursement_pool = Disbursement.objects.filter(**query_params).order_by(sort)
 	
 	if request.GET.get('p'):
 		p = int(request.GET.get('p'))
@@ -859,7 +911,24 @@ def disbursement_table(request):
 			record['row'] = "odd"
 		count = count + 1
 
-	results = json.dumps({'results':results, 'title':title, 'page':page}, separators=(',',':'))
+	buttons = {}
+	try:
+		Payment.objects.filter(**query_params)
+		buttons['payment'] = True
+	except:
+		pass
+	try:
+		Contact.objects.filter(**query_params)
+		buttons['contact'] = True
+	except:
+		pass
+	try:
+		Contribution.objects.filter(**query_params)
+		buttons['contributions'] = True
+	except:
+		pass
+
+	results = json.dumps({'results':results, 'title':title, 'buttons':buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
 def contribution_table(request):
@@ -906,9 +975,12 @@ def contribution_table(request):
 		query_params['lobbyist'] = lobbyist
 		title.append({'id':None, 'text': text, "type": 'recipient'})
 	
-	# lobbyist/ from
+	if request.GET.get('sort'):
+		sort = request.GET.get('sort')
+	else:
+		sort = '-date'	
 
-	contribution_pool = Contribution.objects.filter(**query_params).order_by('-date')
+	contribution_pool = Contribution.objects.filter(**query_params).order_by(sort)
 	
 	if request.GET.get('p'):
 		p = int(request.GET.get('p'))
@@ -958,7 +1030,25 @@ def contribution_table(request):
 		record['date'] = date	
 		results.append(record)
 
-	results = json.dumps({'results':results, 'title':title, 'page':page}, separators=(',',':'))
+
+	buttons = {}
+	try:
+		Payment.objects.filter(**query_params)
+		buttons['payment'] = True
+	except:
+		pass
+	try:
+		Contact.objects.filter(**query_params)
+		buttons['contact'] = True
+	except:
+		pass
+	try:
+		Disbursement.objects.filter(**query_params)
+		buttons['disbursement'] = True
+	except:
+		pass
+
+	results = json.dumps({'results':results, 'title':title, 'buttons':buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 	
 # 2013 totals pages
