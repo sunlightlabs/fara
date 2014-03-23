@@ -600,23 +600,6 @@ def contact_table(request):
 		location = Location.objects.get(id=loc_id)
 		location = location.location
 		title.append({'id':loc_id, 'text':location, "type": 'location'})
-	
-	buttons = {}
-	try:
-		Payment.objects.filter(**query_params)
-		buttons['payment'] = True
-	except:
-		pass
-	try:
-		Disbursement.objects.filter(**query_params)
-		buttons['disburement'] = True
-	except:
-		pass
-	try:
-		Contribution.objects.filter(**query_params)
-		buttons['contributions'] = True
-	except:
-		pass
 
 	if request.GET.get('sort'):
 		sort = request.GET.get('sort')
@@ -684,6 +667,23 @@ def contact_table(request):
 
 		results.append(record)
 
+	buttons = {}
+	try:
+		Payment.objects.filter(**query_params)
+		buttons['payment'] = True
+	except:
+		pass
+	try:
+		Disbursement.objects.filter(**query_params)
+		buttons['disburement'] = True
+	except:
+		pass
+	try:
+		Contribution.objects.filter(**query_params)
+		buttons['contributions'] = True
+	except:
+		pass
+		
 	results = json.dumps({'results':results, 'title':title, 'buttons': buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
@@ -744,23 +744,6 @@ def payment_table(request):
 		location = location.location
 		title.append({'id':loc_id, 'text':location, "type": 'location'})
 
-	buttons = {}
-	try:
-		Payment.objects.filter(**query_params)
-		buttons['payment'] = True
-	except:
-		pass
-	try:
-		Disbursement.objects.filter(**query_params)
-		buttons['disburement'] = True
-	except:
-		pass
-	try:
-		Contribution.objects.filter(**query_params)
-		buttons['contributions'] = True
-	except:
-		pass
-
 	if request.GET.get('sort'):
 		sort = request.GET.get('sort')
 	else:
@@ -813,6 +796,22 @@ def payment_table(request):
 			record['row'] = "odd"
 		count = count + 1
 
+	buttons = {}
+	try:
+		Contact.objects.filter(**query_params)
+		buttons['contact'] = True
+	except:
+		pass
+	try:
+		Disbursement.objects.filter(**query_params)
+		buttons['disbursement'] = True
+	except:
+		pass
+	try:
+		Contribution.objects.filter(**query_params)
+		buttons['contributions'] = True
+	except:
+		pass
 
 	results = json.dumps({'results':results, 'title':title, 'buttons':buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
