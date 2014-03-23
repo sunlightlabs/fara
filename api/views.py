@@ -388,11 +388,11 @@ def location_profile(request, loc_id):
 		
 		client_list.append(client)
 
-	if Contact.objects.filter(client__in="client_list").exists():
+	if Contact.objects.filter(client__in=client_list).exists():
 		reuslts['location-contacts'] = True
-	if Payments.objects.filter(client__in="client_list").exists():
+	if Payments.objects.filter(client__in=client_list).exists():
 		results['location-payments'] = True
-	if Disbursement.objects.filter(client_in="client_list").exists():
+	if Disbursement.objects.filter(client_in=client_list).exists():
 		results['location-disbursement'] = True
 
 	results['clients'] = client_list
