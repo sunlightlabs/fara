@@ -58,8 +58,6 @@ def make_file(form_id):
 			if contributions != None: form_file.write(contributions)
 			if payments != None: form_file.write(payments)
 
-
-		#print "PRTEND saving to amazon" 
 		bucket_file = default_storage.open('/spreadsheets/' + name, 'w')
 		bucket_file.write(open(name).read())
 		bucket_file.close()
@@ -133,7 +131,7 @@ def make_disbursements(docs):
 	else: return None
 
 def contact_sheet(contacts, writer):
-	print 'starting contacts'
+	print 'starting contacts in spread_sheets'
 	c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "email"}
 	for c in contacts:
 		lobbyists = ''
@@ -151,7 +149,6 @@ def contact_sheet(contacts, writer):
 				contact_name = r.name
 				if contact_name == "unknown":
 					contact_name = ''
-			print date, contact_name, c.client, c.registrant
 			writer.writerow([date, r.title, contact_name, r.office_detail, r.agency, c.client, c.client.location, c.registrant, c.description, c_type[c.contact_type], lobbyists, r.bioguide_id, c.link, c.meta_data.form, c.registrant.reg_id, c.client.id, c.client.location.id, r.id, c.id])
 
 
