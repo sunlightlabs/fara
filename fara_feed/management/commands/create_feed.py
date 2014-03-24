@@ -169,6 +169,8 @@ def add_file(url):
                 u = urllib2.urlopen(url)
                 localFile = default_storage.open(file_name, 'w')
                 localFile.write(u.read())
+                localFile.close()
+
                 doc = Document.objects.get(url=url)
                 doc.uploaded = True
                 doc.save()
