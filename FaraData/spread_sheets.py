@@ -140,42 +140,21 @@ def contact_sheet(contacts, writer):
 		lobbyists = ''
 		for l in c.lobbyist.all():
 			lobbyists = lobbyists + l.lobbyist_name + ", "
-		lobbyists = lobbyists.encode('ascii', errors='ignore')
+		lobbyists = lobbyists
 
 		if c.date == None:
 			date = str(c.meta_data.end_date) + '*'
 		else:
 			date = c.date
 
-		if c.description == None:
-			description = 'None'
-		else:
-			description = c.description.encode('ascii', errors='ignore')
-
-
 		for r in c.recipient.all():
-			if r.title != None:	
-				contact_title = r.title.encode('ascii', errors='ignore')	
-			else:
-				contact_title = ''
 
 			if r.name != None:
-				contact_name = r.name.encode('ascii', errors='ignore')
+				contact_name = r.name
 				if contact_name == "unknown":
 					contact_name = ''
-			else:
-				contact_name = ''
 
-			if r.office_detail != None:
-				contact_office = r.office_detail.encode('ascii', errors='ignore')
-			else:
-				contact_office = ''
-			if r. agency != None:
-				contact_agency = r.agency.encode('ascii', errors='ignore')
-			else:
-				contact_agency = ''
-
-			writer.writerow([date, contact_title, contact_name, contact_office, contact_agency, c.client, c.client.location, c.registrant, description, c_type[c.contact_type], lobbyists, r.bioguide_id, c.link, c.meta_data.form, c.registrant.reg_id, c.client.id, c.client.location.id, r.id, c.id])
+			writer.writerow([date, r.title, contact_name, r.office_detail, r.agency, c.client, c.client.location, c.registrant, c.description, c_type[c.contact_type], lobbyists, r.bioguide_id, c.link, c.meta_data.form, c.registrant.reg_id, c.client.id, c.client.location.id, r.id, c.id])
 
 
 def contributions_sheet(contributions, writer):
@@ -199,17 +178,13 @@ def payments_sheet(payments, writer):
 			date = str(p.meta_data.end_date) + '*'
 		else:
 			date = p.date
-		
-		if p.purpose == None:
-			purpose = None
-		else:
-			purpose = p.purpose.encode('ascii', errors='ignore')
+
 		if p.subcontractor:
 			subid = p.subcontractor.reg_id
 		else:
 			subid = ''
 
-		writer.writerow([date, p.amount, p.client, p.registrant, purpose , p.subcontractor, p.link, p.meta_data.form, p.registrant.reg_id, p.client.id, p.client.location.id, subid, p.id])
+		writer.writerow([date, p.amount, p.client, p.registrant, p.purpose , p.subcontractor, p.link, p.meta_data.form, p.registrant.reg_id, p.client.id, p.client.location.id, subid, p.id])
 
 
 def disbursements_sheet(disbursements, writer):
@@ -229,14 +204,14 @@ def disbursements_sheet(disbursements, writer):
 def namebuilder(r):
 	contact_name = ''
 	if r.title != None and r.title != '':	
-		contact_name = r.title.encode('ascii', errors='ignore') + ' '
+		contact_name = r.title
 	if r.name != None and r.name != '':
-		contact_name = contact_name + r.name.encode('ascii', errors='ignore')
+		contact_name = contact_name + r.name
 	if r.office_detail != None and r.office_detail != '':
-		contact_name = contact_name + ", office: " + r.office_detail.encode('ascii', errors='ignore')
+		contact_name = contact_name + ", office: " + r.office_detail
 	if r. agency != None and r.agency != '':
-		contact_name = contact_name + ", agency: " + r.agency.encode('ascii', errors='ignore')
-	contact_name = contact_name.encode('ascii', errors='ignore') + "; "
+		contact_name = contact_name + ", agency: " + r.agency
+	contact_name = contact_name + "; "
 	if contact_name == "unknown; ":
 		contact_name = ''
 	return contact_name
