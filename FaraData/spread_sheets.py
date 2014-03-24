@@ -136,7 +136,6 @@ def contact_sheet(contacts, writer):
 	print 'starting contacts'
 	c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "email"}
 	for c in contacts:
-		print "starting loop"
 		lobbyists = ''
 		for l in c.lobbyist.all():
 			lobbyists = lobbyists + l.lobbyist_name + ", "
