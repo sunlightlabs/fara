@@ -147,12 +147,11 @@ def contact_sheet(contacts, writer):
 			date = c.date
 
 		for r in c.recipient.all():
-
 			if r.name != None:
 				contact_name = r.name
 				if contact_name == "unknown":
 					contact_name = ''
-
+			print date, contact_name, c.client, c.registrant
 			writer.writerow([date, r.title, contact_name, r.office_detail, r.agency, c.client, c.client.location, c.registrant, c.description, c_type[c.contact_type], lobbyists, r.bioguide_id, c.link, c.meta_data.form, c.registrant.reg_id, c.client.id, c.client.location.id, r.id, c.id])
 
 
@@ -237,4 +236,4 @@ def client_registrant(writer):
 			except:
 				description = ''
 
-			writer.writerow([client_name, reg_name, "Terminated", client_loc, description, reg.reg_id, client.id, client.location.id])
+			writer.writerow([client_name, reg_name, "Terminated", client_loc, description, reg.reg_id, client.id, client.location.pk])
