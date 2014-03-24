@@ -1,5 +1,4 @@
 import datetime
-import csv
 
 from FaraData.unicode_csv import UnicodeWriter
 from django.core.management.base import BaseCommand, CommandError
@@ -18,7 +17,7 @@ class Command(BaseCommand):
 		# client-registrant
 		filename = "InfluenceExplorer/client_registrant.csv"
 		cr_file = default_storage.open(filename, 'wb')
-		writer = csv.writer(cr_file)
+		writer = UnicodeWriter(cr_file)
 		client_registrant(writer)
 		cr_file.close()
 		print "done with client registrant"
@@ -27,7 +26,7 @@ class Command(BaseCommand):
 		disbursements = Disbursement.objects.filter(meta_data__processed=True)
 		filename = "InfluenceExplorer/disbursements.csv"
 		disbursement_file = default_storage.open(filename, 'wb')
-		writer = csv.writer(disbursement_file)
+		writer = UnicodeWriter(disbursement_file)
 		writer.writerow(disbursement_heading)
 		disbursements_sheet(disbursements, writer)
 		disbursement_file.close()
@@ -37,7 +36,7 @@ class Command(BaseCommand):
 		contributions = Contribution.objects.filter(meta_data__processed=True)
 		filename = "InfluenceExplorer/contributions.csv"
 		contribution_file = default_storage.open(filename, 'wb')
-		writer = csv.writer(contribution_file)
+		writer = UnicodeWriter(contribution_file)
 		writer.writerow(contribution_heading)
 		contributions_sheet(contributions, writer)
 		contribution_file.close()
@@ -47,7 +46,7 @@ class Command(BaseCommand):
 		payments = Payment.objects.filter(meta_data__processed=True)
 		filename = "InfluenceExplorer/payments.csv"
 		payment_file = default_storage.open(filename, 'wb')
-		writer = csv.writer(payment_file)
+		writer = UnicodeWriter(payment_file)
 		writer.writerow(payment_heading)
 		payments_sheet(payments, writer)
 		payment_file.close()
@@ -58,7 +57,7 @@ class Command(BaseCommand):
 		print "got contacts"
 		filename = "InfluenceExplorer/contacts.csv"
 		contact_file = default_storage.open(filename, 'wb')
-		writer = csv.writer(contact_file)
+		writer = UnicodeWriter(contact_file)
 		writer.writerow(contact_heading)
 		print 'starting contacts'
 		contact_sheet(contacts, writer)

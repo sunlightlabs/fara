@@ -81,7 +81,7 @@ def make_contacts(docs):
 	if len(contacts) >= 1:
 		filename = "contacts.csv"
 		contact_file = open(filename, 'wb')
-		writer = csv.writer(contact_file)
+		writer = UnicodeWriter(contact_file)
 		writer.writerow(contact_heading)
 		contact_sheet(contacts, writer)
 		return filename
@@ -96,7 +96,7 @@ def make_contributions(docs):
 		
 	if len(contributions) >=1:
 		filename = "contributions.csv"
-		writer = csv.writer(open(filename, 'wb'))
+		writer = UnicodeWriter(open(filename, 'wb'))
 		writer.writerow(contribution_heading)
 		contributions_sheet(contributions, writer)
 		return filename
@@ -111,7 +111,7 @@ def make_payments(docs):
 
 	if len(payments) >=1:
 		filename = "payments.csv"
-		writer = csv.writer(open(filename, 'wb'))
+		writer = UnicodeWriter(open(filename, 'wb'))
 		writer.writerow(payment_heading)
 		payments_sheet(payments, writer)
 		return filename
@@ -126,7 +126,7 @@ def make_disbursements(docs):
 
 	if len(disbursements) >=1:
 		filename = "disbursements.csv"
-		writer = csv.writer(open(filename, 'wb'))
+		writer = UnicodeWriter(open(filename, 'wb'))
 		writer.writerow(disbursement_heading)
 		disbursements_sheet(disbursements, writer)
 		return filename
