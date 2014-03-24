@@ -27,8 +27,8 @@ class Command(BaseCommand):
 		disbursements = Disbursement.objects.filter(meta_data__processed=True)
 		filename = "InfluenceExplorer/disbursements.csv"
 		disbursement_file = default_storage.open(filename, 'wb')
-		writer = csv.writer(disbursement_heading)
-		writer.writerow(disbursement_file)
+		writer = csv.writer(disbursement_file)
+		writer.writerow(disbursement_heading)
 		disbursements_sheet(disbursements, writer)
 		disbursement_file.close()
 		print "done with disbursements"
