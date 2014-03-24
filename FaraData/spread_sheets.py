@@ -12,6 +12,7 @@ from tempfile import TemporaryFile
 
 from django.core.files.storage import default_storage
 
+from FaraData.unicode_csv import UnicodeWriter
 from fara_feed.models import Document
 from FaraData.models import Contact, Payment, Registrant, Contribution, Disbursement, MetaData
 from django.conf import settings
@@ -132,8 +133,10 @@ def make_disbursements(docs):
 	else: return None
 
 def contact_sheet(contacts, writer):
+	print 'starting contacts'
+	c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "email"}
 	for c in contacts:
-
+		print "starting loop"
 		lobbyists = ''
 		for l in c.lobbyist.all():
 			lobbyists = lobbyists + l.lobbyist_name + ", "
@@ -148,8 +151,6 @@ def contact_sheet(contacts, writer):
 			description = 'None'
 		else:
 			description = c.description.encode('ascii', errors='ignore')
-
-		c_type = {"M": "meeting", "U":"unknown", "P":"phone", "O": "other", "E": "email"}
 
 
 		for r in c.recipient.all():

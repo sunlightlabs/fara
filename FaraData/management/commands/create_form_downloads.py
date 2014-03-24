@@ -19,7 +19,7 @@ class Command(BaseCommand):
 		cr_file = default_storage.open(filename, 'wb')
 		writer = csv.writer(cr_file)
 		client_registrant(writer)
-		cr_file.close()
+		#cr_file.close()
 		print "done with client registrant"
 
 		# disbursements
@@ -52,13 +52,14 @@ class Command(BaseCommand):
 		payment_file.close()
 		print "done with payments"
 		
-		contacts
+		#contacts
 		contacts = Contact.objects.filter(meta_data__processed=True)
 		print "got contacts"
 		filename = "InfluenceExplorer/contacts.csv"
 		contact_file = default_storage.open(filename, 'wb')
 		writer = csv.writer(contact_file)
 		writer.writerow(contact_heading)
+		print 'starting contacts'
 		contact_sheet(contacts, writer)
 		contact_file.close()
 		print "done with contacts"
