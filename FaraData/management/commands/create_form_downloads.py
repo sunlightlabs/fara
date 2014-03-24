@@ -1,6 +1,7 @@
 import datetime
 import csv
 
+from FaraData.unicode_csv import UnicodeWriter
 from django.core.management.base import BaseCommand, CommandError
 from django.core.files.storage import default_storage
 
@@ -19,7 +20,7 @@ class Command(BaseCommand):
 		cr_file = default_storage.open(filename, 'wb')
 		writer = csv.writer(cr_file)
 		client_registrant(writer)
-		#cr_file.close()
+		cr_file.close()
 		print "done with client registrant"
 
 		# disbursements
