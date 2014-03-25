@@ -118,6 +118,7 @@ def s3_set_acls(basename):
         subprocess.call(s3_setacl_cmd, shell=True) 
         subprocess.call("s3cmd setacl s3://fara.sunlightfoundation.com/javascript/ --acl-public --recursive", shell=True)
         subprocess.call("s3cmd setacl s3://fara.sunlightfoundation.com/css/ --acl-public --recursive", shell=True)
+        subprocess.call("s3cmd setacl s3://fara.sunlightfoundation.com/html/ --acl-public --recursive", shell=True)
     else:
         print "s3_set_acl_cmd: " + s3_setacl_cmd
 
