@@ -85,41 +85,8 @@ class Command(BaseCommand):
             
 
 def save_text(url, url_info, outdir):
-    
-    # set up paths
-    document_path = os.path.join(outdir, "documents")
-    if not os.path.exists(document_path):
-        os.mkdir(document_path)
-    file_name = str(url[25:-4]) + ".txt"
-    doc_file_name = os.path.join(document_path, file_name)
-    
-    if not os.path.isfile(doc_file_name):
-        doc_file =  open(doc_file_name, 'w')
-        
-        amazon_file_name = "pdfs/" + url[25:]
-        if default_storage.exists(amazon_file_name):
-            pdf = default_storage.open(amazon_file_name, 'rb')
-        else:
-            pdf = urllib2.urlopen(url)
-        localFile = open("temp.pdf", 'w')
-        localFile = localFile.write(pdf.read())
-        tempDoc = file("temp.pdf", "rb")
-        pdf_file = PdfFileReader(tempDoc)
-        pages = pdf_file.getNumPages()
-        text_file = codecs.open(doc_file_name, encoding='utf-8', mode='wb')
+    print "will change this to elastic search, not file"  
 
-        #looping through the pages and putting the contents in to a text document
-        count = 0
-        while count < pages:
-            pg = pdf_file.getPage(count)
-            pgtxt = pg.extractText()
-            count = count + 1
-            text_file.write(pgtxt) 
-        print "-saving %s to disk" % (url)
-        text_file.close()
-
-    # else:
-    #     print "cashe works"
 
 
 def pdf2htmlEX(): 
