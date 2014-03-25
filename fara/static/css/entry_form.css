@@ -72,6 +72,7 @@ form.wide {
 }
 
 .form-control {
+  overflow: scroll;
   margin-bottom: 15px;
 }
 
