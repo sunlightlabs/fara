@@ -1056,7 +1056,6 @@ def reg_2013(request):
 	# this grabs the totals that are created in api management command totaler.py
 	data = open("api/computations/reg13.json", 'r')
 	results = data.read()
-	results = json.dumps(results, separators=(',',':'))
 	data.close()
 	return HttpResponse(results, mimetype="application/json")
 
