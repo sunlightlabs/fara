@@ -61,11 +61,11 @@ class Command(BaseCommand):
 				if s13 != 0:
 					results.append(registrant)
 		
-		print "starting"
+		# save to file
 		with open("api/computations/reg13.json", 'w') as f:
 			results = json.dumps({'results':results}, separators=(',',':'))
 			f.write(results)
 		
-		# save to file
+
 
 

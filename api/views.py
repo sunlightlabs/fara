@@ -1,5 +1,6 @@
 import datetime
 import json
+import os
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
@@ -1053,8 +1054,12 @@ def contribution_table(request):
 def reg_2013(request):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
+	
 	# this grabs the totals that are created in api management command totaler.py
-	data = open("api/computations/reg13.json", 'r')
+	this_filepath = os.path.abspath(__file__)
+	this_parent_dir = os.path.dirname(this_filepath) 
+	file_name = os.path.join(this_parent_dir, "computations/reg13.json")
+	data = open(file_name, 'r')
 	results = data.read()
 	data.close()
 	return HttpResponse(results, mimetype="application/json")
@@ -1075,7 +1080,5 @@ def location_list(request):
 
 	results = json.dumps({'results':results}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
-
-
 
 # number of clients # number of arms sales
