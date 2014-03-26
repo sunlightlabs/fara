@@ -31,7 +31,7 @@ class Command(BaseCommand):
 			else:
 				if crp[:1] != "N":
 					writer.writerow([person.id, person.crp_id, person.title, person.name, person.agency, person.office_detail, person.state_local])
-				elif crp not in failures: 
+				elif crp not in failures:
 					bio = find_bio(crp)
 					if bio != None:
 						person.bioguide_id = bio
@@ -50,7 +50,7 @@ def find_bio(crp):
 					'apikey': apikey,
 	               }
 
-	endpoint = 'http://congress.api.sunlightfoundation.com/legislators'
+	endpoint = 'https://congress.api.sunlightfoundation.com/legislators'
 	response = requests.get(endpoint, params=query_params)
 	response_old = requests.get(endpoint, params=old_query_params)
 	response_url = response.url
@@ -61,7 +61,7 @@ def find_bio(crp):
 	old_data = response_old.json()
 
 	bioguide_id = read_response(data, crp)
-	
+
 	if bioguide_id == None:
 		bioguide_id = read_response(old_data, crp)
 
