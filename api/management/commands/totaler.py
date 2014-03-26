@@ -42,7 +42,7 @@ class Command(BaseCommand):
 					complete_records13 = True
 					registrant['complete_records13'] = True
 				else:
-					registrant['complete_records13'] = s13
+					registrant['complete_records13'] = False
 
 				if Payment.objects.filter(link__in=docs_2013):
 					payments2013 = Payment.objects.filter(link__in=docs_2013).aggregate(total_pay=Sum('amount'))
@@ -51,12 +51,18 @@ class Command(BaseCommand):
 
 				if Contact.objects.filter(registrant=reg_id,recipient__agency__in=["Congress", "House", "Senate"]).exists():
 					registrant['federal_lobbying'] = True
+				else:
+					registrant['federal_lobbying'] = False
 					
 				if Contact.objects.filter(registrant=reg_id,recipient__agency="U.S. Department of State").exists():
 					registrant['state_dept_lobbying'] = True
+				else:
+					registrant['state_dept_lobbying'] = False
 					
 				if Contact.objects.filter(registrant=reg_id,recipient__agency="Media").exists():
 					registrant['pr'] = True
+				else:
+					registrant['pr'] = False
 					
 				if s13 != 0:
 					results.append(registrant)
