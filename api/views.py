@@ -1050,15 +1050,14 @@ def contribution_table(request):
 	return HttpResponse(results, mimetype="application/json")
 	
 # 2013 totals pages
-
-
 def reg_2013(request):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
 	# this grabs the totals that are created in api management command totaler.py
-	while open("api/computations/reg13.json", 'r') as data:
-		results = data.read()
-		results = json.dumps(results, separators=(',',':'))
+	data = open("api/computations/reg13.json", 'r')
+	results = data.read()
+	results = json.dumps(results, separators=(',',':'))
+	data.close()
 	return HttpResponse(results, mimetype="application/json")
 
 def location_list(request):
