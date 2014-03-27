@@ -11,6 +11,7 @@ from django.db.models import Sum
 from fara_feed.models import Document
 from FaraData.models import Registrant, Payment, Contact, Contribution, Recipient, Client, Disbursement, ClientReg, Location, MetaData, Lobbyist
 from arms_sales.models import Proposed
+from search.search_foreign import *
 
 from fara.local_settings import API_PASSWORD
 
@@ -668,21 +669,12 @@ def contact_table(request):
 		results.append(record)
 
 	buttons = {}
-	try:
-		Payment.objects.filter(**query_params)
+	if Payment.objects.filter(**query_params).exists():
 		buttons['payment'] = True
-	except:
-		pass
-	try:
-		Disbursement.objects.filter(**query_params)
+	if Disbursement.objects.filter(**query_params).exists():
 		buttons['disbursement'] = True
-	except:
-		pass
-	try:
-		Contribution.objects.filter(**query_params)
+	if Contribution.objects.filter(**query_params).exists():
 		buttons['contribution'] = True
-	except:
-		pass
 
 	results = json.dumps({'results':results, 'title':title, 'buttons': buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
@@ -691,8 +683,6 @@ def namebuilder(r):
 	if r.name == "unknown":
 		return ''
 	contact_name = ''
-	if r.title != None and r.title != '':	
-		contact_name = r.title + ' '
 	if r.name != None and r.name != '':
 		contact_name = contact_name + r.name
 	if r.office_detail != None and r.office_detail != '':
@@ -797,21 +787,12 @@ def payment_table(request):
 		count = count + 1
 
 	buttons = {}
-	try:
-		Contact.objects.filter(**query_params)
+	if Contact.objects.filter(**query_params).exists():
 		buttons['contact'] = True
-	except:
-		pass
-	try:
-		Disbursement.objects.filter(**query_params)
+	if Disbursement.objects.filter(**query_params).exists():
 		buttons['disbursement'] = True
-	except:
-		pass
-	try:
-		Contribution.objects.filter(**query_params)
+	if Contribution.objects.filter(**query_params).exists():
 		buttons['contribution'] = True
-	except:
-		pass
 
 	results = json.dumps({'results':results, 'title':title, 'buttons':buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
@@ -911,21 +892,12 @@ def disbursement_table(request):
 		count = count + 1
 
 	buttons = {}
-	try:
-		Payment.objects.filter(**query_params)
+	if Payment.objects.filter(**query_params).exists():
 		buttons['payment'] = True
-	except:
-		pass
-	try:
-		Contact.objects.filter(**query_params)
+	if Contact.objects.filter(**query_params).exists():
 		buttons['contact'] = True
-	except:
-		pass
-	try:
-		Contribution.objects.filter(**query_params)
+	if Contribution.objects.filter(**query_params).exists():
 		buttons['contribution'] = True
-	except:
-		pass
 
 	results = json.dumps({'results':results, 'title':title, 'buttons':buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
@@ -1031,21 +1003,12 @@ def contribution_table(request):
 
 
 	buttons = {}
-	try:
-		Payment.objects.filter(**query_params)
+	if Payment.objects.filter(**query_params).exists():
 		buttons['payment'] = True
-	except:
-		pass
-	try:
-		Contact.objects.filter(**query_params)
+	if Contact.objects.filter(**query_params).exists():
 		buttons['contact'] = True
-	except:
-		pass
-	try:
-		Disbursement.objects.filter(**query_params)
+	if Disbursement.objects.filter(**query_params).exists():
 		buttons['disbursement'] = True
-	except:
-		pass
 
 	results = json.dumps({'results':results, 'title':title, 'buttons':buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
@@ -1064,6 +1027,7 @@ def reg_2013(request):
 	data.close()
 	return HttpResponse(results, mimetype="application/json")
 
+# I am using this for clients now
 def location_list(request):
 	locations = Location.objects.all()
 	results = []
@@ -1081,4 +1045,56 @@ def location_list(request):
 	results = json.dumps({'results':results}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
-# number of clients # number of arms sales
+
+def search(request):
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied
+
+	if request.GET.get('q'):
+		q = request.GET.get('q')
+	else:
+		results = json.dumps({'message':'No search terms'}, separators=(',',':'))
+		return HttpResponse(results, mimetype="application/json")
+
+	if request.GET.get('clientpage'):
+		clientpage = request.GET.get('clientpage')
+	else:
+		clientpage = 1
+	if request.GET.get('regpage'):
+		regpage = request.GET.get('regpage')
+	else:
+		regpage = 1
+	if request.GET.get('peoplepage'):
+		peoplepage = request.GET.get('peoplepage')
+	else:
+		peoplepage = 1
+	if request.GET.get('armspage'):
+		armspage = request.GET.get('armspage')
+	else:
+		armspage = 1
+	if request.GET.get('interactonspage'):
+		interactonspage = request.GET.get('interactonspage')
+	else:
+		interactonspage = 1
+	if request.GET.get('locationpage'):
+		locationpage = request.GET.get('locationpage')
+	else:
+		locationpage = 1
+
+	clients = search_client(q, clientpage)
+	regs = search_registrant(q, regpage)
+	people_org = search_recipients(q, peoplepage)
+	arms = search_arms(q, armspage)
+	interactions = search_interactions(q, interactonspage)
+	locations = search_locations(q, locationpage)
+
+	results = {}
+	results['clients'] = clients
+	results['registrants'] = regs
+	results['people_org'] =  people_org
+	results['arms'] = arms
+	results['interactions'] = interactions
+	results['locations'] = locations
+
+	results = json.dumps(results, separators=(',',':'))
+	return HttpResponse(results, mimetype="application/json")

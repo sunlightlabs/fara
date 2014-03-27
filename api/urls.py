@@ -26,4 +26,5 @@ urlpatterns = patterns('',
    url(r'^contribution-table', 'api.views.contribution_table', name= 'contribution-table'),
    url(r'^reg-2013', 'api.views.reg_2013', name= 'reg-2013'),
    url(r'^locations', 'api.views.location_list', name='location-list'),
+   url(r'^search', 'api.views.search', name='search'),
 )
