@@ -21,9 +21,9 @@ def cleantext(text):
 
 @login_required(login_url='/admin')
 def find_form(request):
- 	return render(request, 'FaraData/api_lookup.html') 
+ 	return render(request, 'FaraData/api_lookup.html')
 
-@login_required(login_url='/admin')        
+@login_required(login_url='/admin')
 def find_member(request):
 	q = request.GET['member'],
 
@@ -39,7 +39,7 @@ def find_member(request):
 					'per_page': 50,
 	               }
 
-	endpoint = 'http://congress.api.sunlightfoundation.com/legislators'
+	endpoint = 'https://congress.api.sunlightfoundation.com/legislators'
 	response = requests.get(endpoint, params=query_params)
 	response_old = requests.get(endpoint, params=old_query_params)
 	response_url = response.url
@@ -57,7 +57,7 @@ def find_member(request):
 					title = "Rep. "
 				else:
 					title = ''
-				
+
 				first_name =  d['first_name']
 				last_name = d['last_name']
 				full_name = "%s %s" %(first_name, last_name)
@@ -65,12 +65,12 @@ def find_member(request):
 				crp_id = d['crp_id']
 				bioguide_id = d['bioguide_id']
 				state = d['state']
-				
+
 				if time == 'old':
-					text = "%s %s %s (%s-%s) (NOT in office) CRP ID = %s" %(title, first_name, last_name, party, state, crp_id) 
+					text = "%s %s %s (%s-%s) (NOT in office) CRP ID = %s" %(title, first_name, last_name, party, state, crp_id)
 				else:
-					text = "%s %s %s (%s-%s) CRP ID = %s" %(title, first_name, last_name, party, state, crp_id) 
-				
+					text = "%s %s %s (%s-%s) CRP ID = %s" %(title, first_name, last_name, party, state, crp_id)
+
 				result = [crp_id, "Congress", chamber,  full_name, title, text, bioguide_id]
 				results.append(result)
 
@@ -92,7 +92,7 @@ def find_member(request):
 		accent_data = response.json()
 		read_response(accent_data, "accent")
 
-	return render(request, 'FaraData/api_lookup.html', {'results': results}) 
+	return render(request, 'FaraData/api_lookup.html', {'results': results})
 
 @login_required(login_url='/admin')
 def add_member(request):
@@ -127,7 +127,7 @@ def add_staff(request):
 					    title = cleantext(request.GET['title']),
 	)
 	if Recipient.objects.filter(crp_id=staff.crp_id, name=staff.name).exists():
-		message = staff.name + " of " + staff.office_detail + " CRP id : " + staff.crp_id 
+		message = staff.name + " of " + staff.office_detail + " CRP id : " + staff.crp_id
 		return render(request, 'FaraData/api_lookup.html', {'insystem': message})
 	else:
 		staff.save()
@@ -149,9 +149,9 @@ def add_leader_PAC(request):
 					    office_detail = member_name,
 					    name = cleantext(request.GET['PAC_name']),
 	)
-	
+
 	if Recipient.objects.filter(crp_id=staff.crp_id, name=staff.name).exists():
-		message = staff.name + " of " + staff.office_detail + " CRP id : " + staff.crp_id 
+		message = staff.name + " of " + staff.office_detail + " CRP id : " + staff.crp_id
 		return render(request, 'FaraData/api_lookup.html', {'insystem': message})
 	else:
 		staff.save()

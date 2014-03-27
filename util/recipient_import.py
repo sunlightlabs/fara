@@ -17,7 +17,7 @@ bad_id = csv.reader(open("known_unknowns.csv", "rU"))
 for bad in bad_id:
 	bad_ids.append(bad[0])
 
-# did this to some fields so that the function returns the right number of outputs	
+# did this to some fields so that the function returns the right number of outputs
 def no_none(item):
 	if item == 'None' or item == 'none' or item == None:
 		return ''
@@ -35,8 +35,8 @@ known_ids = {}
 def find(crp_id):
 	if str(crp_id) in bad_ids:
 		return "ERROR"
-	
-	elif known_ids.has_key(crp_id): 
+
+	elif known_ids.has_key(crp_id):
 		return ([known_ids[crp_id][0], known_ids[crp_id][1], crp_id])
 
 	else:
@@ -45,7 +45,7 @@ def find(crp_id):
 						"all_legislators": "true",
 		}
 
-		endpoint = 'http://congress.api.sunlightfoundation.com/legislators'
+		endpoint = 'https://congress.api.sunlightfoundation.com/legislators'
 		response = requests.get(endpoint, params=query_params)
 		response_url = response.url
 		data = response.json()
@@ -63,12 +63,12 @@ def find(crp_id):
 		except:
 			print "Can't find CRP ID, not in bad list: ", crp_id
 			bad_ids.append(crp_id)
-			return "ERROR"	
-	
+			return "ERROR"
+
 
 def add_member(data):
 	full_name = data[0]
-	chamber = data[1]		
+	chamber = data[1]
 	chamber = str(chamber).capitalize()
 	if chamber == 'Senate':
 		title = "Sen. "
@@ -86,31 +86,31 @@ def add_member(data):
 					    office_detail = chamber,
 					    name = full_name,
 					    title = title,
-		)	
+		)
 	 	member.save()
- 	
 
-def add_staff(data, name, title): 
+
+def add_staff(data, name, title):
 	#print "data= ", data, 'name= ', name, 'title= ', title
 	member_name = data[0]
-	chamber = data[1]		
+	chamber = data[1]
 	chamber = str(chamber).capitalize()
-	
+
 	if chamber == 'Senate':
 		office = "Sen. " + member_name
-	
+
 	if chamber == 'House':
 		office = "Rep. " + member_name
-	
+
 	if chamber == "Congress":
 		chamber = "Congressional"
-	
+
 	try:
 		crp_id = data[2]
 		if crp_id == '':
 			crp_id = None
 	except:
-		print "Where did you come from? ", data, name, title 
+		print "Where did you come from? ", data, name, title
 		crp_id = None
 
 	if 'office' not in locals():
@@ -119,10 +119,10 @@ def add_staff(data, name, title):
 
 	if office == name and office != '':
 		add_member(data)
-	
+
 	elif office[4:] == name and office != '':
 		add_memeber(data)
-	
+
 
 	else:
 		name = fix_none(name)
@@ -131,7 +131,7 @@ def add_staff(data, name, title):
 
 		if Recipient.objects.filter(crp_id = crp_id, name = name).exists():
 			pass
-		
+
 		elif crp_id != None and name != None:
 			if len(crp_id) == 9 and ('(' in name or 'Sen. ' in name or 'Rep. ' in name):
 				if "Staff" not in name:
@@ -142,7 +142,7 @@ def add_staff(data, name, title):
 							    office_detail = office,
 							    name = name,
 							    title = title,
-				)	
+				)
 			 	staff.save()
 	 	else:
 			staff = Recipient(crp_id = crp_id,
@@ -150,18 +150,18 @@ def add_staff(data, name, title):
 						    office_detail = office,
 						    name = name,
 						    title = title,
-			)	
+			)
 		 	staff.save()
 
-def non_congressional_donation(crp_id, committee, candidate, state_local, com_type):	
+def non_congressional_donation(crp_id, committee, candidate, state_local, com_type):
 	crp_id = crp_id[:9]
 	crp_id = fix_none(crp_id)
 	# capitalization was causing dupes
 	committee = committee.upper()
 	committee = committee.strip()
 	committee = fix_none(committee)
-	candidate = fix_none(candidate)		
-	
+	candidate = fix_none(candidate)
+
 	if candidate == None and (com_type != None or com_type != ''):
 		candidate = com_type
 
@@ -170,7 +170,7 @@ def non_congressional_donation(crp_id, committee, candidate, state_local, com_ty
 	elif crp_id == None and committee == None and candidate == None:
 		pass
 
-	else:			
+	else:
 		recip = Recipient(crp_id = crp_id,
 							name = committee,
 							office_detail = candidate,
@@ -214,8 +214,8 @@ def add_reg_contact(line):
 		agency = ''
 	if office == "Other" or office == "other":
 		office = ''
-	#I want this reserved for members and these don't have crp ids	
-	if agency == "Congress":	
+	#I want this reserved for members and these don't have crp ids
+	if agency == "Congress":
 		agency = "Congressional"
 
 	crp_id = crp_id[:9]
@@ -235,11 +235,11 @@ def add_reg_contact(line):
 		    office_detail = office,
 		    name = name,
 		    title = title,
-		)	
+		)
 	 	staff.save()
 	 	#print "reg-contact: ", staff
 
-# this is for recipients that the other fields depend on 
+# this is for recipients that the other fields depend on
 for line in data:
 	if line['model'] == 'fara.contact':
 		approved = line['fields']['approved']
@@ -281,7 +281,7 @@ for line in data:
 					if level in member_terms:
 						if Recipient.objects.filter(crp_id=crp_id, agency="Congress").exists():
 							pass
-						else:	
+						else:
 							response = find(crp_id)
 							if response == 'Error':
 								chamber = line['fields']['agency_detail']
@@ -290,9 +290,9 @@ for line in data:
 								add_staff([member_name, chamber, crp_id], name, title)
 							else:
 								add_member(response)
-							
+
 					elif "Staff" in level:
-						if Recipient.objects.filter(crp_id=crp_id, name=name).exists():	
+						if Recipient.objects.filter(crp_id=crp_id, name=name).exists():
 							pass
 						else:
 							response = find(crp_id)
@@ -307,22 +307,22 @@ for line in data:
 							else:
 								print "add staff 0"
 								add_staff(response, name, title)
-					
+
 					else:
 						print "Level error", level
-						if Recipient.objects.filter(crp_id=crp_id, name=name).exists():	
+						if Recipient.objects.filter(crp_id=crp_id, name=name).exists():
 							pass
 						else:
 							response = find(crp_id)
 							if response == 'Error':
-								add_reg_contact(line)	
+								add_reg_contact(line)
 							else:
 								print "add staff 1"
 								add_staff(response, name, title)
 
 				# uncoded congressional contacts
 				else:
-					if Recipient.objects.filter(crp_id=crp_id, name=name).exists():	
+					if Recipient.objects.filter(crp_id=crp_id, name=name).exists():
 						pass
 					else:
 						response = find(crp_id)
@@ -340,27 +340,27 @@ for line in data:
 			lobbyist =  line['fields']['lobbyist']
 			if lobbyist != None:
 				lobbyist.strip()
-				if Lobbyist.objects.filter(lobbyist_name=lobbyist).exists():	
+				if Lobbyist.objects.filter(lobbyist_name=lobbyist).exists():
 					pass
 				else:
 					lobby= Lobbyist(lobbyist_name = lobbyist)
 					lobby.save()
 
 
-	if  line['model'] == 'fara.contribution': 
+	if  line['model'] == 'fara.contribution':
 		# pulls out recipients from contributions
 		approved = line['fields']['approved']
 		if approved == 1:
 			candidate = line['fields']['candidate_name']
 			candidate = no_none(candidate)
-			
+
 			committee = line['fields']['committee']
 			committee = no_none(committee)
 			if committee == '':
 				committee = candidate
 			else:
 				committee = committee.strip()
-			
+
 			crp_id = line['fields']['candidate_id']
 			if crp_id == None:
 				crp_id = ''
@@ -374,7 +374,7 @@ for line in data:
 				state_local = False
 
 			if len(crp_id) == 9:
-				
+
 				if "PAC" in str(line['fields']['recipient_type']):
 					# Leadership PAC
 					# too many capitalization errors making dupes for PACs
@@ -398,7 +398,7 @@ for line in data:
 							if office == name:
 								add_member(response)
 							else:
-								committee = fix_none(committee)	
+								committee = fix_none(committee)
 								office = fix_none(office)
 
 								if Recipient.objects.filter(crp_id = crp_id, name = committee, agency = "Leadership PAC", office_detail = office,).exists():
@@ -411,14 +411,14 @@ for line in data:
 														office_detail = office,
 									)
 									#recip.save()
-									
 
-				# Congressional candidate committees	
+
+				# Congressional candidate committees
 				else:
 					if Recipient.objects.filter(crp_id=crp_id, agency="Congress").exists():
 						pass
 					else:
-						response = find(crp_id)	
+						response = find(crp_id)
 						if response == "ERROR":
 							com_type= line['fields']['recipient_type']
 							non_congressional_donation(crp_id, committee, candidate, state_local, com_type)
@@ -428,12 +428,12 @@ for line in data:
 			else:
 				com_type= line['fields']['recipient_type']
 				non_congressional_donation(crp_id, committee, candidate, state_local, com_type)
-			
+
 			# pulls out lobbyists
 			lobbyist =  line['fields']['lobbyist']
 			if lobbyist != None:
 				lobbyist.strip()
-				if Lobbyist.objects.filter(lobbyist_name=lobbyist).exists():	
+				if Lobbyist.objects.filter(lobbyist_name=lobbyist).exists():
 					pass
 				else:
 					lobby= Lobbyist(lobbyist_name = lobbyist)
@@ -454,7 +454,7 @@ for key in known_ids.keys():
 	for k in known_ids[key]:
 		row = [str(known_ids[key][2]), str(known_ids[key][0]), str(known_ids[key][1])]
 		writer.writerow(row)
-		
+
 json_data.close()
 
 
