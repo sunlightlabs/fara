@@ -5,13 +5,15 @@ from PyPDF2 import PdfFileReader
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.files.storage import default_storage
+from django.conf import settings 
 
 from FaraData.models import Contact, Payment, Disbursement, Contribution, Client, Location, Registrant, Recipient, Lobbyist, Gift
 from fara_feed.models import Document
 from arms_sales.models import Proposed
 from fara_feed.management.commands.create_feed import add_file
 
-es = Elasticsearch()
+
+es = Elasticsearch(**settings.ES_CONFIG)
 
 class Command(BaseCommand):
 	help = "Puts all the data into elastic search."
