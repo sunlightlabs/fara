@@ -1080,6 +1080,10 @@ def search(request):
 		locationpage = request.GET.get('locationpage')
 	else:
 		locationpage = 1
+	if request.GET.get('docpage'):
+		docpage = request.GET.get('docpage')
+	else:
+		docpage = 1
 
 	clients = search_client(q, clientpage)
 	regs = search_registrant(q, regpage)
@@ -1087,6 +1091,7 @@ def search(request):
 	arms = search_arms(q, armspage)
 	interactions = search_interactions(q, interactonspage)
 	locations = search_locations(q, locationpage)
+	docs =  search_text(q, docpage)
 
 	results = {}
 	results['clients'] = clients
@@ -1095,6 +1100,7 @@ def search(request):
 	results['arms'] = arms
 	results['interactions'] = interactions
 	results['locations'] = locations
+	results['docs'] = docs
 
 	results = json.dumps(results, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
