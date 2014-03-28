@@ -136,6 +136,7 @@ INSTALLED_APPS = (
     'gunicorn',
     'reversion',
     'api',
+    'search',
     'storages',
     'arms_sales',
 )
