@@ -669,12 +669,21 @@ def contact_table(request):
 		results.append(record)
 
 	buttons = {}
-	if Payment.objects.filter(**query_params).exists():
-		buttons['payment'] = True
-	if Disbursement.objects.filter(**query_params).exists():
-		buttons['disbursement'] = True
-	if Contribution.objects.filter(**query_params).exists():
-		buttons['contribution'] = True
+	try:
+		if Payment.objects.filter(**query_params).exists():
+			buttons['payment'] = True
+	except:
+		pass
+	try:
+		if Disbursement.objects.filter(**query_params).exists():
+			buttons['disbursement'] = True
+	except:
+		pass
+	try:
+		if Contribution.objects.filter(**query_params).exists():
+			buttons['contribution'] = True
+	except:
+		pass
 
 	results = json.dumps({'results':results, 'title':title, 'buttons': buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
@@ -787,12 +796,21 @@ def payment_table(request):
 		count = count + 1
 
 	buttons = {}
-	if Contact.objects.filter(**query_params).exists():
-		buttons['contact'] = True
-	if Disbursement.objects.filter(**query_params).exists():
-		buttons['disbursement'] = True
-	if Contribution.objects.filter(**query_params).exists():
-		buttons['contribution'] = True
+	try:
+		if Contact.objects.filter(**query_params).exists():
+			buttons['contact'] = True
+	except:
+		pass
+	try:
+		if Disbursement.objects.filter(**query_params).exists():
+			buttons['disbursement'] = True
+	except:
+		pass
+	try:
+		if Contribution.objects.filter(**query_params).exists():
+			buttons['contribution'] = True
+	except:
+		pass
 
 	results = json.dumps({'results':results, 'title':title, 'buttons':buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
@@ -892,12 +910,21 @@ def disbursement_table(request):
 		count = count + 1
 
 	buttons = {}
-	if Payment.objects.filter(**query_params).exists():
-		buttons['payment'] = True
-	if Contact.objects.filter(**query_params).exists():
-		buttons['contact'] = True
-	if Contribution.objects.filter(**query_params).exists():
-		buttons['contribution'] = True
+	try:
+		if Payment.objects.filter(**query_params).exists():
+			buttons['payment'] = True
+	except:
+		pass
+	try:
+		if Contact.objects.filter(**query_params).exists():
+			buttons['contact'] = True
+	except:
+		pass
+	try:
+		if Contribution.objects.filter(**query_params).exists():
+			buttons['contribution'] = True
+	except:
+		pass
 
 	results = json.dumps({'results':results, 'title':title, 'buttons':buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
@@ -1003,12 +1030,21 @@ def contribution_table(request):
 
 
 	buttons = {}
-	if Payment.objects.filter(**query_params).exists():
-		buttons['payment'] = True
-	if Contact.objects.filter(**query_params).exists():
-		buttons['contact'] = True
-	if Disbursement.objects.filter(**query_params).exists():
-		buttons['disbursement'] = True
+	try:
+		if Payment.objects.filter(**query_params).exists():
+			buttons['payment'] = True
+	except:
+		pass
+	try:
+		if Contact.objects.filter(**query_params).exists():
+			buttons['contact'] = True
+	except:
+		pass
+	try:
+		if Disbursement.objects.filter(**query_params).exists():
+			buttons['disbursement'] = True
+	except:
+		pass
 
 	results = json.dumps({'results':results, 'title':title, 'buttons':buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
