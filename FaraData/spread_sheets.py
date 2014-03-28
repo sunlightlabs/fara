@@ -215,22 +215,19 @@ def client_registrant(writer):
 	writer.writerow(client_reg_heading)
 	for reg in Registrant.objects.all():
 		for c in reg.clients.all():
-			client_name = c.client_name
-			reg_name = reg.reg_name
 			try:	
 				client_reg = ClientReg.objects.get(client_id=client,registrant_id=registrant)
 				description = client_reg.description
 			except:
 				description = ''
-			writer.writerow([client_name, reg_name, "Active", c.location.location, description, reg.reg_id, c.id])
+			writer.writerow([c.client_name, reg.reg_name, "Active", c.location.location, description, reg.reg_id, c.id, c.location.pk])
+		
 		for client in reg.terminated_clients.all():
 			client_name = client.client_name
 			reg_name = reg.reg_name
-			client_loc = client.location.location
 			try:	
 				client_reg = ClientReg.objects.get(client_id=client,registrant_id=registrant)
 				description = client_reg.description
 			except:
 				description = ''
-
-			writer.writerow([client_name, reg_name, "Terminated", client_loc, description, reg.reg_id, client.id, client.location.pk])
+			writer.writerow([client_name, reg_name, "Terminated", client.location.location, description, reg.reg_id, client.id, client.location.pk])
