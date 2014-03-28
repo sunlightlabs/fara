@@ -119,10 +119,9 @@ def incoming_arms(request):
 		arms_pool = Proposed.objects.filter(location_id=request.GET.get('location_id'))
 	elif request.GET.get('doc_id'):
 		arms = Proposed.objects.get(id=request.GET.get('doc_id'))
-
-		return HttpResponse(json.dumps({'pdf_url':arms.pdf_url, 'date':arms.date.strftime("%m/%d/%Y")  , 'title':arms.title, 'id':arms.id, 'location':arms.location, 'location_id':arms.location_id}), mimetype="application/json")
+		return HttpResponse(json.dumps({'pdf_url':arms.pdf_url, 'date':arms.date.strftime("%m/%d/%Y"), 'title':arms.title, 'id':arms.id, 'location':arms.location, 'location_id':arms.location_id}), mimetype="application/json")
 	else:
-		arms_pool = Proposed.objects.all()
+		arms_pool = Proposed.objects.all().order_by('-date')
 	
 	paginate_arms = paginate(arms_pool, p)
 	page_of_arms = paginate_arms[0:]

@@ -36,8 +36,6 @@ class Command(BaseCommand):
 
 		# set to 2008 for full records
 		while year >= year_limit:
-			if year == 2008 and month == 05:
-					break
 			while month >= month_limit:
 				if year == 2008 and month == 05:
 					break
@@ -71,7 +69,7 @@ class Command(BaseCommand):
 				
 				try: 
 					existing_record = Proposed.objects.get(dsca_url=pagelink)
-					
+					print "exists"
 				except:
 					title = links2pages[0].text
 					date_p = profile.find_all("div")[-1]
@@ -159,6 +157,7 @@ class Command(BaseCommand):
 						matching_loc = None
 					
 					record.save()
+					print "added record %s" %(record)
 
 					#save to amazon
 					try:
