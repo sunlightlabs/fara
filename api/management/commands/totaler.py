@@ -5,7 +5,7 @@ import datetime
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Sum
 
-from FaraData.models import Contact, Registrant, MetaData, Payment
+from FaraData.models import Contact, Registrant, MetaData, Payment, Contribution
 from fara_feed.models import Document
 
 class Command(BaseCommand):
@@ -49,20 +49,25 @@ class Command(BaseCommand):
 					payments2013 = float(payments2013['total_pay'])
 					registrant['payments2013'] = payments2013
 
-				if Contact.objects.filter(registrant=reg_id,recipient__agency__in=["Congress", "House", "Senate"]).exists():
+				if Contact.objects.filter(registrant=reg_id,recipient__agency__in=["Congress", "House", "Senate"], meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
 					registrant['federal_lobbying'] = True
 				else:
 					registrant['federal_lobbying'] = False
 					
-				if Contact.objects.filter(registrant=reg_id,recipient__agency="U.S. Department of State").exists():
+				if Contact.objects.filter(registrant=reg_id,recipient__agency="U.S. Department of State", meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
 					registrant['state_dept_lobbying'] = True
 				else:
 					registrant['state_dept_lobbying'] = False
 					
-				if Contact.objects.filter(registrant=reg_id,recipient__agency="Media").exists():
+				if Contact.objects.filter(registrant=reg_id,recipient__agency="Media", meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
 					registrant['pr'] = True
 				else:
 					registrant['pr'] = False
+
+				if Contribution.objects.filter(registrant=reg_id, meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today())).exists():
+					registrant['contribution'] = True
+				else:
+					registrant['contribution'] = False
 					
 				if s13 != 0:
 					results.append(registrant)
