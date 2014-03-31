@@ -114,12 +114,19 @@ def incoming_arms(request):
 		p = 1
 	page = {}
 	page['page'] = p 
-	
+
 	if request.GET.get('location_id'):
 		arms_pool = Proposed.objects.filter(location_id=request.GET.get('location_id'))
 	elif request.GET.get('doc_id'):
 		arms = Proposed.objects.get(id=request.GET.get('doc_id'))
-		return HttpResponse(json.dumps({'pdf_url':arms.pdf_url, 'date':arms.date.strftime("%m/%d/%Y"), 'title':arms.title, 'id':arms.id, 'location':arms.location, 'location_id':arms.location_id}), mimetype="application/json")
+		if arms.date:
+			try:
+				date = arms.date
+			except:
+				date = None
+		else:
+			date = None
+		return HttpResponse(json.dumps({'pdf_url':arms.pdf_url, 'date':date, 'title':arms.title, 'id':arms.id, 'location':arms.location, 'location_id':arms.location_id}), mimetype="application/json")
 	else:
 		arms_pool = Proposed.objects.all().order_by('-date')
 	
@@ -139,7 +146,10 @@ def incoming_arms(request):
 		record['id'] = arms_press.id
 		record['title'] = arms_press.title
 		if arms_press.date:
-			record['date'] = arms_press.date.strftime("%m/%d/%Y")
+			try:
+				record['date'] = arms_press.date.strftime("%m/%d/%Y")
+			except:
+				record['date'] = None
 		# this is not scraped yet
 		if arms_press.amount:
 			record['amount'] = arms_press.amount
@@ -166,6 +176,9 @@ def doc_profile(request, doc_id):
 		"processed": doc.processed,
 		"doc_id": doc.id,
 	}
+
+	if doc.is_amended == True:
+		results['amended'] == True
 
 	if Registrant.objects.filter(reg_id=reg_id).exists():
 		reg = Registrant.objects.get(reg_id=reg_id)
