@@ -187,7 +187,7 @@ def doc_profile(request, doc_id):
 
 	if MetaData.objects.filter(link=url):
 		md = MetaData.objects.get(link=url)
-		if md.is_amended == True:
+		if md.is_amendment == True:
 			results['amended'] == True
 
 	if Registrant.objects.filter(reg_id=reg_id).exists():
