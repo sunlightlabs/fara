@@ -149,9 +149,9 @@ def incoming_arms(request):
 		record['id'] = arms_press.id
 		record['title'] = arms_press.title
 		
-		if arms.date:
+		if arms_press.date:
 			try:
-				record['date'] = arms.date.strftime("%m/%d/%Y")
+				record['date'] = arms_press.date.strftime("%m/%d/%Y")
 			except:
 				record['date'] = None
 		else:
