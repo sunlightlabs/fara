@@ -465,7 +465,7 @@ def reg_profile(request, reg_id):
 			complete_records13 = False
 		if s14 == 2:
 			complete_records14 = True
-			resuls['complete_records14'] = True
+			results['complete_records14'] = True
 		else:
 			complete_records14 = False
 
