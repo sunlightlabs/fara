@@ -1,0 +1,8 @@
+# this runs FARA and arms scrapers twice a day
+0 0,12 * * * /projects/fara/bin/crontask.sh > /projects/fara/log/cron.log 2>&1
+
+# this runs totals for influence explorer and api totals once a day
+5 0 * * * /projects/fara/bin/crontotals.sh > /projects/fara/log/crontotals.log 2>&1
+
+# this runs pdf2text every hour
+5 * * * * /projects/fara/bin/sync-pdf-html.sh > /projects/fara/log/sync-pdf.log 2>&1
