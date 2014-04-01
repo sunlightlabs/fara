@@ -579,7 +579,7 @@ def contact_table(request):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
 	results = []
-	query_params = {}
+	query_params = {"meta_data__processed": True}
 
 	### add date paras
 	title = []
@@ -728,7 +728,7 @@ def payment_table(request):
 		raise PermissionDenied
 	
 	results = []
-	query_params = {}
+	query_params = {"meta_data__processed": True}
 	title = []
 
 	if request.GET.get('reg_id'):
@@ -842,7 +842,7 @@ def disbursement_table(request):
 		raise PermissionDenied
 	
 	results = []
-	query_params = {}
+	query_params = {"meta_data__processed": True}
 	title = []
 
 	if request.GET.get('reg_id'):
@@ -956,7 +956,7 @@ def contribution_table(request):
 		raise PermissionDenied
 
 	results = []
-	query_params = {}
+	query_params = {"meta_data__processed": True}
 	title = []
 
 	if request.GET.get('reg_id'):
