@@ -43,9 +43,9 @@ def extract_text(link):
 
 	try:
 		pdf_file = PdfFileReader(pdf)
-		return ''
 	except:
 		print "BAD FILE-- %s " %(link)
+		return ''
 
 	pages = pdf_file.getNumPages()
 	count = 0

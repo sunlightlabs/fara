@@ -10,14 +10,18 @@ import os
 import codecs
 import logging
 
-from django.core.management.base import BaseCommand, CommandError
-from django.core.files.storage import default_storage
-
 from bs4 import BeautifulSoup
 from PyPDF2 import PdfFileReader
+from elasticsearch import Elasticsearch
+
+from django.core.management.base import BaseCommand, CommandError
+from django.core.files.storage import default_storage
+from django.conf import settings 
 
 from fara_feed.models import Document
 from FaraData.models import MetaData, Registrant
+
+es = Elasticsearch(**settings.ES_CONFIG)
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -41,12 +45,12 @@ class Command(BaseCommand):
             start_date = datetime.date.today() - datetime.timedelta(days=25)
             end_date = datetime.date.today()
 
-        this_filename = os.path.abspath(__file__)
-        this_parent_dir = os.path.dirname(this_filename) + '/../..'
-        outdir = os.path.join(this_parent_dir, "output")
-        if not os.path.exists(outdir):
-            os.mkdir(outdir)
-        print "files will be saved to %s" % (outdir)
+        # this_filename = os.path.abspath(__file__)
+        # this_parent_dir = os.path.dirname(this_filename) + '/../..'
+        # outdir = os.path.join(this_parent_dir, "output")
+        # if not os.path.exists(outdir):
+        #     os.mkdir(outdir)
+        # print "files will be saved to %s" % (outdir)
         
         doj_url = 'https://efile.fara.gov/pls/apex/f?p=125:10:::NO::P10_DOCTYPE:ALL'
         search_html = urllib2.urlopen(doj_url).read()
@@ -70,7 +74,7 @@ class Command(BaseCommand):
         
         page = urllib2.urlopen(req).read()
         page = BeautifulSoup(page)
-        parse_and_save(page, outdir)
+        parse_and_save(page)
         next_url_realitive = page.find("a", {"class":"t14pagination"})
 
         while next_url_realitive != None:
@@ -80,18 +84,86 @@ class Command(BaseCommand):
             
             page = urllib2.urlopen(req).read()
             page = BeautifulSoup(page)
-            parse_and_save(page, outdir)
+            parse_and_save(page)
             next_url_realitive = page.find("a", {"class":"t14pagination"})
+
+    
+def add_file(url):
+    if url[:25] != "http://www.fara.gov/docs/":
+        message = 'bad link ' + url
+        logger.error(message)
+        print message
+    else:
+        file_name = "pdfs/" + url[25:]
+        if not default_storage.exists(file_name):
+            try:
+                url = str(url)
+                u = urllib2.urlopen(url)
+                text = u.read()
+                localFile = default_storage.open(file_name, 'w')
+                # writing pdf to amazon
+                localFile.write(text)
+                # closing amazon file
+                localFile.close()
+
+                # adding to document model
+                doc = Document.objects.get(url=url)
+                doc.uploaded = True
+                doc.save()
+
+                return text
             
+            except:
+                message = 'bad upload ' + url
+                logger.error(message)
+                return None
 
-def save_text(url, url_info, outdir):
-    print "will change this to elastic search, not file"  
+        else:
+            doc = Document.objects.get(url=url)
+            if doc.uploaded != True:  
+                doc.uploaded = True
+                doc.save()
+            return None
 
 
 
-def pdf2htmlEX(): 
-    return true
+def save_text(url_info, text):
+    url = url_info['url']
+    print url
+    if text == None:
+        amazon_file_name = "pdfs/" + url[25:]
+        pdf = default_storage.open(amazon_file_name, 'rb')
+        pdf_file = PdfFileReader(pdf)
+        pages = pdf_file.getNumPages()
+        count = 0
+        text = ''
+        while count < pages:
+            pg = pdf_file.getPage(count)
+            pgtxt = pg.extractText()
+            count = count + 1
+            text = text + pgtxt
 
+    document = Document.objects.get(url=url)
+    doc_id = document.id
+
+    #saving to elastic search
+    doc = {
+            'type': url_info['doc_type'],
+            'date': url_info['stamp_date'],
+            'registrant': url_info['reg_name'],
+            'reg_id': url_info['reg_id'],
+            'doc_id': doc_id, 
+            'link': url,
+            'text': text,
+    }
+    res = es.index(index="foreign", doc_type='fara_files', id=doc_id, body=doc)
+    
+    # saving to disk
+    file_name = "data/form_text/" + url[25:-4] + ".txt"
+    with open(file_name, 'w') as txt_file:
+        txt_file.write(text.encode('utf8'))
+
+    print document.url
 
 def add_document(url_info):
     url = str(url_info['url']).strip()
@@ -122,37 +194,8 @@ def add_document(url_info):
         reg.save()
 
 
-    
-def add_file(url):
-    if url[:25] != "http://www.fara.gov/docs/":
-        message = 'bad link ' + url
-        logger.error(message)
-        print message
-    else:
-        file_name = "pdfs/" + url[25:]
-        if not default_storage.exists(file_name):
-            try:
-                url = str(url)
-                u = urllib2.urlopen(url)
-                localFile = default_storage.open(file_name, 'w')
-                localFile.write(u.read())
-                localFile.close()
 
-                doc = Document.objects.get(url=url)
-                doc.uploaded = True
-                doc.save()
-            except:
-                message = 'bad upload ' + url
-                logger.error(message)
-
-        else:
-            doc = Document.objects.get(url=url)
-            if doc.uploaded != True:  
-                doc.uploaded = True
-                doc.save()
-
-
-def parse_and_save(page, outdir):
+def parse_and_save(page):
     filings = page.find("table", {"class" : "t14Standard"})
     new_fara_docs = []
 
@@ -216,8 +259,8 @@ def parse_and_save(page, outdir):
             documents.append(url_info)
             #saving
             add_document(url_info)
-            add_file(url)
-            save_text(url, url_info, outdir)
+            text = add_file(url)
+            save_text(url_info, text)
             new_fara_docs.append(url_info)
             
 
