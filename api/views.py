@@ -129,7 +129,7 @@ def incoming_arms(request):
 			print arms, "Has no date"
 			date =  None
 		
-		return HttpResponse(json.dumps({'pdf_url':arms.pdf_url, 'date':date, 'title':arms.title, 'id':arms.id, 'location':arms.location, 'location_id':arms.location_id}), mimetype="application/json")
+		return HttpResponse(json.dumps({'pdf_url':arms.pdf_url, 'date':date, 'title':arms.title, 'id':arms.id, 'location':arms.location, 'location_id':arms.location_id, 'dsca_url':arms.dsca_url}), mimetype="application/json")
 	else:
 		arms_pool = Proposed.objects.all().order_by('-date')
 	
