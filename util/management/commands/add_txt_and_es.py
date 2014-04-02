@@ -19,12 +19,16 @@ class Command(BaseCommand):
 	can_import_settings = True
 
 	def handle(self, *args, **options):
+		print "starting"
 		for document in Document.objects.all():
 			if doc_exists(document.url) == False:
 				docs =  search_text(docpage)
 				text = extract_text(document.url)
 				load_fara_text(text, document)
 				save_on_disk(text, document.url)
+				print " added ", document.url
+			else:
+				print "exists"
 			
 
 def extract_text(link):
