@@ -20,13 +20,14 @@ class Command(BaseCommand):
 
 	def handle(self, *args, **options):
 		for document in Document.objects.all():
-			text = extract_text(document.url)
-			load_fara_text(text, document)
-			save_on_disk(text, document.url)
-
+			if doc_exists(document.url) == False:
+				docs =  search_text(docpage)
+				text = extract_text(document.url)
+				load_fara_text(text, document)
+				save_on_disk(text, document.url)
+			
 
 def extract_text(link):
-	print 'text extraction'
 	amazon_file_name = "pdfs/" + link[25:]
 	if not default_storage.exists(amazon_file_name):
 		try:
@@ -38,6 +39,7 @@ def extract_text(link):
 
 	try:
 		pdf_file = PdfFileReader(pdf)
+		return ''
 	except:
 		print "BAD FILE-- %s " %(link)
 
@@ -54,7 +56,6 @@ def extract_text(link):
 
 
 def load_fara_text(text, document):
-	print 'es'
 	reg_id = document.reg_id
 	reg = Registrant.objects.get(reg_id=reg_id)
 	reg_name = reg.reg_name
@@ -72,12 +73,26 @@ def load_fara_text(text, document):
 
 
 def save_on_disk(text, link):
-	print 'disk'
 	file_name = "data/form_text/" + link[25:-4] + ".txt"
-	print file_name
-	with open(file_name, 'w') as f:
-		f.write(text.encode('utf8'))
+	with open(file_name, 'w') as txt_file:
+		txt_file.write(text.encode('utf8'))
 
+
+def doc_exists(q):
+	body = {
+	"query": {
+		"query_string": {
+			"fields": ["link"],
+			"query": q,
+		}
+		},
+	}
+
+	doc = es.search(index="foreign", doc_type='fara_files', body=body)
+	if doc['hits']['hits']:
+		return True
+	else:
+		return False
 
 
 
