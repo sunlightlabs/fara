@@ -20,18 +20,18 @@ class Command(BaseCommand):
 	can_import_settings = True
 
 	def handle(self, *args, **options):
-		load_clients()
-		load_locations()
-		load_registrants()
-		load_recipients()
-		#load_lobby()
-		load_arms()
+		# load_clients()
+		# load_locations()
+		# load_registrants()
+		# load_recipients()
+		## load_lobby()
+		# load_arms()
 		load_contacts()
 		load_payments()
 		load_disbursements()
 		load_contributions()
 		load_gifts()
-		load_fara_text()
+		# load_fara_text()
 
 def load_clients():
 	for client in Client.objects.all():
@@ -166,8 +166,8 @@ def load_contacts():
 		for l in contact.lobbyist.all():
 			if l.lobbyist_name:
 				doc['employee'] = l.lobbyist_name
-		
-		res = es.index(index="foreign", doc_type='interactions', id=contact.id, body=doc)
+		c_id = "contact" + contact.id
+		res = es.index(index="foreign", doc_type='interactions', id=c_id, body=doc)
 
 	res = es.search(index="foreign", doc_type='interactions', body={"query": {"match_all": {}}})
 	print("Got %d Hits:" % res['hits']['total'])
@@ -200,7 +200,8 @@ def load_contributions():
 				doc['contributor'] =  contribution.lobbyist.PAC_name
 				doc['pac'] = True
 
-		res = es.index(index="foreign", doc_type='interactions', id=contribution.id, body=doc)
+		con_id = 'contribution' + contribution.id
+		res = es.index(index="foreign", doc_type='interactions', id=con_id, body=doc)
 
 	res = es.search(index="foreign", doc_type='interactions', body={"query": {"match_all": {}}})
 	print("Got %d Hits:" % res['hits']['total'])
@@ -228,7 +229,8 @@ def load_payments():
 			doc['subcontractor'] = payment.subcontractor.reg_name,
 			doc['subcontractor_id'] = payment.subcontractor.reg_id,
 
-		res = es.index(index="foreign", doc_type='interactions', id=payment.id, body=doc)
+		pay_id = "payment" + payment.id
+		res = es.index(index="foreign", doc_type='interactions', id=pay_id, body=doc)
 
 	res = es.search(index="foreign", doc_type='interactions', body={"query": {"match_all": {}}})
 	print("Got %d Hits:" % res['hits']['total'])
@@ -255,8 +257,8 @@ def load_disbursements():
 		if disbursement.subcontractor:
 			doc['subcontractor'] = disbursement.subcontractor.reg_name,
 			doc['subcontractor_id'] = disbursement.subcontractor.reg_id,
-		
-		res = es.index(index="foreign", doc_type='interactions', id=disbursement.id, body=doc)
+		dis_id = 'disbursement' + disbursement.id
+		res = es.index(index="foreign", doc_type='interactions', id=dis_id, body=doc)
 
 	res = es.search(index="foreign", doc_type='interactions', body={"query": {"match_all": {}}})
 	print("Got %d Hits:" % res['hits']['total'])
@@ -284,8 +286,8 @@ def load_gifts():
 		if gift.recipient:
 			doc['recipient'] = gift.recipient.name
 			doc['recipient_id'] = gift.recipient.id
-
-		res = es.index(index="foreign", doc_type='interactions', id=gift.id, body=doc)
+		gift_id = 'gift' + gift.id
+		res = es.index(index="foreign", doc_type='interactions', id=gift_id, body=doc)
 
 	res = es.search(index="foreign", doc_type='interactions', body={"query": {"match_all": {}}})
 	print("Got %d Hits:" % res['hits']['total'])
@@ -309,7 +311,7 @@ def load_fara_text():
 				'link': document.url,
 				'text': text,
 		}
-		
+
 		res = es.index(index="foreign", doc_type='fara_files', id=document.id, body=doc)
 
 	res = es.search(index="foreign", doc_type='fara_files', body={"query": {"match_all": {}}})

@@ -129,7 +129,7 @@ def add_file(url):
 
 def save_text(url_info, text):
     url = url_info['url']
-    print url
+
     if text == None:
         amazon_file_name = "pdfs/" + url[25:]
         pdf = default_storage.open(amazon_file_name, 'rb')
@@ -163,7 +163,6 @@ def save_text(url_info, text):
     with open(file_name, 'w') as txt_file:
         txt_file.write(text.encode('utf8'))
 
-    print document.url
 
 def add_document(url_info):
     url = str(url_info['url']).strip()
@@ -211,15 +210,10 @@ def parse_and_save(page):
                 stamp_date = re.findall(r'\d{8}', url)
                 stamp_date = stamp_date[0]
                 stamp_date_obj = datetime.datetime.strptime(stamp_date, "%Y%m%d")
-            date_string = stamp_date_obj.strftime('%Y-%m-%d')
-
-            reg_name = l.find('td',{"headers" : "REGISTRANTNAME"})
-            reg_name = reg_name.text
             
-            # checking to see if I had it # disabling to make sure all forms of the document are accounted for
-            # if Document.objects.filter(url = url).exists():
-            #     add_file(url)
-            # else:     
+            date_string = stamp_date_obj.strftime('%Y-%m-%d')
+            reg_name = l.find('td',{"headers" : "REGISTRANTNAME"})
+            reg_name = reg_name.text    
             reg_id = re.sub('-','', url[25:29])
             reg_id = re.sub('S','', reg_id)
             reg_id = re.sub('L','', reg_id)
