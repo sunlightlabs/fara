@@ -42,7 +42,7 @@ class Command(BaseCommand):
 		if options.get('contacts'):
 			create_contact()
 		if options.get('client_reg'):
-			client_registrant()
+			client_reg()
 		if options.get('disbursements'):
 			disbursements()
 		if options.get('contributions'):
@@ -62,7 +62,7 @@ def create_contact():
 	contact_file.close()
 	print "done with contacts"
 
-def client_registrant():
+def client_reg():
 	filename = "InfluenceExplorer/client_registrant.csv"
 	cr_file = default_storage.open(filename, 'wb')
 	writer = UnicodeWriter(cr_file)
