@@ -1,7 +1,6 @@
 import datetime
-# email problems
-import smtplib
-from email.mime.text import MIMEText
+
+from optparse import make_option
 
 from FaraData.unicode_csv import UnicodeWriter
 from django.core.management.base import BaseCommand, CommandError
@@ -15,14 +14,45 @@ class Command(BaseCommand):
 	help = "Creates one zipfile of spreadsheets for each form to buckets."
 	can_import_settings = True
 
+	option_list = BaseCommand.option_list + (
+			make_option('--contacts',
+				action='store_true',
+				help='create full download of contacts',
+			),
+			make_option('--client_reg',
+				action='store_true',
+				help='create full download of clients and registrants',
+			),
+			make_option('--disbursements',
+				action = 'store_true',
+				help= 'create full download of disbursements'
+			),
+			make_option('--contributions',
+				action = 'store_true',
+				help= 'create full download of contributions'
+			),
+			make_option('--payments',
+				action = 'store_true',
+				help = 'create full download of payments'
+			),
+		)
+
 	def handle(self, *args, **options):
-		create_ie_tables()
+		print "starting", datetime.datetime.now().time()
+		if options.get('contacts'):
+			create_contact()
+		if options.get('client_reg'):
+			client_registrant()
+		if options.get('disbursements'):
+			disbursements()
+		if options.get('contributions'):
+			contributions()
+		if options.get('payments'):
+			payments()
 
+		print "ending", datetime.datetime.now().time()
 
-def create_ie_tables():
-	print "starting", datetime.datetime.now().time()
-	
-	#contacts
+def create_contact():
 	contacts = list(Contact.objects.filter(meta_data__processed=True))
 	filename = "InfluenceExplorer/contacts.csv"
 	contact_file = default_storage.open(filename, 'wb')
@@ -32,7 +62,7 @@ def create_ie_tables():
 	contact_file.close()
 	print "done with contacts"
 
-	# client-registrant
+def client_registrant():
 	filename = "InfluenceExplorer/client_registrant.csv"
 	cr_file = default_storage.open(filename, 'wb')
 	writer = UnicodeWriter(cr_file)
@@ -40,7 +70,7 @@ def create_ie_tables():
 	cr_file.close()
 	print "done with client registrant"
 
-	# disbursements
+def disbursements():
 	disbursements = Disbursement.objects.filter(meta_data__processed=True)
 	filename = "InfluenceExplorer/disbursements.csv"
 	disbursement_file = default_storage.open(filename, 'wb')
@@ -50,7 +80,7 @@ def create_ie_tables():
 	disbursement_file.close()
 	print "done with disbursements"
 
-	# contributions
+def contributions():
 	contributions = Contribution.objects.filter(meta_data__processed=True)
 	filename = "InfluenceExplorer/contributions.csv"
 	contribution_file = default_storage.open(filename, 'wb')
@@ -60,7 +90,7 @@ def create_ie_tables():
 	contribution_file.close()
 	print "done with contributions"
 
-	# payments
+def payments():
 	payments = Payment.objects.filter(meta_data__processed=True)
 	filename = "InfluenceExplorer/payments.csv"
 	payment_file = default_storage.open(filename, 'wb')
@@ -70,7 +100,6 @@ def create_ie_tables():
 	payment_file.close()
 	print "done with payments"
 
-	print "ending", datetime.datetime.now().time()
 
 
 
