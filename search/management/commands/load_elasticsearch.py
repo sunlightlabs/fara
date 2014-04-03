@@ -166,7 +166,7 @@ def load_contacts():
 		for l in contact.lobbyist.all():
 			if l.lobbyist_name:
 				doc['employee'] = l.lobbyist_name
-		c_id = "contact" + contact.id
+		c_id = "contact" + str(contact.id)
 		res = es.index(index="foreign", doc_type='interactions', id=c_id, body=doc)
 
 	res = es.search(index="foreign", doc_type='interactions', body={"query": {"match_all": {}}})
@@ -200,7 +200,7 @@ def load_contributions():
 				doc['contributor'] =  contribution.lobbyist.PAC_name
 				doc['pac'] = True
 
-		con_id = 'contribution' + contribution.id
+		con_id = 'contribution' + str(contribution.id)
 		res = es.index(index="foreign", doc_type='interactions', id=con_id, body=doc)
 
 	res = es.search(index="foreign", doc_type='interactions', body={"query": {"match_all": {}}})
@@ -229,7 +229,7 @@ def load_payments():
 			doc['subcontractor'] = payment.subcontractor.reg_name,
 			doc['subcontractor_id'] = payment.subcontractor.reg_id,
 
-		pay_id = "payment" + payment.id
+		pay_id = "payment" + str(payment.id)
 		res = es.index(index="foreign", doc_type='interactions', id=pay_id, body=doc)
 
 	res = es.search(index="foreign", doc_type='interactions', body={"query": {"match_all": {}}})
@@ -257,7 +257,7 @@ def load_disbursements():
 		if disbursement.subcontractor:
 			doc['subcontractor'] = disbursement.subcontractor.reg_name,
 			doc['subcontractor_id'] = disbursement.subcontractor.reg_id,
-		dis_id = 'disbursement' + disbursement.id
+		dis_id = 'disbursement' + str(disbursement.id)
 		res = es.index(index="foreign", doc_type='interactions', id=dis_id, body=doc)
 
 	res = es.search(index="foreign", doc_type='interactions', body={"query": {"match_all": {}}})
@@ -286,7 +286,7 @@ def load_gifts():
 		if gift.recipient:
 			doc['recipient'] = gift.recipient.name
 			doc['recipient_id'] = gift.recipient.id
-		gift_id = 'gift' + gift.id
+		gift_id = 'gift' + str(gift.id)
 		res = es.index(index="foreign", doc_type='interactions', id=gift_id, body=doc)
 
 	res = es.search(index="foreign", doc_type='interactions', body={"query": {"match_all": {}}})
