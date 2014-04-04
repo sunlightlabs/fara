@@ -5,6 +5,7 @@ from optparse import make_option
 from FaraData.unicode_csv import UnicodeWriter
 from django.core.management.base import BaseCommand, CommandError
 from django.core.files.storage import default_storage
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from FaraData.spread_sheets import *
 from FaraData.models import Contact, Payment, Disbursement, Contribution
@@ -52,14 +53,32 @@ class Command(BaseCommand):
 
 		print "ending", datetime.datetime.now().time()
 
+def paginate(form, page):
+	paginator = Paginator(form, 1000)
+	try:
+		form = paginator.page(page)
+	except PageNotAnInteger:
+		form = paginator.page(1)
+	except EmptyPage:
+		return None
+	return form
+
 def create_contact():
-	contacts = list(Contact.objects.filter(meta_data__processed=True))
+	count = Contact.objects.filter(meta_data__processed=True).count()
+	print count
+	# add 1 to get the remaining
+	pages = int(count/1000) + 1
+	pool = Contact.objects.filter(meta_data__processed=True)
+
 	filename = "InfluenceExplorer/contacts.csv"
-	contact_file = default_storage.open(filename, 'wb')
-	writer = UnicodeWriter(contact_file)
-	writer.writerow(contact_heading)
-	contact_sheet(contacts, writer)
-	contact_file.close()
+	with default_storage.open(filename, 'wb') as contact_file:
+		writer = UnicodeWriter(contact_file)
+		writer.writerow(contact_heading)
+		page = 1
+		for n in range(0,pages):
+			contacts = paginate(pool, page)
+			contact_sheet(contacts, writer)
+
 	print "done with contacts"
 
 def client_reg():

@@ -136,7 +136,6 @@ def contact_sheet(contacts, writer):
 		lobbyists = ''
 		for l in c.lobbyist.all():
 			lobbyists = lobbyists + l.lobbyist_name + ", "
-		lobbyists = lobbyists
 
 		if c.date == None:
 			date = str(c.meta_data.end_date) + '*'
