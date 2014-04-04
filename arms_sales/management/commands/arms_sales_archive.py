@@ -5,14 +5,20 @@ import json
 import logging
 import urllib2
 from datetime import datetime, date
+from elasticsearch import Elasticsearch
+
 
 from bs4 import BeautifulSoup
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.files.storage import default_storage
+from django.conf import settings 
 
 from arms_sales.models import Proposed
 from FaraData.models import Location
+
+es = Elasticsearch(**settings.ES_CONFIG)
+
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -174,6 +180,21 @@ class Command(BaseCommand):
 						logger.error(message)
 							
 					results.append({"title":title, "date":date, "link": pagelink, "pdf_link":pdf_link, "print_link":print_link, "text": data_text})
+					
+					try:
+						doc = {
+								'title': title,
+								'text': data_text,
+								'location': record.location,
+								'location_id': record.location_id,
+								'date': date,
+						}
+
+						res = es.index(index="foreign", doc_type='arms', id=record.id, body=doc)
+					except:
+						message = 'bad pdf no es upload for - %s' % (title)
+						logger.error(message)
+
 					print title	
 		# print "saving"
 		# f = open('proposed_arms_sales.json', 'w')

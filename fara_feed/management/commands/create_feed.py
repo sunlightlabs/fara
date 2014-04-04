@@ -126,7 +126,6 @@ def add_file(url):
             return None
 
 
-
 def save_text(url_info, text):
     url = url_info['url']
 
@@ -146,17 +145,22 @@ def save_text(url_info, text):
     document = Document.objects.get(url=url)
     doc_id = document.id
 
+    
     #saving to elastic search
-    doc = {
-            'type': url_info['doc_type'],
-            'date': url_info['stamp_date'],
-            'registrant': url_info['reg_name'],
-            'reg_id': url_info['reg_id'],
-            'doc_id': doc_id, 
-            'link': url,
-            'text': text,
-    }
-    res = es.index(index="foreign", doc_type='fara_files', id=doc_id, body=doc)
+    try:
+        doc = {
+                'type': url_info['doc_type'],
+                'date': url_info['stamp_date'],
+                'registrant': url_info['reg_name'],
+                'reg_id': url_info['reg_id'],
+                'doc_id': doc_id, 
+                'link': url,
+                'text': text,
+        }
+        res = es.index(index="foreign", doc_type='fara_files', id=doc_id, body=doc)
+    except:
+        message = 'bad pdf no es upload for %s ' % (url)
+        logger.error(message)
     
     # saving to disk
     file_name = "data/form_text/" + url[25:-4] + ".txt"
@@ -191,6 +195,13 @@ def add_document(url_info):
             reg_name = url_info['reg_name']
             )
         reg.save()
+
+    doc = {
+                'name': url_info['reg_name'],
+                'reg_id': reg_id
+    }
+
+    res = es.index(index="foreign", doc_type='registrant', id=reg_id, body=doc)
 
 
 
