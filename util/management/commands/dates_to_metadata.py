@@ -15,8 +15,7 @@ class Command(BaseCommand):
 			if md.end_date == None or md.end_date == '':
 				try:
 					Document.objects.get(url=md.link)
-					doc = Document.objects.get(url=md.link)
-					date = doc.stampdate
+					document = Document.objects.get(url=md.link)
 				except:
 					url = md.link
 					reg_id = re.sub('-','', url[25:29])
@@ -58,5 +57,8 @@ class Command(BaseCommand):
 					    stamp_date = stamp_date_obj,
 					    processed = md.processed,
 					)
-					#document.save()
+					document.save()
 					print md.notes
+
+				md.end_date = document.stamp_date
+				md.save()
