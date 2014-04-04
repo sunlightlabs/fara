@@ -23,12 +23,11 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 # HEADINGS
-contact_heading = ['Date', 'Contact Title','Contact Name', 'Contact Office', 'Contact Agency', 'Client', 'Client Location', 'Registrant', 'Description', 'Type', 'Employees Mentioned', 'Affiliated Member Bioguide ID', 'Source', 'Document ID', 'Registrant ID', 'Client ID', 'Location ID', 'Recipient ID', 'Record ID']
-contribution_heading = ['Date', 'Amount', 'Recipient', 'Registrant', 'Contributing Individual or PAC', 'CRP ID of Recipient', 'Bioguide ID', 'Source', 'Document ID', 'Registrant ID', 'Recipient ID', 'Record ID']
-payment_heading = ['Date', 'Amount', 'Client', 'Registrant', 'Purpose', 'From subcontractor', 'Source', 'Document ID', 'Registrant ID', 'Client ID','Location ID', 'Subcontractor ID', 'Record ID']
-disbursement_heading = ['Date', 'Amount', 'Client', 'Registrant', 'Purpose', 'To Subcontractor', 'Source', 'Document ID', 'Registrant ID', 'Client ID','Location ID', 'Subcontractor ID', 'Record ID']
-client_reg_heading = ['Client', 'Registrant name', 'Terminated', 'Location of Client', 'Description of service (when available)', 'Registrant ID', 'Client ID', 'Location ID']
-
+contact_heading = ['date', 'contact_title', 'contact_name', 'contact_office', 'contact_agency', 'client', 'client_location', 'registrant', 'description', 'type', 'employees_mentioned', 'affiliated_member_bioguide_id', 'source', 'document_id', 'registrant_id', 'client_id', 'location_id', 'recipient_id', 'record_id']
+contribution_heading = ['date', 'amount', 'recipient', 'registrant', 'contributing_individual_or_pac', 'crp_id_of_recipient', 'bioguide_id', 'source', 'document_id', 'registrant_id', 'recipient_id', 'record_id']
+payment_heading = ['date', 'amount', 'client', 'registrant', 'purpose', 'from_subcontractor', 'source', 'document_id', 'registrant_id', 'client_id', 'location_id', 'subcontractor_id', 'record_id']
+disbursement_heading = ['date', 'contact_title', 'contact_name', 'contact_office', 'contact_agency', 'client', 'client_location', 'registrant', 'description', 'type', 'employees_mentioned', 'affiliated_member_bioguide_id', 'source', 'document_id', 'registrant_id', 'client_id', 'location_id', 'recipient_id', 'record_id']
+client_reg_heading = ['client', 'registrant_name', 'terminated', 'location_of_client', 'description_of_service', 'registrant_id', 'client_id', 'location_id']
 # makes a file package per form 
 def make_file(form_id):
 	if not os.path.exists("forms"):
