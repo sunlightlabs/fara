@@ -168,7 +168,7 @@ def contributions_sheet(contributions, writer):
 def payments_sheet(payments, writer):
 	for p in payments:
 		if p.date == None:
-			date = datetime.datetime.strftime(c.meta_data.end_date, "%m/%d/%y") + '*'
+			date = datetime.datetime.strftime(p.meta_data.end_date, "%m/%d/%y") + '*'
 		else:
 			date = p.date
 
@@ -183,7 +183,7 @@ def payments_sheet(payments, writer):
 def disbursements_sheet(disbursements, writer):
 	for d in disbursements:
 		if d.date == None:
-			date = datetime.datetime.strftime(c.meta_data.end_date, "%m/%d/%y") + '*'
+			date = datetime.datetime.strftime(d.meta_data.end_date, "%m/%d/%y") + '*'
 		else:
 			date = d.date
 		
