@@ -138,7 +138,7 @@ def contact_sheet(contacts, writer):
 			lobbyists = lobbyists + l.lobbyist_name + ", "
 
 		if c.date == None:
-			date = datetime.datetime.strftime(c.meta_data.end_date, "%m/%d/%y") + '*'
+			date = datetime.datetime.strftime(c.meta_data.end_date, "%Y-%m-%d") + '*'
 		else:
 			date = c.date
 
