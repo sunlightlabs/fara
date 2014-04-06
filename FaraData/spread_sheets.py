@@ -138,7 +138,7 @@ def contact_sheet(contacts, writer):
 			lobbyists = lobbyists + l.lobbyist_name + ", "
 
 		if c.date == None:
-			date = c.meta_data.end_date + '*'
+			date =  datetime.datetime.strftime(c.meta_data.end_date, "%Y-%m-%d") + '*'
 		else:
 			date = c.date
 
@@ -158,7 +158,7 @@ def contributions_sheet(contributions, writer):
  		else:
  			lobby = ''
  		if c.date == None:
-			date = c.meta_data.end_date + '*'
+			date =  datetime.datetime.strftime(c.meta_data.end_date, "%Y-%m-%d") + '*'
 		else:
 			date = c.date
 
@@ -168,7 +168,7 @@ def contributions_sheet(contributions, writer):
 def payments_sheet(payments, writer):
 	for p in payments:
 		if p.date == None:
-			date = p.meta_data.end_date + '*'
+			date =  datetime.datetime.strftime(p.meta_data.end_date, "%Y-%m-%d") + '*'
 		else:
 			date = p.date
 
@@ -183,7 +183,7 @@ def payments_sheet(payments, writer):
 def disbursements_sheet(disbursements, writer):
 	for d in disbursements:
 		if d.date == None:
-			date = d.meta_data.end_date + '*'
+			date =  datetime.datetime.strftime(d.meta_data.end_date, "%Y-%m-%d") + '*'
 		else:
 			date = d.date
 		
