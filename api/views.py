@@ -25,6 +25,10 @@ def paginate(form, page):
 		form = paginator.page(paginator.num_pages)
 	return form
 
+def test(request):
+	results = json.dumps({"working":True}, separators=(',',':'))
+	return HttpResponse(results, mimetype="application/json")
+
 def incoming_fara(request):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
@@ -204,21 +208,21 @@ def doc_profile(request, doc_id):
 
 		if doc.processed == True:
 			if Contribution.objects.filter(link=url).exists():
-				contribution = Contribution.objects.filter(link=url).aggregate(total_pay=Sum('amount'))
+				contribution = Contribution.objects.filter(link=url).aggregate(total_pay=Sum('amount'),meta_data__processed=True)
 				total_contributions = float(contribution['total_pay'])
 				results['total_contribution'] = total_contributions
 			
 			if Payment.objects.filter(link=url).exists():
-				payment = Payment.objects.filter(link=url).aggregate(total_pay=Sum('amount'))
+				payment = Payment.objects.filter(link=url).aggregate(total_pay=Sum('amount'),meta_data__processed=True)
 				total_pay = float(payment['total_pay'])
 				results['total_payment'] = total_pay
 
 			if Contact.objects.filter(link=url).exists():
-				total_contacts = Contact.objects.filter(link=url).count()
+				total_contacts = Contact.objects.filter(link=url,meta_data__processed=True).count()
 				results['total_contact'] = total_contacts
 			
 			if Disbursement.objects.filter(link=url).exists():
-				disbursements = Disbursement.objects.filter(link=url).aggregate(total_pay=Sum('amount'))
+				disbursements = Disbursement.objects.filter(link=url).aggregate(total_pay=Sum('amount'),meta_data__processed=True)
 				total_disbursements = float(disbursements['total_pay'])
 				results['total_disbursement'] = total_disbursements
 
@@ -276,11 +280,11 @@ def recipient_profile(request, recip_id):
 		recipient['recipient_id'] = recip_id
 
 		if Contribution.objects.filter(recipient=recip_id).exists():
-			contribution = Contribution.objects.filter(recipient=recip_id).aggregate(total_pay=Sum('amount'))
+			contribution = Contribution.objects.filter(recipient=recip_id).aggregate(total_pay=Sum('amount'),meta_data__processed=True)
 			recipient['total_contribution'] = float(contribution['total_pay'])
 		
 		if Contact.objects.filter(recipient=recip_id).exists():
-			recipient['contacts'] = Contact.objects.filter(recipient=recip_id).count()
+			recipient['contacts'] = Contact.objects.filter(recipient=recip_id, meta_data__processed=True).count()
 
 		results.append(recipient)
 	
@@ -306,8 +310,8 @@ def client_profile(request, client_id):
 	client['client_type'] = c.client_type
 	client['description'] = c.description
 
-	if Contact.objects.filter(client=client_id).exists():
-		client['contacts'] = Contact.objects.filter(client=client_id).count()
+	if Contact.objects.filter(client=client_id,meta_data__processed=True).exists():
+		client['contacts'] = Contact.objects.filter(client=client_id, meta_data__processed=True).count()
 
 	# is null makes sure there is not double counting money flowing through multiple contractors
 	if Payment.objects.filter(client=client_id).exists():
@@ -402,11 +406,11 @@ def location_profile(request, loc_id):
 		
 		client_list.append(client)
 
-	if Contact.objects.filter(client__in=clients).exists():
+	if Contact.objects.filter(client__in=clients, meta_data__processed=True).exists():
 		results['location_contacts'] = True
-	if Payment.objects.filter(client__in=clients).exists():
+	if Payment.objects.filter(client__in=clients, meta_data__processed=True).exists():
 		results['location_payments'] = True
-	if Disbursement.objects.filter(client__in=clients).exists():
+	if Disbursement.objects.filter(client__in=clients, meta_data__processed=True).exists():
 		results['location_disbursements'] = True
 
 	results['clients'] = client_list
@@ -527,12 +531,12 @@ def reg_profile(request, reg_id):
 			'active': True,
 		}
 
-		if Payment.objects.filter(client=client,registrant=reg).exists():
+		if Payment.objects.filter(client=client,registrant=reg, meta_data__processed=True).exists():
 			c['payment'] = True
-		if Disbursement.objects.filter(client=client,registrant=reg).exists():
+		if Disbursement.objects.filter(client=client,registrant=reg, meta_data__processed=True).exists():
 			c['disbursement'] = True
-		if Contact.objects.filter(client=client,registrant=reg).exists():
-			total_contacts = Contact.objects.filter(client=client,registrant=reg).count()
+		if Contact.objects.filter(client=client,registrant=reg, meta_data__processed=True).exists():
+			total_contacts = Contact.objects.filter(client=client,registrant=reg, meta_data__processed=True).count()
 			c['contact'] = total_contacts
 		if ClientReg.objects.filter(client_id=client,reg_id=reg_id).exists():
 			cr = ClientReg.objects.get(client_id=client,reg_id=reg_id)
@@ -556,12 +560,12 @@ def reg_profile(request, reg_id):
 			'active': False,
 		}
 
-		if Payment.objects.filter(client=client,registrant=reg).exists():
+		if Payment.objects.filter(client=client,registrant=reg, meta_data__processed=True).exists():
 			c['payment'] = True
-		if Disbursement.objects.filter(client=client,registrant=reg).exists():
+		if Disbursement.objects.filter(client=client,registrant=reg, meta_data__processed=True).exists():
 			c['disbursement'] = True
-		if Contact.objects.filter(client=client,registrant=reg).exists():
-			total_contacts = Contact.objects.filter(client=client,registrant=reg).count()
+		if Contact.objects.filter(client=client,registrant=reg, meta_data__processed=True).exists():
+			total_contacts = Contact.objects.filter(client=client, registrant=reg, meta_data__processed=True).count()
 			c['contact'] = total_contacts
 		if ClientReg.objects.filter(client_id=client,reg_id=reg_id).exists():
 			cr = ClientReg.objects.get(client_id=client,reg_id=reg_id)
