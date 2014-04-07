@@ -139,7 +139,7 @@ INSTALLED_APPS = (
     'search',
     'storages',
     'arms_sales',
-    #'raven.contrib.django.raven_compat',
+    'raven.contrib.django.raven_compat',
 )
 
 
