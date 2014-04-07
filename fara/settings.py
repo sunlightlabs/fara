@@ -4,7 +4,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -139,7 +139,7 @@ INSTALLED_APPS = (
     'search',
     'storages',
     'arms_sales',
-    'raven.contrib.django.raven_compat',
+    #'raven.contrib.django.raven_compat',
 )
 
 
