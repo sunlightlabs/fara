@@ -208,12 +208,12 @@ def doc_profile(request, doc_id):
 
 		if doc.processed == True:
 			if Contribution.objects.filter(link=url).exists():
-				contribution = Contribution.objects.filter(link=url).aggregate(total_pay=Sum('amount'),meta_data__processed=True)
+				contribution = Contribution.objects.filter(link=url,meta_data__processed=True).aggregate(total_pay=Sum('amount'))
 				total_contributions = float(contribution['total_pay'])
 				results['total_contribution'] = total_contributions
 			
 			if Payment.objects.filter(link=url).exists():
-				payment = Payment.objects.filter(link=url).aggregate(total_pay=Sum('amount'),meta_data__processed=True)
+				payment = Payment.objects.filter(link=url,meta_data__processed=True).aggregate(total_pay=Sum('amount'))
 				total_pay = float(payment['total_pay'])
 				results['total_payment'] = total_pay
 
@@ -222,7 +222,7 @@ def doc_profile(request, doc_id):
 				results['total_contact'] = total_contacts
 			
 			if Disbursement.objects.filter(link=url).exists():
-				disbursements = Disbursement.objects.filter(link=url).aggregate(total_pay=Sum('amount'),meta_data__processed=True)
+				disbursements = Disbursement.objects.filter(link=url,meta_data__processed=True).aggregate(total_pay=Sum('amount'))
 				total_disbursements = float(disbursements['total_pay'])
 				results['total_disbursement'] = total_disbursements
 
@@ -280,7 +280,7 @@ def recipient_profile(request, recip_id):
 		recipient['recipient_id'] = recip_id
 
 		if Contribution.objects.filter(recipient=recip_id).exists():
-			contribution = Contribution.objects.filter(recipient=recip_id).aggregate(total_pay=Sum('amount'),meta_data__processed=True)
+			contribution = Contribution.objects.filter(recipient=recip_id,meta_data__processed=True).aggregate(total_pay=Sum('amount'))
 			recipient['total_contribution'] = float(contribution['total_pay'])
 		
 		if Contact.objects.filter(recipient=recip_id).exists():
