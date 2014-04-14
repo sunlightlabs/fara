@@ -863,6 +863,7 @@ def location(request):
         location = Location(location = cleantext(request.GET['location']),
                             country_grouping = cleantext(request.GET['country']),
                             region = cleantext(request.GET['region']),
+                            country_code = request.GET['iso']
         )
         location.save()
         location_info = json.dumps({'location': location.location, 'country': location.country_grouping, 'region': location.region} , separators=(',',':'))
