@@ -7,12 +7,15 @@ class Command(BaseCommand):
 		countries = get_countries()
 		for location in Location.objects.all():
 			if countries.has_key(location.country_grouping):
-				print "hit"
 				location.country_code = countries[location.country_grouping]
-				print countries[location.country_grouping]
-				location.save() 
-				print location.id
+				# location.save() 
 			else:
+				if countries.has_key(location.location):
+					location.country_code = countries[location.location]
+					print "hit", location.location
+					location.save()
+
+
 				print "miss ", location, location.id  
 
 def get_countries():
