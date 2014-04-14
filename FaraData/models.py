@@ -75,6 +75,7 @@ class Location(models.Model):
     location = models.CharField(max_length=200, unique=True)
     country_grouping = models.CharField(max_length=200, blank= True, null=True, default='')
     region = models.CharField(max_length=200, blank= True, null=True)
+    country_code = models.CharField(max_length=3, blank= True, null=True)
 
     def __unicode__(self):
         return self.location
