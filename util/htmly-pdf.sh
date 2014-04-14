@@ -10,29 +10,23 @@
 #
 # ./get-names-of-pdfs-to-process.py fara 2> /dev/null | parallel --max-procs=8 ./htmly-pdf.sh {} pdfs html
 
-function do_one {
-# $1 should be the name of the pdf
-	HTML_DIR=$2
-	FILE_NAME=$1
-	PDFS_DIR=$(dirname $1)
-	PDF=$(basename $1)
-	FILE_BASENAME=$(basename $PDF .pdf)
+FILE_BASENAME=$1
+PDFS_DIR=$2
+HTML_DIR=$3
+PDF_FILE="$FILE_BASENAME.pdf"
 
-#echo pdf2htmlEX --embed cfijo --external-hint-tool=ttfautohint --dest-dir $HTML_DIR/$FILE_BASENAME $PDFS_DIR/$PDF index.html
-	pdf2htmlEX --embed cfijo --external-hint-tool=ttfautohint --dest-dir $HTML_DIR/$FILE_BASENAME $PDFS_DIR/$PDF index.html
-
-#echo $FILE_BASENAME
-}
 
 if [ ! -d $2 ]
 then
 	echo "arg 2:$2 isn't a dir"
 	exit 1
 fi
-echo "s3://fara.sunlightfoundation.com/pdfs/$1.pdf"
+echo "s3cmd ls s3://fara.sunlightfoundation.com/$PDFS_DIR/$FILE_BASENAME.pdf"
 
 # get one pdf
-boto-rsync s3://fara.sunlightfoundation.com/$2/$1.pdf $2
+boto-rsync s3://fara.sunlightfoundation.com/$PDFS_DIR/$FILE_BASENAME.pdf $PDFS_DIR
 
 # use above function to call pdf2htmlEX
-do_one pdfs/$1.pdf $3
+pdf2htmlEX --embed cfijo --external-hint-tool=ttfautohint --dest-dir $HTML_DIR/$FILE_BASENAME $PDFS_DIR/$PDF_FILE index.html
+
+#thing pdfs/$1.pdf $3
