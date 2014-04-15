@@ -54,7 +54,7 @@ class Command(BaseCommand):
 		print "ending", datetime.datetime.now().time()
 
 def paginate(form, page):
-	paginator = Paginator(form, 1000)
+	paginator = Paginator(form, 500)
 	try:
 		form = paginator.page(page)
 	except PageNotAnInteger:
@@ -65,9 +65,10 @@ def paginate(form, page):
 
 def create_contact():
 	count = Contact.objects.filter(meta_data__processed=True).count()
-	print count
-	# add 1 to get the remaining
-	pages = int(count/1000) + 1
+	pages = int(count/500) 
+	if count % 500 != 0:
+		pages = count + 1
+
 	pool = Contact.objects.filter(meta_data__processed=True)
 
 	filename = "InfluenceExplorer/contacts.csv"
@@ -78,6 +79,7 @@ def create_contact():
 		for n in range(0,pages):
 			contacts = paginate(pool, page)
 			contact_sheet(contacts, writer)
+			page = page + 1
 
 	print "done with contacts"
 
