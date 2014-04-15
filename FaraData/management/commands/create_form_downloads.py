@@ -65,6 +65,7 @@ def create_contact():
 		writer = UnicodeWriter(contact_file)
 		writer.writerow(contact_heading)
 		page = 1
+		print page_range[1]
 		for n in range(1, page_range[1]):
 			contacts = paginated_contacts.page(n)
 			contact_sheet(contacts, writer)
