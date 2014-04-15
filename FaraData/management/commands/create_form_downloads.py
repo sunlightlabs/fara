@@ -53,33 +53,21 @@ class Command(BaseCommand):
 
 		print "ending", datetime.datetime.now().time()
 
-def paginate(form, page):
-	paginator = Paginator(form, 500)
-	try:
-		form = paginator.page(page)
-	except PageNotAnInteger:
-		form = paginator.page(1)
-	except EmptyPage:
-		return None
-	return form
 
 def create_contact():
-	count = Contact.objects.filter(meta_data__processed=True).count()
-	pages = int(count/500) 
-	if count % 500 != 0:
-		pages = count + 1
-
 	pool = Contact.objects.filter(meta_data__processed=True)
+	paginated_contacts = Paginator(pool, 500)
+	page_range = paginated_contacts.page_range
 
 	filename = "InfluenceExplorer/contacts.csv"
+	# this was paginated to avoid horrendous garbage cleanup when I passes it all at once
 	with default_storage.open(filename, 'wb') as contact_file:
 		writer = UnicodeWriter(contact_file)
 		writer.writerow(contact_heading)
 		page = 1
-		for n in range(0,pages):
-			contacts = paginate(pool, page)
+		for n in range(1, page_range[1]):
+			contacts = paginated_contacts.page(n)
 			contact_sheet(contacts, writer)
-			page = page + 1
 
 	print "done with contacts"
 
