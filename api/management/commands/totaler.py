@@ -36,7 +36,7 @@ def total_registrants():
 				md = MetaData.objects.get(link=doc)
 				end_date = md.end_date
 				if end_date != None:
-					if datetime.date(2013,1,1) < md.end_date < datetime.date(2013,12,31):
+					if datetime.date(2013,1,1) <= md.end_date <= datetime.date(2013,12,31):
 						docs_2013.append(doc)
 						if "Supplemental" in doc:
 							s13 = s13 + 1
