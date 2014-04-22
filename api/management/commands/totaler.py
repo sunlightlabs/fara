@@ -90,11 +90,11 @@ def location_api():
 	for l in locations:
 		if l.country_code:
 			if results.has_key(l.country_code):
-				results[l.country_code].append({l.location: l.id})
+				results[l.country_code].append({'name':l.location, 'id': l.id, 'region':l.region})
 			else:
-				results[l.country_code] = [{l.location: l.id}]
+				results[l.country_code] = [{'name':l.location, 'id': l.id, 'region':l.region}]
 		else:
-			results["000"].append({l.location: l.id})
+			results["000"].append({'name':l.location, 'id': l.id, 'region':l.region})
 
 	with open("api/computations/map.json", 'w') as f:
 		results = json.dumps({'results':results}, separators=(',',':'))
