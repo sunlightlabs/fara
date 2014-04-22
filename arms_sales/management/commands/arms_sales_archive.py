@@ -168,19 +168,19 @@ class Command(BaseCommand):
 					record.save()
 					print "added record %s" %(record)
 
-					#save to amazon
-					# try:
-					# 	file_name = "arms_pdf/" + str(record.id) + ".pdf"
-					# 	pdf_link = str(pdf_link)
-					# 	u = urllib2.urlopen(pdf_link)
-					# 	localFile = default_storage.open(file_name, 'w')
-					# 	localFile.write(u.read())
-					# 	localFile.close() 
+					save to amazon
+					try:
+						file_name = "arms_pdf/" + str(record.id) + ".pdf"
+						pdf_link = str(pdf_link)
+						u = urllib2.urlopen(pdf_link)
+						localFile = default_storage.open(file_name, 'w')
+						localFile.write(u.read())
+						localFile.close() 
 
-					# except:
-					# 	print 'not working'
-					# 	message = 'bad upload ' + title
-					# 	logger.error(message)
+					except:
+						print 'not working'
+						message = 'bad upload ' + title
+						logger.error(message)
 							
 					results.append({"title":title, "date":date, "link": pagelink, "pdf_link":pdf_link, "print_link":print_link, "text": data_text})
 					
