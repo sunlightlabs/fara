@@ -154,11 +154,14 @@ class Command(BaseCommand):
 					cleaning = {"Iraq F":"Iraq", "Republic of Korea":"South Korea", "Republic of Korea (ROK)":"South Korea", "United Arab Emirates (UAE)":"United Arab Emirates", "Taipei Economic and Cultural Representative Office in the United States":"Taiwan", "Kingdom of Morocco":"Morocco"}
 					if cleaning.has_key(country):
 						country = cleaning[country]
+					print country
 
 					try:
 						matching_loc = Location.objects.get(location=country)
 						loc_id = int(matching_loc.id)
 						record.location_id = loc_id
+						record.location = matching_loc.location
+						print loc_id
 					except:
 						matching_loc = None
 					
@@ -166,18 +169,18 @@ class Command(BaseCommand):
 					print "added record %s" %(record)
 
 					#save to amazon
-					try:
-						file_name = "arms_pdf/" + str(record.id) + ".pdf"
-						pdf_link = str(pdf_link)
-						u = urllib2.urlopen(pdf_link)
-						localFile = default_storage.open(file_name, 'w')
-						localFile.write(u.read())
-						localFile.close() 
+					# try:
+					# 	file_name = "arms_pdf/" + str(record.id) + ".pdf"
+					# 	pdf_link = str(pdf_link)
+					# 	u = urllib2.urlopen(pdf_link)
+					# 	localFile = default_storage.open(file_name, 'w')
+					# 	localFile.write(u.read())
+					# 	localFile.close() 
 
-					except:
-						print 'not working'
-						message = 'bad upload ' + title
-						logger.error(message)
+					# except:
+					# 	print 'not working'
+					# 	message = 'bad upload ' + title
+					# 	logger.error(message)
 							
 					results.append({"title":title, "date":date, "link": pagelink, "pdf_link":pdf_link, "print_link":print_link, "text": data_text})
 					
@@ -189,10 +192,10 @@ class Command(BaseCommand):
 								'location_id': record.location_id,
 								'date': date,
 						}
-
+						print "made doc"
 						res = es.index(index="foreign", doc_type='arms', id=record.id, body=doc)
 					except:
-						message = 'bad pdf no es upload for - %s' % (title)
+						message = 'bad pdf no elasticsearch upload for - %s' % (title)
 						logger.error(message)
 
 					print title	
