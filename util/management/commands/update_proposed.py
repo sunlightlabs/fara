@@ -14,31 +14,33 @@ class Command(BaseCommand):
 	def handle(self, *args, **options):
 		proposals =  Proposed.objects.all()
 		for proposal in proposals:
-			title = proposal.title
-			country = title.split(u"–")
+			if proposal.location == None or proposal.location == '':
+				title = proposal.title
+				country = title.split(u"–")
 
-			if len(country) <= 1:
-				country = title.split(u"-")
-			country = country[0]
-			country = country.replace("Government of ", "")
-			country = country.replace("The ", "")
-			country = country.strip()
+				if len(country) <= 1:
+					country = title.split(u"-")
+				country = country[0]
+				country = country.replace("Government of ", "")
+				country = country.replace("The ", "")
+				country = country.strip()
 
-			cleaning = {"Iraq F":"Iraq", "Republic of Korea":"South Korea", "Republic of Korea (ROK)":"South Korea", "United Arab Emirates (UAE)":"United Arab Emirates", "Taipei Economic and Cultural Representative Office in the United States":"Taiwan", "Kingdom of Morocco":"Morocco"}
-			if cleaning.has_key(country):
-				country = cleaning[country]
+				cleaning = {"Iraq F":"Iraq", "Republic of Korea":"South Korea", "Republic of Korea (ROK)":"South Korea", "United Arab Emirates (UAE)":"United Arab Emirates", "Taipei Economic and Cultural Representative Office in the United States":"Taiwan", "Kingdom of Morocco":"Morocco"}
+				if cleaning.has_key(country):
+					country = cleaning[country]
 
-			try:
-				matching_loc = Location.objects.get(location=country)
-				loc_id = int(matching_loc.id)
-				proposal.location_id = loc_id
-			except:
-				matching_loc = None
-				print country, "NOT FOUND"
-			
-			proposal.location = country
+				try:
+					matching_loc = Location.objects.get(location=country)
+					loc_id = int(matching_loc.id)
+					proposal.location_id = loc_id
+					print "added loc %s" % (country)
+				except:
+					matching_loc = None
+					print country, "NOT FOUND"
+				
+				proposal.location = country
 
-			proposal.save()
-			#if matching_loc == None:
+				proposal.save()
+				#if matching_loc == None:
 				
 
