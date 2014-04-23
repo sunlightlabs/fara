@@ -117,13 +117,11 @@ def location_api():
 # this isn't efficient but it has a lot of data checking
 # I can't total as I go from the reg_totals because I want the records of all registrants who lobby not just the payments on the record where the lobbying occurs
 def client_totals(lobbying_regs, docs):
-	print lobbying_regs
-
 	for doc_url in docs:
 		doc = Document.objects.get(url=doc_url)
 		client_totals = {}
 		# eliminate docs that were not submitted by lobbyists
-		if Registrant.objects.get(reg_id=doc.reg_id) in lobbying_regs:
+		if doc.reg_id in lobbying_regs:
 			print "found reg"
 			# I can't just sum because I need to break it up by client registrant pairs
 			if Payment.objects.filter(link = doc.url).exists():
