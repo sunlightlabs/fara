@@ -24,6 +24,7 @@ def total_registrants():
 	for r in registrants:
 		reg_id = r.reg_id
 		registrant ={}
+		docs_for_clients = []
 		if Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())).exists():
 			doc_list = []
 			registrant["reg_name"] = r.reg_name
@@ -42,6 +43,7 @@ def total_registrants():
 					# narrows to 2013 Supplementals and Amendments that apply to 2013
 					if datetime.date(2013,1,1) <= md.end_date <= datetime.date(2013,12,31):
 						docs_2013.append(doc)
+						docs_for_clients.append(doc)
 						if "Supplemental" in doc:
 							s13 = s13 + 1
 						if "Registration" in doc:
@@ -91,7 +93,7 @@ def total_registrants():
 		f.write(results)
 
 	# pass lobbying regs to client totaler
-	client_totals(lobbying_regs, docs_2013)
+	client_totals(lobbying_regs, docs_for_clients)
 
 def location_api():
 	locations = Location.objects.all()
