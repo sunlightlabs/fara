@@ -114,6 +114,9 @@ def location_api():
 # I can't total as I go from the reg_totals because I want the records of all registrants who lobby not just the payments on the record where the lobbying occurs
 def client_totals(lobbying_regs, docs_2013):
 	print lobbying_regs
+	print
+	print docs_2013
+	print
 	for doc_url in docs_2013:
 		print doc_url
 		doc = Document.objects.get(url=doc_url)
