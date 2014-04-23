@@ -64,14 +64,14 @@ def total_registrants():
 			if Contact.objects.filter(registrant=reg_id,recipient__agency__in=["Congress", "House", "Senate", "White House"], meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
 				registrant['federal_lobbying'] = True
 				if r.reg_id not in lobbying_regs:
-					lobbying_regs.append(r.reg_id)
+					lobbying_regs.append(int(r.reg_id))
 			else:
 				registrant['federal_lobbying'] = False
 				
 			if Contact.objects.filter(registrant=reg_id,recipient__agency="U.S. Department of State", meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
 				registrant['state_dept_lobbying'] = True
 				if r.reg_id not in lobbying_regs:
-					lobbying_regs.append(r.reg_id)
+					lobbying_regs.append(int(r.reg_id))
 			else:
 				registrant['state_dept_lobbying'] = False
 				
