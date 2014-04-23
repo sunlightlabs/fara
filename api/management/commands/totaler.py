@@ -5,7 +5,7 @@ import datetime
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Sum
 
-from FaraData.models import Contact, Registrant, MetaData, Payment, Contribution, Location
+from FaraData.models import Contact, Registrant, MetaData, Payment, Contribution, Location, Client
 from fara_feed.models import Document
 
 class Command(BaseCommand):
@@ -94,7 +94,6 @@ def total_registrants():
 		f.write(results)
 
 	# pass lobbying regs to client totaler
-	print docs_for_clients
 	client_totals(lobbying_regs, docs_for_clients)
 
 def location_api():
@@ -128,33 +127,34 @@ def client_totals(lobbying_regs, docs):
 				print "found payments"
 				for payment in Payment.objects.filter(link = doc.url):
 					print "made it to payment loop"
-					if client_totals.has_key(payment.client.id):
-						if client_totals[payment.client.id]['registrants'].has_key(reg_id):
+					client_id = int(payment.client.id)
+					if client_totals.has_key(client_id):
+						if client_totals[client_id]['registrants'].has_key(reg_id):
 							print "building on existing record"
-							total = client_totals[payment.client.id]['registrants'][reg_id][reg_total]
+							total = client_totals[client_id]['registrants'][reg_id][reg_total]
 							total_pay  = total + payment.amount
-							client_totals[payment.client.id]['registrants'][reg_id][reg_total] = total_pay
+							client_totals[client_id]['registrants'][reg_id][reg_total] = total_pay
 							# I want to catch this even if it is missing on the first record 
-							if payment.subcontractor != None and client_totals[payment.client.id]['registrants']['subcontractor'] != payment.subcontractor.reg_name:
+							if payment.subcontractor != None and client_totals[client_id]['registrants']['subcontractor'] != payment.subcontractor.reg_name:
 							 	print subcontractor.reg_name
-							 	client_totals[payment.client.id]['registrants']['subcontractor'] = payment.subcontractor.reg_name
+							 	client_totals[client_id]['registrants']['subcontractor'] = payment.subcontractor.reg_name
 						else:
 							print "new reg existing record"
 							client_totals[payment.client.id]['registrants'][reg_id] = {'reg_id':reg_id, 'reg_name':reg_name, 'reg_total':payment.amount, 'subcontractor':payment.subcontractor.reg_name}
 					else:
-						client_totals[payment.client.id] = {
-															'client_name':client.name, 
-															'client_location':client.location.location, 
-															'locaiton_id': client.location.location_id,
-															'registrants':{ 
-																			reg_id: {
-																						'reg_id':reg_id, 
-																						'reg_name':reg_name, 
-																						'reg_total':payment.amount, 
-																						'subcontractor':payment.subcontractor.reg_name
-																					},
+						client_totals[client_id] = {
+													'client_name':client.name, 
+													'client_location':client.location.location, 
+													'locaiton_id': client.location.location_id,
+													'registrants':{ 
+																	reg_id: {
+																				'reg_id':reg_id, 
+																				'reg_name':reg_name, 
+																				'reg_total':payment.amount, 
+																				'subcontractor':payment.subcontractor.reg_name
 																			},
-															}
+																	},
+													}
 
 
 
