@@ -131,9 +131,9 @@ def client_totals(lobbying_regs, docs):
 					if client_totals.has_key(client_id):
 						if client_totals[client_id]['registrants'].has_key(reg_id):
 							print "building on existing record"
-							total = client_totals[client_id]['registrants'][reg_id][reg_total]
+							total = client_totals[client_id]['registrants'][reg_id]['reg_total']
 							total_pay  = total + payment.amount
-							client_totals[client_id]['registrants'][reg_id][reg_total] = total_pay
+							client_totals[client_id]['registrants'][reg_id]['reg_total'] = total_pay
 						else:
 							print "new reg existing record"
 							client_totals[payment.client.id]['registrants'][reg_id] = {
