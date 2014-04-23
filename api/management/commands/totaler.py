@@ -121,28 +121,23 @@ def client_totals(lobbying_regs, docs):
 		client_totals = {}
 		# eliminate docs that were not submitted by lobbyists
 		if doc.reg_id in lobbying_regs:
-			print "found reg"
 			# I can't just sum because I need to break it up by client registrant pairs
 			if Payment.objects.filter(link = doc.url).exists():
-				print "found payments"
 				for payment in Payment.objects.filter(link = doc.url):
 					reg_id = payment.registrant.reg_id
 					client_id = int(payment.client.id)
 					if client_totals.has_key(client_id):
 						if client_totals[client_id]['registrants'].has_key(reg_id):
-							print "building on existing record"
 							total = client_totals[client_id]['registrants'][reg_id]['reg_total']
 							total_pay  = total + payment.amount
 							client_totals[client_id]['registrants'][reg_id]['reg_total'] = total_pay
 						else:
-							print "new reg existing record"
 							client_totals[payment.client.id]['registrants'][reg_id] = {
 																						'reg_id':reg_id,
 																						'reg_name':payment.registrant.reg_name,
 																						'reg_total':payment.amount, 
 																					}
 					else:
-						print "first record"
 						client_totals[client_id] = {
 													'client_name':payment.client.client_name, 
 													'client_location':payment.client.location.location, 
@@ -159,7 +154,9 @@ def client_totals(lobbying_regs, docs):
 					if payment.subcontractor:
 						client_totals[payment.client.id]['registrants']['subcontractor'] = payment.subcontractor.reg_name
 
-
-
+	print client_totals
+	with open("api/computations/client13.json", 'w') as f:
+		results = json.dumps(client_totals, separators=(',',':'))
+		f.write(results)
 
 
