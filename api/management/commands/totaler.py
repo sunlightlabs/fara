@@ -128,8 +128,11 @@ def client_totals(lobbying_regs, docs):
 				for payment in Payment.objects.filter(link = doc.url):
 					print "made it to payment loop"
 					print payment
+					print "hello"
 					print payment.client
+					print "yes"
 					client_id = int(payment.client.id)
+					print "wtf"
 					if client_totals.has_key(client_id):
 						if client_totals[client_id]['registrants'].has_key(reg_id):
 							print "building on existing record"
@@ -142,7 +145,12 @@ def client_totals(lobbying_regs, docs):
 							 	client_totals[client_id]['registrants']['subcontractor'] = payment.subcontractor.reg_name
 						else:
 							print "new reg existing record"
-							client_totals[payment.client.id]['registrants'][reg_id] = {'reg_id':reg_id, 'reg_name':reg_name, 'reg_total':payment.amount, 'subcontractor':payment.subcontractor.reg_name}
+							client_totals[payment.client.id]['registrants'][reg_id] = {
+																						'reg_id':reg_id, 
+																						'reg_name':reg_name, 
+																						'reg_total':payment.amount, 
+																						'subcontractor':payment.subcontractor.reg_name,
+																					}
 					else:
 						client_totals[client_id] = {
 													'client_name':client.name, 
@@ -153,7 +161,7 @@ def client_totals(lobbying_regs, docs):
 																				'reg_id':reg_id, 
 																				'reg_name':reg_name, 
 																				'reg_total':payment.amount, 
-																				'subcontractor':payment.subcontractor.reg_name
+																				'subcontractor':payment.subcontractor.reg_name,
 																			},
 																	},
 													}
