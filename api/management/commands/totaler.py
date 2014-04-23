@@ -35,6 +35,7 @@ def total_registrants():
 			
 			docs_2013 = []
 			s13 = 0
+			# doc is really a doc url
 			for doc in doc_list:
 				md = MetaData.objects.get(link=doc)
 				end_date = md.end_date
@@ -43,7 +44,7 @@ def total_registrants():
 					# narrows to 2013 Supplementals and Amendments that apply to 2013
 					if datetime.date(2013,1,1) <= md.end_date <= datetime.date(2013,12,31):
 						docs_2013.append(doc)
-						docs_for_clients.append(doc.url)
+						docs_for_clients.append(doc)
 						print "adding"
 						if "Supplemental" in doc:
 							s13 = s13 + 1
