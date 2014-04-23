@@ -127,6 +127,8 @@ def client_totals(lobbying_regs, docs):
 				print "found payments"
 				for payment in Payment.objects.filter(link = doc.url):
 					print "made it to payment loop"
+					print payment
+					print payment.client
 					client_id = int(payment.client.id)
 					if client_totals.has_key(client_id):
 						if client_totals[client_id]['registrants'].has_key(reg_id):
