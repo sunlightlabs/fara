@@ -148,7 +148,7 @@ def client_totals(lobbying_regs, docs):
 					else:
 						print "first record"
 						client_totals[client_id] = {
-													'client_name':payment.client.name, 
+													'client_name':payment.client.client_name, 
 													'client_location':payment.client.location.location, 
 													'locaiton_id': payment.client.location.location_id,
 													'registrants':{ 
