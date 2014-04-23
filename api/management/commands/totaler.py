@@ -140,8 +140,8 @@ def client_totals(lobbying_regs, docs):
 						else:
 							print "new reg existing record"
 							client_totals[payment.client.id]['registrants'][reg_id] = {
-																						'reg_id':reg_id, 
-																						'reg_name':reg_name, 
+																						'reg_id':payment.registant.reg_id,
+																						'reg_name':payment.registrant.reg_name,
 																						'reg_total':payment.amount, 
 																						'subcontractor':payment.subcontractor.reg_name,
 																					}
@@ -153,8 +153,8 @@ def client_totals(lobbying_regs, docs):
 													'locaiton_id': payment.client.location.id,
 													'registrants':{ 
 																	reg_id: {
-																				'reg_id':reg_id, 
-																				'reg_name':reg_name, 
+																				'reg_id':payment.registant.reg_id, 
+																				'reg_name':payment.registrant.reg_name, 
 																				'reg_total':payment.amount, 
 																				'subcontractor':payment.subcontractor.reg_name,
 																			},
