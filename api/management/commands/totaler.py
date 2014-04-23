@@ -21,10 +21,10 @@ def total_registrants():
 	registrants = Registrant.objects.all()
 	results = []
 	lobbying_regs =[]
+	docs_for_clients = []
 	for r in registrants:
 		reg_id = r.reg_id
 		registrant ={}
-		docs_for_clients = []
 		if Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())).exists():
 			doc_list = []
 			registrant["reg_name"] = r.reg_name
