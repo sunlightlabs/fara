@@ -43,7 +43,7 @@ def total_registrants():
 					# narrows to 2013 Supplementals and Amendments that apply to 2013
 					if datetime.date(2013,1,1) <= md.end_date <= datetime.date(2013,12,31):
 						docs_2013.append(doc)
-						docs_for_clients.append(doc)
+						docs_for_clients.append(doc.url)
 						print "adding"
 						if "Supplemental" in doc:
 							s13 = s13 + 1
@@ -94,6 +94,7 @@ def total_registrants():
 		f.write(results)
 
 	# pass lobbying regs to client totaler
+	print docs_for_clients
 	client_totals(lobbying_regs, docs_for_clients)
 
 def location_api():
