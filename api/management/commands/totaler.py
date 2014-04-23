@@ -20,6 +20,7 @@ class Command(BaseCommand):
 def total_registrants():
 	registrants = Registrant.objects.all()
 	results = []
+	lobbying_regs =[]
 	for r in registrants:
 		reg_id = r.reg_id
 		registrant ={}
@@ -27,6 +28,7 @@ def total_registrants():
 			doc_list = []
 			registrant["reg_name"] = r.reg_name
 			registrant['reg_id'] = r.reg_id
+			# looking for all processed documents
 			for doc in Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())):
 				doc_list.append(doc.url)
 			
@@ -35,7 +37,9 @@ def total_registrants():
 			for doc in doc_list:
 				md = MetaData.objects.get(link=doc)
 				end_date = md.end_date
+				# meta data for supplementals and amendments with supplemental-like records should all have end dates
 				if end_date != None:
+					# narrows to 2013 Supplementals and Amendments that apply to 2013
 					if datetime.date(2013,1,1) <= md.end_date <= datetime.date(2013,12,31):
 						docs_2013.append(doc)
 						if "Supplemental" in doc:
@@ -54,13 +58,17 @@ def total_registrants():
 				payments2013 = float(payments2013['total_pay'])
 				registrant['payments2013'] = payments2013
 
-			if Contact.objects.filter(registrant=reg_id,recipient__agency__in=["Congress", "House", "Senate"], meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
+			if Contact.objects.filter(registrant=reg_id,recipient__agency__in=["Congress", "House", "Senate", "White House"], meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
 				registrant['federal_lobbying'] = True
+				if r.reg_id not in lobbying_regs:
+					lobbying_regs.append(r.reg_id)
 			else:
 				registrant['federal_lobbying'] = False
 				
 			if Contact.objects.filter(registrant=reg_id,recipient__agency="U.S. Department of State", meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
 				registrant['state_dept_lobbying'] = True
+				if r.reg_id not in lobbying_regs:
+					lobbying_regs.append(r.reg_id)
 			else:
 				registrant['state_dept_lobbying'] = False
 				
@@ -81,7 +89,9 @@ def total_registrants():
 	with open("api/computations/reg13.json", 'w') as f:
 		results = json.dumps({'results':results}, separators=(',',':'))
 		f.write(results)
-	
+
+	# pass lobbying regs to client totaler
+	client_totals(lobbying_regs, docs_2013)
 
 def location_api():
 	locations = Location.objects.all()
@@ -99,3 +109,55 @@ def location_api():
 	with open("api/computations/map.json", 'w') as f:
 		results = json.dumps({'results':results}, separators=(',',':'))
 		f.write(results)
+
+# this isn't efficient but it has a lot of data checking
+# I can't total as I go from the reg_totals because I want the records of all registrants who lobby not just the payments on the record where the lobbying occurs
+def client_totals(lobbying_regs, docs_2013):
+	print lobbying_regs
+	for doc_url in docs_2013:
+		print doc_url
+		doc = Document.objects.get(url=doc_url)
+		client_totals = {}
+		# eliminate docs that were not submitted by lobbyists
+		if Registrant.objects.get(reg_id=doc.reg_id) in lobbying_regs:
+			print "found reg"
+			# I can't just sum because I need to break it up by client registrant pairs
+			if Payment.objects.filter(link = doc.url).exists():
+				print "found payments"
+				for payment in Payment.objects.filter(link = doc.url):
+					print "made it to payment loop"
+					if client_totals.has_key(payment.client.id):
+						if client_totals[payment.client.id]['registrants'].has_key(reg_id):
+							print "building on existing record"
+							total = client_totals[payment.client.id]['registrants'][reg_id][reg_total]
+							total_pay  = total + payment.amount
+							client_totals[payment.client.id]['registrants'][reg_id][reg_total] = total_pay
+							# I want to catch this even if it is missing on the first record 
+							if payment.subcontractor != None and client_totals[payment.client.id]['registrants']['subcontractor'] != payment.subcontractor.reg_name:
+							 	print subcontractor.reg_name
+							 	client_totals[payment.client.id]['registrants']['subcontractor'] = payment.subcontractor.reg_name
+						else:
+							print "new reg existing record"
+							client_totals[payment.client.id]['registrants'][reg_id] = {'reg_id':reg_id, 'reg_name':reg_name, 'reg_total':payment.amount, 'subcontractor':payment.subcontractor.reg_name}
+					else:
+						client_totals[payment.client.id] = {
+															'client_name':client.name, 
+															'client_location':client.location.location, 
+															'locaiton_id': client.location.location_id,
+															'registrants':{ 
+																			reg_id: {
+																						'reg_id':reg_id, 
+																						'reg_name':reg_name, 
+																						'reg_total':payment.amount, 
+																						'subcontractor':payment.subcontractor.reg_name
+																					},
+																			},
+															}
+
+		# just for debug
+		else:
+			print "not a lobbyist"
+
+
+
+
