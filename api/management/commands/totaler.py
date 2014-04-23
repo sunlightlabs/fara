@@ -133,17 +133,12 @@ def client_totals(lobbying_regs, docs):
 							total = client_totals[client_id]['registrants'][reg_id][reg_total]
 							total_pay  = total + payment.amount
 							client_totals[client_id]['registrants'][reg_id][reg_total] = total_pay
-							# I want to catch this even if it is missing on the first record 
-							if payment.subcontractor != None and client_totals[client_id]['registrants']['subcontractor'] != payment.subcontractor.reg_name:
-							 	print subcontractor.reg_name
-							 	client_totals[client_id]['registrants']['subcontractor'] = payment.subcontractor.reg_name
 						else:
 							print "new reg existing record"
 							client_totals[payment.client.id]['registrants'][reg_id] = {
-																						'reg_id':payment.registrant.reg_id,
+																						'reg_id':payment.registant.reg_id,
 																						'reg_name':payment.registrant.reg_name,
 																						'reg_total':payment.amount, 
-																						'subcontractor':payment.subcontractor.reg_name,
 																					}
 					else:
 						print "first record"
@@ -156,11 +151,12 @@ def client_totals(lobbying_regs, docs):
 																				'reg_id':payment.registrant.reg_id, 
 																				'reg_name':payment.registrant.reg_name, 
 																				'reg_total':payment.amount, 
-																				'subcontractor':payment.subcontractor.reg_name,
 																			},
 																	},
 													}
-
+					# I want to catch this even if it is missing on the first record 
+					if payment.subcontractor:
+						client_totals[payment.client.id]['registrants']['subcontractor'] = payment.subcontractor.reg_name
 
 
 
