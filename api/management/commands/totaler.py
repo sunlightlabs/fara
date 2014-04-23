@@ -120,7 +120,6 @@ def client_totals(lobbying_regs, docs):
 	print lobbying_regs
 
 	for doc_url in docs:
-		print doc_url
 		doc = Document.objects.get(url=doc_url)
 		client_totals = {}
 		# eliminate docs that were not submitted by lobbyists
