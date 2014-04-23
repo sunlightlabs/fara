@@ -150,7 +150,7 @@ def client_totals(lobbying_regs, docs):
 						client_totals[client_id] = {
 													'client_name':payment.client.client_name, 
 													'client_location':payment.client.location.location, 
-													'locaiton_id': payment.client.location.location_id,
+													'locaiton_id': payment.client.location.id,
 													'registrants':{ 
 																	reg_id: {
 																				'reg_id':reg_id, 
