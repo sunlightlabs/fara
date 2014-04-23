@@ -125,8 +125,8 @@ def client_totals(lobbying_regs, docs):
 			# I can't just sum because I need to break it up by client registrant pairs
 			if Payment.objects.filter(link = doc.url).exists():
 				print "found payments"
-				reg_id = payment.registrant.reg_id
 				for payment in Payment.objects.filter(link = doc.url):
+					reg_id = payment.registrant.reg_id
 					client_id = int(payment.client.id)
 					if client_totals.has_key(client_id):
 						if client_totals[client_id]['registrants'].has_key(reg_id):
