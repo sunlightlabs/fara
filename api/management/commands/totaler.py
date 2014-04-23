@@ -45,7 +45,6 @@ def total_registrants():
 					if datetime.date(2013,1,1) <= md.end_date <= datetime.date(2013,12,31):
 						docs_2013.append(doc)
 						docs_for_clients.append(doc)
-						print "adding"
 						if "Supplemental" in doc:
 							s13 = s13 + 1
 						if "Registration" in doc:
@@ -119,9 +118,7 @@ def location_api():
 # I can't total as I go from the reg_totals because I want the records of all registrants who lobby not just the payments on the record where the lobbying occurs
 def client_totals(lobbying_regs, docs):
 	print lobbying_regs
-	print
-	print docs
-	print
+
 	for doc_url in docs:
 		print doc_url
 		doc = Document.objects.get(url=doc_url)
@@ -162,9 +159,7 @@ def client_totals(lobbying_regs, docs):
 																			},
 															}
 
-		# just for debug
-		else:
-			print "not a lobbyist"
+
 
 
 
