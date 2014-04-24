@@ -114,11 +114,14 @@ def location_api():
 		f.write(results)
 
 # this isn't efficient but it has a lot of data checking
-# I can't total as I go from the reg_totals because I want the records of all registrants who lobby not just the payments on the record where the lobbying occurs
+# I can't total as I go from thereg_totals because I want the records of all registrants who lobby not just the payments on the record where the lobbying occurs
 def client_totals(lobbying_regs, docs):
 	client_totals = {}
 	for doc_url in docs:
-		doc = Document.objects.get(url=doc_url)
+		
+		#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		#doc = Document.objects.get(url=doc_url)
+		doc = Document.objects.filter(url=doc_url)[0]
 		# eliminate docs that were not submitted by lobbyists
 		if doc.reg_id in lobbying_regs:
 			# I can't just sum because I need to break it up by client registrant pairs
@@ -129,13 +132,13 @@ def client_totals(lobbying_regs, docs):
 					if client_totals.has_key(client_id):
 						if client_totals[client_id]['registrants'].has_key(reg_id):
 							total = client_totals[client_id]['registrants'][reg_id]['reg_total']
-							total_pay  = total + payment.amount
-							client_totals[client_id]['registrants'][reg_id]['reg_total'] = total_pay
+							total_pay  = total + float(payment.amount)
+							client_totals[client_id]['registrants'][reg_id]['reg_total'] = float(total_pay)
 						else:
 							client_totals[payment.client.id]['registrants'][reg_id] = {
 																						'reg_id':reg_id,
 																						'reg_name':payment.registrant.reg_name,
-																						'reg_total':payment.amount, 
+																						'reg_total':float(payment.amount), 
 																					}
 					else:
 						client_totals[client_id] = {
@@ -146,7 +149,7 @@ def client_totals(lobbying_regs, docs):
 																	reg_id: {
 																				'reg_id':reg_id, 
 																				'reg_name':payment.registrant.reg_name, 
-																				'reg_total':payment.amount, 
+																				'reg_total':float(payment.amount), 
 																			},
 																	},
 													}
@@ -156,7 +159,7 @@ def client_totals(lobbying_regs, docs):
 
 	print client_totals
 	with open("api/computations/client13.json", 'w') as f:
-		# results = json.dumps(client_totals, separators=(',',':'))
-		f.write(client_totals)
+		results = json.dumps(client_totals, separators=(',',':'))
+		f.write(results)
 
 
