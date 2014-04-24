@@ -152,9 +152,8 @@ def client_totals(lobbying_regs, docs):
 													}
 					# I want to catch this even if it is missing on the first record 
 					if payment.subcontractor:
-						client_totals[payment.client.id]['registrants']['subcontractor'] = payment.subcontractor.reg_name
+						client_totals[payment.client.id]['registrants'][reg_id]['subcontractor'] = payment.subcontractor.reg_name
 
-	print client_totals
 	with open("api/computations/client13.json", 'w') as f:
 		results = json.dumps(client_totals, separators=(',',':'))
 		f.write(results)
