@@ -113,7 +113,7 @@ def location_api():
 		results = json.dumps({'results':results}, separators=(',',':'))
 		f.write(results)
 
-# this isn't efficient but it has a lot of data checking
+# this isn't efficient but there aren't that many political registrants and it has a lot of data checking
 # I can't total as I go from thereg_totals because I want the records of all registrants who lobby not just the payments on the record where the lobbying occurs
 def client_totals(lobbying_regs, docs):
 	client_totals = {}
