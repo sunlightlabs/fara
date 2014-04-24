@@ -172,21 +172,31 @@ def client_totals(lobbying_regs, docs):
 	print 'starting client total'
 	# don't want to double count the subcontracting
 	for client in client_totals.keys():
+		print 1
 		primary = {} # {reg_id: $}
+		print 2
 		from_sub = {} # {sub : primary}
+		print 3
 		preliminary_total = 0
+		print 4
 		for reg in client_totals[client]['registrants']:
+			print 5
 			if client_totals[client]['registrants'][reg].has_key('subcontractor_id'):
+				print 6
 				from_sub[ int(client_totals[client]['registrants'][reg]['subcontractor_id']) ] = reg
 			primary[int(reg)] = client_totals[client]['registrants'][reg]['reg_total']
 			preliminary_total = preliminary_total + client_totals[client]['registrants'][reg]['reg_total']
+			print 7
 		# second loop because I need to know all of the reg_id to figure out subcontracting
 		if len(from_sub) > 0:
+			print 8
 			for sub in from_sub:
 				if primary.has_key(sub):
 					preliminary_total = preliminary_total - client_totals[client]['registrants'][ from_sub[sub] ]['reg_total']
+		print 9
 		total = preliminary_total
 		client_totals[client]['total'] = total
+		print 10
 		location_id = client_totals[client]['location_id']
 		amount = float(location_totals[location_id]['total'])
 		location_totals = amount + total
