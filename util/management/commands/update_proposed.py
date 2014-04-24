@@ -22,10 +22,11 @@ class Command(BaseCommand):
 					country = title.split(u"-")
 				country = country[0]
 				country = country.replace("Government of ", "")
+				country = country.replace("Kingdom of ", "")
 				country = country.replace("The ", "")
 				country = country.strip()
 
-				cleaning = {"Iraq F":"Iraq", "Republic of Korea":"South Korea", "Republic of Korea (ROK)":"South Korea", "United Arab Emirates (UAE)":"United Arab Emirates", "Taipei Economic and Cultural Representative Office in the United States":"Taiwan", "Kingdom of Morocco":"Morocco"}
+				cleaning = {"Iraq F":"Iraq", "Republic of Korea":"South Korea", "Republic of Korea (ROK)":"South Korea", "United Arab Emirates (UAE)":"United Arab Emirates", "Taipei Economic and Cultural Representative Office in the United States":"Taiwan"}
 				if cleaning.has_key(country):
 					country = cleaning[country]
 
