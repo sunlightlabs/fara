@@ -116,8 +116,11 @@ def location_api():
 # this isn't efficient but there aren't that many political registrants and it has a lot of data checking
 # I can't total as I go from thereg_totals because I want the records of all registrants who lobby not just the payments on the record where the lobbying occurs
 def client_totals(lobbying_regs, docs):
+	print "starting client totals"
 	client_totals = {}
 	for doc_url in docs:
+		# work around for local testing where data is dirty
+		#doc = Document.objects.filter(url=doc_url)[0]
 		doc = Document.objects.get(url=doc_url)
 		# eliminate docs that were not submitted by lobbyists
 		if doc.reg_id in lobbying_regs:
@@ -154,9 +157,30 @@ def client_totals(lobbying_regs, docs):
 					if payment.subcontractor:
 						client_totals[payment.client.id]['registrants'][reg_id]['subcontractor'] = payment.subcontractor.reg_name
 						client_totals[payment.client.id]['registrants'][reg_id]['subcontractor_id'] = payment.subcontractor.reg_id
+	print 'starting client total'
+	# don't want to double count the subcontracting
+	for client in client_totals.keys():
+		primary = {} # {reg_id: $}
+		from_sub = {} # {sub : primary}
+		preliminary_total = 0
+		for reg in client_totals[client]['registrants']:
+			if client_totals[client]['registrants'][reg].has_key('subcontractor_id'):
+				from_sub[ int(client_totals[client]['registrants'][reg]['subcontractor_id']) ] = reg
+			primary[int(reg)] = client_totals[client]['registrants'][reg]['reg_total']
+			preliminary_total = preliminary_total + client_totals[client]['registrants'][reg]['reg_total']
+		# second loop because I need to know all of the reg_id to figure out subcontracting
+		if len(from_sub) > 0:
+			for sub in from_sub:
+				if primary.has_key(sub):
+					preliminary_total = preliminary_total - client_totals[client]['registrants'][ from_sub[sub] ]['reg_total']
+		
+		client_totals[client]['total'] = preliminary_total
+		
 
+
+	results = {'client_totals':client_totals, }
 	with open("api/computations/client13.json", 'w') as f:
-		results = json.dumps(client_totals, separators=(',',':'))
+		results = json.dumps(results, separators=(',',':'))
 		f.write(results)
 
 
