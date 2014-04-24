@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from optparse import make_option
 
@@ -10,6 +11,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from FaraData.spread_sheets import *
 from FaraData.models import Contact, Payment, Disbursement, Contribution
 from fara_feed.models import Document
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
 	help = "Creates one zipfile of spreadsheets for each form to buckets."
@@ -51,7 +55,9 @@ class Command(BaseCommand):
 		if options.get('payments'):
 			payments()
 
-		print "ending", datetime.datetime.now().time()
+		message = "IE upload script ran %s on %s" % (options , datetime.datetime.now().time())
+		logger.error(message)
+
 
 
 def create_contact():
@@ -60,11 +66,10 @@ def create_contact():
 	page_range = paginated_contacts.page_range
 
 	filename = "InfluenceExplorer/contacts.csv"
-	# this was paginated to avoid horrendous garbage cleanup when I passes it all at once
 	with default_storage.open(filename, 'wb') as contact_file:
 		writer = UnicodeWriter(contact_file)
 		writer.writerow(contact_heading)
-
+		# this was paginated to avoid horrendous garbage cleanup when I passes it all at once
 		for n in page_range:
 			contacts = paginated_contacts.page(n)
 			contact_sheet(contacts, writer)
