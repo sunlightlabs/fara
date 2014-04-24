@@ -20,18 +20,18 @@ class Command(BaseCommand):
 	can_import_settings = True
 
 	def handle(self, *args, **options):
-		# load_clients()
-		# load_locations()
-		# load_registrants()
-		# load_recipients()
-		## load_lobby()
-		# load_arms()
+		load_clients()
+		load_locations()
+		load_registrants()
+		load_recipients()
+		# load_lobby()
+		load_arms()
 		load_contacts()
 		load_payments()
 		load_disbursements()
 		load_contributions()
 		load_gifts()
-		# load_fara_text()
+		load_fara_text()
 
 def load_clients():
 	for client in Client.objects.all():
