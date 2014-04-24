@@ -176,11 +176,8 @@ def client_totals(lobbying_regs, docs):
 		
 		client_totals[client]['total'] = preliminary_total
 		
-
-
-	results = {'client_totals':client_totals, }
 	with open("api/computations/client13.json", 'w') as f:
-		results = json.dumps(results, separators=(',',':'))
+		results = json.dumps(client_totals, separators=(',',':'))
 		f.write(results)
 
 
