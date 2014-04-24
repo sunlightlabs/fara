@@ -118,9 +118,10 @@ def location_api():
 def client_totals(lobbying_regs, docs):
 	print "starting client totals"
 	client_totals = {}
+	location_totals = {}
 	for doc_url in docs:
 		# work around for local testing where data is dirty
-		#doc = Document.objects.filter(url=doc_url)[0]
+		# doc = Document.objects.filter(url=doc_url)[0]
 		doc = Document.objects.get(url=doc_url)
 		# eliminate docs that were not submitted by lobbyists
 		if doc.reg_id in lobbying_regs:
@@ -129,6 +130,7 @@ def client_totals(lobbying_regs, docs):
 				for payment in Payment.objects.filter(link = doc.url):
 					reg_id = payment.registrant.reg_id
 					client_id = int(payment.client.id)
+					location_id = int(payment.client.location.id)
 					if client_totals.has_key(client_id):
 						if client_totals[client_id]['registrants'].has_key(reg_id):
 							total = client_totals[client_id]['registrants'][reg_id]['reg_total']
@@ -144,7 +146,7 @@ def client_totals(lobbying_regs, docs):
 						client_totals[client_id] = {
 													'client_name':payment.client.client_name, 
 													'client_location':payment.client.location.location, 
-													'location_id': payment.client.location.id,
+													'location_id': location_id,
 													'registrants':{ 
 																	reg_id: {
 																				'reg_id':reg_id, 
@@ -157,6 +159,16 @@ def client_totals(lobbying_regs, docs):
 					if payment.subcontractor:
 						client_totals[payment.client.id]['registrants'][reg_id]['subcontractor'] = payment.subcontractor.reg_name
 						client_totals[payment.client.id]['registrants'][reg_id]['subcontractor_id'] = payment.subcontractor.reg_id
+					
+					# create location dictionary so I can just add later
+					if not location_totals.has_key(location_id):
+						location_totals[location_id] = {
+												'name': payment.client.location.location,
+												'id': location_id,
+												'total': 0,
+												}
+
+
 	print 'starting client total'
 	# don't want to double count the subcontracting
 	for client in client_totals.keys():
@@ -173,11 +185,20 @@ def client_totals(lobbying_regs, docs):
 			for sub in from_sub:
 				if primary.has_key(sub):
 					preliminary_total = preliminary_total - client_totals[client]['registrants'][ from_sub[sub] ]['reg_total']
-		
-		client_totals[client]['total'] = preliminary_total
-		
+		total = preliminary_total
+		client_totals[client]['total'] = total
+		location_id = client_totals[client]['location_id']
+		location_totals = location_totals[location_id]['total'] + total
+
 	with open("api/computations/client13.json", 'w') as f:
 		results = json.dumps(client_totals, separators=(',',':'))
 		f.write(results)
+
+	with open("api/computations/location13.json", 'w') as f:
+		results = json.dumps(location_totals, separators=(',',':'))
+		f.write(results)
+
+
+
 
 
