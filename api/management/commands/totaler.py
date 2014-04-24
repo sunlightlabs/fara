@@ -188,7 +188,6 @@ def client_totals(lobbying_regs, docs):
 					preliminary_total = preliminary_total - client_totals[client]['registrants'][ from_sub[sub] ]['reg_total']
 		total = preliminary_total
 		client_totals[client]['total'] = total
-		print 10
 		location_id = client_totals[client]['location_id']
 		amount = float(location_totals[location_id]['total'])
 		location_totals[location_id]['total'] = amount + total
@@ -200,6 +199,7 @@ def client_totals(lobbying_regs, docs):
 	with open("api/computations/location13.json", 'w') as f:
 		results = json.dumps(location_totals, separators=(',',':'))
 		f.write(results)
+	print location_totals
 
 
 
