@@ -118,10 +118,7 @@ def location_api():
 def client_totals(lobbying_regs, docs):
 	client_totals = {}
 	for doc_url in docs:
-		
-		#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		#doc = Document.objects.get(url=doc_url)
-		doc = Document.objects.filter(url=doc_url)[0]
+		doc = Document.objects.get(url=doc_url)
 		# eliminate docs that were not submitted by lobbyists
 		if doc.reg_id in lobbying_regs:
 			# I can't just sum because I need to break it up by client registrant pairs
