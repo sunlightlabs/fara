@@ -1119,6 +1119,19 @@ def client13(request):
 	data.close()
 	return HttpResponse(results, mimetype="application/json")
 
+def location13(request):
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied
+
+	# this grabs the totals that are created in api management command totaler.py
+	this_filepath = os.path.abspath(__file__)
+	this_parent_dir = os.path.dirname(this_filepath) 
+	file_name = os.path.join(this_parent_dir, "computations/location13.json")
+	data = open(file_name, 'r')
+	results = data.read()
+	data.close()
+	return HttpResponse(results, mimetype="application/json")
+
 # I am using this for clients now
 def location_list(request):
 	locations = Location.objects.all()

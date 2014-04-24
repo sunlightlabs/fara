@@ -199,7 +199,6 @@ def client_totals(lobbying_regs, docs):
 	with open("api/computations/location13.json", 'w') as f:
 		results = json.dumps(location_totals, separators=(',',':'))
 		f.write(results)
-	print location_totals
 
 
 

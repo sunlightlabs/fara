@@ -19,6 +19,7 @@ urlpatterns = patterns('',
    url(r'^search', 'api.views.search', name='search'),
    url(r'^map', 'api.views.map', name='map'),
    url(r'^lobbying-2013', 'api.views.client13', name='client13'),
+   url(r'^locations-2013', 'api.views.location13', name='location13'),
    # to check status
    url(r'^test', 'api.views.test', name='test'),
 )
