@@ -84,7 +84,7 @@ def search_interactions(q, page):
 	body = {
 	"query": {
 		"query_string": {
-			"fields": ["client", "registrant", "recipient", "purpose", "contributor", "subcontractor", ],
+			"fields": ["client", "registrant", "recipient", "purpose", "contributor", "subcontractor", "description" ],
 			"query": q,
 		}
 		},
