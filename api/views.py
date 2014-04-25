@@ -1160,7 +1160,8 @@ def search(request):
 	else:
 		results = json.dumps({'message':'No search terms'}, separators=(',',':'))
 		return HttpResponse(results, mimetype="application/json")
-
+	
+	# set all to one?
 	if request.GET.get('clientpage'):
 		clientpage = request.GET.get('clientpage')
 	else:
@@ -1190,13 +1191,13 @@ def search(request):
 	else:
 		docpage = 1
 
-	clients = search_client(q, clientpage)
-	regs = search_registrant(q, regpage)
-	people_org = search_recipients(q, peoplepage)
-	arms = search_arms(q, armspage)
-	interactions = search_interactions(q, interactonspage)
-	locations = search_locations(q, locationpage)
-	docs =  search_text(q, docpage)
+	clients = search_client(q, int(clientpage))
+	regs = search_registrant(q, int(regpage))
+	people_org = search_recipients(q, int(peoplepage))
+	arms = search_arms(q, int(armspage))
+	interactions = search_interactions(q, int(interactonspage))
+	locations = search_locations(q, int(locationpage))
+	docs =  search_text(q, int(docpage))
 
 	results = {}
 	results['clients'] = clients
@@ -1206,6 +1207,56 @@ def search(request):
 	results['interactions'] = interactions
 	results['locations'] = locations
 	results['docs'] = docs
+
+	results = json.dumps(results, separators=(',',':'))
+	return HttpResponse(results, mimetype="application/json")
+
+def search_more():
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied
+
+	results = {}
+
+	if request.GET.get('q'):
+		q = request.GET.get('q')
+	else:
+		results = json.dumps({'message':'No search terms'}, separators=(',',':'))
+		return HttpResponse(results, mimetype="application/json")
+
+	if request.GET.get('clientpage'):
+		clientpage = request.GET.get('clientpage')
+		clients = search_client(q, int(clientpage))
+		results['clients'] = clients
+
+	if request.GET.get('regpage'):
+		regpage = request.GET.get('regpage')
+		regs = search_registrant(q, int(regpage))
+		results['registrants'] = regs
+
+	if request.GET.get('peoplepage'):
+		peoplepage = request.GET.get('peoplepage')
+		people_org = search_recipients(q, int(peoplepage))
+		results['people_org'] =  people_org
+	
+	if request.GET.get('armspage'):
+		armspage = request.GET.get('armspage')
+		arms = search_arms(q, int(armspage))
+		results['arms'] = arms
+	
+	if request.GET.get('interactonspage'):
+		interactonspage = request.GET.get('interactonspage')
+		interactions = search_interactions(q, int(interactonspage))
+		results['interactions'] = interactions
+	
+	if request.GET.get('locationpage'):
+		locationpage = request.GET.get('locationpage')
+		locations = search_locations(q, int(locationpage))
+		results['locations'] = locations
+
+	if request.GET.get('docpage'):
+		docpage = request.GET.get('docpage')
+		docs =  search_text(q, int(docpage))
+		results['docs'] = docs
 
 	results = json.dumps(results, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
