@@ -1161,7 +1161,7 @@ def search(request):
 		results = json.dumps({'message':'No search terms'}, separators=(',',':'))
 		return HttpResponse(results, mimetype="application/json")
 	
-	# set all to one?
+	# I could make them all 1
 	if request.GET.get('clientpage'):
 		clientpage = request.GET.get('clientpage')
 	else:
@@ -1243,9 +1243,9 @@ def search_more(request):
 		arms = search_arms(q, int(armspage))
 		results['arms'] = arms
 	
-	if request.GET.get('interactonspage'):
-		interactonspage = request.GET.get('interactonspage')
-		interactions = search_interactions(q, int(interactonspage))
+	if request.GET.get('interactionspage'):
+		interactionspage = request.GET.get('interactionspage')
+		interactions = search_interactions(q, int(interactionspage))
 		results['interactions'] = interactions
 	
 	if request.GET.get('locationpage'):
