@@ -1211,7 +1211,7 @@ def search(request):
 	results = json.dumps(results, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
-def search_more():
+def search_more(request):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
 
