@@ -1,3 +1,5 @@
+import re
+
 from django.core.management.base import BaseCommand, CommandError
 
 from FaraData.models import Registrant, Client, Payment, Contact, Disbursement, Gift, Contribution
@@ -23,9 +25,17 @@ class Command(BaseCommand):
 		for contribution in Contribution.objects.all():
 			reg_id = str(contribution.registrant.reg_id)
 			if reg_id not in contribution.link:
-				print "contribution id", contribution.id
-				print reg_id, contribution.link, contribution.date, "\n"
+				print reg_id, contribution.link, contribution.date
 				wrong_contribution += 1
+
+				link = str(contribution.link)
+				real_reg_id = re.sub('-','', link[25:29])
+				real_reg_id = re.sub('S','', real_reg_id)
+				real_reg_id = re.sub('L','', real_reg_id)
+				print int(real_reg_id), "\n" 
+				new_reg = Registrant(reg_id=real_reg_id)
+				print "found new reg"
+
 				if reg_id not in problem_reg:
 					problem_reg.append(reg_id)
 		print "%s wrong contributions" % (wrong_contribution)
