@@ -29,7 +29,7 @@ class Command(BaseCommand):
 				print reg_id, contribution.link, contribution.date
 				wrong_contribution += 1
 
-				link = str(contribution.link)
+				link = contribution.link
 				real_reg_id = re.sub('-','', link[25:29])
 				real_reg_id = re.sub('S','', real_reg_id)
 				real_reg_id = re.sub('L','', real_reg_id)
