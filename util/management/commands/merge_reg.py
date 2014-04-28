@@ -6,6 +6,26 @@ from FaraData.models import Registrant, Client, Payment, Contact, Disbursement, 
 
 class Command(BaseCommand):
 	def handle(self, pythonpath, verbosity, traceback, settings):
+		bad_payments = [57646, 57647]
+		for p in bad_payments:
+			payment = Payment.objects.get(id=p)
+			reg = Registrant.objects.get(reg_id=3375)
+			print payment
+			payment.registrant = reg
+			payment.save()
+			print payment
+
+		bad_dis = [110523, 110524]
+		for d in bad_dis:
+			disbursement = Disbursement.objects.get(id=d)
+			print reg
+			reg = Registrant.objects.get(reg_id=3375)
+			reg.save()
+			print reg
+
+
+
+		exit()
 
 		cleared = {}
 		
@@ -22,19 +42,19 @@ class Command(BaseCommand):
 			original_id = i[0]
 			new_id = i[1]
 			name = i[2]
-			# try:
-			# 	reg = Registrant.objects.get(reg_id=original_id)
+			try:
+				reg = Registrant.objects.get(reg_id=original_id)
 			
-			# except:
-			# 	reg = None
+			except:
+				reg = None
 			
-			# if reg != None:
-			if reg.reg_name == name:
-				cleared[original_id] = new_id
+			if reg != None:
+				if reg.reg_name == name:
+					cleared[original_id] = new_id
+				else:
+					print "Name error", 1
 			else:
-				print "Name error", 1
-			# else:
-			# 	print "Name error", 2
+				print "Name error", 2
 
 
 		#go through records  to replace where they are pointing
