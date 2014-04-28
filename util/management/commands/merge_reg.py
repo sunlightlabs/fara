@@ -53,6 +53,7 @@ class Command(BaseCommand):
 			for client in splintered_clients_list:
 				if client not in existing_clients:
 					new_reg.clients.add(client)
+					new_reg.save()
 
 			#Gift.client m2m
 			gifts = Gift.objects.filter(registrant__reg_id= cleared_id)
