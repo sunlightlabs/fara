@@ -35,7 +35,6 @@ class Command(BaseCommand):
 				real_reg_id = re.sub('L','', real_reg_id)
 				new_reg = Registrant(reg_id=real_reg_id)
 				print "new_reg"
-				print contribution
 				contribution.registrant = new_reg
 				contribution.save()
 				print contribution.id
