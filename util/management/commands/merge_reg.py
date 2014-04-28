@@ -6,26 +6,25 @@ from FaraData.models import Registrant, Client, Payment, Contact, Disbursement, 
 
 class Command(BaseCommand):
 	def handle(self, pythonpath, verbosity, traceback, settings):
-		bad_payments = [57646, 57647]
-		for p in bad_payments:
-			payment = Payment.objects.get(id=p)
-			reg = Registrant.objects.get(reg_id=3718)
-			print payment
-			payment.registrant = reg
-			payment.save()
-			print payment
+		
+		## Holland and knight de-registers and re-registers so it has too many fara ids and it sometimes has urls with the wrong one
+		# bad_payments = [57646, 57647]
+		# for p in bad_payments:
+		# 	payment = Payment.objects.get(id=p)
+		# 	reg = Registrant.objects.get(reg_id=3718)
+		# 	print payment
+		# 	payment.registrant = reg
+		# 	payment.save()
+		# 	print payment
 
-		bad_dis = [110523, 110524]
-		for d in bad_dis:
-			disbursement = Disbursement.objects.get(id=d)
-			print reg
-			reg = Registrant.objects.get(reg_id=3718)
-			reg.save()
-			print reg
+		# bad_dis = [110523, 110524]
+		# for d in bad_dis:
+		# 	disbursement = Disbursement.objects.get(id=d)
+		# 	print reg
+		# 	reg = Registrant.objects.get(reg_id=3718)
+		# 	reg.save()
+		# 	print reg
 
-
-
-		exit()
 
 		cleared = {}
 		

@@ -24,8 +24,10 @@ class Command(BaseCommand):
 		print "%s wrong contacts" % (wrong_contact)
 		
 		for contribution in Contribution.objects.all():
+			print contribution.id
 			reg_id = str(contribution.registrant.reg_id)
 			if reg_id not in contribution.link:
+				print contribution.id
 				print reg_id, contribution.link, contribution.date
 				wrong_contribution += 1
 
