@@ -22,19 +22,19 @@ class Command(BaseCommand):
 			original_id = i[0]
 			new_id = i[1]
 			name = i[2]
-			try:
-				reg = Registrant.objects.get(reg_id=original_id)
+			# try:
+			# 	reg = Registrant.objects.get(reg_id=original_id)
 			
-			except:
-				reg = None
+			# except:
+			# 	reg = None
 			
-			if reg != None:
-				if reg.reg_name == name:
-					cleared[original_id] = new_id
-				else:
-					print "Name error", 1
+			# if reg != None:
+			if reg.reg_name == name:
+				cleared[original_id] = new_id
 			else:
-				print "Name error", 2
+				print "Name error", 1
+			# else:
+			# 	print "Name error", 2
 
 
 		#go through records  to replace where they are pointing
