@@ -1,7 +1,7 @@
 # this corrects a registrant id error
 from django.core.management.base import BaseCommand, CommandError
 
-from FaraData.models import Registrant, Client, Payment, Contact, Disbursement, Gift, Contribution
+from FaraData.models import Registrant, Client, Payment, Contact, Disbursement, Gift, Contribution, ClientReg
 
 
 class Command(BaseCommand):
@@ -12,7 +12,7 @@ class Command(BaseCommand):
 		#wrong id, correct id, name
 		incorrect_regs = (
 					[3375, 3718, 'Holland & Knight LLP'], 
-					[2579, 2759, 'WHITE & CASE LLP'],
+					[2579, 2759, 'White & Case LLP'],
 					)
 
 		
@@ -78,11 +78,11 @@ class Command(BaseCommand):
 			for d in dis:
 				d.registrant = new_reg
 				d.save()
-				print "dis -saving ", new_reg, "replacing ", old_regt, d.id
+				print "dis -saving ", new_reg, "replacing ", old_reg, d.id
 			#ClientReg.client_id fk
-			client_reg = ClientReg.objects.filter(registrant__reg_id= cleared_id)
+			client_reg = ClientReg.objects.filter(reg_id__reg_id= cleared_id)
 			for cr in client_reg:
-				cr.registrant = new_reg
+				cr.reg_id = new_reg
 				cr.save()
 				print "client reg, replacing ", old_reg, " with ", new_reg, cr.id
 
