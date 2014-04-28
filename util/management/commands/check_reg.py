@@ -12,15 +12,16 @@ class Command(BaseCommand):
 		wrong_payment = 0 
 		wrong_disbursement = 0
 		problem_reg = []
-		for contact in Contact.objects.all():
-			reg_id = str(contact.registrant.reg_id)
-			if reg_id not in contact.link:
-				print "contact id", contact.id
-				print reg_id, contact.link, contact.date, "\n"
-				wrong_contact += 1
-				if reg_id not in problem_reg:
-					problem_reg.append(reg_id)
-		print "%s wrong contacts" % (wrong_contact)
+		## fixed all of these
+		# for contact in Contact.objects.all():
+		# 	reg_id = str(contact.registrant.reg_id)
+		# 	if reg_id not in contact.link:
+		# 		print "contact id", contact.id
+		# 		print reg_id, contact.link, contact.date, "\n"
+		# 		wrong_contact += 1
+		# 		if reg_id not in problem_reg:
+		# 			problem_reg.append(reg_id)
+		# print "%s wrong contacts" % (wrong_contact)
 		
 		for contribution in Contribution.objects.all():
 			reg_id = str(contribution.registrant.reg_id)
@@ -32,9 +33,11 @@ class Command(BaseCommand):
 				real_reg_id = re.sub('-','', link[25:29])
 				real_reg_id = re.sub('S','', real_reg_id)
 				real_reg_id = re.sub('L','', real_reg_id)
-				print int(real_reg_id), "\n" 
 				new_reg = Registrant(reg_id=real_reg_id)
-				print "found new reg"
+				print contribution
+				contribution.registrant = new_reg
+				contribution.save()
+				print contribution
 
 				if reg_id not in problem_reg:
 					problem_reg.append(reg_id)
