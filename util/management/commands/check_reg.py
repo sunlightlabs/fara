@@ -24,22 +24,21 @@ class Command(BaseCommand):
 		print "%s wrong contacts" % (wrong_contact)
 		
 		for contribution in Contribution.objects.all():
-			print contribution.id
 			reg_id = str(contribution.registrant.reg_id)
 			if reg_id not in contribution.link:
-				print contribution.id
+				# print contribution.id
 				print reg_id, contribution.link, contribution.date
-				wrong_contribution += 1
+				# wrong_contribution += 1
 
-				link = contribution.link
-				real_reg_id = re.sub('-','', link[25:29])
-				real_reg_id = re.sub('S','', real_reg_id)
-				real_reg_id = re.sub('L','', real_reg_id)
-				new_reg = Registrant(reg_id=real_reg_id)
-				print "new_reg"
-				contribution.registrant = new_reg
-				contribution.save()
-				print contribution.id
+				# link = contribution.link
+				# real_reg_id = re.sub('-','', link[25:29])
+				# real_reg_id = re.sub('S','', real_reg_id)
+				# real_reg_id = re.sub('L','', real_reg_id)
+				# new_reg = Registrant(reg_id=real_reg_id)
+				# print "new_reg"
+				# contribution.registrant = new_reg
+				# contribution.save()
+				# print contribution.id
 
 				if reg_id not in problem_reg:
 					problem_reg.append(reg_id)
