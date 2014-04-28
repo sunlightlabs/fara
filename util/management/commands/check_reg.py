@@ -12,16 +12,16 @@ class Command(BaseCommand):
 		wrong_payment = 0 
 		wrong_disbursement = 0
 		problem_reg = []
-		## fixed all of these
-		# for contact in Contact.objects.all():
-		# 	reg_id = str(contact.registrant.reg_id)
-		# 	if reg_id not in contact.link:
-		# 		print "contact id", contact.id
-		# 		print reg_id, contact.link, contact.date, "\n"
-		# 		wrong_contact += 1
-		# 		if reg_id not in problem_reg:
-		# 			problem_reg.append(reg_id)
-		# print "%s wrong contacts" % (wrong_contact)
+
+		for contact in Contact.objects.all():
+			reg_id = str(contact.registrant.reg_id)
+			if reg_id not in contact.link:
+				print "contact id", contact.id
+				print reg_id, contact.link, contact.date, "\n"
+				wrong_contact += 1
+				if reg_id not in problem_reg:
+					problem_reg.append(reg_id)
+		print "%s wrong contacts" % (wrong_contact)
 		
 		for contribution in Contribution.objects.all():
 			reg_id = str(contribution.registrant.reg_id)
