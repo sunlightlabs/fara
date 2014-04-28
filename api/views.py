@@ -983,8 +983,8 @@ def contribution_table(request):
 		query_params['recipient'] = recip
 		title.append({'id':recipient_id, 'text':recip.name, "type": 'recipient'})
 
-	if request.GET.get('conribution_id'):
-		contribution_id = int(request.GET.get('conribution_id'))
+	if request.GET.get('contribution_id'):
+		contribution_id = int(request.GET.get('contribution_id'))
 		query_params['id'] = contribution_id
 		text = "Contribution record " + contribution_id
 		title.append({'id':None, 'text': text, "type": 'recipient'})
@@ -1178,10 +1178,10 @@ def search(request):
 		armspage = request.GET.get('armspage')
 	else:
 		armspage = 1
-	if request.GET.get('interactonspage'):
-		interactonspage = request.GET.get('interactonspage')
+	if request.GET.get('interactionspage'):
+		interactionspage = request.GET.get('interactionspage')
 	else:
-		interactonspage = 1
+		interactionspage = 1
 	if request.GET.get('locationpage'):
 		locationpage = request.GET.get('locationpage')
 	else:
@@ -1195,7 +1195,7 @@ def search(request):
 	regs = search_registrant(q, int(regpage))
 	people_org = search_recipients(q, int(peoplepage))
 	arms = search_arms(q, int(armspage))
-	interactions = search_interactions(q, int(interactonspage))
+	interactions = search_interactions(q, int(interactionspage))
 	locations = search_locations(q, int(locationpage))
 	docs =  search_text(q, int(docpage))
 
