@@ -9,7 +9,7 @@ class Command(BaseCommand):
 		bad_payments = [57646, 57647]
 		for p in bad_payments:
 			payment = Payment.objects.get(id=p)
-			reg = Registrant.objects.get(reg_id=3375)
+			reg = Registrant.objects.get(reg_id=3718)
 			print payment
 			payment.registrant = reg
 			payment.save()
@@ -19,7 +19,7 @@ class Command(BaseCommand):
 		for d in bad_dis:
 			disbursement = Disbursement.objects.get(id=d)
 			print reg
-			reg = Registrant.objects.get(reg_id=3375)
+			reg = Registrant.objects.get(reg_id=3718)
 			reg.save()
 			print reg
 
