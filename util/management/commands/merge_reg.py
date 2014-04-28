@@ -12,6 +12,7 @@ class Command(BaseCommand):
 		#wrong id, correct id, name
 		incorrect_regs = (
 					[3375, 3718, 'Holland & Knight LLP'], 
+					[2579, 2759, 'WHITE & CASE LLP'],
 					)
 
 		
