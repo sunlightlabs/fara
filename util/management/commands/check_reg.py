@@ -46,6 +46,17 @@ class Command(BaseCommand):
 						problem_reg.append(reg_id)
 			except:
 				print "error"
+				bad_ids = [3375, 2579]
+				link = contribution.link
+				real_reg_id = re.sub('-','', link[25:29])
+				real_reg_id = re.sub('S','', real_reg_id)
+				real_reg_id = re.sub('L','', real_reg_id)
+				if int(real_reg_id) not in bad_ids:
+					new_reg = Registrant(reg_id=real_reg_id)
+					print "new_reg", Registrant
+				else:
+					print "Why are you not fixed?", contribution.id
+
 				print contribution.id
 		print "%s wrong contributions" % (wrong_contribution)
 		
