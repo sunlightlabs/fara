@@ -986,7 +986,7 @@ def contribution_table(request):
 	if request.GET.get('contribution_id'):
 		contribution_id = int(request.GET.get('contribution_id'))
 		query_params['id'] = contribution_id
-		text = "Contribution record " + contribution_id
+		text = "Contribution record " + str(contribution_id)
 		title.append({'id':None, 'text': text, "type": 'recipient'})
 	
 	if request.GET.get('employee_id'):
