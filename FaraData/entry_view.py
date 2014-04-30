@@ -1546,20 +1546,18 @@ def make_clone_contact(request):
         print "found client"
 
         contact = Contact(registrant = original_contact.registrant,
-                        contact_type = original_contact.contact_type,
-                        description = original_contact.description,
+                        contact_type = request.GET['contact_type'],
+                        description = request.GET['description'],
                         link = original_contact.link,
                         client = client,
                         meta_data = original_contact.meta_data,
                         date = date,
         )
         contact.save()
-        print contact, "printed contact \n"
         
         if original_contact.lobbyist.exists():
             for lobbyist in original_contact.lobbyist.all(): 
                 contact.lobbyist.add(lobbyist) 
-        print "made it through lobby \n"
 
         original_recipients = original_contact.recipient.all()
         print "found recips \n"

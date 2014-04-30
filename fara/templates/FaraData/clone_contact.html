@@ -29,16 +29,6 @@
     </ul> 
     {% endfor %}
 
-    <h4>Type</h4>
-    <ul>
-        <li>{{ contact.contact_type }}</li>
-    </ul>
-
-    <h4>Description</h4>
-    <ul>
-        <li>{{ contact.description }}</li>
-    </ul>
-
     <h4>Clone Contact</h4>
     <form method="GET" id="clone_contact" class="fix" action="/make_clone_contact"> 
         <input type="hidden" name="reg_id" value="{{ contact.registrant.reg_id }}">
@@ -55,10 +45,34 @@
             <option value="{{ client.id }}">{{ client.client_name }}</option>
         {% endfor %}
         </select>
+
+        <label for="type">Type</label>
+        <select name="contact_type" class="form-control">
+            <option value="{{ contact.contact_type }}" selected disabled>
+                {% if contact.contact_type == "O" %}
+                    other</option>
+                {% elif contact.contact_type == "P" %}
+                    phone</option>
+                {% elif contact.contact_type == "E" %}
+                    email</option>
+                {% elif contact.contact_type == "M" %}  
+                    meeting</option>
+                {% else %}
+                    unknown</option>
+                {% endif %}
+            <option value="U">unknown</option>
+            <option value="P">phone</option>
+            <option value="E">email</option>
+            <option value="M">meeting</option>
+            <option value="O">other</option>
+        </select>
        
         <label for="date">Date</label>
         <p>Please make a list of dates formatted as MM/DD/YYYY and separated by commas</p>
         <textarea id="contact_date" type="text" name="date" class="form-control"/>{{ date }}</textarea>
+
+        <label for="description">Description</label>
+        <textarea id="id_description" name="description" class="form-control">{{ contact.description }}</textarea>
 
         <button type="submit" class="btn btn-default form-control">Submit</button>
     </form>
