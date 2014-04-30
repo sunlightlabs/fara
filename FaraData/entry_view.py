@@ -455,6 +455,29 @@ def fix_contact(request, contact_id):
     })
 
 @login_required(login_url='/admin')
+def clone_contact(request, contact_id): 
+    contact =  Contact.objects.get(id=contact_id)
+    reg_object = reg_info(contact.registrant.reg_id)
+    url = contact.link
+    lobbyists = reg_object.lobbyists.all()
+    current_lobby = contact.lobbyist.all()
+    recipients = contact.recipient.all()
+    try:
+        date = contact.date.strftime('%m/%d/%Y')
+    except:
+        date = ''
+
+    return render(request, 'FaraData/clone_contact.html',{
+        'contact': contact,
+        'reg_object': reg_object,
+        'url': url,
+        'lobbyists': lobbyists,
+        'recipients': recipients,
+        'current_lobby': current_lobby,
+        'date': date,
+    }) 
+
+@login_required(login_url='/admin')
 def fix_payment(request, payment_id):
     payment = Payment.objects.get(id=payment_id)
     reg_object = reg_info(payment.registrant.reg_id)
@@ -598,7 +621,12 @@ def cleandate(date):
             try:
                 date.strip()
                 date_obj = dateutil.parser.parse(date)
-                return date_obj
+                if date_obj > datetime.now():
+                    date_error = json.dumps({'error': 'date in the future'}, separators=(',',':'))
+                    return date_error
+                else:
+                    return date_obj     
+
             except:
                 date_error = json.dumps({'error': 'Incorrect date format'}, separators=(',',':'))
                 return date_error
@@ -1073,10 +1101,10 @@ def payment(request):
 
         reg_id = Registrant.objects.get(reg_id=int(request.GET['reg_id']) )
             
-        if request.method == 'GET' and 'fee' in request.GET:
-            fee = True
-        else:
-            fee = False
+        # if request.method == 'GET' and 'fee' in request.GET:
+        #     fee = True
+        # else:
+        #     fee = False
 
         purpose = cleantext(request.GET['purpose'])
         amount = cleanmoney(request.GET['amount'])
@@ -1086,7 +1114,7 @@ def payment(request):
         
         payment = Payment(client = client,
                             registrant = reg_id,
-                            fee = fee,
+                            # fee = fee,
                             amount = amount,
                             purpose = purpose,
                             link = request.GET['link'],
@@ -1489,6 +1517,67 @@ def amend_contact(request):
     except:
         error = json.dumps({'error': 'failed'} , separators=(',',':'))
         return HttpResponse(error, mimetype="application/json") 
+
+@login_required(login_url='/admin')
+def make_clone_contact(request):        
+    # try:
+    contact_id = int(request.GET['contact_id'])
+    original_contact = Contact.objects.get(id=contact_id)
+    
+    if int(request.GET['reg_id']) != int(original_contact.registrant.reg_id):
+        error = json.dumps({'error': 'Registrant id error'} , separators=(',',':'))
+        return HttpResponse(error, mimetype="application/json")
+   
+    dates = request.GET['date']
+    dates = dates.split(',')
+
+    for date in dates:
+        date = cleandate(request.GET['date'])
+        if type(date) == datetime:
+            date = date
+        elif date == '{"error":"No date"}':
+            date = ""
+        else:
+            return HttpResponse(date, mimetype="application/json")
+        print "date processed"
+
+        client_id = request.GET['client']
+        client = Client.objects.get(id=client_id)
+        print "found client"
+
+        contact = Contact(registrant = original_contact.registrant,
+                        contact_type = original_contact.contact_type,
+                        description = original_contact.description,
+                        link = original_contact.link,
+                        client = client,
+                        meta_data = original_contact.meta_data,
+                        date = date,
+        )
+        contact.save()
+        print contact, "printed contact \n"
+        
+        if original_contact.lobbyist.exists():
+            for lobbyist in original_contact.lobbyist.all(): 
+                contact.lobbyist.add(lobbyist) 
+        print "made it through lobby \n"
+
+        original_recipients = original_contact.recipient.all()
+        print "found recips \n"
+        for recipient in original_recipients:
+            print "looping \n"
+            print recipient
+            contact.recipient.add(recipient)
+            print recipient.name
+        print "recips \n"
+        contact.save()     
+        print "saved \n"
+
+    sucess = json.dumps({'sucess': contact_id} , separators=(',',':'))
+    return HttpResponse(sucess, mimetype="application/json")
+
+    # except:
+    #     error = json.dumps({'error': 'failed'} , separators=(',',':'))
+    #     return HttpResponse(error, mimetype="application/json") 
 
 @login_required(login_url='/admin')
 def contact_remove_lobby(request):

@@ -1,0 +1,75 @@
+{% extends "FaraData/form_base.html" %}
+
+{% block show_doc %}
+{% endblock show_doc %}
+
+{% block formquestions %}
+
+<section class="form-section">
+    
+    <h3>Clone Contact</h3>
+
+    {% if recipients %}
+    <h4>Recipients for this contact:</h4>
+    {% endif %}
+
+    {% for r in recipients %}
+    <ul>
+        <li>{{ r.name }}</li>
+    </ul>
+    {% endfor %}
+
+    {% if current_lobby %}
+    <h4>Lobbyists for this contact</h4>
+    {% endif %}
+
+    {% for l in current_lobby %}
+    <ul>
+        <li>{{ l }}</li>
+    </ul> 
+    {% endfor %}
+
+    <h4>Type</h4>
+    <ul>
+        <li>{{ contact.contact_type }}</li>
+    </ul>
+
+    <h4>Description</h4>
+    <ul>
+        <li>{{ contact.description }}</li>
+    </ul>
+
+    <h4>Clone Contact</h4>
+    <form method="GET" id="clone_contact" class="fix" action="/make_clone_contact"> 
+        <input type="hidden" name="reg_id" value="{{ contact.registrant.reg_id }}">
+        <input type="hidden" name="link" value="{{ url }}">
+        <input type="hidden" name="contact_id" value="{{ contact.id }}">
+
+        <label for="client">Client</label>
+        <select name="client" id="contact_client" class="form-control">
+            <option value="{{ contact.client.id }}">{{ contact.client.client_name }}</option>
+        {% for client in reg_object.clients.all %}
+            <option value="{{ client.id }}">{{ client.client_name }}</option>
+        {% endfor %}
+        {% for client in reg_object.terminated_clients.all %}
+            <option value="{{ client.id }}">{{ client.client_name }}</option>
+        {% endfor %}
+        </select>
+       
+        <label for="date">Date</label>
+        <p>Please make a list of dates formatted as MM/DD/YYYY and separated by commas</p>
+        <textarea id="contact_date" type="text" name="date" class="form-control"/>{{ date }}</textarea>
+
+        <button type="submit" class="btn btn-default form-control">Submit</button>
+    </form>
+
+    <span class="help"><a href="{% url 'instructions' %}#Contact" target="blank">Help</a></span>
+
+</section>
+
+<p>Refresh contact form page to see clones</p>
+
+{% endblock formquestions %}
+
+{% block doc_footer %}
+{% endblock doc_footer %}
