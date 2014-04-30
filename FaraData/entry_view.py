@@ -1531,8 +1531,8 @@ def make_clone_contact(request):
     dates = request.GET['date']
     dates = dates.split(',')
 
-    for date in dates:
-        date = cleandate(request.GET['date'])
+    for d in dates:
+        date = cleandate(d)
         if type(date) == datetime:
             date = date
         elif date == '{"error":"No date"}':
