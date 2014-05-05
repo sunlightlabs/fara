@@ -31,7 +31,7 @@ class Command(BaseCommand):
 		load_disbursements()
 		load_contributions()
 		load_gifts()
-		load_fara_text()
+		# load_fara_text()
 
 def load_clients():
 	for client in Client.objects.all():
