@@ -417,6 +417,7 @@ def location_profile(request, loc_id):
 	results = json.dumps({'results': results }, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
+##### Why is there repeted Qubec?
 
 def reg_profile(request, reg_id):
 	if not request.GET.get('key') == API_PASSWORD:
@@ -434,10 +435,8 @@ def reg_profile(request, reg_id):
 
 	# need to filter by stamp date (date received by DOJ) to get totals. This should catch all document reported for the year. You need 2 six-month filings to have a complete year
 	if Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())).exists():
-		doc_list = []
-		# getting recent supplementals and amendments
-		for doc in Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())):
-			doc_list.append(doc.url)
+		print "YES"
+		doc_list = Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today()))
 		
 		# checking the end date "Six-month period ending in"
 		docs_2013 = []
@@ -445,21 +444,20 @@ def reg_profile(request, reg_id):
 		s13 = 0
 		s14 = 0
 		for doc in doc_list:
+			print doc, "document"
 			md = MetaData.objects.get(link=doc)
 			end_date = md.end_date
 			if end_date != None:
-				if datetime.date(2013,1,1) < md.end_date < datetime.date(2013,12,31):
+				print end_date, "end_date in 2013"
+				if datetime.date(2013,1,1) <= md.end_date <= datetime.date(2013,12,31):
+					print "YES, 2013"
 					docs_2013.append(doc)
 					if "Supplemental" in doc:
 						s13 = s13 + 1
 					if "Registration" in doc:
 						s13 = s13 + 1
-				if datetime.date(2014,1,1) < md.end_date < datetime.date(2014,12,31):
-					docs_2014.append(doc)
-					if "Supplemental" in doc:
-						s14 = s14 + 1
-					if "Registration" in doc:
-						s14 = s14 + 1
+			else:
+				print end_date, "not 2013"
 
 		# need 2 supplementals, or a reg and supplemental for a complete year of records
 		if s13 == 2:

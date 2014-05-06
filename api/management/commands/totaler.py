@@ -42,7 +42,7 @@ def total_registrants():
 				# meta data for supplementals and amendments with supplemental-like records should all have end dates
 				if end_date != None:
 					# narrows to 2013 Supplementals and Amendments that apply to 2013
-					if datetime.date(2013,1,1) <= md.end_date <= datetime.date(2013,12,31):
+					if datetime.date(2013,1,1) <= md.end_date < datetime.date(2013,12,31):
 						docs_2013.append(doc)
 						docs_for_clients.append(doc)
 						if "Supplemental" in doc:
