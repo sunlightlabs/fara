@@ -489,15 +489,14 @@ def reg_profile(request, reg_id):
 		if Payment.objects.filter(registrant=reg).exists():
 			registrant['total_payments'] = True
 			if complete_records13 == True:
-				if Payment.objects.filter(link__in=docs_2013):
-					payments2013 = Payment.objects.filter(link__in=docs_2013).aggregate(total_pay=Sum('amount'))
-					payments2013 = float(payments2013['total_pay'])
-					registrant['payments2013'] = payments2013
+				payments2013 = Payment.objects.filter(link__in=docs_2013).aggregate(total_pay=Sum('amount'))
+				payments2013 = float(payments2013['total_pay'])
+				registrant['payments2013'] = payments2013
 			
-			if Payment.objects.filter(link__in=docs_2014):
-				payments2014 = Payment.objects.filter(link__in=docs_2014).aggregate(total_pay=Sum('amount'))
-				payments2014 = float(payments2014['total_pay'])
-				registrant['payments2014'] = payments2014	
+			# if Payment.objects.filter(link__in=docs_2014):
+			# 	payments2014 = Payment.objects.filter(link__in=docs_2014).aggregate(total_pay=Sum('amount'))
+			# 	payments2014 = float(payments2014['total_pay'])
+				# registrant['payments2014'] = payments2014	
 
 		if Disbursement.objects.filter(registrant=reg).exists():
 			registrant['total_disbursements'] = True
@@ -507,10 +506,10 @@ def reg_profile(request, reg_id):
 					disburse2013 = float(disburse2013['total_pay'])
 					registrant['disburse2013'] = disburse2013
 
-			if Disbursement.objects.filter(link__in=docs_2014):
-				disburse2014 = Disbursement.objects.filter(link__in=docs_2014).aggregate(total_pay=Sum('amount'))
-				disburse2014 = float(disburse2014['total_pay'])
-				registrant['disburse2014'] = disburse2014
+			# if Disbursement.objects.filter(link__in=docs_2014):
+			# 	disburse2014 = Disbursement.objects.filter(link__in=docs_2014).aggregate(total_pay=Sum('amount'))
+			# 	disburse2014 = float(disburse2014['total_pay'])
+			# 	registrant['disburse2014'] = disburse2014
 
 	if Contact.objects.filter(registrant=reg).exists():
 		contacts = Contact.objects.filter(registrant=reg).count()
