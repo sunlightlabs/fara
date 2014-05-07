@@ -128,7 +128,6 @@ def add_file(url):
 
 def save_text(url_info, text):
     url = url_info['url']
-
     if text == None:
         amazon_file_name = "pdfs/" + url[25:]
         pdf = default_storage.open(amazon_file_name, 'rb')
@@ -141,11 +140,9 @@ def save_text(url_info, text):
             pgtxt = pg.extractText()
             count = count + 1
             text = text + pgtxt
-
     document = Document.objects.get(url=url)
     doc_id = document.id
 
-    
     #saving to elastic search
     try:
         doc = {
@@ -164,8 +161,18 @@ def save_text(url_info, text):
     
     # saving to disk
     file_name = "data/form_text/" + url[25:-4] + ".txt"
-    with open(file_name, 'w') as txt_file:
-        txt_file.write(text.encode('utf8'))
+    # I am getting ascii errors which is confusing to me
+    try:
+        text = text.encode('utf8', 'ignore')
+    except:
+        text = None
+        message = 'bad pdf no text upload for %s ' % (url)
+        logger.error(message)
+
+    if text is not None:
+        with open(file_name, 'w') as txt_file:
+            text = text.encode('utf8', 'ignore')
+            txt_file.write(text)
 
 
 def add_document(url_info):
