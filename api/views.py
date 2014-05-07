@@ -459,6 +459,7 @@ def reg_profile(request, reg_id):
 			complete_records13 = True
 			registrant['complete_records13'] = True
 		else:
+			complete_records13 = False
 			registrant['complete_records13'] = False
 
 		if Payment.objects.filter(link__in=docs_2013) and complete_records13 == True:
