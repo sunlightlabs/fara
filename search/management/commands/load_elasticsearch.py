@@ -1,4 +1,3 @@
-
 import os
 from elasticsearch import Elasticsearch
 from PyPDF2 import PdfFileReader
@@ -12,7 +11,6 @@ from fara_feed.models import Document
 from arms_sales.models import Proposed
 from fara_feed.management.commands.create_feed import add_file
 
-
 es = Elasticsearch(**settings.ES_CONFIG)
 
 class Command(BaseCommand):
@@ -24,14 +22,14 @@ class Command(BaseCommand):
 		load_locations()
 		load_registrants()
 		load_recipients()
-		# load_lobby()
-		load_arms()
-		load_contacts()
-		load_payments()
-		load_disbursements()
-		load_contributions()
-		load_gifts()
-		# load_fara_text()
+		## load_lobby()
+		#load_arms()
+		#load_contacts()
+		#load_payments()
+		#load_disbursements()
+		#load_contributions()
+		#load_gifts()
+		#load_fara_text()
 
 def load_clients():
 	for client in Client.objects.all():
