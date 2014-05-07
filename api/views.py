@@ -432,84 +432,57 @@ def reg_profile(request, reg_id):
 	registrant['reg_id'] = reg_id
 	registrant['name'] = reg.reg_name
 	# could add address information 
-
-	# need to filter by stamp date (date received by DOJ) to get totals. This should catch all document reported for the year. You need 2 six-month filings to have a complete year
 	if Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())).exists():
-		print "YES"
-		doc_list = Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today()))
-		
-		# checking the end date "Six-month period ending in"
 		docs_2013 = []
-		docs_2014 = []
 		s13 = 0
-		s14 = 0
-		for doc in doc_list:
-			print doc, "document"
-			try:
-				md = MetaData.objects.get(link=doc)
-				end_date = md.end_date
-			except:
-				end_date = None
-
+		# doc is really a doc url
+		for doc in Document.objects.filter(processed=True, reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())):
+			print doc.doc_type
+			print doc.processed
+			print doc.stamp_date
+			doc = doc.url
+			
+			md = MetaData.objects.get(link=doc)
+			end_date = md.end_date
+			print end_date
+			# meta data for supplementals and amendments with supplemental-like records should all have end dates
 			if end_date != None:
-				print end_date, "end_date in 2013"
+				# narrows to 2013 Supplementals and Amendments that apply to 2013
 				if datetime.date(2013,1,1) <= md.end_date <= datetime.date(2013,12,31):
-					print "YES, 2013"
 					docs_2013.append(doc)
 					if "Supplemental" in doc:
 						s13 = s13 + 1
 					if "Registration" in doc:
 						s13 = s13 + 1
-			else:
-				print end_date, "not 2013"
-
-		# need 2 supplementals, or a reg and supplemental for a complete year of records
+		print s13
 		if s13 == 2:
 			complete_records13 = True
-			results['complete_records13'] = True
+			registrant['complete_records13'] = True
 		else:
-			complete_records13 = False
-		if s14 == 2:
-			complete_records14 = True
-			results['complete_records14'] = True
-		else:
-			complete_records14 = False
+			registrant['complete_records13'] = False
 
-		if complete_records13 == True:
-			if Contribution.objects.filter(link__in=docs_2013).exists():
-				contribution = Contribution.objects.filter(link__in=docs_2013).aggregate(total_pay=Sum('amount'))
-				total_contribution = float(contribution['total_pay'])
-				registrant['contributions13'] = total_contribution 
-		
-		if Contribution.objects.filter(link__in=docs_2014).exists():
-			contribution = Contribution.objects.filter(link__in=docs_2014).aggregate(total_pay=Sum('amount'))
-			total_contribution = float(contribution['total_pay'])
-			registrant['contributions14'] = total_contribution			
+		if Payment.objects.filter(link__in=docs_2013) and complete_records13 == True:
+			payments2013 = Payment.objects.filter(link__in=docs_2013).aggregate(total_pay=Sum('amount'))
+			payments2013 = float(payments2013['total_pay'])
+			registrant['payments2013'] = payments2013
 
-		if Payment.objects.filter(registrant=reg).exists():
-			registrant['total_payments'] = True
-			if complete_records13 == True:
-				payments2013 = Payment.objects.filter(link__in=docs_2013).aggregate(total_pay=Sum('amount'))
-				payments2013 = float(payments2013['total_pay'])
-				registrant['payments2013'] = payments2013
+		if Contact.objects.filter(registrant=reg_id,recipient__agency__in=["Congress", "House", "Senate", "White House"], meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
+			registrant['federal_lobbying'] = True
 			
-			# if Payment.objects.filter(link__in=docs_2014):
-			# 	payments2014 = Payment.objects.filter(link__in=docs_2014).aggregate(total_pay=Sum('amount'))
-			# 	payments2014 = float(payments2014['total_pay'])
-				# registrant['payments2014'] = payments2014	
+		if Contact.objects.filter(registrant=reg_id,recipient__agency="U.S. Department of State", meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
+			registrant['state_dept_lobbying'] = True
+			
+		if Contact.objects.filter(registrant=reg_id,recipient__agency="Media", meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
+			registrant['pr'] = True
+		else:
+			registrant['pr'] = False
+			
 
-		if Disbursement.objects.filter(registrant=reg).exists():
-			registrant['total_disbursements'] = True
-			if complete_records13 == True:
-				if Disbursement.objects.filter(link__in=docs_2013):
-					disburse2013 = Disbursement.objects.filter(link__in=docs_2013).aggregate(total_pay=Sum('amount'))
-					disburse2013 = float(disburse2013['total_pay'])
-					registrant['disburse2013'] = disburse2013
+	if Payment.objects.filter(registrant=reg).exists():
+	 	registrant['total_payments'] = True
 
-			# if Disbursement.objects.filter(link__in=docs_2014):
-			# 	disburse2014 = Disbursement.objects.filter(link__in=docs_2014).aggregate(total_pay=Sum('amount'))
-			# 	disburse2014 = float(disburse2014['total_pay'])
-			# 	registrant['disburse2014'] = disburse2014
+	if Disbursement.objects.filter(registrant=reg).exists():
+	 	registrant['total_disbursements'] = True
 
 	if Contact.objects.filter(registrant=reg).exists():
 		contacts = Contact.objects.filter(registrant=reg).count()
