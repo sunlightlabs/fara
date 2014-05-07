@@ -21,7 +21,7 @@ class Command(BaseCommand):
 		load_clients()
 		load_locations()
 		load_registrants()
-		load_recipients()
+		#load_recipients()
 		## load_lobby()
 		#load_arms()
 		#load_contacts()
