@@ -168,7 +168,7 @@ class Command(BaseCommand):
 					record.save()
 					print "added record %s" %(record)
 
-					save to amazon
+					#save to amazon
 					try:
 						file_name = "arms_pdf/" + str(record.id) + ".pdf"
 						pdf_link = str(pdf_link)
@@ -199,11 +199,6 @@ class Command(BaseCommand):
 						logger.error(message)
 
 					print title	
-		# print "saving"
-		# f = open('proposed_arms_sales.json', 'w')
-		# data = json.dumps(results, separators=(',',':'))
-		# f.write(data)
-		# f.close()	
 
 def soupify(url):
 	page = requests.get(url)

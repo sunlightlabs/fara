@@ -44,13 +44,6 @@ class Command(BaseCommand):
         else:
             start_date = datetime.date.today() - datetime.timedelta(days=25)
             end_date = datetime.date.today()
-
-        # this_filename = os.path.abspath(__file__)
-        # this_parent_dir = os.path.dirname(this_filename) + '/../..'
-        # outdir = os.path.join(this_parent_dir, "output")
-        # if not os.path.exists(outdir):
-        #     os.mkdir(outdir)
-        # print "files will be saved to %s" % (outdir)
         
         doj_url = 'https://efile.fara.gov/pls/apex/f?p=125:10:::NO::P10_DOCTYPE:ALL'
         search_html = urllib2.urlopen(doj_url).read()
@@ -92,7 +85,7 @@ def add_file(url):
     if url[:25] != "http://www.fara.gov/docs/":
         message = 'bad link ' + url
         logger.error(message)
-        print message
+        return None
     else:
         file_name = "pdfs/" + url[25:]
         if not default_storage.exists(file_name):
@@ -109,74 +102,67 @@ def add_file(url):
                 # adding to document model
                 doc = Document.objects.get(url=url)
                 doc.uploaded = True
-                doc.save()
-
-                return text
-            
+                doc.save()          
             except:
-                message = 'bad upload ' + url
+                message = 'bad upload, not saved to Amazon' + url
                 logger.error(message)
                 return None
 
-        else:
-            doc = Document.objects.get(url=url)
-            if doc.uploaded != True:  
-                doc.uploaded = True
-                doc.save()
-            return None
 
-
-def save_text(url_info, text):
+def save_text(url_info):
     url = url_info['url']
-    if text == None:
-        amazon_file_name = "pdfs/" + url[25:]
-        pdf = default_storage.open(amazon_file_name, 'rb')
-        pdf_file = PdfFileReader(pdf)
-        pages = pdf_file.getNumPages()
-        count = 0
-        text = ''
-        while count < pages:
-            pg = pdf_file.getPage(count)
+    amazon_file_name = "pdfs/" + url[25:]
+    pdf = default_storage.open(amazon_file_name, 'rb')
+    pdf_file = PdfFileReader(pdf)
+    pages = pdf_file.getNumPages()
+    count = 0
+    text = ''
+    while count < pages:
+        pg = pdf_file.getPage(count)
+        count = count + 1
+        try:
             pgtxt = pg.extractText()
-            count = count + 1
-            text = text + pgtxt
+        except:
+            pgtxt = ''
+            message = 'bad page no text upload for %s , page %s' % (url, count)
+            logger.error(message)
+        text = text + pgtxt
     document = Document.objects.get(url=url)
     doc_id = document.id
 
-    #saving to elastic search
-    try:
-        doc = {
-                'type': url_info['doc_type'],
-                'date': url_info['stamp_date'],
-                'registrant': url_info['reg_name'],
-                'reg_id': url_info['reg_id'],
-                'doc_id': doc_id, 
-                'link': url,
-                'text': text,
-        }
-        res = es.index(index="foreign", doc_type='fara_files', id=doc_id, body=doc)
-    except:
-        message = 'bad pdf no es upload for %s ' % (url)
-        logger.error(message)
-    
-    # saving to disk
-    file_name = "data/form_text/" + url[25:-4] + ".txt"
+    pdf.close()
+
     # I am getting ascii errors which is confusing to me
     try:
         text = text.encode('utf8', 'ignore')
     except:
-        text = None
+        text = ''
         message = 'bad pdf no text upload for %s ' % (url)
         logger.error(message)
 
-    if text is not None:
+    # saving to disk
+    file_name = "data/form_text/" + url[25:-4] + ".txt"
+    
+    try:
         with open(file_name, 'w') as txt_file:
-            text = text.encode('utf8', 'ignore')
             txt_file.write(text)
+    except:
+        message = 'bad file no disk upload for %s ' % (url)
+        logger.error(message)
+
+    return text
 
 
 def add_document(url_info):
     url = str(url_info['url']).strip()
+    reg_id = url_info['reg_id']
+    
+    if not Registrant.objects.filter(reg_id=reg_id):
+        reg = Registrant (reg_id=reg_id,
+            reg_name = url_info['reg_name']
+        )
+        reg.save()
+
     if not Document.objects.filter(url = url).exists():
         document = Document(url = url,
             reg_id = url_info['reg_id'],
@@ -184,7 +170,6 @@ def add_document(url_info):
             stamp_date = url_info['stamp_date'],
         )
         document.save()
-
         
     if not MetaData.objects.filter(link= url).exists():
         document = Document.objects.get(url = url)
@@ -194,21 +179,37 @@ def add_document(url_info):
                         processed = False,
                         is_amendment = False,
                         form = document.id,
-            )
+        )
+        md.save()
 
-    reg_id = url_info['reg_id']
-    if not Registrant.objects.filter(reg_id=reg_id):
-        reg = Registrant (reg_id=reg_id,
-            reg_name = url_info['reg_name']
-            )
-        reg.save()
+    
+def save_es(url_info, text):
+    document = Document.objects.get(url=url_info['url'])
+    try:
+        doc = {
+                    'type': document.doc_type,
+                    'date': document.stamp_date,
+                    'registrant': url_info['reg_name'],
+                    'reg_id': document.reg_id,
+                    'doc_id': document.id, 
+                    'link': document.url,
+                    'text': text,
+        }
 
-    doc = {
-                'name': url_info['reg_name'],
-                'reg_id': reg_id
-    }
+        res = es.index(index="foreign", doc_type='registrant', id=document.reg_id, body=doc)
+    except:
+        doc = {
+                    'type': document.doc_type,
+                    'date': document.stamp_date,
+                    'registrant': url_info['reg_name'],
+                    'reg_id': document.reg_id,
+                    'doc_id': document.id, 
+                    'link': document.url,
+        }
 
-    res = es.index(index="foreign", doc_type='registrant', id=reg_id, body=doc)
+        res = es.index(index="foreign", doc_type='registrant', id=document.reg_id, body=doc)
+        message = 'No es text upload for %s ' % (document.url)
+        logger.error(message)      
 
 
 
@@ -271,8 +272,9 @@ def parse_and_save(page):
             documents.append(url_info)
             #saving
             add_document(url_info)
-            text = add_file(url)
-            save_text(url_info, text)
+            add_file(url)
+            text = save_text(url_info)
+            save_es(url_info, text)
             new_fara_docs.append(url_info)
             
 
