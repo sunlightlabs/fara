@@ -168,7 +168,7 @@ class Command(BaseCommand):
 					record.save()
 					print "added record %s" %(record)
 
-					#save to amazon
+					# #save to amazon
 					try:
 						file_name = "arms_pdf/" + str(record.id) + ".pdf"
 						pdf_link = str(pdf_link)
@@ -190,7 +190,7 @@ class Command(BaseCommand):
 								'text': data_text,
 								'location': record.location,
 								'location_id': record.location_id,
-								'date': date,
+								'date': record.date,
 						}
 						print "made doc"
 						res = es.index(index="foreign", doc_type='arms', id=record.id, body=doc)
