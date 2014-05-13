@@ -192,9 +192,11 @@ def client_totals(lobbying_regs, docs):
 		amount = float(location_totals[location_id]['total'])
 		location_totals[location_id]['total'] = amount + total
 
+	# for lobbying totals but Double check that it is not all of the totals, it hasn't been published yet
 	with open("api/computations/client13.json", 'w') as f:
 		results = json.dumps(client_totals, separators=(',',':'))
 		f.write(results)
+
 
 	with open("api/computations/location13.json", 'w') as f:
 		results = json.dumps(location_totals, separators=(',',':'))
