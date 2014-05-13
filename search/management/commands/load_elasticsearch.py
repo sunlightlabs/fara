@@ -1,6 +1,7 @@
 import os
 from elasticsearch import Elasticsearch
 from PyPDF2 import PdfFileReader
+from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.files.storage import default_storage
@@ -17,19 +18,88 @@ class Command(BaseCommand):
 	help = "Puts all the data into elastic search."
 	can_import_settings = True
 
+	option_list = BaseCommand.option_list + (
+			make_option('--contacts',
+				action='store_true',
+				help='full elasticsearch load of contacts',
+			),
+			make_option('--client_reg',
+				action='store_true',
+				help='full elasticsearch load of clients and registrants',
+			),
+			make_option('--disbursements',
+				action = 'store_true',
+				help= 'full elasticsearch load of disbursements'
+			),
+			make_option('--contributions',
+				action = 'store_true',
+				help= 'full elasticsearch load of contributions'
+			),
+			make_option('--payments',
+				action = 'store_true',
+				help = 'full elasticsearch load of payments'
+			),
+			make_option('--clients',
+				action = 'store_true',
+				help = 'full elasticsearch load of clients'
+			),
+			make_option('--locations',
+				action = 'store_true',
+				help = 'full elasticsearch load of locations'
+			),
+			make_option('--arms',
+				action = 'store_true',
+				help = 'full elasticsearch load of arms'
+			),
+			make_option('--registrants',
+				action = 'store_true',
+				help = 'full elasticsearch load of registrants'
+			),
+			make_option('--recipients',
+				action = 'store_true',
+				help = 'full elasticsearch load of registrants'
+			),
+			make_option('--text',
+				action = 'store_true',
+				help = 'full elasticsearch load documents with text'
+			),
+
+		)
+
 	def handle(self, *args, **options):
-		# load_clients()
-		# load_locations()
-		load_registrants()
-		# load_recipients()
-		## load_lobby()
-		#load_arms()
-		#load_contacts()
-		#load_payments()
-		#load_disbursements()
-		#load_contributions()
-		#load_gifts()
-		#load_fara_text()
+		if options.get('clients'):
+			load_clients()
+		if options.get('locations'):
+			load_locations()
+		if options.get('registrants'):
+			load_registrants()
+		if options.get('recipients'):
+			load_recipients()
+		if options.get('arms'):
+			load_arms()
+		if options.get('contacts'):
+			load_contacts()
+		if options.get('payments'):
+			load_payments()
+		if options.get('disbursements'):
+			load_disbursements()
+		if options.get('contributions'):
+			load_contributions()
+		if options.get('text'):
+			load_fara_text()
+
+
+		if not options.get('text') and not options.get('contributions') and not options.get('disbursements') and not options.get('payments') and not options.get('contacts') and not options.get('arms') and not options.get('recipients') and not options.get('registrants') and not options.get('locations') and not options.get('clients'):
+			load_clients()
+			load_locations()
+			load_registrants()
+			load_recipients()
+			load_arms()
+			load_contacts()
+			load_payments()
+			load_disbursements()
+			load_contributions()
+			load_gifts
 
 def load_clients():
 	for client in Client.objects.all():
@@ -64,7 +134,7 @@ def load_locations():
 	for hit in res['hits']['hits']:
 		print hit
 
-	print '\nloaded clients\n'
+	print '\nloaded locations\n'
 
 def load_registrants():
 	for reg in Registrant.objects.all():
