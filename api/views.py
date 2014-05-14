@@ -381,6 +381,11 @@ def location_profile(request, loc_id):
 			payment = Payment.objects.filter(client=c.id,subcontractor__isnull=True,sort_date__range=( datetime.date(2013,1,1), datetime.date.today()),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
 			client['running_total_13'] = float(payment['total_pay'])
 		
+		if Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2013,1,1), datetime.date(2014,1,1)),meta_data__processed=True).exists():
+			payment13 = Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2013,1,1), datetime.date(2014,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
+			total_pay = float(payment13['total_pay'])
+			client['total_13'] = total_pay
+
 		if Payment.objects.filter(client=c.id).exists():
 			client['total_pay'] = True
 		
