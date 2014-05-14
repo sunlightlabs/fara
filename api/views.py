@@ -317,16 +317,15 @@ def client_profile(request, client_id):
 	if Payment.objects.filter(client=client_id).exists():
 		client['total_payment'] = True
 
-	# running total beginning in 2013
-	if Payment.objects.filter(client=client_id,subcontractor__isnull=True,sort_date__range=( datetime.date(2013,1,1), datetime.date.today()),meta_data__processed=True).exists():
-		payments = Payment.objects.filter(client=client_id,subcontractor__isnull=True,sort_date__range=(datetime.date(2013,1,1), datetime.date.today()),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
-		total_pay = float(payments['total_pay'])
-		client['running_total_13'] = total_pay
-
 	if Payment.objects.filter(client=client_id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2013,1,1), datetime.date(2014,1,1)),meta_data__processed=True).exists():
 		payment13 = Payment.objects.filter(client=client_id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2013,1,1), datetime.date(2014,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
 		total_pay = float(payment13['total_pay'])
 		client['total_13'] = total_pay
+
+	if Payment.objects.filter(client=client_id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2014,1,1), datetime.date(2015,1,1)),meta_data__processed=True).exists():
+		payment14 = Payment.objects.filter(client=client_id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2014,1,1), datetime.date(2015,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
+		total_pay = float(payment14['total_pay'])
+		client['running_total_14'] = total_pay
 
 	if Disbursement.objects.filter(client=client_id).exists():
 		#disbursement = Disbursement.objects.filter(client=client_id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
@@ -376,10 +375,9 @@ def location_profile(request, loc_id):
 		client['id'] = c.id
 
 		# is null makes sure there is not double counting money flowing through multiple contractors
-		# changing to 2013 running total
-		if Payment.objects.filter(client=c.id,subcontractor__isnull=True,sort_date__range=( datetime.date(2013,1,1), datetime.date.today()),meta_data__processed=True).exists():
-			payment = Payment.objects.filter(client=c.id,subcontractor__isnull=True,sort_date__range=( datetime.date(2013,1,1), datetime.date.today()),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
-			client['running_total_13'] = float(payment['total_pay'])
+		if Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2014,1,1), datetime.date(2015,1,1)),meta_data__processed=True).exists():
+			payment = Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2014,1,1), datetime.date(2015,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
+			client['running_total_14'] = float(payment['total_pay'])
 		
 		if Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2013,1,1), datetime.date(2014,1,1)),meta_data__processed=True).exists():
 			payment13 = Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2013,1,1), datetime.date(2014,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
