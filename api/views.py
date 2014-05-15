@@ -325,7 +325,7 @@ def client_profile(request, client_id):
 	if Payment.objects.filter(client=client_id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2014,1,1), datetime.date(2015,1,1)),meta_data__processed=True).exists():
 		payment14 = Payment.objects.filter(client=client_id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2014,1,1), datetime.date(2015,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
 		total_pay = float(payment14['total_pay'])
-		client['running_total_14'] = total_pay
+		client['total_14'] = total_pay
 
 	if Disbursement.objects.filter(client=client_id).exists():
 		#disbursement = Disbursement.objects.filter(client=client_id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
