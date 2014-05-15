@@ -377,7 +377,7 @@ def location_profile(request, loc_id):
 		# is null makes sure there is not double counting money flowing through multiple contractors
 		if Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2014,1,1), datetime.date(2015,1,1)),meta_data__processed=True).exists():
 			payment = Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2014,1,1), datetime.date(2015,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
-			client['running_total_14'] = float(payment['total_pay'])
+			client['total_14'] = float(payment['total_pay'])
 		
 		if Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2013,1,1), datetime.date(2014,1,1)),meta_data__processed=True).exists():
 			payment13 = Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2013,1,1), datetime.date(2014,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
@@ -425,7 +425,6 @@ def location_profile(request, loc_id):
 	results = json.dumps({'results': results }, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
-##### Why is there repeted Qubec?
 
 def reg_profile(request, reg_id):
 	if not request.GET.get('key') == API_PASSWORD:
@@ -438,51 +437,57 @@ def reg_profile(request, reg_id):
 	reg = Registrant.objects.get(reg_id=reg_id)
 	reg_id = reg.reg_id
 	registrant['reg_id'] = reg_id
-	registrant['name'] = reg.reg_name
-	# could add address information 
-	if Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())).exists():
-		docs_2013 = []
-		s13 = 0
-		registrant['docs_13'] = []
-		# doc is really a doc url
-		for doc in Document.objects.filter(processed=True, reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())):
-			doc = doc.url
-			md = MetaData.objects.get(link=doc)
-			end_date = md.end_date
-			# meta data for supplementals and amendments with supplemental-like records should all have end dates
-			if end_date != None:
-				# narrows to 2013 Supplementals and Amendments that apply to 2013
-				if datetime.date(2013,1,1) <= md.end_date <= datetime.date(2014,1,1):
-					docs_2013.append(doc)
-					if "Supplemental" in doc:
-						s13 = s13 + 1
-						registrant['docs_13'].append(doc) 
-					if "Registration" in doc:
-						s13 = s13 + 1
-						registrant['docs_13'].append(doc) 
+### all the docs are in so I am going to simplify this
+	# registrant['name'] = reg.reg_name
+	# # could add address information 
+	# if Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())).exists():
+	# 	docs_2013 = []
+	# 	s13 = 0
+	# 	registrant['docs_13'] = []
+	# 	# doc is really a doc url
+	# 	for doc in Document.objects.filter(processed=True, reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())):
+	# 		doc = doc.url
+	# 		md = MetaData.objects.get(link=doc)
+	# 		end_date = md.end_date
+	# 		# meta data for supplementals and amendments with supplemental-like records should all have end dates
+	# 		if end_date != None:
+	# 			# narrows to 2013 Supplementals and Amendments that apply to 2013
+	# 			if datetime.date(2013,1,1) <= md.end_date <= datetime.date(2014,1,1):
+	# 				docs_2013.append(doc)
+	# 				if "Supplemental" in doc:
+	# 					s13 = s13 + 1
+	# 					registrant['docs_13'].append(doc) 
+	# 				if "Registration" in doc:
+	# 					s13 = s13 + 1
+	# 					registrant['docs_13'].append(doc) 
 		
-		if s13 == 2:
-			complete_records13 = True
-			registrant['complete_records13'] = True
-		else:
-			complete_records13 = False
-			registrant['complete_records13'] = False
+	# 	if s13 == 2:
+	# 		complete_records13 = True
+	# 		registrant['complete_records13'] = True
+	# 	else:
+	# 		complete_records13 = False
+	# 		registrant['complete_records13'] = False
 
-		if Payment.objects.filter(link__in=docs_2013) and complete_records13 == True:
-			payments2013 = Payment.objects.filter(link__in=docs_2013).aggregate(total_pay=Sum('amount'))
-			payments2013 = float(payments2013['total_pay'])
-			registrant['payments2013'] = payments2013
+	if Payment.objects.filter(registrant=reg,meta_data__processed=True,meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date(2014,1,1))).exists():
+		payments2013 = Payment.objects.filter(registrant=reg,meta_data__processed=True,meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date(2014,1,1))).aggregate(total_pay=Sum('amount'))
+		payments2013 = float(payments2013['total_pay'])
+		registrant['payments2013'] = payments2013
 
-		if Contact.objects.filter(registrant=reg_id,recipient__agency__in=["Congress", "House", "Senate", "White House"], meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
-			registrant['federal_lobbying'] = True
-			
-		if Contact.objects.filter(registrant=reg_id,recipient__agency="U.S. Department of State", meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
-			registrant['state_dept_lobbying'] = True
-			
-		if Contact.objects.filter(registrant=reg_id,recipient__agency="Media", meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
-			registrant['pr'] = True
-		else:
-			registrant['pr'] = False
+	if Payment.objects.filter(registrant=reg,meta_data__processed=True,meta_data__end_date__range=(datetime.date(2014,1,1), datetime.date(2015,1,1))).exists():
+		payments2014 = Payment.objects.filter(registrant=reg,meta_data__processed=True,meta_data__end_date__range=(datetime.date(2014,1,1), datetime.date(2015,1,1))).aggregate(total_pay=Sum('amount'))
+		payments2014 = float(payments2014['total_pay'])
+		registrant['payments2014'] = payments2014
+
+	if Contact.objects.filter(registrant=reg_id,recipient__agency__in=["Congress", "House", "Senate", "White House"], meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
+		registrant['federal_lobbying'] = True
+		
+	if Contact.objects.filter(registrant=reg_id,recipient__agency="U.S. Department of State", meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
+		registrant['state_dept_lobbying'] = True
+		
+	if Contact.objects.filter(registrant=reg_id,recipient__agency="Media", meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
+		registrant['pr'] = True
+	else:
+		registrant['pr'] = False
 			
 
 	if Payment.objects.filter(registrant=reg).exists():
