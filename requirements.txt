@@ -1,6 +1,6 @@
 #
 Django==1.5
-MySQL-python==1.2.4
+MySQL-python==1.2.4 # running different version locally want to upgrade python
 SQLAlchemy==0.6.6
 beautifulsoup4==4.2.0
 django-debug-toolbar==0.9.4
@@ -16,13 +16,15 @@ requests==1.2.3
 simplejson==2.3.0
 virtualenv==1.7.1.2
 django-reversion==1.7.1
-django-piston==0.2.3
+django-piston==0.2.3 # I should just get rid of whatever is left of this
 django-storages==1.1.8
 boto==2.17.0
 PyPDF2==1.20
 elasticsearch==1.0.0
 raven==4.1.1
 boto-rsync
+gunicorn
+south
 
 
 
