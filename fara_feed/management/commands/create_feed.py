@@ -156,8 +156,10 @@ def save_text(url_info):
 def add_document(url_info):
     url = str(url_info['url']).strip()
     reg_id = url_info['reg_id']
+
+    print url_info['reg_name']
     
-    if not Registrant.objects.filter(reg_id=reg_id):
+    if not Registrant.objects.filter(reg_id=reg_id).exists():
         reg = Registrant (reg_id=reg_id,
             reg_name = url_info['reg_name']
         )
@@ -196,7 +198,7 @@ def save_es(url_info, text):
                     'text': text,
         }
 
-        res = es.index(index="foreign", doc_type='registrant', id=document.reg_id, body=doc)
+        res = es.index(index="foreign", doc_type='fara_files', id=document.id, body=doc)
     except:
         doc = {
                     'type': document.doc_type,
@@ -207,7 +209,7 @@ def save_es(url_info, text):
                     'link': document.url,
         }
 
-        res = es.index(index="foreign", doc_type='registrant', id=document.reg_id, body=doc)
+        res = es.index(index="foreign", doc_type='fara_files', id=document.id, body=doc)
         message = 'No es text upload for %s ' % (document.url)
         logger.error(message)      
 
