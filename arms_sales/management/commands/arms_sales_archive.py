@@ -73,10 +73,11 @@ class Command(BaseCommand):
 				pagelink = links2pages[0].get("href")
 				pagelink = base_url + pagelink
 				
-				try: 
-					existing_record = Proposed.objects.get(dsca_url=pagelink)
-					print "exists"
-				except:
+				# try: 
+				# 	existing_record = Proposed.objects.get(dsca_url=pagelink)
+				# 	print "exists"
+				# except:
+				if True:
 					title = links2pages[0].text
 					date_p = profile.find_all("div")[-1]
 					date_p = date_p.text
@@ -128,8 +129,11 @@ class Command(BaseCommand):
 					if pdf_link != None:
 						pdf_link = pdf_link[0].get("href")
 					
-					data_text = page.select(".field-item")[0] 
-					data_text = data_text.text
+					data_text = ''
+					field_text = page.select(".field-item")
+					for d in field_text:
+						data_text = data_text + "\n" + d.text
+
 					record = Proposed(
 						    title = title,
 						    text = data_text,
