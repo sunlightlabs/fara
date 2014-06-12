@@ -118,9 +118,7 @@ class Command(BaseCommand):
 					
 					# looking at individual page
 					page = soupify(pagelink)
-					print_link = page.select(".print_html")[0].find_all("a")
-					print_link = print_link[0].get("href")
-					
+				
 					# a few don't have pdfs
 					try:
 						pdf_link = page.select(".file")[0].find_all("a")
@@ -130,8 +128,7 @@ class Command(BaseCommand):
 					if pdf_link != None:
 						pdf_link = pdf_link[0].get("href")
 					
-					print_page = soupify(print_link)
-					data_text = print_page.select(".print-content")[0] 
+					data_text = page.select(".field-item")[0] 
 					data_text = data_text.text
 					record = Proposed(
 						    title = title,
@@ -139,13 +136,12 @@ class Command(BaseCommand):
 						    date = date_obj,
 						    dsca_url = pagelink,
 						    pdf_url = pdf_link,
-						    print_url = print_link,
 						)
 					
 					country = title.split(u"–")
 					if len(country) <= 1:
 						country = title.split(u"-")
-					
+
 					country = country[0]
 					country = country.replace("Government of ", "")
 					country = country.replace("The ", "")
@@ -154,7 +150,6 @@ class Command(BaseCommand):
 					cleaning = {"Iraq F":"Iraq", "Republic of Korea":"South Korea", "Republic of Korea (ROK)":"South Korea", "United Arab Emirates (UAE)":"United Arab Emirates", "Taipei Economic and Cultural Representative Office in the United States":"Taiwan", "Kingdom of Morocco":"Morocco"}
 					if cleaning.has_key(country):
 						country = cleaning[country]
-					print country
 
 					try:
 						matching_loc = Location.objects.get(location=country)
@@ -182,7 +177,7 @@ class Command(BaseCommand):
 						message = 'bad upload ' + title
 						logger.error(message)
 							
-					results.append({"title":title, "date":date, "link": pagelink, "pdf_link":pdf_link, "print_link":print_link, "text": data_text})
+					results.append({"title":title, "date":date, "link": pagelink, "pdf_link":pdf_link, "text": data_text})
 					
 					try:
 						doc = {
