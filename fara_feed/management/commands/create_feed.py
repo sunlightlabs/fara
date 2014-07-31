@@ -22,6 +22,7 @@ from fara_feed.models import Document
 from FaraData.models import MetaData, Registrant
 
 es = Elasticsearch(**settings.ES_CONFIG)
+head = ({'User-Agent': 'Mozilla/5.0'})
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -32,10 +33,8 @@ fara_url = 'https://efile.fara.gov/pls/apex/wwv_flow.accept'
 class Command(BaseCommand):
     help = "Crawls the DOJ's FARA site looking for new documents."
     can_import_settings = True
-    args = 'date_range'
 
     def handle(self, *args, **options):
-
         if args:
             for date_input in args:
                 dates = date_input.split(':')
@@ -46,10 +45,12 @@ class Command(BaseCommand):
             end_date = datetime.date.today()
         
         doj_url = 'https://efile.fara.gov/pls/apex/f?p=125:10:::NO::P10_DOCTYPE:ALL'
-        search_html = urllib2.urlopen(doj_url).read()
+        search = urllib2.Request(doj_url, headers=head)
+        search_html = urllib2.urlopen(search).read()
         search_page = BeautifulSoup(search_html)
         form = search_page.find("form", {"id":"wwvFlowForm"})
         data = []
+
         for input in form.findAll('input'):
             if input.has_attr('name'):
                 if input['name'] not in ('p_t01', 'p_t02', 'p_t06', 'p_t07', 'p_request'):
@@ -61,10 +62,9 @@ class Command(BaseCommand):
                  ('p_t07', end_date.strftime('%m/%d/%Y')),
                  ('p_request', 'SEARCH'),
         ]
-       
+
         url = 'https://efile.fara.gov/pls/apex/wwv_flow.accept'
-        req = urllib2.Request(url, data=urllib.urlencode(data))
-        
+        req = urllib2.Request(url, data=urllib.urlencode(data), headers=head)
         page = urllib2.urlopen(req).read()
         page = BeautifulSoup(page)
         parse_and_save(page)
@@ -73,25 +73,24 @@ class Command(BaseCommand):
         while next_url_realitive != None:
             url_end = next_url_realitive['href']
             next_url = 'https://efile.fara.gov/pls/apex/' + url_end
-            req = urllib2.Request(next_url)
-            
+            req = urllib2.Request(next_url, headers=head)
             page = urllib2.urlopen(req).read()
             page = BeautifulSoup(page)
             parse_and_save(page)
             next_url_realitive = page.find("a", {"class":"t14pagination"})
-
     
 def add_file(url):
     if url[:25] != "http://www.fara.gov/docs/":
         message = 'bad link ' + url
-        logger.error(message)
+        print(message)
         return None
     else:
         file_name = "pdfs/" + url[25:]
         if not default_storage.exists(file_name):
             try:
                 url = str(url)
-                u = urllib2.urlopen(url)
+                u = urllib2.Request(url, headers=head)
+                u = urllib2.urlopen(u).read()
                 text = u.read()
                 localFile = default_storage.open(file_name, 'w')
                 # writing pdf to amazon
@@ -105,7 +104,6 @@ def add_file(url):
                 doc.save()          
             except:
                 message = 'bad upload, not saved to Amazon' + url
-                logger.error(message)
                 return None
 
 
@@ -270,12 +268,15 @@ def parse_and_save(page):
                 logger.error(message)
 
 
-            url_info= {'url':url,'reg_name':reg_name,  'reg_id':reg_id, 'doc_type':doc_type, 'stamp_date':date_string}
+            url_info= {'url':url,'reg_name':reg_name, 'reg_id':reg_id, 'doc_type':doc_type, 'stamp_date':date_string}
             documents.append(url_info)
             #saving
             add_document(url_info)
-            add_file(url)
-            text = save_text(url_info)
+            file = add_file(url)
+            if file != None:
+                text = save_text(url_info)
+            else:
+                text = None
             save_es(url_info, text)
             new_fara_docs.append(url_info)
             
