@@ -437,36 +437,7 @@ def reg_profile(request, reg_id):
 	reg = Registrant.objects.get(reg_id=reg_id)
 	reg_id = reg.reg_id
 	registrant['reg_id'] = reg_id
-### all the docs are in so I am going to simplify this
-	# registrant['name'] = reg.reg_name
-	# # could add address information 
-	# if Document.objects.filter(processed=True,reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())).exists():
-	# 	docs_2013 = []
-	# 	s13 = 0
-	# 	registrant['docs_13'] = []
-	# 	# doc is really a doc url
-	# 	for doc in Document.objects.filter(processed=True, reg_id=reg_id,doc_type__in=['Supplemental','Amendment'],stamp_date__range=(datetime.date(2013,1,1), datetime.date.today())):
-	# 		doc = doc.url
-	# 		md = MetaData.objects.get(link=doc)
-	# 		end_date = md.end_date
-	# 		# meta data for supplementals and amendments with supplemental-like records should all have end dates
-	# 		if end_date != None:
-	# 			# narrows to 2013 Supplementals and Amendments that apply to 2013
-	# 			if datetime.date(2013,1,1) <= md.end_date <= datetime.date(2014,1,1):
-	# 				docs_2013.append(doc)
-	# 				if "Supplemental" in doc:
-	# 					s13 = s13 + 1
-	# 					registrant['docs_13'].append(doc) 
-	# 				if "Registration" in doc:
-	# 					s13 = s13 + 1
-	# 					registrant['docs_13'].append(doc) 
-		
-	# 	if s13 == 2:
-	# 		complete_records13 = True
-	# 		registrant['complete_records13'] = True
-	# 	else:
-	# 		complete_records13 = False
-	# 		registrant['complete_records13'] = False
+	registrant['name'] = reg.reg_name
 
 	if Payment.objects.filter(registrant=reg,meta_data__processed=True,meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date(2014,1,1))).exists():
 		payments2013 = Payment.objects.filter(registrant=reg,meta_data__processed=True,meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date(2014,1,1))).aggregate(total_pay=Sum('amount'))
