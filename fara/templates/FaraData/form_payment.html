@@ -14,7 +14,7 @@
                     <th>Amount</th>
                     <th>Client</th>
                     <th>Date</th>
-                    <th>Fee</th>
+                    <!-- <th>Fee</th> -->
                     <th></th>
                 </tr>
             </thead>
@@ -25,11 +25,11 @@
                     <td class="pay">${{ pay.1 }}</td>
                     <td>{{ pay.0 }}</td>
                     <td>{{ pay.3 }}</td>
-                {% if pay.2 == True %}
+               <!--  {% if pay.2 == True %}
                     <td><span class="glyphicon glyphicon-ok"></span></td>
                 {% else %}
                     <td>No</td>
-                {% endif %}
+                {% endif %} -->
                     <td>
                         <a class="js-popup" href="{% url 'fix-payment' pay.4 %}">Fix</a>
                     </td>
@@ -74,12 +74,12 @@
 
             
             
-            <div class="checkbox">
+<!--             <div class="checkbox">
                 <label>
                     <input type="checkbox" name="fee">
                     Fee
                 </label>
-            </div>
+            </div> -->
             
             <label for="amount">Amount</label>
             <input id="amount" type="text" class="form-control" name="amount" placeholder="$"/>

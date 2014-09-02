@@ -33,6 +33,8 @@ def temp_home(request):
 def instructions(request):
 	return render(request, 'FaraData/instructions.html')
 
+
+### Not using these anymore #### 
 ### Creating CSV results by form
 
 @login_required(login_url='/admin')

@@ -67,9 +67,9 @@ def find_member(request):
 				state = d['state']
 
 				if time == 'old':
-					text = "%s %s %s (%s-%s) (NOT in office) CRP ID = %s" %(title, first_name, last_name, party, state, crp_id)
+					text = "%s %s %s (%s-%s) (NOT in office) CRP ID = %s, Bioguide ID = %s" %(title, first_name, last_name, party, state, crp_id, bioguide_id)
 				else:
-					text = "%s %s %s (%s-%s) CRP ID = %s" %(title, first_name, last_name, party, state, crp_id)
+					text = "%s %s %s (%s-%s) CRP ID = %s, Bioguide ID = %s" %(title, first_name, last_name, party, state, crp_id, bioguide_id)
 
 				result = [crp_id, "Congress", chamber,  full_name, title, text, bioguide_id]
 				results.append(result)
