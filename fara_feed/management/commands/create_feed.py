@@ -4,6 +4,7 @@ import sys
 import time
 import urllib
 import urllib2
+from cookielib import CookieJar
 import string
 import argparse
 import os
@@ -35,6 +36,8 @@ class Command(BaseCommand):
     can_import_settings = True
 
     def handle(self, *args, **options):
+        cj = CookieJar()
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
         if args:
             for date_input in args:
                 dates = date_input.split(':')
@@ -46,7 +49,7 @@ class Command(BaseCommand):
         
         doj_url = 'https://efile.fara.gov/pls/apex/f?p=125:10:::NO::P10_DOCTYPE:ALL'
         search = urllib2.Request(doj_url, headers=head)
-        search_html = urllib2.urlopen(search).read()
+        search_html = opener.open(search).read()
         search_page = BeautifulSoup(search_html)
         form = search_page.find("form", {"id":"wwvFlowForm"})
         data = []
@@ -60,12 +63,13 @@ class Command(BaseCommand):
                  ('p_t02', 'ALL'),
                  ('p_t06', start_date.strftime('%m/%d/%Y')),
                  ('p_t07', end_date.strftime('%m/%d/%Y')),
+                 ('p_t09', 'Registration Date'),
                  ('p_request', 'SEARCH'),
         ]
 
         url = 'https://efile.fara.gov/pls/apex/wwv_flow.accept'
         req = urllib2.Request(url, data=urllib.urlencode(data), headers=head)
-        page = urllib2.urlopen(req).read()
+        page = opener.open(req).read()
         page = BeautifulSoup(page)
         parse_and_save(page)
         next_url_realitive = page.find("a", {"class":"t14pagination"})
