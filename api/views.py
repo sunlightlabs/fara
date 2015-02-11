@@ -209,12 +209,12 @@ def doc_profile(request, doc_id):
 		if doc.processed == True:
 			if Contribution.objects.filter(link=url).exists():
 				contribution = Contribution.objects.filter(link=url,meta_data__processed=True).aggregate(total_pay=Sum('amount'))
-				total_contributions = float(contribution['total_pay'])
+				total_contributions = float(contribution['total_pay'] or 0)
 				results['total_contribution'] = total_contributions
 			
 			if Payment.objects.filter(link=url).exists():
 				payment = Payment.objects.filter(link=url,meta_data__processed=True).aggregate(total_pay=Sum('amount'))
-				total_pay = float(payment['total_pay'])
+				total_pay = float(payment['total_pay'] or 0)
 				results['total_payment'] = total_pay
 
 			if Contact.objects.filter(link=url).exists():
@@ -223,7 +223,7 @@ def doc_profile(request, doc_id):
 			
 			if Disbursement.objects.filter(link=url).exists():
 				disbursements = Disbursement.objects.filter(link=url,meta_data__processed=True).aggregate(total_pay=Sum('amount'))
-				total_disbursements = float(disbursements['total_pay'])
+				total_disbursements = float(disbursements['total_pay'] or 0)
 				results['total_disbursement'] = total_disbursements
 
 	results = json.dumps({'results': results}, separators=(',',':'))
@@ -241,7 +241,7 @@ def client_form_summary(client_objects, url):
 		}		
 		if Payment.objects.filter(link=url,client=client,meta_data__processed=True).exists():
 			payment = Payment.objects.filter(link=url,client=client).aggregate(total_pay=Sum('amount'))
-			total_pay = float(payment['total_pay'])
+			total_pay = float(payment['total_pay'] or 0)
 			c['payment'] = total_pay
 
 		if Contact.objects.filter(link=url,client=client,meta_data__processed=True).exists():
@@ -250,7 +250,7 @@ def client_form_summary(client_objects, url):
 		
 		if Disbursement.objects.filter(link=url,client=client,meta_data__processed=True).exists():
 			disbursements = Disbursement.objects.filter(link=url,client=client).aggregate(total_pay=Sum('amount'))
-			total_disbursements = float(disbursements['total_pay'])
+			total_disbursements = float(disbursements['total_pay'] or 0)
 			c['disbursement'] = total_disbursements
 		clients.append(c)
 	return clients
@@ -281,7 +281,7 @@ def recipient_profile(request, recip_id):
 
 		if Contribution.objects.filter(recipient=recip_id).exists():
 			contribution = Contribution.objects.filter(recipient=recip_id,meta_data__processed=True).aggregate(total_pay=Sum('amount'))
-			recipient['total_contribution'] = float(contribution['total_pay'])
+			recipient['total_contribution'] = float(contribution['total_pay'] or 0)
 		
 		if Contact.objects.filter(recipient=recip_id).exists():
 			recipient['contacts'] = Contact.objects.filter(recipient=recip_id, meta_data__processed=True).count()
@@ -319,12 +319,12 @@ def client_profile(request, client_id):
 
 	if Payment.objects.filter(client=client_id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2013,1,1), datetime.date(2014,1,1)),meta_data__processed=True).exists():
 		payment13 = Payment.objects.filter(client=client_id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2013,1,1), datetime.date(2014,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
-		total_pay = float(payment13['total_pay'])
+		total_pay = float(payment13['total_pay'] or 0)
 		client['total_13'] = total_pay
 
 	if Payment.objects.filter(client=client_id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2014,1,1), datetime.date(2015,1,1)),meta_data__processed=True).exists():
 		payment14 = Payment.objects.filter(client=client_id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2014,1,1), datetime.date(2015,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
-		total_pay = float(payment14['total_pay'])
+		total_pay = float(payment14['total_pay'] or 0)
 		client['total_14'] = total_pay
 
 	if Disbursement.objects.filter(client=client_id).exists():
@@ -377,11 +377,11 @@ def location_profile(request, loc_id):
 		# is null makes sure there is not double counting money flowing through multiple contractors
 		if Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2014,1,1), datetime.date(2015,1,1)),meta_data__processed=True).exists():
 			payment = Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2014,1,1), datetime.date(2015,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
-			client['total_14'] = float(payment['total_pay'])
+			client['total_14'] = float(payment['total_pay'] or 0)
 		
 		if Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2013,1,1), datetime.date(2014,1,1)),meta_data__processed=True).exists():
 			payment13 = Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2013,1,1), datetime.date(2014,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
-			total_pay = float(payment13['total_pay'])
+			total_pay = float(payment13['total_pay'] or 0)
 			client['total_13'] = total_pay
 
 		if Payment.objects.filter(client=c.id).exists():
@@ -441,12 +441,12 @@ def reg_profile(request, reg_id):
 
 	if Payment.objects.filter(registrant=reg,meta_data__processed=True,meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date(2014,1,1))).exists():
 		payments2013 = Payment.objects.filter(registrant=reg,meta_data__processed=True,meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date(2014,1,1))).aggregate(total_pay=Sum('amount'))
-		payments2013 = float(payments2013['total_pay'])
+		payments2013 = float(payments2013['total_pay'] or 0)
 		registrant['payments2013'] = payments2013
 
 	if Payment.objects.filter(registrant=reg,meta_data__processed=True,meta_data__end_date__range=(datetime.date(2014,1,1), datetime.date(2015,1,1))).exists():
 		payments2014 = Payment.objects.filter(registrant=reg,meta_data__processed=True,meta_data__end_date__range=(datetime.date(2014,1,1), datetime.date(2015,1,1))).aggregate(total_pay=Sum('amount'))
-		payments2014 = float(payments2014['total_pay'])
+		payments2014 = float(payments2014['total_pay'] or 0)
 		registrant['payments2014'] = payments2014
 
 	if Contact.objects.filter(registrant=reg_id,recipient__agency__in=["Congress", "House", "Senate", "White House"], meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
