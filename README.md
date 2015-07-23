@@ -18,10 +18,10 @@ The arms_sales app scrapes press releases from the DSCA for proposed arms sales.
 To set up this project to scrape FARA feeds locally:
 
 1. Create a virtual environment (specify python2.7)
-2. run pip install -r requirements.txt
-3. in fara_feed/management/commands/ add __init__.pyc
-4. in fara/ create local_settings.py
-5. add the following to local_settings.py:
+2. In your virtual environment, run pip install -r requirements.txt
+3. In fara_feed/management/commands/ add an empty file called __init__.pyc
+4. In fara/ create the file local_settings.py
+5. Add the following to local_settings.py:
     a) SECRET_KEY="something"
     b) ES_CONFIG={}
 6. If mysql is not installed, install it
