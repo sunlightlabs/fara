@@ -29,6 +29,8 @@ To set up this project to scrape FARA feeds locally:
 8. Run python manage.py syncdb
 9. Run python manage.py migrate
 10. Run python manage.py create_feed
+11. Run python manage.py arms_sales_archive
+
 
 ---
 
