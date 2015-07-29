@@ -31,7 +31,26 @@ To set up this project to scrape FARA feeds locally:
 10. Run python manage.py create_feed
 11. Run python manage.py arms_sales_archive
 
+To get the site and API running:
+
+1. Add the following to local_settings.py:
+    a) API_PASSWORD="apikey" # or whatever you want, you'll need it to hit your local API
+    b) apikey="" # this is never used
+
+2. If you'll be poking around, it's probably worth setting DEBUG=True in local_settings.py
+
+3. Run python manage.py runserver
+
+4. You should now be able to access the site at localhost:8000
+
+5. If you want to access the API, you'll need to pass the parameter key=apikey where apikey is whatever you set in local settings. For example:
+
+```
+http://localhost:8000/api/proposed-arms?key=apikey.
+```
+
+Find available endpoints in api/urls.py
 
 ---
 
-This is project is under construction. If you are interested in contributing in some way email Lindsay at lyoung@sunlightfoundation.com
+This is project is under construction. If you are interested in contributing in some way email contact@sunlightfoundation.com
