@@ -27,6 +27,11 @@ documents = []
 #changing pgR_min_row modifies the starting point
 
 
+#building the historical scraper completely separately
+#from the regular fara feed scraper, and then a 
+#task to combine them so that we always have the raw
+#historical data and can combine when needed.
+
 class Command(BaseCommand):
     help = "Crawls the DOJ's FARA site looking for new documents."
     can_import_settings = True
