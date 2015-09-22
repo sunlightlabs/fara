@@ -60,15 +60,25 @@ class Command(BaseCommand):
                 #multiple matching clients, help! skipping for now
                 print("Multiple clients with that name, moving on")
             else:
+                location_text = hist_reln.location_represented
+
                 #create the client
                 #but first we have to match the location.
-                location = Location.objects.filter(location__iexact=hist_reln.location_represented)
+
+                #clean up known location mismatches
+                location_dict = {'SOMALI DEMOCRATIC REPUBLIC' : 'SOMALIA',
+                                'KOREA REPUBLIC OF' : 'SOUTH KOREA',
+                                'BOSNIA-HERZEGOVINA' : 'BOSNIA AND HERZEGOVINA'}
+                if location_text in location_dict:
+                    location_text = location_dict[location_text]
+
+                location = Location.objects.filter(location__iexact=location_text)
                 if len(location) == 1:
                     location = location[0]
                 else:
-                    print "Unknown location {}".format(hist_reln.location_represented)
+                    print "Unknown location {}".format(location_text)
                     continue
-
+                print name
                 client = Client(location=location,
                                 client_name=name.strip(),
                                 address1=hist_reln.address,
@@ -77,7 +87,6 @@ class Command(BaseCommand):
 
 
             for md in related_fara_metadata:
-                print "match"
 
                 new_registrant = False
 
@@ -97,13 +106,11 @@ class Command(BaseCommand):
                     md.client_set.add(client)
                     md.save()
                     for r in md.registrant_set.all():
-                        print "add clientregs"
                         ClientReg(client_id=client,
                                 reg_id=r).save()
 
                 elif new_registrant:
                     for c in md.client_set.all():
-                        print "add clientregs 2"
                         ClientReg(client_id=c,
                                 reg_id=registrant).save()
 
