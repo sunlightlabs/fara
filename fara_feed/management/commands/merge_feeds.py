@@ -37,8 +37,7 @@ class Command(BaseCommand):
                 registrant = registrant[0]
             elif len(registrant) == 0:
                 registrant = Registrant(reg_id=registrant_no,
-                                        reg_name=hist_reln.registrant,
-                                        metadata=related_fara_metadata[0])
+                                        reg_name=hist_reln.registrant)
                 registrant.save()
             else:
                 #there's more tha one registrant with the same ID
@@ -78,13 +77,12 @@ class Command(BaseCommand):
                 else:
                     print "Unknown location {}".format(location_text)
                     continue
-                print name
                 client = Client(location=location,
                                 client_name=name.strip(),
                                 address1=hist_reln.address,
                                 state=hist_reln.state)
-                client.save()
-
+                #only going to save client if it actually needs
+                #to be added
 
             for md in related_fara_metadata:
 
@@ -92,27 +90,33 @@ class Command(BaseCommand):
 
                 #with registrants we can use their id system to dedup
                 #so we'll just add them if they aren't in there
+
                 if not registrant in md.registrant_set.all():
                     md.registrant_set.add(registrant)
                     md.save()
-                    new_registrant = True
-
+                    new_registrant = True            
+                    registrant.meta_data.add(link)
                 #for clients we have to be more careful since there's no id
                 #so we'll only add clients if the client_set is empty
                 #otherwise we may add duplicates
                 #and presumably only human-entered data is in the db and it's good?
-                #we also have to try to match clients by name. ick.
                 if len(md.client_set.all()) == 0:
+                    client.save() #we're good to save now
                     md.client_set.add(client)
                     md.save()
                     for r in md.registrant_set.all():
-                        ClientReg(client_id=client,
-                                reg_id=r).save()
-
+                        cr = ClientReg(client_id=client,
+                                reg_id=r)
+                        cr.save()
+                        cr.meta_data.add(link)
+                        cr.save()
                 elif new_registrant:
                     for c in md.client_set.all():
-                        ClientReg(client_id=c,
-                                reg_id=registrant).save()
+                        cr = ClientReg(client_id=c,
+                                reg_id=registrant)
+                        cr.save()
+                        cr.meta_data.add(link)
+                        cr.save()
 
 
 
