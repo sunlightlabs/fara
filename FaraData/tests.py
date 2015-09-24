@@ -112,8 +112,41 @@ class UnrelatedClientMergeTestCase(SimpleTestCase):
         
         
 
-    def test_data_merge_with_known_reg(self):
+    def test_data_merge_unrelated_client(self):
         """merge_feeds does not add clients if any clients are found for metadata"""
+        management.call_command('merge_feeds')
+        self.assertEqual(Client.objects.count(),1)
+        self.assertEqual(Registrant.objects.count(),1)
+        self.assertEqual(ClientReg.objects.count(),1)
+
+    def tearDown(self):
+        Historical.objects.all().delete()
+        HistoricalDoc.objects.all().delete()
+        MetaData.objects.all().delete()
+        Location.objects.all().delete()
+        Client.objects.all().delete()
+        Registrant.objects.all().delete()
+        ClientReg.objects.all().delete()
+
+class KnownClientMergeTestCase(SimpleTestCase):
+    def setUp(self):
+        Historical.objects.create(principal="Rachel",
+            location_represented="Sunlight",
+            registrant="Bob",
+            registrant_no="123")
+        hist = Historical.objects.all()[0]
+        HistoricalDoc.objects.create(historical_relationship=hist,
+            document_link="www.example.com")
+        md = MetaData.objects.create(link="www.example.com")
+        sunlight = Location.objects.create(location="Sunlight")
+        client = Client.objects.create(client_name="Rachel",
+            location=sunlight)
+        client.save()
+        
+        
+
+    def test_data_merge_unrelated_client(self):
+        """merge_feeds does not add new clients if name matches existing client"""
         management.call_command('merge_feeds')
         self.assertEqual(Client.objects.count(),1)
         self.assertEqual(Registrant.objects.count(),1)
