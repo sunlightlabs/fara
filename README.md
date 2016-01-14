@@ -28,8 +28,9 @@ To set up this project to scrape FARA feeds locally:
 7. Create a mysql database called FaraData.
 8. Run python manage.py syncdb
 9. Run python manage.py migrate
-10. Run python manage.py create_feed
-11. Run python manage.py arms_sales_archive
+10. If elasticsearch is not installed, install it and make sure a server is running. The setting in 5(b) above works with a default Elasticsearch server configuration.
+11. Run python manage.py create_feed
+12. Run python manage.py arms_sales_archive
 
 
 ---
