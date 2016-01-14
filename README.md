@@ -15,24 +15,37 @@ The arms_sales app scrapes press releases from the DSCA for proposed arms sales.
 
 ##Hacking
 
-To set up this project to scrape FARA feeds locally:
+**To set up this project to scrape FARA feeds locally:**
 
 1. Create a virtual environment (specify python2.7)
+
 2. In your virtual environment, run pip install -r requirements.txt
+
 3. In fara_feed/management/commands/ add an empty file called __init__.pyc
+
 4. In fara/ create the file local_settings.py
+
 5. Add the following to local_settings.py:
     a) SECRET_KEY="something"
     b) ES_CONFIG={}
+
 6. If mysql is not installed, install it
+
 7. Create a mysql database called FaraData.
+
 8. Run python manage.py syncdb
+
 9. Run python manage.py migrate
+
 10. If elasticsearch is not installed, install it and make sure a server is running. The setting in 5(b) above works with a default Elasticsearch server configuration.
+
 11. Run python manage.py create_feed
+
 12. Run python manage.py arms_sales_archive
 
-To get the site and API running:
+
+
+**To get the site and API running:**
 
 1. Add the following to local_settings.py:
     a) API_PASSWORD="apikey" # or whatever you want, you'll need it to hit your local API
