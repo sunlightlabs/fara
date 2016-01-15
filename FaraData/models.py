@@ -218,4 +218,31 @@ class ClientReg(models.Model):
         return "%s - %s" % (self.client_id, self.reg_id)
 
 
-    
+#a historical data source was found later that lists
+#principals in a machine-readable format
+#we're scraping it into a separate table so we can make
+#appropriate decisions about what to integrate where
+#so we don't clobber existing, good, human-entered data
+class Historical(models.Model):
+    principal = models.CharField(max_length=255, null=True)
+    principal_reg_date = models.DateField(null=True, blank=True)
+    principal_termination_date = models.DateField(null=True, blank=True)
+    address = models.CharField(max_length=255, null=True)
+    state = models.CharField(max_length=255, null=True)
+    location_represented = models.CharField(max_length=255, null=True)
+    registrant = models.CharField(max_length=255, null=True)
+    registrant_no = models.IntegerField()
+    registrant_reg_date = models.DateField(null=True, blank=True)
+    registrant_termination_date = models.DateField(null=True, blank=True)
+
+    def __unicode__(self):
+        return "%s - %s" % (self.principal, self.registrant)
+
+class HistoricalDoc(models.Model):
+    historical_relationship = models.ForeignKey(Historical)
+    document_type = models.CharField(max_length=255, null=True)
+    document_link = models.CharField(max_length=255, null=True)
+    document_name = models.CharField(max_length=255, null=True)
+    document_date = models.DateField(null=True, blank=True)
+    def __unicode__(self):
+        return self.document_name
