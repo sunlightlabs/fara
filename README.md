@@ -67,6 +67,7 @@ Find available endpoints in api/urls.py
 
 
 **To incorporate historical information on principals into the database**
+
 This feature is new and has no visible front-end component yet. It draws on an historical source to incorporate additional machine-readable information on principals into existing client records, defaulting to older manually entered data if it exists. The process uses two distinct commands in order to separate scraping (historical_feed) and merging into the database (merge_feeds) while we're confirming that the process is not destructive to old data (thus far it appears to be fine).
 
 To add historical data to the database:
