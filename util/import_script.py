@@ -127,7 +127,7 @@ for line in data:
 	    							address = line['fields']['address'],
 	    							city = line['fields']['city'],
 	    							state = line['fields']['state'],
-	    							zip = line['fields']['zipcode'],
+	    							zip_code = line['fields']['zipcode'],
 			)
 			registrant.save()
 
