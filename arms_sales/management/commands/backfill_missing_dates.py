@@ -15,31 +15,32 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         sales = Proposed.objects.filter(date = None).all()
         for sale in sales:
-            try:
-                d = sale.text.split(" -")[0].split("WASHINGTON, ")[1].strip()
-            except:
-                d = sale.text.split(" -")[0].split("Washington, ")[1].strip()
-            if "Sept." in d or "Sept " in d:
-                    d = d.replace("Sept", "Sep")
-            d = str(d)
-            print d
-            try:
-                date_obj = datetime.strptime(d, "%b %d, %Y")
-            except:
-                try:    
-                    date_obj = datetime.strptime(d, "%b. %d, %Y")
+            if "WASHINGTON" in sale.text or "Washington" in sale.text:
+                try:
+                    d = sale.text.split(" -")[0].split("WASHINGTON, ")[1].strip()
+                except:
+                    d = sale.text.split(" -")[0].split("Washington, ")[1].strip()
+                if "Sept." in d or "Sept " in d:
+                        d = d.replace("Sept", "Sep")
+                d = str(d)
+                print d
+                try:
+                    date_obj = datetime.strptime(d, "%b %d, %Y")
                 except:
                     try:    
-                        date_obj = datetime.strptime(d, "%b, %d, %Y")
+                        date_obj = datetime.strptime(d, "%b. %d, %Y")
                     except:
-                        try:
-                            date_obj = datetime.strptime(d, "%B %d, %Y")
-                        except: 
-                            print d
-                            date_obj = None
-            try:
-                sale.date = date_obj
-                sale.save()
-                print "New date is: " + sale.date
-            except:
-                pass
+                        try:    
+                            date_obj = datetime.strptime(d, "%b, %d, %Y")
+                        except:
+                            try:
+                                date_obj = datetime.strptime(d, "%B %d, %Y")
+                            except: 
+                                print d
+                                date_obj = None
+                try:
+                    sale.date = date_obj
+                    sale.save()
+                    print "New date is: " + sale.date
+                except:
+                    pass
