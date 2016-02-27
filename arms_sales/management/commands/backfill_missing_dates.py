@@ -15,11 +15,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         sales = Proposed.objects.filter(date = None).all()
         for sale in sales:
-            if "WASHINGTON" in sale.text or "Washington" in sale.text:
-                try:
-                    d = sale.text.split(" -")[0].split("WASHINGTON, ")[1].strip()
-                except:
-                    d = sale.text.split(" -")[0].split("Washington, ")[1].strip()
+            try:
+                d = sale.text.split(" -")[0].split("WASHINGTON, ")[1].strip()
+            except:
+                d = sale.text.split(" -")[0].split("Washington, ")[1].strip()
+            try:
                 if "Sept." in d or "Sept " in d:
                         d = d.replace("Sept", "Sep")
                 d = str(d)
@@ -44,3 +44,5 @@ class Command(BaseCommand):
                     print "New date is: " + sale.date
                 except:
                     pass
+            except:
+                pass
