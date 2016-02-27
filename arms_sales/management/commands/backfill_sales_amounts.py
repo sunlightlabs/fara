@@ -20,6 +20,8 @@ class Command(BaseCommand):
                 try:
                     url = p.dsca_url
                     if p.amount == 115100000.00:
+                        p.amount = None
+                        p.save()
                         url = p.pdf_url
                     price_string = requests.get(url).text.split("$")[1][:100]
                     raw_amount = re.compile(r'<[^>]+>').sub('', price_string).split("lion")[0]+"lion"
