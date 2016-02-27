@@ -21,6 +21,8 @@ class Command(BaseCommand):
                     d = sale.text.split(" -")[0].split("Washington, ")[1].strip()
                 except:
                     pass
+            except:
+                pass
             try:
                 if "Sept." in d or "Sept " in d:
                         d = d.replace("Sept", "Sep")
