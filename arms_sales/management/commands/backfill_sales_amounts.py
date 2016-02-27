@@ -29,5 +29,5 @@ class Command(BaseCommand):
                     p.save()
                 except:
                     print p.title+": Could not find a dollar amount"
-            print p.amount
+            print p.amount + ": "+p.title[:45]
         
