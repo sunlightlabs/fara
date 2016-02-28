@@ -327,6 +327,19 @@ def client_profile(request, client_id):
 		total_pay = float(payment14['total_pay'] or 0)
 		client['total_14'] = total_pay
 
+
+	if Payment.objects.filter(client=client_id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2015,1,1), datetime.date(2016,1,1)),meta_data__processed=True).exists():
+		payment15 = Payment.objects.filter(client=client_id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2015,1,1), datetime.date(2016,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
+		total_pay = float(payment15['total_pay'] or 0)
+		client['total_15'] = total_pay
+
+	if Payment.objects.filter(client=client_id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2016,1,1), datetime.date(2017,1,1)),meta_data__processed=True).exists():
+		payment16 = Payment.objects.filter(client=client_id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2016,1,1), datetime.date(2017,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
+		total_pay = float(payment16['total_pay'] or 0)
+		client['total_16'] = total_pay
+
+
+
 	if Disbursement.objects.filter(client=client_id).exists():
 		#disbursement = Disbursement.objects.filter(client=client_id,subcontractor__isnull=True).aggregate(total_pay=Sum('amount'))
 		client['total_disbursement'] = True

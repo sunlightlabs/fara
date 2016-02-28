@@ -79,4 +79,10 @@ Tests to check that the process maintains the integrity of older data can be run
 
 ---
 
+
+**Future proofing**
+A feature of the site that reporters have told is useful is its offering of totals paid by a client in the current (running total) and previous (complete total) year. At the moment these are hardcoded to 2015 and 2016 totals, so there are two options for dealing with this:
+1. Future proof the code: In ```api/views.py```, modifiy the code to replace pieces of  ```client['total_2016']``` with something like ```timezone.now().year]``` and total for 2015 to be ```timezone.now().year-1```. Then update the templates where those variables are displayed (in bulgogi: ```client_profile.html``` and ```location_profile.html```) to display ```{{c.thisyear_total}}``` and ```{{c.lastyear_total}}``` vs their current hardcoded 2015 and 2016 values.
+2. Physically go into the files above and change every January.
+
 This is project is under construction. If you are interested in contributing in some way email contact@sunlightfoundation.com
