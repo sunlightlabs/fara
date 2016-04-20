@@ -233,7 +233,7 @@ def create_csv(model_str, query_dict):
 
         # see if file already exists first before creating it
         if default_storage.exists(file_name):
-            return default_storage.path(file_name)
+            return os.path.join(settings.STATIC_URL, file_name)
 
         rows = [getattr(spread_sheets, model_str + '_heading')]
         for item in related:
@@ -292,7 +292,7 @@ def create_csv(model_str, query_dict):
         csv_file.write(output.getvalue())
         csv_file.close()
 
-        return default_storage.path(file_name)
+        return os.path.join(settings.STATIC_URL, file_name)
     else:
         return ''
 
