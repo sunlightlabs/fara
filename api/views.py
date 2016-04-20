@@ -1236,6 +1236,9 @@ def search_more(request):
 
 
 def generate_csv(request, model_str):
+
+	if not request.GET.get('key') == API_PASSWORD:
+		raise PermissionDenied
 	# possible model_str values are (contact|contribution|payment|disbursement|client) from api.urls
 	# which when capitalized will map to model names in fara.models
 
