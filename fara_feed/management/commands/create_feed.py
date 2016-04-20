@@ -10,6 +10,8 @@ import argparse
 import os
 import codecs
 import logging
+import io
+import csv
 
 from bs4 import BeautifulSoup
 from PyPDF2 import PdfFileReader
@@ -17,10 +19,14 @@ from elasticsearch import Elasticsearch
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.files.storage import default_storage
-from django.conf import settings 
+from django.conf import settings
+from django.db.models import Q
 
 from fara_feed.models import Document
-from FaraData.models import MetaData, Registrant
+from FaraData import models as FaraData_models
+from FaraData.models import MetaData, Registrant, Contribution, Payment, Disbursement
+from FaraData import spread_sheets
+
 
 es = Elasticsearch(**settings.ES_CONFIG)
 head = ({'User-Agent': 'Mozilla/5.0'})
@@ -216,6 +222,80 @@ def save_es(url_info, text):
         logger.error(message)      
 
 
+def create_csv(model_str, query_dict):
+    available = ['contact', 'contribution', 'payment', 'disbursement']
+
+    if model_str in available:
+        query = Q(**query_dict)
+        related = getattr(FaraData_models, model_str.capitalize()).objects.filter(query)
+        file_name = 'data/' + model_str + '/' + model_str + '-' + \
+                    '_'.join(map(lambda x: x[0]+'='+x[1], query_dict.items())) + '.csv'
+
+        # see if file already exists first before creating it
+        if default_storage.exists(file_name):
+            return default_storage.path(file_name)
+
+        rows = [getattr(spread_sheets, model_str + '_heading')]
+        for item in related:
+
+            if item.date is None:
+                date = datetime.datetime.strftime(item.meta_data.end_date, "%Y-%m-%d")
+            else:
+                date = datetime.datetime.strftime(item.date, '%Y-%m-%d')
+
+            if model_str == 'contact':
+                c_type = {"M": "meeting", "U": "unknown", "P": "phone", "O": "other", "E": "email"}
+
+                lobbyists = ''
+                for l in item.lobbyist.all():
+                    lobbyists = lobbyists + l.lobbyist_name + ", "
+
+                for r in item.recipient.all():
+                    if r.name is not None:
+                        contact_name = r.name
+                        if contact_name == "unknown":
+                            contact_name = ''
+                    else:
+                        contact_name = ''
+
+                    rows.append([date, r.title, contact_name, r.office_detail, r.agency, item.client,
+                                 item.client.location, item.registrant, item.description, c_type[item.contact_type],
+                                 lobbyists, r.bioguide_id, item.link, item.meta_data.form, item.registrant.reg_id,
+                                 item.client.id, item.client.location.id, r.id, item.id])
+
+            elif model_str == 'contribution':
+                recipient_name = spread_sheets.namebuilder(item.recipient)
+                lobby = item.lobbyist if item.lobbyist else ''
+                rows.append([date, item.amount, recipient_name, item.registrant, lobby, item.recipient.crp_id,
+                             item.recipient.bioguide_id, item.link, item.meta_data.form, item.registrant.reg_id,
+                             item.recipient.id, item.id])
+
+            elif model_str == 'payment':
+                subid = item.subcontractor if item.subcontractor else ''
+                rows.append([date, item.amount, item.client, item.registrant, item.purpose , item.subcontractor,
+                             item.link, item.meta_data.form, item.registrant.reg_id, item.client.id,
+                             item.client.location.id, subid.id, item.id])
+
+            elif model_str == 'disbursement':
+                subid = item.subcontractor if item.subcontractor else ''
+                rows.append([date, item.amount, item.client, item.registrant, item.purpose, item.subcontractor,
+                             item.link, item.meta_data.form, item.registrant.reg_id, item.client.id,
+                             item.client.location.id, subid.id, item.id])
+
+        rows.sort(key=lambda x: x[0], reverse=True)  # sort by date - more recent comes first
+
+        output = io.BytesIO()
+        writer = csv.writer(output)
+        writer.writerows(rows)
+
+        csv_file = default_storage.open(file_name, 'w')
+        csv_file.write(output.getvalue())
+        csv_file.close()
+
+        return default_storage.path(file_name)
+    else:
+        return ''
+
 
 def parse_and_save(page):
     filings = page.find("table", {"class" : "t14Standard"})
@@ -248,47 +328,38 @@ def parse_and_save(page):
 
             elif info[0] == 'Short':
                 doc_type = 'Short Form'
-
             elif info[0] == 'Exhibit':
                 if "AB" in url:
                     doc_type = 'Exhibit AB'  
-                if "C" in url:
+                elif "C" in url:
                     doc_type = 'Exhibit C'    
-                if "D" in url:
+                elif "D" in url:
                     doc_type = 'Exhibit D'
-
+                else:
+                    doc_type = 'unknown'
             elif info[0] == 'Conflict':
                 doc_type = 'Conflict Provision'
-
             elif info[0] == 'Registration':
                 doc_type = 'Registration'
-
             elif info[0] == 'Supplemental':
-                doc_type = 'Supplemental' 
-
+                doc_type = 'Supplemental'
             else:
                 message = "Can't identify form-- %s " % (url)
                 doc_type = 'unknown'
                 logger.error(message)
 
-
-            url_info= {'url':url,'reg_name':reg_name, 'reg_id':reg_id, 'doc_type':doc_type, 'stamp_date':date_string}
+            url_info = {'url': url,
+                       'reg_name': reg_name,
+                       'reg_id':reg_id,
+                       'doc_type': doc_type,
+                       'stamp_date':date_string}
             documents.append(url_info)
             #saving
             add_document(url_info)
             file = add_file(url)
-            if file != None:
+            if file is not None:
                 text = save_text(url_info)
             else:
                 text = None
             save_es(url_info, text)
             new_fara_docs.append(url_info)
-            
-
-
-
-
-      
-
-
-

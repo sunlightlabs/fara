@@ -14,6 +14,8 @@ from arms_sales.models import Proposed
 from search.search_foreign import *
 
 from fara.local_settings import API_PASSWORD
+from fara_feed.management.commands.create_feed import create_csv
+
 
 def paginate(form, page):
 	paginator = Paginator(form, 20)
@@ -28,6 +30,7 @@ def paginate(form, page):
 def test(request):
 	results = json.dumps({"working":True}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
+
 
 def incoming_fara(request):
 	if not request.GET.get('key') == API_PASSWORD:
@@ -44,19 +47,19 @@ def incoming_fara(request):
 			"processed": doc.processed,
 			"reg_id": reg_id,
 			}
-		
+
 		if Registrant.objects.filter(reg_id=reg_id).exists():
 			reg = Registrant.objects.get(reg_id=reg_id)
 			info['reg_name']= reg.reg_name
-		
+
 		results = json.dumps({'results':info}, separators=(',',':'))
 		return HttpResponse(results, mimetype="application/json")
 
 	query_params = {}
 	if not request.GET.get('all_records'):
 		query_params['stamp_date__range'] = (datetime.date(2012,1,1), datetime.date.today())
-	
-	### Would like to make this not case sensitive 
+
+	### Would like to make this not case sensitive
 	if request.GET.get('doc_type'):
 		form_type = request.GET.get('doc_type')
 		# all takes away doc type restrictions
@@ -81,8 +84,8 @@ def incoming_fara(request):
 		p = int(request.GET.get('p'))
 	else:
 		p = 1
-	
-	page = {}	
+
+	page = {}
 	page['page'] = p
 
 	doc_pool = Document.objects.filter(**query_params).order_by('-stamp_date')
@@ -117,13 +120,13 @@ def incoming_arms(request):
 	else:
 		p = 1
 	page = {}
-	page['page'] = p 
+	page['page'] = p
 
 	if request.GET.get('location_id'):
 		arms_pool = Proposed.objects.filter(location_id=request.GET.get('location_id'))
 	elif request.GET.get('doc_id'):
 		arms = Proposed.objects.get(id=request.GET.get('doc_id'))
-	
+
 		if arms.date:
 			try:
 				date = arms.date.strftime("%m/%d/%Y")
@@ -132,11 +135,11 @@ def incoming_arms(request):
 		else:
 			print arms, "Has no date"
 			date =  None
-		
+
 		return HttpResponse(json.dumps({'pdf_url':arms.pdf_url, 'date':date, 'title':arms.title, 'id':arms.id, 'location':arms.location, 'location_id':arms.location_id, 'dsca_url':arms.dsca_url}), mimetype="application/json")
 	else:
 		arms_pool = Proposed.objects.all().order_by('-date')
-	
+
 	paginate_arms = paginate(arms_pool, p)
 	page_of_arms = paginate_arms[0:]
 	page['num_pages'] = int(arms_pool.count())/20
@@ -152,7 +155,7 @@ def incoming_arms(request):
 		count += 1
 		record['id'] = arms_press.id
 		record['title'] = arms_press.title
-		
+
 		if arms_press.date:
 			try:
 				record['date'] = arms_press.date.strftime("%m/%d/%Y")
@@ -174,7 +177,7 @@ def incoming_arms(request):
 def doc_profile(request, doc_id):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
-	
+
 	doc_id= int(doc_id)
 	doc = Document.objects.get(id=doc_id)
 	url = doc.url
@@ -211,7 +214,7 @@ def doc_profile(request, doc_id):
 				contribution = Contribution.objects.filter(link=url,meta_data__processed=True).aggregate(total_pay=Sum('amount'))
 				total_contributions = float(contribution['total_pay'] or 0)
 				results['total_contribution'] = total_contributions
-			
+
 			if Payment.objects.filter(link=url).exists():
 				payment = Payment.objects.filter(link=url,meta_data__processed=True).aggregate(total_pay=Sum('amount'))
 				total_pay = float(payment['total_pay'] or 0)
@@ -220,7 +223,7 @@ def doc_profile(request, doc_id):
 			if Contact.objects.filter(link=url).exists():
 				total_contacts = Contact.objects.filter(link=url,meta_data__processed=True).count()
 				results['total_contact'] = total_contacts
-			
+
 			if Disbursement.objects.filter(link=url).exists():
 				disbursements = Disbursement.objects.filter(link=url,meta_data__processed=True).aggregate(total_pay=Sum('amount'))
 				total_disbursements = float(disbursements['total_pay'] or 0)
@@ -238,7 +241,7 @@ def client_form_summary(client_objects, url):
 			'location': client.location.location,
 			'client_id': client.id,
 			'location_id': client.location.id,
-		}		
+		}
 		if Payment.objects.filter(link=url,client=client,meta_data__processed=True).exists():
 			payment = Payment.objects.filter(link=url,client=client).aggregate(total_pay=Sum('amount'))
 			total_pay = float(payment['total_pay'] or 0)
@@ -247,7 +250,7 @@ def client_form_summary(client_objects, url):
 		if Contact.objects.filter(link=url,client=client,meta_data__processed=True).exists():
 			total_contacts = Contact.objects.filter(link=url,client=client).count()
 			c['contact'] = total_contacts
-		
+
 		if Disbursement.objects.filter(link=url,client=client,meta_data__processed=True).exists():
 			disbursements = Disbursement.objects.filter(link=url,client=client).aggregate(total_pay=Sum('amount'))
 			total_disbursements = float(disbursements['total_pay'] or 0)
@@ -258,7 +261,7 @@ def client_form_summary(client_objects, url):
 def recipient_profile(request, recip_id):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
-	
+
 	recipient = Recipient.objects.get(id=recip_id)
 	results = []
 	# If a member of congress, we want to get all the connected contacts
@@ -267,7 +270,7 @@ def recipient_profile(request, recip_id):
 		recipients = Recipient.objects.filter(bioguide_id=recipient.bioguide_id)
 	else:
 		recipients = [recipient]
-			
+
 	for recip in recipients:
 		recipient = {}
 		recipient['agency'] = recip.agency
@@ -276,18 +279,18 @@ def recipient_profile(request, recip_id):
 		recipient['title'] = recip.title
 		recipient['state_local'] = recip.state_local
 		recipient['bioguide_id'] = recip.bioguide_id
-		recip_id = recip.id 
+		recip_id = recip.id
 		recipient['recipient_id'] = recip_id
 
 		if Contribution.objects.filter(recipient=recip_id).exists():
 			contribution = Contribution.objects.filter(recipient=recip_id,meta_data__processed=True).aggregate(total_pay=Sum('amount'))
 			recipient['total_contribution'] = float(contribution['total_pay'] or 0)
-		
+
 		if Contact.objects.filter(recipient=recip_id).exists():
 			recipient['contacts'] = Contact.objects.filter(recipient=recip_id, meta_data__processed=True).count()
 
 		results.append(recipient)
-	
+
 	results = json.dumps({'results': results }, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
 
@@ -300,7 +303,7 @@ def client_profile(request, client_id):
 	c = Client.objects.get(id=client_id)
 	results = []
 	client = {}
-	client['location'] = c.location.location 
+	client['location'] = c.location.location
 	client['location_id'] = c.location.id
 	client['client_name'] = c.client_name
 	client['address'] = c.address1
@@ -362,7 +365,7 @@ def client_profile(request, client_id):
 			terminated_reg = {}
 			terminated_reg['name'] = reg.reg_name
 			terminated_reg['reg_id'] = reg.reg_id
-			terminated_registrants.append(terminated_reg)	
+			terminated_registrants.append(terminated_reg)
 		client['terminated_reg'] = terminated_registrants
 
 	results = json.dumps({'results': client }, separators=(',',':'))
@@ -370,13 +373,13 @@ def client_profile(request, client_id):
 
 def location_profile(request, loc_id):
 	if not request.GET.get('key') == API_PASSWORD:
-		raise PermissionDenied 	
-	
+		raise PermissionDenied
+
 	results = {}
 	location = Location.objects.get(id=loc_id)
 	results['location_name'] = location.location
 	results['location_id'] = location.id
-	
+
 	# Find client and reg information
 	clients = Client.objects.filter(location=loc_id)
 	client_list = []
@@ -391,7 +394,7 @@ def location_profile(request, loc_id):
 		if Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2014,1,1), datetime.date(2015,1,1)),meta_data__processed=True).exists():
 			payment = Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2014,1,1), datetime.date(2015,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
 			client['total_14'] = float(payment['total_pay'] or 0)
-		
+
 		if Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2013,1,1), datetime.date(2014,1,1)),meta_data__processed=True).exists():
 			payment13 = Payment.objects.filter(client=c.id,subcontractor__isnull=True,meta_data__end_date__range=( datetime.date(2013,1,1), datetime.date(2014,1,1)),meta_data__processed=True).aggregate(total_pay=Sum('amount'))
 			total_pay = float(payment13['total_pay'] or 0)
@@ -399,10 +402,10 @@ def location_profile(request, loc_id):
 
 		if Payment.objects.filter(client=c.id).exists():
 			client['total_pay'] = True
-		
+
 		if Contact.objects.filter(client=c.id).exists():
 			client['contacts'] = Contact.objects.filter(client=c.id).count()
-		
+
 		# registrant and status
 		if Registrant.objects.filter(clients=c).exists():
 			active_regs = Registrant.objects.filter(clients=c)
@@ -422,9 +425,9 @@ def location_profile(request, loc_id):
 				terminated_reg = {}
 				terminated_reg['name'] = reg.reg_name
 				terminated_reg['reg_id'] = reg.reg_id
-				terminated_registrants.append(terminated_reg)	
+				terminated_registrants.append(terminated_reg)
 			client['terminated_reg'] = terminated_registrants
-		
+
 		client_list.append(client)
 
 	if Contact.objects.filter(client__in=clients, meta_data__processed=True).exists():
@@ -464,26 +467,26 @@ def reg_profile(request, reg_id):
 
 	if Contact.objects.filter(registrant=reg_id,recipient__agency__in=["Congress", "House", "Senate", "White House"], meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
 		registrant['federal_lobbying'] = True
-		
+
 	if Contact.objects.filter(registrant=reg_id,recipient__agency="U.S. Department of State", meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
 		registrant['state_dept_lobbying'] = True
-		
+
 	if Contact.objects.filter(registrant=reg_id,recipient__agency="Media", meta_data__end_date__range=(datetime.date(2013,1,1), datetime.date.today()) ).exists():
 		registrant['pr'] = True
 	else:
 		registrant['pr'] = False
-			
+
 
 	if Payment.objects.filter(registrant=reg).exists():
-	 	registrant['total_payments'] = True
+		registrant['total_payments'] = True
 
 	if Disbursement.objects.filter(registrant=reg).exists():
-	 	registrant['total_disbursements'] = True
+		registrant['total_disbursements'] = True
 
 	if Contact.objects.filter(registrant=reg).exists():
 		contacts = Contact.objects.filter(registrant=reg).count()
 		registrant['total_contacts'] = contacts
-	
+
 	if Contribution.objects.filter(registrant=reg).exists():
 		registrant['total_contributions'] = True
 
@@ -497,7 +500,7 @@ def reg_profile(request, reg_id):
 			'location': client.location.location,
 			'client_id': client.id,
 			'location': client.location.location,
-			'location_id': client.location.id, 
+			'location_id': client.location.id,
 			'active': True,
 		}
 
@@ -526,7 +529,7 @@ def reg_profile(request, reg_id):
 			'location': client.location.location,
 			'client_id': client_id,
 			'location': client.location.location,
-			'location_id': client.location.id, 
+			'location_id': client.location.id,
 			'active': False,
 		}
 
@@ -563,7 +566,7 @@ def contact_table(request):
 		registrant = Registrant.objects.get(reg_id=reg_id)
 		query_params['registrant'] = registrant
 		title.append({'id':reg_id, 'text':registrant.reg_name, "type":'reg' })
-	
+
 	if request.GET.get('doc_id'):
 		doc_id = request.GET.get('doc_id')
 		doc = Document.objects.get(id=doc_id)
@@ -584,7 +587,7 @@ def contact_table(request):
 		query_params['recipient'] = recip
 		title.append({'id':recip_id, 'text':str(recip.name), "type": 'recipient'})
 
-	if request.GET.get('contact_id'):	
+	if request.GET.get('contact_id'):
 		contact_id = int(request.GET.get('contact_id'))
 		query_params['id'] = contact_id
 		t = "Contact record " + str(contact_id)
@@ -601,15 +604,15 @@ def contact_table(request):
 	if request.GET.get('sort'):
 		sort = request.GET.get('sort')
 	else:
-		sort = '-date'	
+		sort = '-date'
 
 	contact_pool = Contact.objects.filter(**query_params).order_by(sort)
-	
+
 	if request.GET.get('p'):
 		p = int(request.GET.get('p'))
 	else:
 		p = 1
-	page = {}	
+	page = {}
 	page['page'] = p
 	page['num_pages'] = int(contact_pool.count())/20
 
@@ -625,7 +628,7 @@ def contact_table(request):
 		contacts = []
 		for r in contact.recipient.all():
 			person = {}
-			name = namebuilder(r) 
+			name = namebuilder(r)
 			recipient_id = r.id
 			if name == '':
 				recipient_id = None
@@ -637,20 +640,20 @@ def contact_table(request):
 		else:
 			record['row'] = "odd"
 		count += 1
-		
+
 		date = contact.date
 		if date == None:
 			md = MetaData.objects.get(link=url)
 			date = md.end_date
 			try:
 				date = date.strftime("%m/%d/%Y")
-				date = "*" + date 
+				date = "*" + date
 			except:
 				date = ''
 		else:
 			date = date.strftime("%m/%d/%Y")
 		record['date'] = date
-		
+
 		employee = ''
 		for l in contact.lobbyist.all():
 			employee = employee + l.lobbyist_name + ", "
@@ -700,7 +703,7 @@ def namebuilder(r):
 def payment_table(request):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
-	
+
 	results = []
 	query_params = {"meta_data__processed": True}
 	title = []
@@ -715,7 +718,7 @@ def payment_table(request):
 		doc_id = request.GET.get('doc_id')
 		doc = Document.objects.get(id=doc_id)
 		url = doc.url
-		query_params['link']= url 
+		query_params['link']= url
 		text = "Document " + str(doc_id)
 		title.append({'id':doc_id, 'text':text, "type": 'form'})
 
@@ -724,13 +727,13 @@ def payment_table(request):
 		client = Client.objects.get(id=client_id)
 		query_params['client'] = client
 		title.append({'id':client_id, 'text':str(client.client_name), "type": 'client'})
-	
+
 	if request.GET.get('payment_id'):
 		payment_id = int(request.GET.get('payment_id'))
 		query_params['id'] = int(payment_id)
 		t = "Payment record " + str(payment_id)
 		title.append({'id':None, 'text': t, "type": 'payment'})
-	
+
 	if request.GET.get('location_id'):
 		loc_id = int(request.GET.get('location_id'))
 		clients = Client.objects.filter(location__id=loc_id)
@@ -742,15 +745,15 @@ def payment_table(request):
 	if request.GET.get('sort'):
 		sort = request.GET.get('sort')
 	else:
-		sort = '-date'	
+		sort = '-date'
 
 	payment_pool = Payment.objects.filter(**query_params).order_by(sort)
-	
+
 	if request.GET.get('p'):
 		p = int(request.GET.get('p'))
 	else:
 		p = 1
-	page = {}	
+	page = {}
 	page['page'] = p
 	page['num_pages'] = int(payment_pool.count())/20
 	paginate_payments = paginate(payment_pool, p)
@@ -777,12 +780,12 @@ def payment_table(request):
 			date = md.end_date
 			try:
 				date = date.strftime("%m/%d/%Y")
-				date = "*" + date 
+				date = "*" + date
 			except:
 				date = ''
 		else:
 			date = date.strftime("%m/%d/%Y")
-		record['date'] = date	
+		record['date'] = date
 		results.append(record)
 
 		if count %2 == 0:
@@ -814,7 +817,7 @@ def payment_table(request):
 def disbursement_table(request):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
-	
+
 	results = []
 	query_params = {"meta_data__processed": True}
 	title = []
@@ -829,7 +832,7 @@ def disbursement_table(request):
 		doc_id = request.GET.get('doc_id')
 		doc = Document.objects.get(id=doc_id)
 		url = doc.url
-		query_params['link']= url 
+		query_params['link']= url
 		text = "Document " + str(doc_id)
 		title.append({'id':doc_id, 'text':text, "type": 'form'})
 
@@ -838,13 +841,13 @@ def disbursement_table(request):
 		client = Client.objects.get(id=client_id)
 		query_params['client'] = client
 		title.append({'id':client_id, 'text':str(client.client_name), "type": 'client'})
-	
+
 	if request.GET.get('disbursement_id'):
 		disbursement_id = int(request.GET.get('disbursement_id'))
 		query_params['id'] = int(disbursement_id)
 		t = "Disbursement record " + str(disbursement_id)
 		title.append({'id':None, 'text': t, "type": 'disbursement'})
-	
+
 	if request.GET.get('location_id'):
 		loc_id = int(request.GET.get('location_id'))
 		clients = Client.objects.filter(location__id=loc_id)
@@ -852,19 +855,19 @@ def disbursement_table(request):
 		location = Location.objects.get(id=loc_id)
 		location = location.location
 		title.append({'id':loc_id, 'text':location, "type": 'location'})
-	
+
 	if request.GET.get('sort'):
 		sort = request.GET.get('sort')
 	else:
-		sort = '-date'	
+		sort = '-date'
 
 	disbursement_pool = Disbursement.objects.filter(**query_params).order_by(sort)
-	
+
 	if request.GET.get('p'):
 		p = int(request.GET.get('p'))
 	else:
 		p = 1
-	page = {}	
+	page = {}
 	page['page'] = p
 	page['num_pages'] = int(disbursement_pool.count())/20
 	paginate_disbursements = paginate(disbursement_pool, p)
@@ -891,12 +894,12 @@ def disbursement_table(request):
 			date = md.end_date
 			try:
 				date = date.strftime("%m/%d/%Y")
-				date = "*" + date 
+				date = "*" + date
 			except:
 				date = ''
 		else:
 			date = date.strftime("%m/%d/%Y")
-		record['date'] = date	
+		record['date'] = date
 		results.append(record)
 
 		if count %2 == 0:
@@ -943,7 +946,7 @@ def contribution_table(request):
 		doc_id = request.GET.get('doc_id')
 		doc = Document.objects.get(id=doc_id)
 		url = doc.url
-		query_params['link']= url 
+		query_params['link']= url
 		text = "Document " + str(doc_id)
 		title.append({'id':doc_id, 'text':text, "type": 'form'})
 
@@ -958,29 +961,29 @@ def contribution_table(request):
 		query_params['id'] = contribution_id
 		text = "Contribution record " + str(contribution_id)
 		title.append({'id':None, 'text': text, "type": 'recipient'})
-	
+
 	if request.GET.get('employee_id'):
 		lobbyist_id = int(request.GET.get('employee_id'))
 		lobbyist = Lobbyist.objects.get(id=lobbyist_id)
 		lobbyist_name = lobbyist.lobbyist_name
-   		pac_name = lobbyist.PAC_name
-   		# one of these will be an empty string
-   		text = str(lobbyist_name) + str(pac_name)
+		pac_name = lobbyist.PAC_name
+		# one of these will be an empty string
+		text = str(lobbyist_name) + str(pac_name)
 		query_params['lobbyist'] = lobbyist
 		title.append({'id':None, 'text': text, "type": 'recipient'})
-	
+
 	if request.GET.get('sort'):
 		sort = request.GET.get('sort')
 	else:
-		sort = '-date'	
+		sort = '-date'
 
 	contribution_pool = Contribution.objects.filter(**query_params).order_by(sort)
-	
+
 	if request.GET.get('p'):
 		p = int(request.GET.get('p'))
 	else:
 		p = 1
-	page = {}	
+	page = {}
 	page['page'] = p
 	page['num_pages'] = int(contribution_pool.count())/20
 	paginate_contributions = paginate(contribution_pool, p)
@@ -998,18 +1001,18 @@ def contribution_table(request):
 		record['recipient_id'] = contribution.recipient.id
 		record['registrant'] = contribution.registrant.reg_name
 		record['reg_id'] = contribution.registrant.reg_id
-		
+
 		if record.has_key('contributor'):
 			record['contributor'] = str(contribution.lobbyist)
 			record['contributor_id'] = contribution.lobbyist.id
-		
+
 		date = contribution.date
 		if date == None:
 			md = MetaData.objects.get(link=url)
 			date = md.end_date
 			try:
 				date = date.strftime("%m/%d/%Y")
-				date = "*" + date 
+				date = "*" + date
 			except:
 				date = ''
 		else:
@@ -1021,7 +1024,7 @@ def contribution_table(request):
 			record['row'] = "odd"
 		count = count + 1
 
-		record['date'] = date	
+		record['date'] = date
 		results.append(record)
 
 
@@ -1044,15 +1047,15 @@ def contribution_table(request):
 
 	results = json.dumps({'results':results, 'title':title, 'buttons':buttons, 'page':page}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")
-	
+
 # 2013 totals pages
 def reg_2013(request):
 	if not request.GET.get('key') == API_PASSWORD:
 		raise PermissionDenied
-	
+
 	# this grabs the totals that are created in api management command totaler.py
 	this_filepath = os.path.abspath(__file__)
-	this_parent_dir = os.path.dirname(this_filepath) 
+	this_parent_dir = os.path.dirname(this_filepath)
 	file_name = os.path.join(this_parent_dir, "computations/reg13.json")
 	data = open(file_name, 'r')
 	results = data.read()
@@ -1068,7 +1071,7 @@ def map(request):
 
 	# this grabs the totals that are created in api management command totaler.py
 	this_filepath = os.path.abspath(__file__)
-	this_parent_dir = os.path.dirname(this_filepath) 
+	this_parent_dir = os.path.dirname(this_filepath)
 	file_name = os.path.join(this_parent_dir, "computations/map.json")
 	data = open(file_name, 'r')
 	results = data.read()
@@ -1082,7 +1085,7 @@ def client13(request):
 
 	# this grabs the totals that are created in api management command totaler.py
 	this_filepath = os.path.abspath(__file__)
-	this_parent_dir = os.path.dirname(this_filepath) 
+	this_parent_dir = os.path.dirname(this_filepath)
 	file_name = os.path.join(this_parent_dir, "computations/client13.json")
 	data = open(file_name, 'r')
 	results = data.read()
@@ -1095,7 +1098,7 @@ def location13(request):
 
 	# this grabs the totals that are created in api management command totaler.py
 	this_filepath = os.path.abspath(__file__)
-	this_parent_dir = os.path.dirname(this_filepath) 
+	this_parent_dir = os.path.dirname(this_filepath)
 	file_name = os.path.join(this_parent_dir, "computations/location13.json")
 	data = open(file_name, 'r')
 	results = data.read()
@@ -1130,7 +1133,7 @@ def search(request):
 	else:
 		results = json.dumps({'message':'No search terms'}, separators=(',',':'))
 		return HttpResponse(results, mimetype="application/json")
-	
+
 	# I could make them all 1
 	if request.GET.get('clientpage'):
 		clientpage = request.GET.get('clientpage')
@@ -1207,17 +1210,17 @@ def search_more(request):
 		peoplepage = request.GET.get('peoplepage')
 		people_org = search_recipients(q, int(peoplepage))
 		results['people_org'] =  people_org
-	
+
 	if request.GET.get('armspage'):
 		armspage = request.GET.get('armspage')
 		arms = search_arms(q, int(armspage))
 		results['arms'] = arms
-	
+
 	if request.GET.get('interactionspage'):
 		interactionspage = request.GET.get('interactionspage')
 		interactions = search_interactions(q, int(interactionspage))
 		results['interactions'] = interactions
-	
+
 	if request.GET.get('locationpage'):
 		locationpage = request.GET.get('locationpage')
 		locations = search_locations(q, int(locationpage))
@@ -1229,4 +1232,29 @@ def search_more(request):
 		results['docs'] = docs
 
 	results = json.dumps(results, separators=(',',':'))
+	return HttpResponse(results, mimetype="application/json")
+
+
+def generate_csv(request, model_str):
+	# possible model_str values are (contact|contribution|payment|disbursement|client) from api.urls
+	# which when capitalized will map to model names in fara.models
+
+	# map GET parameters to internal field names
+	get_params = {
+		'reg_id': 'registrant_id',
+		'doc_id': 'document_id',
+		'client_id': 'client_id',
+		'location_id': 'location_id',
+		'disbursement_id': 'record_id',
+		'contact_id': 'contact_id',
+	}
+
+	# construct query dict from GET parameters
+	query_dict = {}
+	for param in get_params.keys():
+		val = request.GET.get(param, None)
+		if val is not None:
+			query_dict[get_params[param]] = int(val)
+
+	results = json.dumps({'url': create_csv(model_str, query_dict)}, separators=(',',':'))
 	return HttpResponse(results, mimetype="application/json")

@@ -122,4 +122,3 @@ urlpatterns = patterns('',
     # API (looking up IDs using the Congress API)
     (r'^api/', include('api.urls')),
     )
-

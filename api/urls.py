@@ -21,6 +21,8 @@ urlpatterns = patterns('',
    url(r'^map', 'api.views.map', name='map'),
    url(r'^lobbying-2013', 'api.views.client13', name='client13'),
    url(r'^location-2013', 'api.views.location13', name='location13'),
+   # Unified CSV creator (cdunwell 04/20/2016)
+   url(r'^generate_csv/(?P<model_str>(contact|contribution|payment|disbursement|client))$', 'api.views.generate_csv', name='generate-csv'),
    # to check status
    url(r'^test', 'api.views.test', name='test'),
 )

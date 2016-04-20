@@ -9,12 +9,12 @@ from django.http import HttpResponse
 
 from FaraData.models import *
 from fara_feed.models import *
-# the functions in here should replace the ones below to be consistent  
+# the functions in here should replace the ones below to be consistent
 from FaraData.spread_sheets import make_file
 
 def namebuilder(r):
 	contact_name = ''
-	if r.title != None and r.title != '':	
+	if r.title != None and r.title != '':
 		contact_name = r.title.encode('ascii', errors='ignore') + ' '
 	if r.name != None and r.name != '':
 		contact_name = contact_name + r.name.encode('ascii', errors='ignore')
@@ -36,7 +36,6 @@ def instructions(request):
 
 ### Not using these anymore #### 
 ### Creating CSV results by form
-
 @login_required(login_url='/admin')
 def contact_csv(request, form_id):
 	doc = Document.objects.get(id=form_id)
@@ -57,7 +56,7 @@ def contact_csv(request, form_id):
 		for l in c.lobbyist.all():
 			lobbyists = lobbyists + l.lobbyist_name + ", "
 		lobbyists = lobbyists.encode('ascii', errors='ignore')
-		
+
 		if c.date == None:
 			date = dumb_date.strftime('%x') + "*"
 		else:
@@ -95,7 +94,7 @@ def payment_csv(request, form_id):
 			date = dumb_date.strftime('%x') + "*"
 		else:
 			date = p.date
-		
+
 		writer.writerow([p.client, p.amount, date, p.registrant, p.purpose, p.subcontractor, p.link])
 
 	return response
@@ -120,7 +119,7 @@ def disbursement_csv(request, form_id):
 			date = dumb_date.strftime('%x') + "*"
 		else:
 			date = d.date
-		
+
 		writer.writerow([d.amount, date, d.client, d.registrant, d.purpose, d.link, d.id])
 
 	return response
@@ -141,13 +140,13 @@ def contribution_csv(request, form_id):
 	writer = csv.writer(response)
 	writer.writerow(['Amount', 'Date', 'Recipient', 'Registrant', 'Contributing Lobbyist or PAC', 'Source', 'Record ID'])
 
-	for c in contribution:	
- 		recipient_name = namebuilder(c.recipient)
- 		if c.lobbyist:
- 			lobby = c.lobbyist
- 		else:
- 			lobby = ''
- 		if c.date == None:
+	for c in contribution:
+		recipient_name = namebuilder(c.recipient)
+		if c.lobbyist:
+			lobby = c.lobbyist
+		else:
+			lobby = ''
+		if c.date == None:
 			date = dumb_date.strftime('%x') + "*"
 		else:
 			date = c.date
@@ -167,8 +166,8 @@ def clients_csv(request):
 	writer = csv.writer(response)
 
 	for c in clients:
-		writer.writerow([c.id, c.client_name, c.location]) 
-	
+		writer.writerow([c.id, c.client_name, c.location])
+
 	return response
 
 
