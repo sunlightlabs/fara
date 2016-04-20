@@ -227,14 +227,13 @@ def create_csv(model_str, query_dict):
 
     if model_str in available:
         query = Q(**query_dict)
-        related = getattr(FaraData_models, model_str.capitalize()).objects.filter(query)
         file_name = 'data/' + model_str + '/' + model_str + '-' + \
-                    '_'.join(map(lambda x: str(x[0])+'='+str(x[1]), query_dict.items())) + '.csv'
-
+            '_'.join(map(lambda x: str(x[0])+'='+str(x[1]), query_dict.items())) + '.csv'
         # see if file already exists first before creating it
         if default_storage.exists(file_name):
             return os.path.join(settings.STATIC_URL, file_name)
 
+        related = getattr(FaraData_models, model_str.capitalize()).objects.filter(query)
         rows = [getattr(spread_sheets, model_str + '_heading')]
         for item in related:
 
