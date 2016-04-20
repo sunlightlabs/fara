@@ -270,16 +270,16 @@ def create_csv(model_str, query_dict):
                              item.recipient.id, item.id])
 
             elif model_str == 'payment':
-                subid_id = item.subcontractor.id if item.subcontractor else ''
+                sub_id = item.subcontractor.id if item.subcontractor else ''
                 rows.append([date, item.amount, item.client, item.registrant, item.purpose , item.subcontractor,
                              item.link, item.meta_data.form, item.registrant.reg_id, item.client.id,
-                             item.client.location.id, subid_id, item.id])
+                             item.client.location.id, sub_id, item.id])
 
             elif model_str == 'disbursement':
-                subid = item.subcontractor.id if item.subcontractor else ''
+                sub_id = item.subcontractor.id if item.subcontractor else ''
                 rows.append([date, item.amount, item.client, item.registrant, item.purpose, item.subcontractor,
                              item.link, item.meta_data.form, item.registrant.reg_id, item.client.id,
-                             item.client.location.id, subid_id, item.id])
+                             item.client.location.id, sub_id, item.id])
 
         rows.sort(key=lambda x: x[0], reverse=True)  # sort by date - more recent comes first
 
