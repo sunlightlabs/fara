@@ -229,7 +229,7 @@ def create_csv(model_str, query_dict):
         query = Q(**query_dict)
         related = getattr(FaraData_models, model_str.capitalize()).objects.filter(query)
         file_name = 'data/' + model_str + '/' + model_str + '-' + \
-                    '_'.join(map(lambda x: x[0]+'='+x[1], query_dict.items())) + '.csv'
+                    '_'.join(map(lambda x: str(x[0])+'='+str(x[1]), query_dict.items())) + '.csv'
 
         # see if file already exists first before creating it
         if default_storage.exists(file_name):
