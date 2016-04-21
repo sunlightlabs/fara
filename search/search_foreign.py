@@ -73,6 +73,7 @@ def search_arms(q, page):
 
 		"from": f,
 		"size": per_page,
+		"sort": 'date:desc',
 	}
 
 	return es.search(index="foreign", doc_type='arms', body=body)
